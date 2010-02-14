@@ -1,0 +1,127 @@
+
+\section{Directive for local view programming}
+
+\subsection{{\tt local\_alias} directive}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{local\_alias}} directive declares the local data
+object as an alias to the data of a distributed array allocated in each
+node.
+
+\subsubsection*{Syntax}
+\Syntax{local\_alias}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt local\_alias ::} {\it local-array-name}
+\verb|=>| {\it global-array-name} \\
+\verb![C]! & \verb|#pragma xmp| {\tt local\_alias ::} {\it local-array-name}
+\verb|=>| {\it global-array-name} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+This directive declares that the local array specified by
+{\it local-array-name} is a "local alias" to the global array specified by
+{\it global-array-name}.
+
+The shape of a local alias is the same as that of the local part of the
+corresponding global array that is owned by each node. Note that the
+local part includes the shadow area.
+
+A local alias becomes defined when the corresponding global array
+becomes defined. If the corresponding global array is statically
+allocated, then the local alias is always defined in its scoping unit;
+if not, the local alias is not defined until the corresponding global
+array is aloocated.
+
+\subsubsection*{Restriction}
+
+\begin{itemize}
+ \item The array specified by {\it local-array-name} must not be aligned
+       by an {\tt align} directive.
+ \item The array specified by {\it global-array-name} must be aligned
+       by an {\tt align} directive.
+ \item The data type and rank of the array specified by {\it
+       local-array-name} must be the same as those of the array
+       specified by {\it global-array-name}.
+ \item \verb![F]! The array specified by {\it local-array-name} must be
+       a deferred-shape array.
+ \item \verb![C]! The array specified by {\it local-array-name} must be
+       a pointer.
+\end{itemize}
+
+\subsubsection*{Examples}
+
+\begin{description}
+\item[Example 1]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp nodes n(4)
+!$xmp template :: t (100)
+!$xmp distribute (cyclic) onto n :: t
+
+      real :: a (100)
+!$xmp align (i) with t(i) :: a
+!$xmp shadow (1) :: a
+
+      real :: b(0:)
+!$xmp local_alias :: b => a
+\end{Fexample}
+
+The node {\tt n(2)} has a local array of twenty-five elements ({\tt
+a(2:100:4)}) with shadow areas of size one on the lower and upper
+bounds. The lower bound of the local alias {\tt b} is declared to
+be zero. As a result, {\tt b} is an array of twenty-seven elements
+({\tt b(0:26)}) on {\tt n(2)}. The table below shows the correspondence
+of each element of a to that of {\tt b}.
+
+\begin{center}
+\begin{tabular}{|c|c|}\hline
+{\tt a}      & {\tt b} \\ \hline\hline
+lower shadow & 0       \\ \hline
+2            & 1       \\ \hline
+6            & 2       \\ \hline
+10           & 3       \\ \hline
+\dots        & \dots   \\ \hline
+98           & 25      \\ \hline
+upper shadow & 26      \\ \hline
+\end{tabular}
+\end{center}
+
+\item[Example 2]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp nodes n(4)
+!$xmp template :: t(:)
+!$xmp distribute (block) onto n :: t
+
+      real , allocatable :: a(:)
+!$xmp align (i) with t(i) :: a
+
+      real :: b(:)[*]
+!$xmp local_alias :: b => a
+
+      Åc
+
+!$xmp template_fix :: t(128)
+
+      allocate (a(128))
+
+      if (me < 4) b(4) = b(4)[me +1]
+\end{Fexample}
+
+Since the global array {\tt a} is an allocatable array, its local alias
+{\tt b} is not defined when the subroutine starts execution. {\tt b} is
+defined when {\tt a} is allocated at the {\tt allocate}
+statement. Note that {\tt b} is declared as an coarray and therefore can be
+accessed in the same way as a normal coarray.
+
+\end{description}
+
+\subsection{Post directive}
+
+\subsection{Wait directive}
+
+\subsection{Critical directive}
+

@@ -1,0 +1,490 @@
+\section{Global View Communication and Synchronization Construct}
+
+\subsection{Reflect Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{reflect}} directive assigns the value of a
+reflection source to the corresponding shadow object for variables
+having the shadow attribute. 
+
+\subsubsection*{Syntax}
+\Syntax{reflect}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt reflect} {\it array-name} [, {\it
+  array-name} ... ] \\
+\verb![C]! & \verb|#pragma xmp| {\tt reflect} {\it array-name} [, {\it
+  array-name} ... ] \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The {\tt reflect} directive copies the value of
+the reflection source of reflect-object specified by {\it array-name} to all
+shadow objects. This directive may execute the communications.
+
+\subsection{Gmove Construct}
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{gmove}} construct copies data of a
+distributed array in global-view. 
+
+\subsubsection*{Syntax}
+\Syntax{gmove}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt gmove} [{\tt in}$\vert${\tt out}] {\it dest}
+= {\it source} \\
+\verb![C]! & \verb|#pragma xmp| {\tt gmove} [{\tt in}$\vert${\tt out}] {\it
+  dest} = {\it source} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+This directive executes a copy operation of global data array object
+distributed into nodes. This directive is followed by the assignment
+statement of scalar value and array sections. The assignment operation
+of the array sections of a distributed array may require communication
+between nodes.
+
+The assignment statement must be a simple assignment without
+any arithmetic operations.   
+
+In \XMP, \C language is extended to support array section notation to
+support an assignment of array objects.
+
+The assignment statement must have one of following patterns;
+
+\begin{itemize}
+\item  Scalar assignment. For example
+
+\begin{tabular}{lll}
+\hspace{0.5cm} & {\tt s1 = s2} & ! {\tt s1}, {\tt s2} is a scalar
+variable \\ 
+& {\tt a(3) = b(i, j)} & ! {\tt a}, {\tt b} are arrays. \\
+\end{tabular}
+
+\item Array assignment. The left value must be an array name,
+array section or scalar object. For example:
+
+\begin{tabular}{lll}
+\hspace{0.5cm} & {\tt a = b} & ! {\tt a}, {\tt b} are arrays \\
+ & {\tt a(1:10) = b(n:n+9, k)} & ! left and right are array section \\
+ & {\tt a(1:10) = s2} & ! The left is an array section, left is a
+ scalar variable \\
+ & {\tt a(1:10) = b(i, j)} & ! The left is an array section, left is a
+ scalar object \\
+\end{tabular}
+\end{itemize}
+
+The {\tt gmove} construct must be executed by nodes in the executing
+node set. And the value of scalar objects, and index value, range
+value of array section in the assignment statement must be same in
+every node executing this directive.
+
+When no option is specified, the copy operation is performed
+collectively by all nodes in the executing node set. In this case, all
+elements in both source array and target array must be distributed on
+to the executing node set. If the object in right hand side is local
+object, the value of the local object must be same. In this case, the
+assignment is done locally where the object in left hand side is 
+distributed. And, if the object in left hand side is a local object
+and the object in right hand side is global, then this operation
+performs broadcast operation.
+
+If an {\tt in} option is specified, the node which owns the element of
+the object in left hand side gets the data in right hand side by
+remote copy (get) operation. Therefore, the object in left hand side
+must be distributed on to the executing node set. 
+
+If an {\tt out} operation is specified, the node which owns the element
+of the object in right hand side puts the data in left hand side by
+remote copy (put) operation. Therefore, the object in right hand side
+must be distributed on to the executing node set.
+
+If no option is specified, the copy can be performed by two-side
+communication. In this case, the receiver side waits the sender side,
+resulting in implicit synchronization. 
+
+If an {\tt in} or {\tt out} clause is specified, the
+copy operation should be done by one-side communication for remote
+memory access. Thus, no synchronization is implied. If
+synchronization is required between reader and writer, the programmer
+must do synchronization explicitly by a {\tt barrier} construct. If reader
+and writer do not belong to the same executing node set, then
+point-to-point synchronization by {\tt post-wait} directive can be
+used.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+\item The {\tt gmove} construct must be executed by all nodes in the
+  executing node set.
+\end{itemize}
+
+\subsubsection*{Examples}
+\begin{description}
+\item[Example 1: array assignment]
+\Example{gmove}
+
+If both left hand side and right hand side are distributed
+array, then the copy operation can be performed by all-to-all
+communication. If the left hand side is a duplicated array, this copy
+is performed by multi-cast communication. If the right hand side is a
+duplicated array, no communication is required.
+
+\vspace{0.5cm}
+
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{Fexample}
+!$xmp gmove
+      a(:,1:N) = b(:,3,0:N-1)
+\end{Fexample}
+\end{center}
+\end{minipage}
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{CexampleR}
+#pragma xmp gmove
+      a[1:N][:] = b[0:N-1][3][:];
+\end{CexampleR}
+\end{center}
+\end{minipage}
+\vspace{1cm}
+
+\item[Example 2: scalar assignment to array] 
+
+When right hand side is a distributed array, the copy is performed by
+broadcast communication from the owner of the element of the array. If
+right hand side is a duplicated array, no communication is required.
+
+\vspace{0.5cm}
+
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{Fexample}
+!$xmp gmove
+      a(:,1:N) = c(k)
+\end{Fexample}
+\end{center}
+\end{minipage}
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{CexampleR}
+#pragma xmp gmove
+      a[1:N][:] = c[k]
+\end{CexampleR}
+\end{center}
+\end{minipage}
+\vspace{1cm}
+
+\item[Example 3]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp nodes p(4)
+      real a(4), b(4)
+!$xmp distribute (block) onto p :: a,b
+      ...
+!$xmp task on p(1:2)	! Only p(1), p(2) execute this section
+      ...
+!$xmp gmove
+      a(1:2) - b(2:3)	! Communication to outside
+      ...		! of executing node occurs
+!$xmp end task
+\end{Fexample}
+
+\end{description}
+
+\subsection{Barrier Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{barrier}} construct specifies an explicit barrier
+at the point at which the construct appears. 
+
+\subsubsection*{Syntax}
+\Syntax{barrier}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt barrier} [{\tt on} {\it nodes-ref}$\vert${\it template-ref}] \\
+\verb![C]! & \verb|#pragma xmp| {\tt barrier} [{\tt on} {\it nodes-ref}$\vert${\it template-ref}] \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The barrier operation is performed between the node set specified by
+an on clause. If on clause is not specified, the current executing
+node set is used.
+%
+The barrier construct also has a function of ensuring that all of the
+remote copy operations that are invoked by gmove in/out constructs
+executed by the node set specified by the on clause are finished.
+
+\subsubsection*{Restriction}
+
+\begin{itemize}
+\item The node set specified by {\tt on} clause must be a subset of the
+      executing node set.  
+\end{itemize}
+
+\subsection{Reduction Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{reduction}} construct performs a reduction
+operation between nodes. 
+
+\subsubsection*{Syntax}
+\Syntax{reduction}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt reduction( } {\it reduction-kind} {\it
+  :} {\it variable} [, {\it variable} ] ... {\tt )} [{\tt on} {\it
+      node-ref}$\vert${\it template-ref}] \\
+\end{tabular}
+
+Where {\it reduction-kind} is one of:
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\tt +} \\
+ & {\tt *} \\
+ & {\tt .AND.} \\
+ & {\tt .OR.} \\
+ & {\tt .EQV.} \\
+ & {\tt .NEQV.} \\
+ & {\tt MAX} \\
+ & {\tt MIN} \\
+ & {\tt IAND} \\
+ & {\tt IOR} \\
+ & {\tt IEOR} \\
+\end{tabular}
+
+\begin{tabular}{ll}
+\verb![C]! & \verb|#pragma xmp| {\tt reduction(} {\it reduction-kind} {\it
+  :} {\it variable} [, {\it variable} ] ... {\tt )} [{\tt on} {\it
+      node-ref}$\vert${\it template-ref}] \\
+\end{tabular}
+
+Where {\it reduction-kind} is one of:
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\tt +} \\
+ & {\tt *} \\
+ & {\tt -} \\
+ & {\verb|&|} \\
+ & {\tt |} \\
+ & {\verb|^|} \\
+ & {\verb|&&|} \\
+ & {\tt ||} \\
+ & {\tt max} \\
+ & {\tt min} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The {\tt \Directive{reduction}} construct performs the
+% modified by Sakagami,H. 09/11/13                                            
+reduction operation specified by {\it reduction-kind} for the specified
+local variable in each node of the node set specified by {\tt on}
+clause, and set the reduction results to variables in each node. The
+variable for the reduction operation is called ``\Term{reduction
+variable}''. Thus, after a reduction operation, the value of the
+reduction variable becomes same.
+
+% inserted by Sakagami,H. 09/11/13 ----- start ----                            
+When {\it template-ref} is specified in {\tt on} clause, the operation
+is done in a node set that consists of nodes associated with the specified temp\
+late.
+Therefore, before the {\tt \Directive{reduction}} construct is executed, the
+referenced template must be fixed. When {\it template-spec} is ``*'',
+nodes in the corresponding dimension are ignored for the reduction operation.
+When {\it template-spec} is ``:'', nodes for all template elements in the corresp\
+onding
+dimension perform the reduction operation.
+
+When {\it node-ref} is specified in {\tt on} clause, the operation
+is done in the specified node set. Therefore, before the {\tt \Directive{reduct\
+ion}} construct is executed, the
+referenced node set must be fixed.
+
+When {\tt on} clause is omitted, the operation is done in the current
+executing node set.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+%\item {\it template-spec} appearing in {\it template-ref} must be either ``*'', ``\
+%:'' or the range.
+%\item If {\tt on} clause is omitted, the operation is done in the current execu\
+%ting node.
+ \item The variables specified by the sequence of {\it variable} must
+       either not be aligned or be replicated among nodes of the node
+       set specified by the {\tt on} clause.
+ \item The {\tt reduction} construct is collective, which it must be
+       executed by all of the executing nodes and each variable
+       appearing in the construct must have the same value among all of
+       the executing nodes.
+ \item The node set specified by {\tt on} clause must be a subset of the
+       current executing node set.
+\end{itemize}
+% inserted by Sakagami,H. 09/11/13 ----- end ---- 
+
+\subsubsection*{Examples}
+\Example{reduction}
+
+\begin{description}
+\item[Example 1]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp reduction(+:s)
+
+!$xmp reduction(max:aa) on t(*,:)
+
+!$xmp reduction(min:bb) on p(10:30)
+\end{Fexample}
+
+% modified by Sakagami,H. 09/11/13                                             
+In the first example, the scalar variable {\tt s} is assumed to contain the 
+partial sum,                                                              
+and the reduction operation calculates the total sum of the variable. The      
+total sum is stored in the variable in each node.                              
+                                                                               
+% modified by Sakagami,H. 09/11/13                                             
+The second example computes the maximum value of the variable {\tt aa} in      
+the node set which consists of nodes associated with all range of the second di
+mension of template {\tt t}.                  
+
+% modified by Sakagami,H. 09/11/13                
+In the third example, the minimum value of the variable {\tt bb} in the node 
+set specified by {\tt p(10:30)}. This example is equivalent to the       
+code using the {\tt \Directive{task}} construct.                               
+
+\begin{Fexample}
+!$xmp task on p(10:30)
+!$xmp reduction(min:bb)
+!$xmp end task
+\end{Fexample}
+
+\item[Example 2]
+\hspace{\hsize}
+\begin{Fexample}
+      dimension a(n,n), p(n), w(n)
+!$xmp align a(i,j) with t(i,j)
+!$xmp align p(i) with t(i,*)
+!$xmp align a(j) with t(*,j)
+      ...
+!$xmp loop (j) on t(:,j)
+      do j = 1, n
+          sum = 0
+!$xmp loop (i) on t(i,j) reduction(+:sum)
+          do i = 1, n
+              sum = sum + a(i,j) * p(i)
+          end do
+          w(j) = sum
+      end do
+\end{Fexample}
+
+This code computes the matrix vector product.
+% modified by Sakagami,H. 09/11/13
+The {\tt reduction} clause is specified for the {\tt \Directive{loop}} construct of the inner
+loop. This example is equivalent to the following program.
+
+\begin{Fexample}
+      dimension a(n,n), p(n), w(n)
+!$xmp align a(i,j) with t(i,j)
+!$xmp align p(i) with t(i,*)
+!$xmp align a(j) with t(*,j)
+      ...
+!$xmp loop (j) on t(:,j)
+      do j = 1, n
+          sum = 0
+!$xmp loop (i) on t(i,j) 
+          do i = 1, n
+              sum - sum + a(i,j) * p(i)
+          end do
+!$xmp reduction(+:sum) on t(1:n,j)
+          w(j) = sum
+      end do
+\end{Fexample}
+
+In this case, the reduction operation on the scalar variable {\tt sum}
+is performed for every iteration in the outer loop, which may cause a
+large overhead.
+% modified by Sakagami,H. 09/11/13
+The {\tt reduction} clause cannot be specified for the {\tt \Directive{loop}} construct of the outer
+loop to reduce this overhead, because the loop index of the outer loop ({tt j}) is different from that
+for the reduction operaion ({\tt i}).
+However this code can be modified with  the {\tt \Directive{reduction}} construct 
+as follows:
+
+\begin{Fexample}
+      dimension a(n,n), p(n), w(n)
+!$xmp align a(i,j) with t(i,j)
+!$xmp align p(i) with t(i,*)
+!$xmp align a(j) with t(*,j)
+      ...
+!$xmp loop (j) on t(:,j)
+      do j = 1, n
+          sum = 0
+!$xmp loop (i) on t(i,j) 
+          do i = 1, n
+              sum - sum + a(i,j) * p(i)
+          end do
+          w(j) = sum
+      end do
+!$xmp reduction(+:w) on t(1:n,*)
+\end{Fexample}
+
+This code executes a reduction operation on the array {\tt w}, just once
+which may runs faster. 
+
+\end{description}
+
+\subsection{Bcast Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{bcast}} construct execute broadcast communication
+from one node.
+
+\subsubsection*{Syntax}
+\Syntax{bcast}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt bcast} {\it variable} 
+[, {\it variable}...] [{\tt from} {\it nodes-ref} [{\tt on} {\it
+  nodes-ref}$\vert${\it template-ref}] \\
+\verb![C]! & \verb|#pragma xmp| {\tt bcast} {\it variable} 
+[, {\it variable}...] [{\tt from} {\it nodes-ref} [{\tt on} {\it
+  nodes-ref}$\vert${\it template-ref}] \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The value of the variables specified by {\it variable} is broadcasted
+form the node specified by {\tt from} clause (called source node) to
+the nodes in the node set specified by {\tt on} clause. The specified
+variable for broadcast is called "\Term{broadcast variable}". After
+executing this directive, the value of the broadcast variable became
+same as the value of the source node. If {\tt from} clause is omitted,
+the first node of the node set is a source node. If {\tt on} clause is
+omitted, the operation is done in the current executing node set.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+\item The variables specified by the sequence of {\it variable} must
+      either not be aligned or be replicated among nodes of the node set
+      specified by the {\tt on} clause.
+\item The {\tt bcast} construct is collective, which means that a {\tt
+      bcast} construct must be executed by all of the executing nodes
+      and each variable appearing in the construct must have the same
+      value among all of the executing nodes.
+\item The node set specified by {\tt on} clause must be a subset of the
+      current executing node set.
+\item The source node specified by {\tt from} clause must belong to
+  the node set specified by {\tt on} clause. 
+\end{itemize}
+

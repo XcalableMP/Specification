@@ -1,0 +1,80 @@
+\chapter{Directives}\index{directive}
+
+This chapter describes the syntax and behavior of \XMP directives.
+In this document, the following notations are used to describe \XMP
+directives. 
+
+\vspace{0.5cm}
+
+\begin{tabular}{ll}
+{\tt xxx} & {\tt type-face} characters are used for literal. \\
+{\it xxx ...} & if the line is followed by ``...'' then xxx can be
+repeated. \\
+{\it [xxx]} & {\it xxx} is optional. \\
+\verb![F]! & The following lines are effective only in \Fort. \\
+\verb![C]! & The following lines are effective only in \C. \\
+\end{tabular}
+
+\vspace{0.5cm}
+
+In \C, \XMP
+directives are specified by using \verb|#pragma| mechanism provided by \C
+standards. In \Fort, \XMP directives are specified by using
+special comments that are identified by unique sentinels
+{\tt\verb|!$xmp|}. The rules of \Fort directives in fixed source format
+and free source format follow these in \OMP and HPF.
+
+\vspace{0.5cm}
+
+\Syntax{directive}
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\it directive-name clause} \\
+& \\
+\verb![C]! & \verb|#pragma xmp| {\it directive-name clause} \\
+\end{tabular}
+
+\vspace{0.5cm}
+
+Directives are classified into declarative directives and
+executable directives. The \Directive{declarative directive} is one that my
+only be placed in a declarative context. A declarative directive has no
+associated executable user code. The scope rule of declarative
+directives obeys one of declaration statements in the base
+language. For example, node declarations by {\tt node} directives are
+effective from declared point to the end of the file in C, and within
+subprogram in \Fort.
+
+{\Directive{Executable} directives are placed in executable
+context. A stand-alone directive is an executable directive which has
+no associated user code, such as a {\tt barrier} directive. Some executable
+directives compose directive construct with associated user code, as
+in following format:
+
+\vspace{0.5cm}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\it directive-name clause} ...\\
+ & \hspace{0.5cm} {\it statement} \\
+ & \hspace{0.5cm} ... \\
+ & \verb|!$xmp| {\tt end} {\it directive-name} \\
+\end{tabular}
+\vspace{0.3cm}
+
+Note that in {\tt loop} construct, {\tt end} can be omitted.
+
+\vspace{0.5cm}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\it directive-name clause} ...\\
+ & \hspace{0.5cm} {\it do-loop-construct} \\
+\end{tabular}
+
+\vspace{0.5cm}
+
+\begin{tabular}{ll}
+\verb![C]! & \verb|#pragma xmp| {\it directive-name clause} ...\\
+ & \hspace{0.5cm} {\it statement} \\
+\end{tabular}
+
+In C, statement can be a compound-statement.
+

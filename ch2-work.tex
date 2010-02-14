@@ -1,0 +1,697 @@
+
+\section{Work Mapping Construct}
+
+\subsection{Task Construct}
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{task}} construct defines an explicit
+task which is executed in a specified node.
+
+\subsubsection*{Syntax}
+\Syntax{task}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt task on} { {\it node-ref} | {\it
+    template-ref} } \\
+& {\it block} \\
+& \verb|!$xmp| {\tt end task} \\
+& \\
+\verb![C]! & \verb|#pragma xmp| {\tt task on} { {\it node-ref} | {\it
+    template-ref} } \\
+& {\it block} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+When the execution encounters a {\tt task} construct, a
+block is executed if the executing node is one of the nodes
+specified by {\it nodes-ref} or {\it template-ref}. Otherwise, the
+execution of the block is skipped. 
+
+If the task is not surrounded by {\tt \Directive{tasks}} construct, {\it
+  nodes-ref} and  {\it template-ref} are evaluated at the entry of 
+the block. Otherwise, the {\it nodes-ref} and {\it template-ref} of
+{\tt task} construct are evaluated at the entry of surrounding 
+{\tt tasks} construct. The result of the evaluation must be same in
+every node in the executing node set. 
+
+To execute the block by nodes specified by {\it nodes-ref} and
+{\it template-ref}, new executing node sets are created conceptually. The
+node set executing outside the {\tt task} construct is called 
+"\Term{parent executing node set}".
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+\item The node set specified by nodes-ref or template-ref must be a
+  subset of parent executing node set.
+\end{itemize}
+
+\subsection{Tasks Construct}
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{tasks}} construct executes multiple tasks in
+arbitrary order. 
+
+\subsubsection*{Syntax}
+\Syntax{tasks}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt tasks} [ {\tt nowait} ] \\
+& {\it task-directive-construct} \\
+& ... \\
+& \verb|!$xmp| {\tt end tasks} \\
+& \\
+\verb![C]! & \verb|#pragma xmp| {\tt tasks} [ {\tt nowait} ] \\
+& {\tt \{} \\
+& \hspace{0.5cm} {\it task-directive-construct} \\
+& {\tt \}} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The {\tt tasks} construct executes the surrounded
+{\tt \Directive{task}} constructs (child task) in arbitrary order
+without implicit synchronization at the entry of each child
+task. As a result, if there is no overlap between executing node sets
+of adjacent tasks, these tasks can be executed in parallel.
+
+Conceptually, {\it nodes-ref} or {\it template-ref} in {\tt task}
+constructs of child tasks are evaluated at 
+the beginning of the {\tt tasks} construct.
+
+No implicit synchronization is done at the entry of {\tt tasks} construct.
+
+When a {\tt nowait} clause is
+specified, implicit synchronization is not done at the end of {\tt tasks}
+construct. Without a {\tt nowait} clause, implicit synchronization, 
+which guarantees completion of all inter-task communications among 
+the child tasks, is done
+in order to make sure that all communications issued inside children
+tasks are finished.
+
+\subsubsection*{Example}
+\Example{tasks}
+\Example{task}
+\Example{end tasks}
+\Example{end task}
+
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{Fexample}
+      subroutine caller
+!$xmp nodes p(1000)
+      real a(100,100)
+      ...
+!$xmp tasks
+!$xmp  task on p(1:500)
+        call task1(a)
+!$xmp  end task
+!$xmp  task on p(501:800)
+        call task1(a)
+!$xmp  end task
+!$xmp  task on p(801:1000)
+        call task1(a)
+!$xmp  end task
+!$xmp end tasks
+      ...
+      end do
+\end{Fexample}
+\end{center}
+\end{minipage}
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{FexampleR}
+      subroutine task1(a)
+      ...
+!$xmp nodes q(*)
+      real a(100,100)
+      ...
+      end subroutine
+\end{FexampleR}
+\end{center}
+\end{minipage}
+\vspace{1cm}
+
+\subsection{Loop Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{loop}} construct specifies
+that the iterations of a loop will be executed in parallel by threads
+in nodes of the executing node set. The iterations are distributed
+across nodes where the specified data is accessed
+locally.
+% inserted by Sakagami,H. 09/11/13
+If the loop includes reduction operations, reduction references must be specified to obtain correct results.
+
+\subsubsection*{Syntax}
+\Syntax{loop}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt loop} [ ( {\it loop-index} ] [, {\it
+  loop-index}] ... ) ] {\tt on} {\it on-ref} [ {\it reduction-ref} ] \\
+\verb![C]! & \verb|#pragma xmp| {\tt loop} [ ( {\it loop-index} ] [, {\it
+  loop-index}] ... ) ] {\tt on} {\it on-ref} [ {\it reduction-ref} ] \\
+\end{tabular}
+
+\vspace{0.3cm}
+
+Where {\it on-ref} is one of:
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it template-ref} \\
+ & {\it nodes-ref}. \\
+\end{tabular}
+
+\vspace{0.3cm}
+
+{\it reduction-ref} is:
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & ( {\it reduction-kind} : {\it reduction-spec} [, ... ]
+ ) \\
+\end{tabular}
+
+\vspace{0.3cm}
+
+{\it reduction-kind} is one of:
+
+%ó·Ç¶ÇŒÅC.AND.ÇÕÅCò_óùå^ÇÃïœêîÇ…ëŒÇµÇƒÅCla = la .AND. lgcl(i)ÇÅCIANDÇÕÅCêÆêîå^ïœêîÇ…ëŒÇµÇƒia = IAND( ia, ib(i) ) Ç∆IANDä÷êîÇégÇ§Ç∆Ç´Ç≈Ç∑ÅD
+%HPFÇ…ì¸Ç¡ÇƒÇ¢Ç‹Ç∑ÅDå≥ÅXÅCéÑÇÕèëÇ©Ç»Ç©Ç¡ÇΩÇÃÇ≈Ç∑Ç™ÅCä‚â∫Ç≥ÇÒÇ™çÌèúÇ∑ÇÈïKóvÇ‡Ç»Ç¢ÇæÇÎÇ§Ç∆ÇÃÇ±Ç∆Ç≈ì¸ÇÍÇ‹ÇµÇΩÅD
+% Reductionéwé¶ï∂Ç…ÇÕì¸Ç¡ÇƒÇ¢Ç‹Ç∑ÇÃÇ≈ÅCí«â¡ÇµÇ‹ÇµÇΩÅD
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\tt +} \\
+ & {\tt *} \\
+ & {\tt .AND.} \\
+ & {\tt .OR.} \\
+ & {\tt .EQV.} \\
+ & {\tt .NEQV.} \\
+ & {\tt MAX} \\
+ & {\tt MIN} \\
+ & {\tt IAND} \\
+ & {\tt IOR} \\
+ & {\tt IEOR} \\
+ & {\tt FIRSTMAX} \\
+ & {\tt FIRSTMIN} \\
+ & {\tt LASTMAX} \\
+ & {\tt LASTMIN} \\
+\end{tabular}
+
+\vspace{0.3cm}
+{
+\it reduction-spec} is:
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it reduction-variable} [ / {\it location-variable}
+ [, ...] ) / ] \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The {\tt \Directive{loop}} construct is associated with a loop nest consisting of
+one or more loops that follow the directive, and distribute execution
+of iterations across nodes in the executing node set. 
+% inserted by Sakagami,H. 09/11/13
+As the iteration range of the loop for each node is determined before the loop is executed, efficient loop execution can be expected.
+
+When {\it on-ref} is {\it template-ref},
+according to the distribution of the specified template, the set of
+loop indices of iterations to be executed in each node is decided, and
+the iterations are executed by these node set as an executing node
+set. Therefore, before the {\tt \Directive{loop}} construct is executed, the
+referenced template must be fixed. When {\it template-spec} is "*",
+the corresponding dimension is collapsed so that it is ignored for
+distribution of loop. When {\it template-spec} is ":", nodes for all
+template elements in the corresponding dimension are assigned to
+iterations for execution. 
+
+% modified by Sakagami,H. 09/11/13
+When {\it on-ref} is {\it nodes-ref}, the node set associated with the
+loop index is created as an executing node set to execute the iteration of the loop index. 
+
+% inserted and modified by Sakagami,H. 09/11/13
+When the loop includes reduction operations, proper {\it reduction-ref} must be specified to obtain semantically correct results and the reduction operation is executed on the specified local reduction variable just after the execution of the loop.
+%If {\it reduction-ref} is specified, the reduction operation is
+%executed on the specified local reduction variable just after the
+%execution of the loop. 
+
+% inserted by Sakagami,H. 09/11/13
+The {\tt \Directive{loop}} construct that has {\it template-ref} as {\it on-ref} and {\tt reduction} clause except in cases
+with {\it reduction-kind} of {\tt FIRSTMAX},  {\tt FIRSTMIN}, {\tt LASTMAX} or {\tt LASTMIN}, is 
+equivalent to a {\tt \Directive{reduction}} construct with following {\it template-spec} replacements:\\
+Åg:Åh to Åg *Åh, \\
+Ågthe loop indexÅh to Åga iteration range of the loopÅh.
+
+\begin{Fexample}
+!$xmp loop (j) on t(:,j) reduction(...)
+      do j = js, je
+          ...
+          do i = 1, N
+              ...
+          end do
+          ...
+      end do
+\end{Fexample}
+
+This loop with reduction clause is equivalent
+to the code shown below:
+
+\begin{Fexample}
+!$xmp loop (j) on t(:,j) 
+      do j = js, je
+          ...
+          do i = 1, N
+              ...
+          end do
+          ...
+      end do
+!$xmp reduction(...) on t(*,js:je)
+\end{Fexample}
+
+% inserted by Sakagami,H. 09/11/13 ----- start ---
+Note that the {\tt \Directive{reduction}} construct does not care of initialization for the 
+reduction variable unlike the {\tt \Directive{loop}} construct with {\tt reduction} clause.
+The following programs return different values of variable {\tt sum} after the reduction
+operation. When {\tt sum} is initialized to zero, they return same results.
+
+\begin{Fexample}
+      sum = 123.45
+!$xmp loop (i) on t(i) reduction(+:sum)
+      do i = 1, N
+         sum = sum + a(i)
+      end do
+      
+      sum = 123.45
+!$xmp loop (i) on t(i)
+      do i = 1, N
+         sum = sum + a(i)
+      end do
+!$xmp reduction(+:sum) on t(1:N)
+\end{Fexample}
+% inserted by Sakagami,H. 09/11/13 ----- end ---
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+\item {\it loop-index} must be the loop index of the loop
+after the directive or the loop index of the loops nested by the
+loop.
+\item When the sequence of {\it loop-index} is omitted, it is interpreted
+that the loop index of the loop after the directive is specified. 
+\item {\it template-spec} appearing in {\it template-ref} must be
+  either "*", ":" or {\it loop-index}. In case of {\it loop-index},
+  the loop index must the loop index of outer loop of the loop.
+\item {\it nodes-ref} must reference different node
+sets for each {\it loop-index}. These node sets consist of different
+nodes. That is, a node must not be included more than one node sets. 
+\item When more than one {\tt \Directive{loop}} constructs are nested, {\it on-ref} of
+  each loop must also be nested.
+\item The initial value, upper bound and increment of
+{\it loop-index} must be invariant in the loop, and same in all executing
+nodes. 
+% modified by Sakagami,H. 09/11/13
+\item If {\it reduction-kind} is {\tt FIRSTMAX},  {\tt FIRSTMIN}, {\tt LASTMAX} or {\tt LASTMIN}, 
+{\it reduction-spec} has more than one {\it location-variable}. 
+% inserted by Sakagami,H. 09/11/13
+\item {\it reduction-ref} must reference reduction operations associated the loop after the directive or the loops nested by the loop.
+\item {\it location-variable} must be fixed in the loop after the directive or the loops nested by the loop.
+\item {\it reduction-variable} must not be referred at a certain iteration in the loop except updating itself.
+\item {\it reduction-variable} and {\it location-variable} must not exist in {\it reduction-ref} of nested loops.
+\end{itemize}
+
+\subsubsection*{Examples}
+\Example{distribute}
+\Example{align}
+\Example{loop}
+
+\begin{description}
+\item[Example 1]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp distribute t(block) onto p
+!$xmp align (i) with t(i) :: a, b
+      ...
+!$xmp loop (j) on t(i)
+      do i = 1, N
+          a(i) = 1.0
+          b(i) = a(i)
+      end do
+\end{Fexample}
+
+The {\tt \Directive{loop}} construct decide a node which executes the iterations,
+according to distribution of template t, and distribute the
+execution. The example is equivalent to the example shown below, while
+it will be faster because executed iterations in each node is decided
+before executing the loop.
+
+\begin{Fexample}
+!$xmp distribute t(block) onto p
+!$xmp align (i) with t(i) :: a, b
+      ...
+      do i = 1, N
+!$xmp task on t(i)
+          a(i) = 1.0
+          b(i) = a(i)
+!$xmp end task
+      end do
+\end{Fexample}
+
+\item[Example 2]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp distribute t(*,block) onto p
+!$xmp align (*,j) with t(*,j) :: a, b
+      ...
+!$xmp loop (j) on t(*,j)
+      do j = 1, M
+          do i = 1, N
+              a(i,j) = 1.0
+              b(i,j) = a(i,j)
+          end do
+      end do
+\end{Fexample}
+
+Since the first dimension of template {\tt t} is collapsed, this
+loop is distributed only for the second dimension. This example is
+equivalent to the {\tt task} construct shown below.
+
+\begin{Fexample}
+!$xmp distribute t(*,block) onto p
+!$xmp align (*,j) with t(*,j) :: a, b
+      ...
+      do j = 1, M
+!$xmp task on t(*,j)
+          do i = 1, N
+              a(i,j) = 1.0
+              b(i,j) = a(i,j)
+          end do
+!$xmp end task 
+      end do
+\end{Fexample}
+
+\item[Example 3]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp distribute t(block,block) onto p
+!$xmp align (i,j) with t(i,j) :: a, b
+      ...
+!$xmp loop (i,j) on t(i,j)
+      do j = 1, M
+          ...
+          do i = 1, N
+              a(i,j) = 1.0
+              b(i,j) = a(i,j)
+          end do
+          ...
+      end do
+\end{Fexample}
+
+% modified by Sakagami,H. 09/11/13
+The distribution for multi-dimensional array in the nested loop can be described
+by using the sequence of {\it loop-index} in one {\tt \Directive{loop}} construct. This example is equivalent
+to the loop shown below, while it will run faster since the iterations
+to be executed are decided outside of nested loop. Note that
+the inner template index set is included by the outer template index set.
+
+\begin{Fexample}
+!$xmp distribute t(block,block) onto p
+!$xmp align (i,j) with t(i,j) :: a, b
+      ...
+!$xmp loop (j) on t(:,j)
+      do j = 1, M
+          ...
+!$xmp loop (i) on t(i,j)
+          do i = 1, N
+              a(i,j) = 1.0
+              b(i,j) = a(i,j)
+          end do
+          ...
+      end do
+\end{Fexample}
+
+\item[Example 4]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp nodes p(10,3)
+      ...
+!$xmp loop on p(:,i)
+      do i = 1, 3
+          call subtask ( i )
+      end do
+\end{Fexample}
+
+The executing node sets are created by 10 nodes reference
+by {\tt p(:,i)} with different the value of {\tt i} in order to execute each
+associated iterations. This example is equivalent to the loop
+% modified by Sakagami,H. 09/11/13
+containing {\tt task} constructs, or static {\tt tasks/task}
+constructs. 
+
+\vspace{0.5cm}
+
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{Fexample}
+!$xmp nodes p(10,3)
+      ...
+      do i = 1, 3
+!$xmp task on p(:,i)
+          call subtask ( i )
+!$xmp end task
+      end do
+\end{Fexample}
+\end{center}
+\end{minipage}
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{FexampleR}
+!$xmp nodes p(10,3)
+      ...
+!$xmp tasks
+!$xmp task on p(:,1)
+      call subtask ( 1 )
+!$xmp end task
+!$xmp task on p(:,2)
+      call subtask ( 2 )
+!$xmp end task
+!$xmp task on p(:,3)
+      call subtask ( 3 )
+!$xmp end task
+!$xmp task on p(:,3)
+      call subtask ( 3 )
+!$xmp end task
+!$xmp task on p(:,3)
+      call subtask ( 3 )
+!$xmp end task
+!$xmp task on p(:,3)
+      call subtask ( 3 )
+!$xmp end task
+!$xmp end tasks
+\end{FexampleR}
+\end{center}
+\end{minipage}
+\vspace{1cm}
+
+\item[Example 5]
+\hspace{\hsize}
+\begin{Fexample}
+      ...
+      lb(1)  = 1
+      iub(1) = 10
+      lb(2)  = 11
+      iub(2) = 25
+      lb(3)  = 26
+      iub(3) = 50
+!$xmp loop (i) on p(lb(i):iub(i))
+      do i = 1, 3
+          call subtask ( i )
+      end do
+\end{Fexample}
+
+The executing node sets with different size are created by
+{\tt p(lb(i):iub(i))} with different value of i for imbalanced work
+loads. This example is equivalent to the loop containing 
+% modified by Sakagami,H. 09/11/13
+{\tt \Directive{task}} constructs, or static {\tt tasks/task} constructs.
+
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{Fexample}
+      do i = 1, 3
+!$xmp task on p(lb(i):iub(i))
+          call subtask ( i )
+!$xmp end task
+      end do
+      ...
+\end{Fexample}
+\end{center}
+\end{minipage}
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{FexampleR}
+!$xmp tasks
+!$xmp task on p(1:10)
+      call subtask ( 1 )
+!$xmp end task
+!$xmp task on p(11:25)
+      call subtask ( 2 )
+!$xmp end task
+!$xmp task on p(25:50)
+      call subtask ( 3 )
+!$xmp end task
+!$xmp end tasks
+\end{FexampleR}
+\end{center}
+\end{minipage}
+\vspace{1cm}
+
+\item[Example 6]
+\hspace{\hsize}
+\begin{Fexample}
+      ...
+      s = 0.0
+!$xmp loop (i) on t(i) reduction(+:s)
+      do i = 1, N
+          s = s + a(i)
+      end do
+\end{Fexample}
+
+This loop
+computes the sum of {\tt a(i)} into the variable {\tt s} in each node. Note that
+only the partial sum is computed on {\tt s} without reduction clause. This
+example is equivalent to the code below. 
+
+\begin{Fexample}
+      ...
+      s = 0.0
+!$xmp loop (i) on t(i) 
+      do i = 1, N
+          s = s + a(i)
+      end do
+!$xmp reduction(+:s) on t(1:N)
+\end{Fexample}
+
+\item[Example 7]
+\hspace{\hsize}
+\begin{Fexample}
+      ...
+      amax = -1.0e30
+      ip = -1
+      jp = -1
+!$xmp loop (i,j) on t(i,j) reduction(firstmax:amax/ip,jp/)
+      do j = 1, M
+          do i = 1, N
+              if( 1(i,j) .gt. amx ) then
+                  amx - a(i,j)
+                  ip = i
+                  jp = j
+              end if
+          end do
+      end do
+\end{Fexample}
+
+This loop
+computes the maximum value of {\tt a(i,j)} into the variable {\tt amax} in each
+% modified by Sakagami,H. 09/11/13
+node. Note that the incomplete maximum value just in the corresponding node is computed on
+ {\tt amax} without reduction clause. When this program is executed
+sequentially without \XMP directives, the first indices of the maximum 
+element are obtained in {\tt ip} and {\tt jp}, so that {\tt FIRSTMAX}
+is specified in reduction clause. 
+% inserted by Sakagami,H. 09/11/13
+This example cannot be rewritten with the {\tt reduction} consruct. 
+% modified by Sakagami,H. 09/11/13
+%\comment{This example is equivalent to the code below. 
+%\begin{Fexample}
+%???????????????? no example ?????????????????
+%\end{Fexample}}
+
+\end{description}
+
+\subsection{Array Construct}
+\subsubsection*{Synopsis}
+The {\tt \Directive{array}} construct divides the work of array
+assignment among the owner of the array. 
+
+\subsubsection*{Syntax}
+\Syntax{array}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt array on} {\it template-ref} \\
+\verb![C]! & (not defined) \\
+\end{tabular}
+
+\subsubsection*{Description}
+In \Fort, the array assignment can be used instead of the loop of
+assignment for each element. This directive executes the array
+assignment in each node. 
+
+% inserted by Sakagami,H. 09/11/13 --- start ---
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+\item {\it template-spec} must be shape conformance with the array assignment after the directive.
+\item If the range in {\it template-spec} is omitted, all of the ranges are assumed to be specified.
+\item The {\tt \Directive{array}} construct is collective, and must not be guarded under conditional
+execution depend on the node index.
+\end{itemize}
+% inserted by Sakagami,H. 09/11/13 --- end ---
+
+\subsubsection*{Examples}
+\Example{array}
+
+\begin{description}
+
+\item[Example 1]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp distribute t(block) onto p
+!$xmp align (i) with t(i) :: a
+      ...
+!$xmp array on t(1:N)
+      a(1:N) = 1.0
+\end{Fexample}
+
+This example is equivalent to the code shown below.
+
+\begin{Fexample}
+!$xmp distribute t(block) onto p
+!$xmp align (i) with t(i) :: a
+      ...
+!$xmp loop on t(1:N)
+      do i = 1, N
+          a(i) = 1.0
+      end do
+\end{Fexample}
+
+% inserted by Sakagami,H. 09/11/13 --- start ---
+\item[Example 2]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp template t(100,20)
+!$xmp distribute t(block,block) onto p
+      dimension a(100.20)
+!$xmp align (i,j) with t(i,j) :: a
+      ...
+!$xmp array on t
+      a = 2.0
+\end{Fexample}
+
+This example is equivalent to the code shown below.
+
+\begin{Fexample}
+!$xmp template t(100,20)
+!$xmp distribute t(block,block) onto p
+      dimension a(100.20)
+!$xmp align (i,j) with t(i,j) :: a
+      ...
+!$xmp loop (i,j) on t(i,j)
+      do j = 1, 20
+         do i = 1, 100
+            a(i,j) = 2.0
+         end do
+      end do
+\end{Fexample}
+\end{description}
+% inserted by Sakagami,H. 09/11/13 --- end ---
