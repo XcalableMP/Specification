@@ -54,7 +54,43 @@ array is aloocated.
 \subsubsection*{Examples}
 
 \begin{description}
+
 \item[Example 1]
+\hspace{\hsize}
+\begin{Fexample}
+!$xmp nodes n(4)
+!$xmp template :: t (100)
+!$xmp distribute (block) onto n :: t
+
+      real :: a (100)
+!$xmp align (i) with t(i) :: a
+!$xmp shadow (1) :: a
+
+      real :: b
+!$xmp local_alias :: b => a
+\end{Fexample}
+
+An array {\tt a} is distributed by block onto four nodes.
+The node {\tt n(2)} has a local array of twenty-five elements ({\tt
+a(25:50)}) with shadow areas of size one on the lower and upper
+bounds. The local alias {\tt b} is an array of twenty-seven elements
+({\tt b(1:27)}) on {\tt n(2)}. The table below shows the correspondence
+of each element of {\tt a} to that of {\tt b}.
+
+\begin{center}
+\begin{tabular}{|c|c|}\hline
+{\tt a}      & {\tt b} \\ \hline\hline
+lower shadow & 1       \\ \hline
+26           & 2       \\ \hline
+27           & 3       \\ \hline
+28           & 4       \\ \hline
+\dots        & \dots   \\ \hline
+50           & 26      \\ \hline
+upper shadow & 27      \\ \hline
+\end{tabular}
+\end{center}
+
+\item[Example 2]
 \hspace{\hsize}
 \begin{Fexample}
 !$xmp nodes n(4)
@@ -69,6 +105,7 @@ array is aloocated.
 !$xmp local_alias :: b => a
 \end{Fexample}
 
+An array {\tt a} is distributed by cyclic onto four nodes.
 The node {\tt n(2)} has a local array of twenty-five elements ({\tt
 a(2:100:4)}) with shadow areas of size one on the lower and upper
 bounds. The lower bound of the local alias {\tt b} is declared to
@@ -89,7 +126,7 @@ upper shadow & 26      \\ \hline
 \end{tabular}
 \end{center}
 
-\item[Example 2]
+\item[Example 3]
 \hspace{\hsize}
 \begin{Fexample}
 !$xmp nodes n(4)
