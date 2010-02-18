@@ -156,9 +156,177 @@ accessed in the same way as a normal coarray.
 
 \end{description}
 
-\subsection{Post directive}
 
-\subsection{Wait directive}
+\subsection{Post construct}
 
-\subsection{Critical directive}
+\subsubsection*{Synopsis}
 
+The {\tt \Directive{post}} construct, in combination with the {\tt
+\Directive{wait}} construct, specifies a point-to-point
+synchronization.
+
+\subsubsection*{Syntax}
+\Syntax{post}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt post ( {\it nodes-ref}, {\it tag} )}\\
+\verb![C]! & \verb|#pragma xmp| {\tt post ( {\it nodes-ref}, {\it tag} )}\\
+\end{tabular}
+
+\subsubsection*{Restriction}
+
+\begin{itemize}
+ \item {\it nodes-ref} must represent one node.
+ \item {\it tag} must be an integer expression.
+\end{itemize}
+
+\subsubsection*{Description}
+
+This construct prohibits statements following it from being executed
+until the execution of all statements preceding a matching
+\Directive{post} construct is completed on the node specified by {\it
+node-ref}.
+
+A {\tt \Directive{post}} construct issued with the arguments of {\it
+tag} and {\it nodes-ref} on a node (called a {\it
+posting node}) dynamically matches at most one {\tt \Directive{wait}}
+construct issued with the arguments of the posting node (unless omitted)
+and the same value as {\it tag} (unless omitted) on the node specified
+by {\it nodes-ref}.
+
+\subsubsection*{Example}
+\Example{post-wait}
+
+\begin{description}
+
+\item[Example 1]
+\hspace{\hsize}
+
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{Fexample}
+      S1
+!$xmp post (p(2), 1)
+\end{Fexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{Fexample}
+!$xmp wait (p(1), 1)
+      S2
+\end{Fexample}
+\end{center}
+\end{minipage}
+
+It is assumed that the left code is executed by the node {\tt p(1)} and
+the right by {\tt p(2)}.
+
+The {\tt post} construct in the left matches
+the {\tt wait} construct in the right because each {\it nodes-ref}
+represent each other and both {\it tags} have the same value of 1.
+%
+These constructs ensure that no statement in {\tt S2} is executed by
+{\tt p(2)} until the execution of all statements in {\tt S1} is
+completed by {\tt p(1)}.
+
+\item[Example 2]
+\hspace{\hsize}
+
+\begin{Fexample}
+!$xmp wait
+      S3
+\end{Fexample}
+
+It is assumed that this code is executed by the node {\tt p(3)}.
+
+The {\tt post} construct in the left code of Example 1 can match
+this {\tt wait} construct because both {\it nodes-ref} and
+	   {\it tag} are omitted in it.
+
+\end{description}
+
+
+\subsection{Wait construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{wait}} construct, in combination with the {\tt
+\Directive{post}} construct, specifies a point-to-point
+synchronization.
+
+\subsubsection*{Syntax}
+\Syntax{wait}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt wait} [ {\tt (} {\it nodes-ref} [ , {\it
+ tag} ] {\tt )} ]\\
+\verb![C]! & \verb|#pragma xmp| {\tt wait} [ {\tt (} {\it nodes-ref} 
+ [ , {\it tag} ] {\tt )} ]\\
+\end{tabular}
+
+\subsubsection*{Restriction}
+
+\begin{itemize}
+ \item {\it nodes-ref} must represent one node.
+ \item {\it tag} must be an integer expression.
+\end{itemize}
+
+\subsubsection*{Description}
+
+This construct prohibits statements following it from being executed
+until the execution of all statements preceding a matching
+\Directive{post} construct is completed on the node specified by {\it
+node-ref}.
+
+A {\tt \Directive{wait}} construct issued with the arguments of {\it
+tag} and {\it nodes-ref} on a node (called a {\it
+waiting node}) dynamically matches at most one {\tt \Directive{post}}
+construct issued with the arguments of the waiting node and the same
+value as {\it tag} on the node specified by {\it nodes-ref}.
+
+If {\it tag} is omitted, the {\tt \Directive{wait}} construct can match at
+most one {\tt \Directive{post}} construct issued with the arguments of
+the waiting node and any tag on the node specified by {\it nodes-ref}.
+%
+If both {\it tag} and {\it nodes-ref} are omitted, the {\tt
+\Directive{wait}} construct can match at most one {\tt \Directive{post}}
+construct issued with the arguments of the waiting node and any tag on
+any node.
+
+
+\subsection{Critical construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{critical}} construct restricts execution of the
+associated structured block to a single node at a time.
+
+\subsubsection*{Syntax}
+\Syntax{critical}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt critical} \\
+& {\it block} \\
+& \verb|!$xmp| {\tt end critical} \\
+& \\
+\verb![C]! & \verb|#pragma xmp| {\tt critical} \\
+& {\it block} \\
+\end{tabular}
+
+%\subsubsection*{Restriction}
+
+\subsubsection*{Description}
+
+This construct specifies a {\it critical region}, at the beginnng of
+which a node waits until no other node is executing it.
+
+%\subsubsection*{Examples}
+%\Example{critical}
+%
+%\begin{Fexample}
+%!$xmp critical
+%      ...
+%!$xmp end critical
+%\end{Fexample}
