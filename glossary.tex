@@ -1,108 +1,90 @@
 
 \section{Glossary}
 \subsection*{\Term{node}}
-A compute node,
-which may have several cores sharing main memory, has its own local
-memory. in distributed memory system. Each node is connected via
-network. An \XMP program begins as a single thread of execution
-in each node.
+In a distributed memory system, a computation node, which may have several cores sharing main memory, has its own local memory. Each node is connected through a network. An \XMP program begins as a single thread of execution in each node.
 
 \subsection*{\Term{node number}}
-Unique number assigned to nodes in entire
-node. The number starts from 1, larger than or equal to 1 and less
-than and equal to the number of nodes. Note that mapping from node
-number to MPI rank is decided by the system. The image index of
-coarray mapping to the entire nodes is equal to the node number. 
+A unique number assigned to each of the nodes in the entire node set. The number starts from 1, larger than or equal to 1 and less than and equal to the number of nodes.Note that the mapping from the node number to the MPI rank is decided by the system. The image index of
+the coarray mapping to the entire node set is equal to the node number. 
 
 \subsection*{\Term{node set}}
 A set of nodes
 
-\subsection*{\Term{entire node set}, \Term{entire node}}
-All nodes
-executing the program, or a set of the nodes. The entire node set is
+\subsection*{\Term{entire node set}, \Term{entire set of nodes}}
+All nodes executing the program, or a set of these nodes. The entire node set is
 decided when staring the program.
 
 \subsection*{\Term{executing node set}, \Term{executing nodes}}
-A node set executing a certain region of program. The executing node
-set which execute a whole program is a entire node set. The executing
-node set of a task is a node set which executes the task. 
+A node set executing a certain region of a program. The executing node
+set that executes an entire program is the entire node set. The executing
+node set of a task is the node set that executes the task. 
 
 \subsection*{\Term{node array}}
-A multi-dimensional array containing nodes. Node array have a
+A multi-dimensional array containing nodes. The node array has a
 name and shape as it attributes.
 
 \subsection*{\Term{executing node array}}
-Node array which contain executing node.
+Node array that contains the executing node.
 
 \subsection*{\Term{task}}
 A specific instance of executable code and
-its data environments executed in a set of nodes. In context of
-program text, a set of statement executed by a set of nodes. A task
-can be nested, and a nested task is executed as a subtask of outer
-task.
+its data environments executed in a set of nodes. In the context of
+the program text, a set of statement executed by a set of nodes. A task
+can be nested, and a nested task is executed as a subtask of an outer task.
 
 \subsection*{\Term{template}}
 A dummy array used to express an index space associated
-with an array. It is also used to describe a iteration space of
-loop. Template has a name, dimension and lower and upper bound of each
-dimension as attributes.
+with an array. Template is also used to describe the iteration space of a loop. A template has a name, a dimension, and an upper and  lower bound for each dimension as attributes.
 
 \subsection*{\Term{replicated execution}}
-Execution of the same
-code in different nodes. If the state at starting point is same and
-the execution has only local side-effect, the local state in each node
-remains same. 
+Execution of the same code in different nodes. If the state at the starting point is the same and
+the execution has only local side-effects, then the local state in each node remains the same. 
 
 \subsection*{\Term{data mapping}}
-The combination of alignment and
+The combination of the alignment and
 distribution attributes used to describe how a data object is
 allocated to nodes.
 
 \subsection*{\Term{work mapping}}
 Assignment of iterations to nodes in
-parallel loop, and tasks to nodes.
+a parallel loop and tasks to nodes.
 
 \subsection*{\Term{image index}}
 A number assigned to
-each images of coarray. The value is equal to or larger than 1. 
-Note that the image index of the coarray mapping to entire nodes is
+each image of the coarray. The value is equal to or greater than 1. 
+Note that the image index of the coarray mapping to the entire node set is
 identical to the node number.
 
 \subsection*{\Term{local}}
 Execution of a program has
-side-effect only on data in the node. In this case, no communication
-to other nodes takes place. 
+side-effects only on the data in the node. In this case, no communication
+with other nodes occurs . 
 
 \subsection*{\Term{non-local}}
 Execution of a program requires
-communication to other nodes, and has some side-effect to other
+communication with other nodes and has side-effects with respect to other
 nodes. 
 
 \subsection*{\Term{global data}}
-Data declared as a distributed array and shared by
-nodes.
+Data declared as a distributed array and shared by nodes.
 
 \subsection*{\Term{local data}}
-Data is allocated in each node, and referenced only
+Data is allocated in each node and is referenced only
 within the node.* collective  An operation must be executed by every
-node in the executing node set to perform an operation working
-together.
+node in the executing node set in order to perform an operation together.
 
 \subsection*{\Term{distribution}}
 The partition of the index space of a data
 object among a set of nodes according to a given pattern. The
-{\tt distribute} directive is used to mapping element of a template onto a
-set of nodes. 
+{\tt distribute} directive is used to map the elements of a template onto a set of nodes. 
 
 \subsection*{\Term{alignment}}
 An attribute of a data object that establishes
 the relationship between data objects for distribution. The {\tt align}
-directive is used to describe the correspondence of the element of data
-and template. 
+directive is used to describe the correspondence of the element of the data and the template. 
 
 \subsection*{\Term{shadow}}
 A data area is used to keep neighbor elements
-temporarily in distributed array. The shadow is an attribute of
-distributed array, declared by {\tt shadow} directive and updated by
-{\tt reflect} directive.
+temporarily in a distributed array. Shadow is an attribute of
+a distributed array that is declared by the {\tt shadow} directive and is updated by the {\tt reflect} directive.
 

@@ -1,13 +1,12 @@
 
-\section{Directive for local view programming}
+\section{Directive for local-view programming}
 
 \subsection{{\tt local\_alias} directive}
 
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{local\_alias}} directive declares the local data
-object as an alias to the data of a distributed array allocated in each
-node.
+object as an alias to the data of a distributed array allocated in each node.
 
 \subsubsection*{Syntax}
 \Syntax{local\_alias}
@@ -22,18 +21,18 @@ node.
 \subsubsection*{Description}
 
 This directive declares that the local array specified by
-{\it local-array-name} is a "local alias" to the global array specified by
+{\it local-array-name} is a ``local alias'' to the global array specified by
 {\it global-array-name}.
 
 The shape of a local alias is the same as that of the local part of the
 corresponding global array that is owned by each node. Note that the
 local part includes the shadow area.
 
-A local alias becomes defined when the corresponding global array
-becomes defined. If the corresponding global array is statically
+A local alias is defined when the corresponding global array
+is defined. If the corresponding global array is statically
 allocated, then the local alias is always defined in its scoping unit;
 if not, the local alias is not defined until the corresponding global
-array is aloocated.
+array is allocated.
 
 \subsubsection*{Restriction}
 
@@ -70,10 +69,10 @@ array is aloocated.
 !$xmp local_alias :: b => a
 \end{Fexample}
 
-An array {\tt a} is distributed by block onto four nodes.
-The node {\tt n(2)} has a local array of twenty-five elements ({\tt
-a(25:50)}) with shadow areas of size one on the lower and upper
-bounds. The local alias {\tt b} is an array of twenty-seven elements
+Array {\tt a} is distributed by block onto four nodes.
+Node {\tt n(2)} has a local array of twenty-five elements ({\tt
+a(25:50)}) with shadow areas of size one on the upper and lower 
+bounds. Local alias {\tt b} is an array of 27 elements
 ({\tt b(1:27)}) on {\tt n(2)}. The table below shows the correspondence
 of each element of {\tt a} to that of {\tt b}.
 
@@ -105,11 +104,11 @@ upper shadow & 27      \\ \hline
 !$xmp local_alias :: b => a
 \end{Fexample}
 
-An array {\tt a} is distributed by cyclic onto four nodes.
-The node {\tt n(2)} has a local array of twenty-five elements ({\tt
-a(2:100:4)}) with shadow areas of size one on the lower and upper
-bounds. The lower bound of the local alias {\tt b} is declared to
-be zero. As a result, {\tt b} is an array of twenty-seven elements
+An array {\tt a} is distributed cyclically onto four nodes.
+Node {\tt n(2)} has a local array of twenty-five elements ({\tt
+a(2:100:4)}) with shadow areas of size one on the upper and lower 
+bounds. The lower bound of local alias {\tt b} is declared to
+be zero. As a result, {\tt b} is an array of 27 elements
 ({\tt b(0:26)}) on {\tt n(2)}. The table below shows the correspondence
 of each element of a to that of {\tt b}.
 
@@ -151,8 +150,8 @@ upper shadow & 26      \\ \hline
 Since the global array {\tt a} is an allocatable array, its local alias
 {\tt b} is not defined when the subroutine starts execution. {\tt b} is
 defined when {\tt a} is allocated at the {\tt allocate}
-statement. Note that {\tt b} is declared as an coarray and therefore can be
-accessed in the same way as a normal coarray.
+statement. Note that {\tt b} is declared as a coarray and therefore can be
+accessed in the same manner as a normal coarray.
 
 \end{description}
 
@@ -182,17 +181,15 @@ synchronization.
 
 \subsubsection*{Description}
 
-This construct prohibits statements following it from being executed
+This construct prohibits statements that follow the construct from being executed
 until the execution of all statements preceding a matching
-\Directive{post} construct is completed on the node specified by {\it
-node-ref}.
+\Directive{post} construct is completed on the node specified by {\it node-ref}.
 
 A {\tt \Directive{post}} construct issued with the arguments of {\it
 tag} and {\it nodes-ref} on a node (called a {\it
 posting node}) dynamically matches at most one {\tt \Directive{wait}}
 construct issued with the arguments of the posting node (unless omitted)
-and the same value as {\it tag} (unless omitted) on the node specified
-by {\it nodes-ref}.
+and the same value as {\it tag} (unless omitted) on the node specified by {\it nodes-ref}.
 
 \subsubsection*{Example}
 \Example{post-wait}
@@ -220,12 +217,12 @@ by {\it nodes-ref}.
 \end{center}
 \end{minipage}
 
-It is assumed that the left code is executed by the node {\tt p(1)} and
-the right by {\tt p(2)}.
+It is assumed that the code of the left is executed by node {\tt p(1)} while that on 
+the right is executed by node {\tt p(2)}.
 
-The {\tt post} construct in the left matches
-the {\tt wait} construct in the right because each {\it nodes-ref}
-represent each other and both {\it tags} have the same value of 1.
+The {\tt post} construct on the left match 
+the {\tt wait} construct on the right because each {\it nodes-ref}
+represents each other  and both {\it tags} have the same value of 1.
 %
 These constructs ensure that no statement in {\tt S2} is executed by
 {\tt p(2)} until the execution of all statements in {\tt S1} is
@@ -239,11 +236,11 @@ completed by {\tt p(1)}.
       S3
 \end{Fexample}
 
-It is assumed that this code is executed by the node {\tt p(3)}.
+It is assumed that this code is executed by node {\tt p(3)}.
 
-The {\tt post} construct in the left code of Example 1 can match
+The {\tt post} construct in the code on the left in Example 1 may match
 this {\tt wait} construct because both {\it nodes-ref} and
-	   {\it tag} are omitted in it.
+	   {\it tag} are omitted.
 
 \end{description}
 
@@ -275,25 +272,23 @@ synchronization.
 
 \subsubsection*{Description}
 
-This construct prohibits statements following it from being executed
+This construct prohibits statements that follow this construct from being executed
 until the execution of all statements preceding a matching
-\Directive{post} construct is completed on the node specified by {\it
-node-ref}.
+\Directive{post} construct is completed on the node specified by {\it node-ref}.
 
 A {\tt \Directive{wait}} construct issued with the arguments of {\it
-tag} and {\it nodes-ref} on a node (called a {\it
+tag} and {\it nodes-ref} on a node (referred to as a {\it
 waiting node}) dynamically matches at most one {\tt \Directive{post}}
 construct issued with the arguments of the waiting node and the same
 value as {\it tag} on the node specified by {\it nodes-ref}.
 
-If {\it tag} is omitted, the {\tt \Directive{wait}} construct can match at
+If {\it tag} is omitted, then the {\tt \Directive{wait}} construct can match at
 most one {\tt \Directive{post}} construct issued with the arguments of
 the waiting node and any tag on the node specified by {\it nodes-ref}.
 %
-If both {\it tag} and {\it nodes-ref} are omitted, the {\tt
+If both {\it tag} and {\it nodes-ref} are omitted, then the {\tt
 \Directive{wait}} construct can match at most one {\tt \Directive{post}}
-construct issued with the arguments of the waiting node and any tag on
-any node.
+construct issued with the arguments of the waiting node and any tag on any node.
 
 
 \subsection{Critical construct}
@@ -301,7 +296,7 @@ any node.
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{critical}} construct restricts execution of the
-associated structured block to a single node at a time.
+associated structured block to a single node at any given time.
 
 \subsubsection*{Syntax}
 \Syntax{critical}
@@ -319,8 +314,8 @@ associated structured block to a single node at a time.
 
 \subsubsection*{Description}
 
-This construct specifies a {\it critical region}, at the beginnng of
-which a node waits until no other node is executing it.
+This construct specifies a {\it critical region}, at the beginning of
+which a node waits until no other node is executing it. 
 
 %\subsubsection*{Examples}
 %\Example{critical}

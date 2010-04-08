@@ -1,14 +1,14 @@
 \chapter{Directives}\index{directive}
 
 This chapter describes the syntax and behavior of \XMP directives.
-In this document, the following notations are used to describe \XMP
+In this document, the following notation is used to describe \XMP
 directives. 
 
 \vspace{0.5cm}
 
 \begin{tabular}{ll}
-{\tt xxx} & {\tt type-face} characters are used for literal. \\
-{\it xxx ...} & if the line is followed by ``...'' then xxx can be
+{\tt xxx} & {\tt type-face} characters are used to indicate literal type characters. \\
+{\it xxx ...} & If the line is followed by ``...'', then xxx can be
 repeated. \\
 {\it [xxx]} & {\it xxx} is optional. \\
 \verb![F]! & The following lines are effective only in \Fort. \\
@@ -18,11 +18,11 @@ repeated. \\
 \vspace{0.5cm}
 
 In \C, \XMP
-directives are specified by using \verb|#pragma| mechanism provided by \C
-standards. In \Fort, \XMP directives are specified by using
+directives are specified using the \verb|#pragma| mechanism provided by \C
+standards. In \Fort, \XMP directives are specified using
 special comments that are identified by unique sentinels
 {\tt\verb|!$xmp|}. The rules of \Fort directives in fixed source format
-and free source format follow these in \OMP and HPF.
+and free source format follow those in \OMP and HPF.
 
 \vspace{0.5cm}
 
@@ -35,20 +35,19 @@ and free source format follow these in \OMP and HPF.
 
 \vspace{0.5cm}
 
-Directives are classified into declarative directives and
-executable directives. The \Directive{declarative directive} is one that my
+Directives are classified as declarative directives and
+executable directives. The \Directive{declarative directive} is a directive that may
 only be placed in a declarative context. A declarative directive has no
 associated executable user code. The scope rule of declarative
-directives obeys one of declaration statements in the base
-language. For example, node declarations by {\tt node} directives are
-effective from declared point to the end of the file in C, and within
-subprogram in \Fort.
+directives obeys one of the declaration statements in the base
+language. For example, in C, node declarations by {\tt node} directives are
+effective from the declared point to the end of the file, and, in \Fort, node declarations by {\tt node} directives are effective within the subprogram.
 
 {\Directive{Executable} directives are placed in executable
-context. A stand-alone directive is an executable directive which has
+context. A stand-alone directive is an executable directive that has
 no associated user code, such as a {\tt barrier} directive. Some executable
-directives compose directive construct with associated user code, as
-in following format:
+directives compose directive constructs using an associated user code, as
+in the following format:
 
 \vspace{0.5cm}
 
@@ -60,7 +59,7 @@ in following format:
 \end{tabular}
 \vspace{0.3cm}
 
-Note that in {\tt loop} construct, {\tt end} can be omitted.
+Note that in the {\tt loop} construct, {\tt end} can be omitted.
 
 \vspace{0.5cm}
 
@@ -76,5 +75,5 @@ Note that in {\tt loop} construct, {\tt end} can be omitted.
  & \hspace{0.5cm} {\it statement} \\
 \end{tabular}
 
-In C, statement can be a compound-statement.
+In C, the statement can be a compound-statement.
 

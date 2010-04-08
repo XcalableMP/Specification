@@ -1,20 +1,21 @@
-\chapter{Support for Local View Programming}
+\chapter{Support for local-view programming}
 
 \XMP adopts coarray notations as
-an extension of languages for local view programming. In case of
-\Fort as the base language, most coarray notations are compatible to
-that of \CAF (CAF) expect that the {\tt task} constructs
+an extension of languages for local-view programming. In the case of
+\Fort as the base language, most coarray notations are compatible with
+that of \CAF (CAF), except that the {\tt task} constructs
 are used for task parallelism.
 
 This line was inserted by Sakagami for svn test.
+
 
 \section{Coarray notation of  \XMP}
 
 The \Term{coarray} is declared and referenced as in CAF. In addition, the
 notations are extended in \XMP so that the coarray declarations
-can be followed by {\tt on} clause ({\tt on} {\it nodes-ref}). In this
+can be followed by the {\tt on} clause ({\tt on} {\it nodes-ref}). In this
 case, the images of the coarray are allocated on the node set specified by
-{\it nodes-ref}. If {\tt on} clause is not specified, the images of
+{\it nodes-ref}. If the {\tt on} clause is not specified, then the images of
 the coarray are allocated on the executing node set as a default.
 
 \subsubsection*{Examples}
@@ -53,19 +54,19 @@ the coarray are allocated on the executing node set as a default.
       ...
 \end{Fexample}
 
-Coarray {\tt wa} mapped on to the entire node set {\tt w} is passed as an
-argument to subroutine {\tt task1} and {\tt task2}. In the
+Coarray {\tt wa} mapped onto the entire node set {\tt w} is passed as an
+argument to subroutines {\tt task1} and {\tt task2}. In these
 subroutines, the argument is referenced by the parameter {\tt aa}. In this
-case, the declaration of coarray for the parameter {\tt aa} requires on
-clause to specify the executing node set which is different from the
-entire node. By this declaration, the subroutine can access to {\tt
-  wa}. It should be noted that coarray {\tt b} and {\tt c} are local
-variable in subroutine {\tt task1} and {\tt task2} respectively, and
-these coarray is mapped on to the executing node set indicated by {\tt
+case, the declaration of the coarray for the parameter {\tt aa} requires an on
+clause to specify the executing node set, which is different from the
+entire node set. By this declaration, the subroutine can access {\tt
+  wa}. Note that coarrays {\tt b} and {\tt c} are local
+variables in subroutines {\tt task1} and {\tt task2}, respectively, and
+these coarrays are mapped onto the executing node set indicated by {\tt
   p}. Since {\tt b} is mapped to {\tt w(1:30)} and {\tt c} is mapped
-on to {\tt   w(31:51)}, there is no way to access coarray {\tt c}
+onto {\tt   w(31:51)}, there is no way to access coarray {\tt c}
 ({\tt b}) from {\tt task1} ({\tt task2}) because a subroutine can
-access the entire node set or its subset, and the executing node set. 
+access the entire node set or its subset as well as the executing node set. 
 
 \item[Example 2]
 \hspace{\hsize}
@@ -75,11 +76,11 @@ access the entire node set or its subset, and the executing node set.
       real two(50)[20,*]
 \end{Fexample}
 
-The entire node set has 200 nodes, on to which coarray one and two
+The entire node set has 200 nodes, onto which coarray one and two are
 mapped. In this case, it is guaranteed that {\tt one(...)[i+(j-1)*20]}
 and {\tt two(...)[i,j]} are mapped into the same node. This mapping rule 
-is compatible to Coarray Fortran. This is same in the following
-code. That is, the shape of the entire node have nothing to coarray.  
+is compatible with Coarray Fortran. This is also the case for the following
+code. That is, the shape of the entire node set has nothing to coarray.  
 
 \begin{Fexample}
 !$xmp nodes w2(20,10)
@@ -104,62 +105,59 @@ OR
       real ni(50)[20,*] on w2
 \end{Fexample}
 
-In many application programs, the neighbor communication
-is one of important communication patterns. The optimal mapping from
-logical node to physical node depends on the number of dimensions. For
+In many application programs, neighbor communication
+is an important communication pattern. The optimal mapping from
+the logical node to the physical node depends on the number of dimensions. For
 example, the optimal mapping for the communication between
 {\tt one(...)[i]} and {\tt one(...)[i+1]} is different from the
 mapping for the communication between {\tt two(...)[i,j]} and {\tt
   two(...)[i+1,j]}. 
 
-In \XMP, one can describe several mappings. In this example, the
-mapping may be compatible to Coarray Fortran, and different mapping
-can be selected. By switching runtime option, node set {\tt w1} and
-{\tt w2} can be different node sets. Coarray {\tt one} and {\tt two}
+In \XMP, several mappings can be described. In this example, the
+mapping may be compatible with Coarray Fortran, and a different mapping
+can be selected. By switching the runtime option, node sets {\tt w1} and
+{\tt w2} can be different node sets. Coarrays {\tt one} and {\tt two}
 are mapped to node set {\tt w1} (that is, the entire node set), and
 {\tt one(...)[i+(j-1)*20]} and {\tt two(...)[i,j]} are mapped to the
-same node. Coarray {\tt ichi} and {\tt ni} are mapped on to different
+same node. Coarrays {\tt ichi} and {\tt ni} are mapped onto a different
 node set {\tt w2}, and {\tt ichi(...)[i+(j-1)*20]} and {\tt
-  ni(...)[i,j]} are mapped to the same physical node. But it is not
-guaranteed that a pair of {\tt one(...)[i]}, {\tt ichi(...)[i]}, a
+  ni(...)[i,j]} are mapped onto the same physical node. However, it is not
+guaranteed that a pair of {\tt one(...)[i]} and {\tt ichi(...)[i]} and a
 pair of {\tt two(...)[i,j]} and {\tt ni(...)[i,j]} are
-mapped into the same node. It should be noted that this point is not
-compatible to Coarray Fortran. 
+mapped into the same node. Note that this point is not compatible with Coarray Fortran. 
 
 \end{description}
 
-\section{Coarray in \C language}
+\section{Coarray in the \C language}
 
-\XMP adopts coarray notations. In order to use coarray notations in \C,
-we propose some language extension of the language.
+\XMP adopts coarray notation. In order to use coarray notation in \C,
+we propose some extensions of the language.
 
-\subsection{Array sections}
+\subsection{Array section notation}
 
-Array section notation is a notation to describe the part of array,
-which is adapted in Fortran90. In \C, an array section has a form as
-follows:
+Array section notation is a notation to describe the part of array that
+is adapted in Fortran90. In \C, an array section has the following form:
 
 \begin{tabular}{ll}
 \hspace{0.5cm} & {\it array-name} '[' [{\it lower-bound}] ':' [{\it
   upper-bound}] [':' {\it step}] ']' ...
 \end{tabular}
 
-An array section is built from some subset of the elements of an array
+An array section is built from subsets of the elements of an array
 object -- those associated with a selected subset of the index range
-attached to the object. The {\it lower-bound} and {\it upper-bound}
+attached to the object. The {\it upper-bound} and the {\it lower-bound} 
 specify the range of array elements of an array object. Either the
-{\it lower-bound} or the {\it upper-bound} can be omitted in the index
+{\it upper-bound} or the {\it lower-bound} can be omitted in the index
 range of a section, in which case they default to the lowest or
-highest values taken by the array's index. So {\tt A[:]} is a section
+highest values taken by the index of the array. Therefore, {\tt A[:]} is a section
 containing the whole of {\tt A}. If the {\it step} is specified,  
-the elements of an array section are every "step"-th element in the
+then the elements of an array section are every ÅeÅestep"-th element in the
 specified range. For example, {\tt B[1:10:3]} is an array section of
 size 4 containing every third element of {\tt B} with indices between
-1 and 10 (ie, indices 1, 4, 7, 10). Collectively ranges specified by
-{\it lower-bound}, {\it upper-bound} and {\it step} are referred to as
-triplets. For multi-dimensional arrays, some dimensions could be
-subscripted with a normal scalar expression, and some could be
-``sectioned'' with triplets.  
+1 and 10 (i.e., indices 1, 4, 7, 10). Collectively, ranges specified by
+{\it upper-bound}, {\it lower-bound}, and {\it step} are referred to as
+triplets. For multi-dimensional arrays, some dimensions can be
+subscripted with a normal scalar expression, and some dimensions can be ``sectioned'' with triplets.  
 
 \subsubsection*{Example}
 
@@ -172,27 +170,25 @@ Array {\tt A} is declared by
 Then:
 
 \begin{tabular}{lll}
-\hspace{0.5cm} & {\tt A[10:19]} & array section of 10 elements form A[10] to
+\hspace{0.5cm} & {\tt A[10:19]} & array section of 10 elements from A[10] to
 A[19] \\
- & {\tt A[10:]} & array section of 90 elements form A[10] to A[99] \\
- & {\tt A[:9]} & array section of 10 elements A[0] to A[9] \\
- & {\tt A[10:19:2]} & array section of 5 elements form A[10] to A[18]
+ & {\tt A[10:]} & array section of 90 elements from A[10] to A[99] \\
+ & {\tt A[:9]} & array section of 10 elements from A[0] to A[9] \\
+ & {\tt A[10:19:2]} & array section of 5 elements from A[10] to A[18]
  by step 2 \\
- & {\tt A[:]} & whole array of A \\
+ & {\tt A[:]} & entire array of A \\
 \end{tabular}
 
-\subsection{Assignment of Array sections}
+\subsection{Assignment of array sections}
 
-One can use array-valued expressions by array section in assignments.
+Array-valued expressions can be used by array section in assignments.
 
 \begin{tabular}{ll}
 \hspace{0.5cm} & {\tt {\it array-section1} = {\it array-section2}} \\
 \end{tabular}
 
-The expression on the right hand side of the assignment must be
-conformable with the array variable on the left hand side. Thus, both
-sides must have the same shape, that is, number of dimension and size
-of each dimension.
+The expression on the right-hand side of the assignment must be
+conformable with the array variable on the left-hand side. Thus, both sides must have the same shape, i.e., the same number of dimensions and size of each dimension.
 
 \subsubsection*{Examples}
 
@@ -205,7 +201,7 @@ A[5:9] = B[0:4]; // copy the elements from A[5] to A[9],
                  // to the elements from B[0} to B[4]
 \end{Cexample}
 
-\subsection{Declarations and Reference of Coarray}
+\subsection{Declarations and reference of coarray}
 
 A coarray is declared by the coarray directive in \C.
 
@@ -217,7 +213,7 @@ A coarray is declared by the coarray directive in \C.
 {\it coarray-dimension} \\
 \end{tabular}
 
-The coarray directive declares a coarray with coarray dimension.
+The coarray directive declares a coarray with the coarray dimension.
 
 \subsubsection*{Examples}
 \Example{coarray}
@@ -238,7 +234,7 @@ The coarray object is referenced in the following expression:
  & {\it array-section-expression} {\tt :} {\it image-index} \\
 \end{tabular}
 
-This expression indicates co-array on the image indicated by {\it image-index}.
+This expression indicates the co-array on the image indicated by {\it image-index}.
 
 \hspace{\hsize}
 \begin{Cexample}

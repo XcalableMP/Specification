@@ -1,6 +1,6 @@
-\section{Global View Communication and Synchronization Construct}
+\section{Global-view communication and synchronization construct}
 
-\subsection{Reflect Construct}
+\subsection{Reflect construct}
 
 \subsubsection*{Synopsis}
 
@@ -21,14 +21,14 @@ having the shadow attribute.
 \subsubsection*{Description}
 
 The {\tt reflect} directive copies the value of
-the reflection source of reflect-object specified by {\it array-name} to all
+the reflection source of the reflect-object specified by {\it array-name} to all
 shadow objects. This directive may execute the communications.
 
-\subsection{Gmove Construct}
+\subsection{Gmove construct}
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{gmove}} construct copies data of a
-distributed array in global-view. 
+The {\tt \Directive{gmove}} construct copies the data of a
+distributed array in global view. 
 
 \subsubsection*{Syntax}
 \Syntax{gmove}
@@ -42,22 +42,22 @@ distributed array in global-view.
 
 \subsubsection*{Description}
 
-This directive executes a copy operation of global data array object
+This directive executes a copy operation of the global data array object
 distributed into nodes. This directive is followed by the assignment
-statement of scalar value and array sections. The assignment operation
+statement of the scalar value and array sections. The assignment operation
 of the array sections of a distributed array may require communication
 between nodes.
 
 The assignment statement must be a simple assignment without
 any arithmetic operations.   
 
-In \XMP, \C language is extended to support array section notation to
+In \XMP, the \C language is extended to support array section notation in order to
 support an assignment of array objects.
 
-The assignment statement must have one of following patterns;
+The assignment statement must have one of the following patterns:
 
 \begin{itemize}
-\item  Scalar assignment. For example
+\item  Scalar assignment. For example:
 
 \begin{tabular}{lll}
 \hspace{0.5cm} & {\tt s1 = s2} & ! {\tt s1}, {\tt s2} is a scalar
@@ -65,8 +65,8 @@ variable \\
 & {\tt a(3) = b(i, j)} & ! {\tt a}, {\tt b} are arrays. \\
 \end{tabular}
 
-\item Array assignment. The left value must be an array name,
-array section or scalar object. For example:
+\item Array assignment. The left-hand value must be an array name,
+array section, or scalar object. For example:
 
 \begin{tabular}{lll}
 \hspace{0.5cm} & {\tt a = b} & ! {\tt a}, {\tt b} are arrays \\
@@ -79,42 +79,41 @@ array section or scalar object. For example:
 \end{itemize}
 
 The {\tt gmove} construct must be executed by nodes in the executing
-node set. And the value of scalar objects, and index value, range
-value of array section in the assignment statement must be same in
+node set. The value of scalar objects, the index value, and the range
+value of the array section in the assignment statement must be the same in
 every node executing this directive.
 
 When no option is specified, the copy operation is performed
 collectively by all nodes in the executing node set. In this case, all
-elements in both source array and target array must be distributed on
-to the executing node set. If the object in right hand side is local
-object, the value of the local object must be same. In this case, the
-assignment is done locally where the object in left hand side is 
-distributed. And, if the object in left hand side is a local object
-and the object in right hand side is global, then this operation
+elements in both the source array and the target array must be distributed on
+to the executing node set. If the object on the right-hand side is a local
+object, then the value of the local object must be the same. In this case, the
+assignment is performed locally, where the object on the left-hand side is 
+distributed. If the object on the left-hand side is a local object
+and the object on the right-hand side is global, then this operation
 performs broadcast operation.
 
-If an {\tt in} option is specified, the node which owns the element of
-the object in left hand side gets the data in right hand side by
-remote copy (get) operation. Therefore, the object in left hand side
-must be distributed on to the executing node set. 
+If an {\tt in} option is specified, then the node that owns the element of
+the object on the left-hand side obtains the data on the right-hand side by the 
+remote copy (get) operation. Therefore, the object on the left-hand side
+must be distributed onto the executing node set. 
 
-If an {\tt out} operation is specified, the node which owns the element
-of the object in right hand side puts the data in left hand side by
-remote copy (put) operation. Therefore, the object in right hand side
-must be distributed on to the executing node set.
+If an {\tt out} operation is specified, then the node that owns the element
+of the object on the right-hand side places the data on the left-hand side by the
+remote copy (put) operation. Therefore, the object on the right-hand side
+must be distributed onto the executing node set.
 
-If no option is specified, the copy can be performed by two-side
-communication. In this case, the receiver side waits the sender side,
+If no option is specified, then the copy can be performed by two-side
+communication. In this case, the receiver side waits for the sender side,
 resulting in implicit synchronization. 
 
-If an {\tt in} or {\tt out} clause is specified, the
-copy operation should be done by one-side communication for remote
+If an {\tt in} or {\tt out} clause is specified, then the
+copy operation should be performed by one-side communication for remote
 memory access. Thus, no synchronization is implied. If
-synchronization is required between reader and writer, the programmer
-must do synchronization explicitly by a {\tt barrier} construct. If reader
-and writer do not belong to the same executing node set, then
-point-to-point synchronization by {\tt post-wait} directive can be
-used.
+synchronization between reader and writer is required, then the programmer
+must perform synchronization explicitly by a {\tt barrier} construct. If the reader
+and the writer do not belong to the same executing node set, then
+point-to-point synchronization by {\tt post-wait} directive can be used.
 
 \subsubsection*{Restrictions}
 
@@ -125,14 +124,14 @@ used.
 
 \subsubsection*{Examples}
 \begin{description}
-\item[Example 1: array assignment]
+\item[Example 1: Array assignment]
 \Example{gmove}
 
-If both left hand side and right hand side are distributed
-array, then the copy operation can be performed by all-to-all
-communication. If the left hand side is a duplicated array, this copy
-is performed by multi-cast communication. If the right hand side is a
-duplicated array, no communication is required.
+If both the left-hand side and the right-hand side are distributed
+arrays, then the copy operation can be performed by all-to-all
+communication. If the left-hand side is a duplicate array, this copy
+is performed by multi-cast communication. If the right-hand side is a
+duplicate array, then no communication is required.
 
 \vspace{0.5cm}
 
@@ -154,11 +153,11 @@ duplicated array, no communication is required.
 \end{minipage}
 \vspace{1cm}
 
-\item[Example 2: scalar assignment to array] 
+\item[Example 2: Scalar assignment to an array] 
 
-When right hand side is a distributed array, the copy is performed by
+When the right-hand side is a distributed array, the copy is performed by
 broadcast communication from the owner of the element of the array. If
-right hand side is a duplicated array, no communication is required.
+the right-hand side is a duplicate array, then no communication is required.
 
 \vspace{0.5cm}
 
@@ -197,7 +196,7 @@ right hand side is a duplicated array, no communication is required.
 
 \end{description}
 
-\subsection{Barrier Construct}
+\subsection{Barrier construct}
 
 \subsubsection*{Synopsis}
 
@@ -215,21 +214,21 @@ at the point at which the construct appears.
 \subsubsection*{Description}
 
 The barrier operation is performed between the node set specified by
-an on clause. If on clause is not specified, the current executing
+an on clause. If an on clause is not specified, then the current executing
 node set is used.
 %
-The barrier construct also has a function of ensuring that all of the
+The barrier construct also has the function of ensuring that all of the
 remote copy operations that are invoked by gmove in/out constructs
 executed by the node set specified by the on clause are finished.
 
 \subsubsection*{Restriction}
 
 \begin{itemize}
-\item The node set specified by {\tt on} clause must be a subset of the
+\item The node set specified by the {\tt on} clause must be a subset of the
       executing node set.  
 \end{itemize}
 
-\subsection{Reduction Construct}
+\subsection{Reduction construct}
 
 \subsubsection*{Synopsis}
 
@@ -245,7 +244,7 @@ operation between nodes.
       node-ref}$\vert${\it template-ref}] \\
 \end{tabular}
 
-Where {\it reduction-kind} is one of:
+where {\it reduction-kind} is one of:
 
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt +} \\
@@ -267,7 +266,7 @@ Where {\it reduction-kind} is one of:
       node-ref}$\vert${\it template-ref}] \\
 \end{tabular}
 
-Where {\it reduction-kind} is one of:
+where {\it reduction-kind} is one of:
 
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt +} \\
@@ -287,30 +286,24 @@ Where {\it reduction-kind} is one of:
 The {\tt \Directive{reduction}} construct performs the
 % modified by Sakagami,H. 09/11/13                                            
 reduction operation specified by {\it reduction-kind} for the specified
-local variable in each node of the node set specified by {\tt on}
-clause, and set the reduction results to variables in each node. The
-variable for the reduction operation is called ``\Term{reduction
-variable}''. Thus, after a reduction operation, the value of the
-reduction variable becomes same.
+local variable in each node of the node set specified by the {\tt on}
+clause and sets the reduction results to variables in each node. The
+variable for the reduction operation is referred to as the ``\Term{reduction
+variable}''. Thus, after the reduction operation, the value of the
+reduction variable becomes the same. 
 
 % inserted by Sakagami,H. 09/11/13 ----- start ----                            
-When {\it template-ref} is specified in {\tt on} clause, the operation
-is done in a node set that consists of nodes associated with the specified temp\
-late.
+When {\it template-ref} is specified in the {\tt on} clause, the operation
+is performed in a node set that consists of nodes associated with the specified template.
 Therefore, before the {\tt \Directive{reduction}} construct is executed, the
 referenced template must be fixed. When {\it template-spec} is ``*'',
 nodes in the corresponding dimension are ignored for the reduction operation.
-When {\it template-spec} is ``:'', nodes for all template elements in the corresp\
-onding
-dimension perform the reduction operation.
+When {\it template-spec} is ``:'', nodes for all template elements in the corresponding dimension perform the reduction operation.
 
-When {\it node-ref} is specified in {\tt on} clause, the operation
-is done in the specified node set. Therefore, before the {\tt \Directive{reduct\
-ion}} construct is executed, the
-referenced node set must be fixed.
+When {\it node-ref} is specified in the {\tt on} clause, the operation
+is performed in the specified node set. Therefore, before the {\tt \Directive{reduction}} construct is executed, the referenced node set must be fixed.
 
-When {\tt on} clause is omitted, the operation is done in the current
-executing node set.
+When the {\tt on} clause is omitted, the operation is performed in the current executing node set.
 
 \subsubsection*{Restrictions}
 
@@ -322,11 +315,11 @@ executing node set.
  \item The variables specified by the sequence of {\it variable} must
        either not be aligned or be replicated among nodes of the node
        set specified by the {\tt on} clause.
- \item The {\tt reduction} construct is collective, which it must be
-       executed by all of the executing nodes and each variable
+ \item The {\tt reduction} construct is collective and must be
+       executed by all of the executing nodes, and each variable
        appearing in the construct must have the same value among all of
        the executing nodes.
- \item The node set specified by {\tt on} clause must be a subset of the
+ \item The node set specified by the {\tt on} clause must be a subset of the
        current executing node set.
 \end{itemize}
 % inserted by Sakagami,H. 09/11/13 ----- end ---- 
@@ -347,18 +340,16 @@ executing node set.
 
 % modified by Sakagami,H. 09/11/13                                             
 In the first example, the scalar variable {\tt s} is assumed to contain the 
-partial sum,                                                              
+partial sum of the variable,                                                              
 and the reduction operation calculates the total sum of the variable. The      
 total sum is stored in the variable in each node.                              
                                                                                
 % modified by Sakagami,H. 09/11/13                                             
-The second example computes the maximum value of the variable {\tt aa} in      
-the node set which consists of nodes associated with all range of the second di
-mension of template {\tt t}.                  
+The second example computes the maximum value of the variable {\tt aa} in the node set that consists of nodes associated with the range of the second dimension of template {\tt t}.                  
 
 % modified by Sakagami,H. 09/11/13                
 In the third example, the minimum value of the variable {\tt bb} in the node 
-set specified by {\tt p(10:30)}. This example is equivalent to the       
+set is specified by {\tt p(10:30)}. This example is equivalent to the       
 code using the {\tt \Directive{task}} construct.                               
 
 \begin{Fexample}
@@ -415,9 +406,8 @@ large overhead.
 % modified by Sakagami,H. 09/11/13
 The {\tt reduction} clause cannot be specified for the {\tt \Directive{loop}} construct of the outer
 loop to reduce this overhead, because the loop index of the outer loop ({tt j}) is different from that
-for the reduction operaion ({\tt i}).
-However this code can be modified with  the {\tt \Directive{reduction}} construct 
-as follows:
+for the reduction operation ({\tt i}).
+However, this code can be modified with the {\tt \Directive{reduction}} construct  as follows:
 
 \begin{Fexample}
       dimension a(n,n), p(n), w(n)
@@ -437,16 +427,15 @@ as follows:
 !$xmp reduction(+:w) on t(1:n,*)
 \end{Fexample}
 
-This code executes a reduction operation on the array {\tt w}, just once
-which may runs faster. 
+This code executes a reduction operation on the array {\tt w} only once, which may result in faster operation. 
 
 \end{description}
 
-\subsection{Bcast Construct}
+\subsection{Bcast construct}
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{bcast}} construct execute broadcast communication
+The {\tt \Directive{bcast}} construct executes broadcast communication
 from one node.
 
 \subsubsection*{Syntax}
@@ -464,27 +453,27 @@ from one node.
 \subsubsection*{Description}
 
 The value of the variables specified by {\it variable} is broadcasted
-form the node specified by {\tt from} clause (called source node) to
-the nodes in the node set specified by {\tt on} clause. The specified
-variable for broadcast is called "\Term{broadcast variable}". After
-executing this directive, the value of the broadcast variable became
-same as the value of the source node. If {\tt from} clause is omitted,
-the first node of the node set is a source node. If {\tt on} clause is
-omitted, the operation is done in the current executing node set.
+from the node specified by the {\tt from} clause (called the source node) to
+the nodes in the node set specified by the {\tt on} clause. The specified
+variable for broadcast is referred to as the ÅeÅe\Term{broadcast variable}". After
+executing this directive, the value of the broadcast variable becomes the 
+same as the value of the source node. If the {\tt from} clause is omitted,
+then the first node of the node set is a source node. If the {\tt on} clause is
+omitted, then the operation is performed in the current executing node set.
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item The variables specified by the sequence of {\it variable} must
+\item The variables specified by the {\it variable} sequence must
       either not be aligned or be replicated among nodes of the node set
       specified by the {\tt on} clause.
 \item The {\tt bcast} construct is collective, which means that a {\tt
-      bcast} construct must be executed by all of the executing nodes
+      bcast} construct must be executed by all of the executing nodes,
       and each variable appearing in the construct must have the same
       value among all of the executing nodes.
-\item The node set specified by {\tt on} clause must be a subset of the
+\item The node set specified by the {\tt on} clause must be a subset of the
       current executing node set.
-\item The source node specified by {\tt from} clause must belong to
-  the node set specified by {\tt on} clause. 
+\item The source node specified by the {\tt from} clause must belong to
+  the node set specified by the {\tt on} clause. 
 \end{itemize}
 
