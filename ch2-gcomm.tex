@@ -1,6 +1,6 @@
-\section{Global-view communication and synchronization construct}
+\section{Global-view Communication and Synchronization Constructs}
 
-\subsection{Reflect construct}
+\subsection{{\tt reflect} Construct}
 
 \subsubsection*{Synopsis}
 
@@ -12,10 +12,10 @@ having the shadow attribute.
 \Syntax{reflect}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt reflect} {\it array-name} [, {\it
-  array-name} ... ] \\
-\verb![C]! & \verb|#pragma xmp| {\tt reflect} {\it array-name} [, {\it
-  array-name} ... ] \\
+\verb![F]! & \verb|!$xmp| {\tt reflect} \verb|(| {\it array-name} [,
+ {\it array-name} ... ] \verb|)| \\
+\verb![C]! & \verb|#pragma xmp| {\tt reflect} \verb|(| {\it array-name}
+     [, {\it array-name} ... ] \verb|)| \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -24,7 +24,7 @@ The {\tt reflect} directive copies the value of
 the reflection source of the reflect-object specified by {\it array-name} to all
 shadow objects. This directive may execute the communications.
 
-\subsection{Gmove construct}
+\subsection{{\tt gmove} Construct}
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{gmove}} construct copies the data of a
@@ -196,7 +196,7 @@ the right-hand side is a duplicate array, then no communication is required.
 
 \end{description}
 
-\subsection{Barrier construct}
+\subsection{{\tt barrier} Construct}
 
 \subsubsection*{Synopsis}
 
@@ -213,13 +213,17 @@ at the point at which the construct appears.
 
 \subsubsection*{Description}
 
-The barrier operation is performed between the node set specified by
-an on clause. If an on clause is not specified, then the current executing
-node set is used.
-%
-The barrier construct also has the function of ensuring that all of the
-remote copy operations that are invoked by gmove in/out constructs
-executed by the node set specified by the on clause are finished.
+The barrier operation is performed among the node set specified by
+an {\tt on} clause. If an {\tt on} clause is not specified, then it is
+assumed that the current executing node set is specified in an {\tt
+on} clause.
+
+Note that an {\tt on} clause may represent multiple node sets. In such a
+case, a barrier operation is performed in each node set.
+
+%The barrier construct also has the function of ensuring that all of the
+%remote copy operations that are invoked by gmove in/out constructs
+%executed by the node set specified by the {\tt on} clause are finished.
 
 \subsubsection*{Restriction}
 
@@ -228,12 +232,13 @@ executed by the node set specified by the on clause are finished.
       executing node set.  
 \end{itemize}
 
-\subsection{Reduction construct}
+
+\subsection{{\tt reduction} Construct}
 
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{reduction}} construct performs a reduction
-operation between nodes. 
+operation among nodes. 
 
 \subsubsection*{Syntax}
 \Syntax{reduction}
@@ -283,27 +288,40 @@ where {\it reduction-kind} is one of:
 
 \subsubsection*{Description}
 
-The {\tt \Directive{reduction}} construct performs the
+The {\tt reduction} construct performs a type of
 % modified by Sakagami,H. 09/11/13                                            
 reduction operation specified by {\it reduction-kind} for the specified
 local variable in each node of the node set specified by the {\tt on}
 clause and sets the reduction results to variables in each node. The
 variable for the reduction operation is referred to as the ``\Term{reduction
 variable}''. Thus, after the reduction operation, the value of the
-reduction variable becomes the same. 
+reduction variable becomes the same in every node that performs the
+operatoin.
 
 % inserted by Sakagami,H. 09/11/13 ----- start ----                            
 When {\it template-ref} is specified in the {\tt on} clause, the operation
-is performed in a node set that consists of nodes associated with the specified template.
-Therefore, before the {\tt \Directive{reduction}} construct is executed, the
-referenced template must be fixed. When {\it template-spec} is ``*'',
-nodes in the corresponding dimension are ignored for the reduction operation.
-When {\it template-spec} is ``:'', nodes for all template elements in the corresponding dimension perform the reduction operation.
+is performed in a node set that consists of nodes onto which the
+specified subset of the template is distributed.
+Therefore, before the {\tt reduction} construct is executed, the
+referenced template must be fixed.
+%
+%When {\it template-subscript} in the {\it template-ref} is ``*'', nodes
+%in the corresponding dimension are ignored for the reduction operation.
+%
+%When {\it template-subscript} in the {\it template-ref} is {\it
+%triplet}, nodes for all template elements in the corresponding dimension
+%perform the reduction operation.
 
 When {\it node-ref} is specified in the {\tt on} clause, the operation
-is performed in the specified node set. Therefore, before the {\tt \Directive{reduction}} construct is executed, the referenced node set must be fixed.
+is performed in the specified node set.
+%Therefore, before the {\tt \Directive{reduction}} construct is executed,
+%the referenced node set must be fixed.
 
-When the {\tt on} clause is omitted, the operation is performed in the current executing node set.
+When the {\tt on} clause is omitted, the operation is performed in the
+current executing node set.
+
+Note that an {\tt on} clause may represent multiple node sets. In such a
+case, a barrier operation is performed in each node set.
 
 \subsubsection*{Restrictions}
 
@@ -339,18 +357,25 @@ When the {\tt on} clause is omitted, the operation is performed in the current e
 \end{Fexample}
 
 % modified by Sakagami,H. 09/11/13                                             
-In the first example, the scalar variable {\tt s} is assumed to contain the 
-partial sum of the variable,                                                              
-and the reduction operation calculates the total sum of the variable. The      
-total sum is stored in the variable in each node.                              
-                                                                               
+%In the first example, the scalar variable {\tt s} is assumed to contain the 
+%partial sum of the variable, and the reduction operation calculates the
+%total sum of the variable. The total sum is stored in the variable in
+%each node.
+In the first example, the reduction operation calculates the sum of the
+scalar variable {\tt s} and the result is stored in the variable in each
+node.
+
 % modified by Sakagami,H. 09/11/13                                             
-The second example computes the maximum value of the variable {\tt aa} in the node set that consists of nodes associated with the range of the second dimension of template {\tt t}.                  
+The second example computes the maximum value of the variable {\tt aa}
+in each node set onto which each of the subsets of the template
+specified by {\tt t(*,:)} is distributed.
+%that consists of nodes associated with the
+%range of the second dimension of template {\tt t}.
 
 % modified by Sakagami,H. 09/11/13                
 In the third example, the minimum value of the variable {\tt bb} in the node 
-set is specified by {\tt p(10:30)}. This example is equivalent to the       
-code using the {\tt \Directive{task}} construct.                               
+set specified by {\tt p(10:30)}. This example is equivalent to the
+following code using the {\tt \Directive{task}} construct.
 
 \begin{Fexample}
 !$xmp task on p(10:30)
@@ -379,8 +404,9 @@ code using the {\tt \Directive{task}} construct.
 
 This code computes the matrix vector product.
 % modified by Sakagami,H. 09/11/13
-The {\tt reduction} clause is specified for the {\tt \Directive{loop}} construct of the inner
-loop. This example is equivalent to the following program.
+The {\tt reduction} clause is specified for the {\tt \Directive{loop}}
+construct of the inner loop. This example is equivalent to the following
+program.
 
 \begin{Fexample}
       dimension a(n,n), p(n), w(n)
@@ -400,14 +426,23 @@ loop. This example is equivalent to the following program.
       end do
 \end{Fexample}
 
-In this case, the reduction operation on the scalar variable {\tt sum}
+In these cases, the reduction operation on the scalar variable {\tt sum}
 is performed for every iteration in the outer loop, which may cause a
 large overhead.
 % modified by Sakagami,H. 09/11/13
-The {\tt reduction} clause cannot be specified for the {\tt \Directive{loop}} construct of the outer
-loop to reduce this overhead, because the loop index of the outer loop ({tt j}) is different from that
-for the reduction operation ({\tt i}).
-However, this code can be modified with the {\tt \Directive{reduction}} construct  as follows:
+The {\tt reduction} clause cannot be specified for the {\tt
+\Directive{loop}} construct of the outer loop to reduce this overhead,
+%
+%because the loop index of the outer loop ({\tt j}) is different from that 
+%for the reduction operation ({\tt i}).
+because the node set where the reduction operation specified by a {\tt
+reduction} clause of a {\tt loop} construct is performed is determined
+from its {\tt on} clause (see \ref{sub:loop_construct}) and
+the {\tt on} clause of the outer {\tt loop} construct is different from
+that of the inner one. 
+%
+However, this code can be modified with the {\tt \Directive{reduction}}
+construct as follows: 
 
 \begin{Fexample}
       dimension a(n,n), p(n), w(n)
@@ -427,11 +462,13 @@ However, this code can be modified with the {\tt \Directive{reduction}} construc
 !$xmp reduction(+:w) on t(1:n,*)
 \end{Fexample}
 
-This code executes a reduction operation on the array {\tt w} only once, which may result in faster operation. 
+This code executes a reduction operation on the array {\tt w} only once,
+which may result in faster operation.  
 
 \end{description}
 
-\subsection{Bcast construct}
+
+\subsection{{\tt bcast} Construct}
 
 \subsubsection*{Synopsis}
 
@@ -455,11 +492,12 @@ from one node.
 The value of the variables specified by {\it variable} is broadcasted
 from the node specified by the {\tt from} clause (called the source node) to
 the nodes in the node set specified by the {\tt on} clause. The specified
-variable for broadcast is referred to as the ÅeÅe\Term{broadcast variable}". After
-executing this directive, the value of the broadcast variable becomes the 
-same as the value of the source node. If the {\tt from} clause is omitted,
-then the first node of the node set is a source node. If the {\tt on} clause is
-omitted, then the operation is performed in the current executing node set.
+variable to be broadcasted is referred to as the ``\Term{broadcast
+variable}". After executing this construct, the value of the broadcasted
+variable becomes the same as the value of the source node. If the {\tt
+from} clause is omitted, then the first node of the specified node set
+is a source node. If the {\tt on} clause is omitted, then the operation
+is performed in the current executing node set.
 
 \subsubsection*{Restrictions}
 
@@ -474,6 +512,6 @@ omitted, then the operation is performed in the current executing node set.
 \item The node set specified by the {\tt on} clause must be a subset of the
       current executing node set.
 \item The source node specified by the {\tt from} clause must belong to
-  the node set specified by the {\tt on} clause. 
+      the node set specified by the {\tt on} clause. 
 \end{itemize}
 
