@@ -1,85 +1,131 @@
-\section{Node declaration}
-
-\subsection{\Directive{Nodes} directive}
+\section{\Directive{nodes} Directive}
 
 \subsubsection*{Synopsis}
 
-The {\tt nodes} directive declares a node array with
-a name, a shape, and some attributes.
+%The {\tt nodes} directive declares a node array with a name, a shape,
+%and some attributes.
 
-\Syntax{node}
+The {\tt nodes} directive declares a named node array.
+
+\Syntax{nodes}
 \subsubsection*{Syntax}
+
 {\small
 \begin{tabular}{ll}
-\verb![F]!&\verb|!$xmp|{\tt nodes} [{\tt(}{\it map-type}{\tt)}]
-{\it nodes-name}({\it nodes-size}) [,{\it nodes-name}({\it nodes-size})]... \\
-\verb![F]!&\verb|!$xmp|{\tt nodes} [ {\tt(}{\it map-type}{\tt)}]
-{\it nodes-name}({\it nodes-size}) [,{\it nodes-name}({\it nodes-size})]...{\tt =*}\\
-\verb![F]!&\verb|!$xmp|{\tt nodes} [{\tt(}{\it map-type}{\tt)}]
-{\it nodes-name}({\it nodes-size}) [,{\it nodes-name}({\it nodes-size})]...{\tt =}{\it nodes-ref}\\
+\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} ( {\it nodes-size}
+ [, {\it nodes-spec} ] ... ) \\
+\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} ( {\it nodes-size}
+     [, {\it nodes-spec} ] ... ) {\tt = *}\\
+\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} ( {\it nodes-size}
+     [, {\it nodes-spec} ] ...) {\tt =} {\it nodes-ref}\\
 & \\
-\verb![C]!&\verb|#pragma xmp|{\tt nodes} [{\tt(}{\it map-type}{\tt)}]
-{\it nodes-name}({\it nodes-size}) [,{\it nodes-name}({\it nodes-size})]... \\
-\verb![C]!&\verb|#pragma xmp|{\tt nodes} [{\tt(}{\it map-type}{\tt)}]
-{\it nodes-name}({\it nodes-size}) [,{\it nodes-name}({\it nodes-size})]...{\tt =*} \\
-\verb![C]!&\verb|#pragma xmp|{\tt nodes} [{\tt(}{\it map-type}{\tt)}]
-{\it nodes-name}({\it nodes-size}) [,{\it nodes-name}({\it nodes-size})]...{\tt =}{\it nodes-ref}\\
+\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name} ( {\it
+     nodes-spec} [, {\it nodes-spec} ] ... ) \\
+\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name} ( {\it
+     nodes-size} [, {\it nodes-spec} ] ... ) {\tt = *} \\
+\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name} ( {\it
+     nodes-size} [, {\it nodes-spec} ] ... ) {\tt =} {\it nodes-ref}\\
 \end{tabular}
 }
 \vspace{0.3cm}
 
-where {\it nodes-size} is a positive integer value or {\it map-type} is
-{\tt regular}.
+where {\it nodes-spec} must be one of:
+
+\hspace{\hsize}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it int-expr} \\
+ \hspace{0.5cm} & {\tt *} \\
+\end{tabular}
+
+%{\small
+%\begin{tabular}{ll}
+%\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name}({\it nodes-size})
+% [, {\it nodes-name}({\it nodes-size})]... \\
+%\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name}({\it nodes-size})
+%     [, {\it nodes-name}({\it nodes-size})]... {\tt = *}\\
+%\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name}({\it nodes-size})
+%     [, {\it nodes-name}({\it nodes-size})]... {\tt =} {\it nodes-ref}\\
+%& \\
+%\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}({\it
+%     nodes-size}) [, {\it nodes-name}({\it nodes-size})]... \\
+%\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}({\it
+%     nodes-size}) [, {\it nodes-name}({\it nodes-size})]... {\tt = *} \\
+%\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}({\it
+%     nodes-size}) [, {\it nodes-name}({\it nodes-size})]... {\tt =} {\it
+%     nodes-ref}\\
+%\end{tabular}
+%}
+%\vspace{0.3cm}
+
+%where {\it nodes-size} is a positive integer expression.
 
 \subsubsection*{Description}
 
-The {\tt node} directive declares a node array to express a
-set of nodes in the context. The first form is used to declare the
-entire node set. The second and third forms declare a new node array
-with a name, a dimension, and a size in order to reference a set of
-nodes. The second form is used to declare the executing node set. The
-ÅeÅe{\tt *}" symbol specifies the current executing node set. The third form
-declares a node array in order to reference the node set specified by
-{\it nodes-ref}.  
+The {\tt nodes} directive declares a node array that corresponds to a
+node set.
 
-If {\it map-type} is specified as {\tt regular}, then the order of nodes in
-the node array follows that of the \Fort array. Therefore, in the first
-form, the node number is used to order nodes in the node array with
-\Fort array ordering. In the second and third forms, the nodes are
-ordered according to the sequence association with referenced nodes.  
+The first form is used to declare a node array that corresponds to the
+entire node set.
+%The second and third forms declare a new node array with a name, a
+%dimension, and a size in order to reference a set of nodes.
+The second form is used to declare a node array that corresponds to the
+executing node set.
+%The ``{\tt *}'' symbol specifies the current executing node set.
+The third form is used to declare a node array that corresponds to the
+node set specified by {\it nodes-ref}.
 
-If no {\it map-type} is specified, then the ordering nodes in the node array are
-system dependent. It is desirable to order the nodes in order to make use of
-the network topology for efficient communication. 
+%If {\it map-type} is specified as {\tt regular}, then the order of nodes in
+%the node array follows that of the {\Fort} array. Therefore, in the first
+%form, the node number is used to order nodes in the node array with
+%{\Fort} array ordering. In the second and third forms, the nodes are
+%ordered according to the sequence association with referenced nodes.  
+%
+%If no {\it map-type} is specified, then the ordering nodes in the node array are
+%system dependent. It is desirable to order the nodes in order to make use of
+%the network topology for efficient communication. 
 
-If the last {\it node-size} is
-ÅeÅe{\tt *}", then the size is automatically adjusted according to the total
-size of the referenced node sets.
+If {\it node-size} in the last dimension is ``{\tt *}'', then the size
+of the node array is automatically adjusted according to the total size
+of the entire node set in the first form, the referenced node set in the
+second form, or the executing node set in the third form.
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item {\it nodes-name} is an identifier in class (1) and must not
-  conflict with other names in class (1).
-\item In \Fort, the second form cannot be used in the main program
-or module.
-\item {\it nodes-size} can be ÅeÅe{\tt *}" only in the last dimension.
-\item The node name referenced in {\it nodes-ref} must not reference 
-{\it nodes-name} directly or indirectly. 
-\item If nodes-size does not contain ÅeÅe{\tt *}", then
-the product of all {\it nodes-size} must be equal to the total size of
-the referenced node set. The referenced node set consists of all nodes in the
-first form, the executed node set in the second form, and the node
-set referenced by {\it nodes-ref} in the third form.
-\item nodes-subscript in {\it nodes-ref} must not be ÅeÅe{\tt *}".
+%\item {\it nodes-name} is an identifier in class (1) and must not
+%  conflict with other names in class (1).
+\item {\it nodes-name} must not conflict with any other local name.
+\item In {\Fort}, the second form cannot be used in either the main
+      program or a module.
+\item {\it nodes-size} can be ``{\tt *}'' only in the last dimension.
+\item {\it nodes-ref} must not reference {\it nodes-name} either
+      directly or indirectly.
+\item If no {\it nodes-size} is ``{\tt *}'', then the product
+      of all {\it nodes-size} must be equal to the total size of the
+      entire node set in the first form, the referenced node set in the
+      second form, or the executing node set in the third form.
+%
+%      The referenced node set must consist of all nodes in the first form,
+%      the executing node set in the second form, and the node set
+%      referenced by {\it nodes-ref} in the third form. 
+\item {\it nodes-subscript} in {\it nodes-ref} must not be ``{\tt *}''.
 \end{itemize}
 
 \subsubsection*{Examples}
 \Example{nodes}
 
-The following are examples of the first and third forms in the main program. Since the declaration of node array {\tt p} specifies 16 nodes as its size, this program must be executed
-with 16 nodes. Since {\tt regular} is not specified, it is not guaranteed that
-{\tt Ar(1)} and {\tt p(3)} are the same node, and the node number of {\tt z(1,1)} is 1. 
+The following are examples of the first and the third forms appeared in
+the main program. Since the node array {\tt p}, which corresponds to the
+entire node set, is declared to be of size 16, this program must be
+executed on 16 nodes.
+
+%Since the declaration of node array {\tt p} specifies
+%16 nodes as its size, this program must be executed with 16 nodes.
+
+%Since {\tt regular} is not specified, it is not guaranteed that {\tt
+%Ar(1)} and {\tt p(3)} are the same node, and the node number of {\tt
+%z(1,1)} is 1.
 
 \vspace{0.5cm}
 
@@ -96,6 +142,7 @@ with 16 nodes. Since {\tt regular} is not specified, it is not guaranteed that
 \end{Fexample}
 \end{center}
 \end{minipage}
+%
 \begin{minipage}{0.45\hsize}
 \begin{center}
 \begin{CexampleR}
@@ -109,33 +156,41 @@ int main() {
 \end{CexampleR}
 \end{center}
 \end{minipage}
-\vspace{1cm}
 
-Example using the regular option. Since node array {\tt p} is declared
-without the regular option, it is not guaranteed that {\tt p(1), p(2)}
-have the node number 1, 2, ... and so on. The node array {\tt q} with the 
-regular option has the order in which
-{\tt q(1,1), q(2,1), q(3,1), q(4,1), q(1,2), ...} have node numbers
-1,2,3,4,5, ... In node array z with the regular option,
-{\tt z(1,1), z(2,1), z(1,2), z(2,2), z(1,3), z(2,3), ...} have the
-node numbers 1, 2, 3, 4, 5, 6, ...
+\vspace{0.5cm}
 
-\begin{Fexample}
-      program main
-!$xmp nodes p(16)
-!$xmp nodes(regular) q(4,*)
-!$xmp nodes(regular) r(8)=p(3:10)
-!$xmp nodes(regular) z(2,3)=(1:6)
-      ...
-      end program
-\end{Fexample}
+%Example using the regular option. Since node array {\tt p} is declared
+%without the regular option, it is not guaranteed that {\tt p(1), p(2)}
+%have the node number 1, 2, ... and so on. The node array {\tt q} with the 
+%regular option has the order in which
+%{\tt q(1,1), q(2,1), q(3,1), q(4,1), q(1,2), ...} have node numbers
+%1,2,3,4,5, ... In node array z with the regular option,
+%{\tt z(1,1), z(2,1), z(1,2), z(2,2), z(1,3), z(2,3), ...} have the
+%node numbers 1, 2, 3, 4, 5, 6, ...
+%
+%\begin{Fexample}
+%      program main
+%!$xmp nodes p(16)
+%!$xmp nodes(regular) q(4,*)
+%!$xmp nodes(regular) r(8)=p(3:10)
+%!$xmp nodes(regular) z(2,3)=(1:6)
+%      ...
+%      end program
+%\end{Fexample}
 
-Example using a subprogram. Since the node
-declaration has the second form, the caller of the {\tt foo} subroutine must
-be executed with 16 nodes. The declaration for the node array {\tt q} of 
-the first form declares the node array for the entire node set. The
-node array {\tt r} is a subset of {\tt p}, and the node array of {\tt
-  x} is a subset of {\tt q}.
+The following is an example of a node declaration in a subprogram.
+Since {\tt p} is declared in the second form to be of size 16 and
+correspond to the executing node set, the caller of the {\tt foo}
+subroutine must be executed on 16 nodes.
+%
+The node array {\tt q} is declared in the first form and corresponds to
+the entire node set. The node array {\tt r} is declared as a subset of
+{\tt p}, and {\tt x} as a subset of {\tt q}.
+
+%The declaration for the node array {\tt q} of the first form
+%declares the node array for the entire node set. The node array {\tt r}
+%is a subset of {\tt p}, and the node array of {\tt x} is a subset of
+%{\tt q}.
 
 \begin{Fexample}
       function foo()
@@ -147,78 +202,116 @@ node array {\tt r} is a subset of {\tt p}, and the node array of {\tt
       end function
 \end{Fexample}
 
-\subsection{Node reference}
+
+\subsection{Node Reference}
 
 \subsubsection*{Synopsis}
 
-The node reference expression is
-used to reference a subset of the referenced node set.
+The node reference expression is used to reference a subset of a node
+set.
 
 \subsubsection*{Syntax}
 \Syntax{node reference}
 
-{\it nodes-ref} is either node reference by node number,
-{\it node-number-ref}, or node reference by name, {\it named-nodes-ref}.
+A node reference {\it nodes-ref} is specified by either node number
+({\it node-number-ref}) or the name of a node array ({\it named-nodes-ref}).
 
 \begin{center}
-\begin{tabular}{ll}
-{\it nodes-ref} & {\it node-number-ref} | {\it named-nodes-ref} \\
-{\it node-number-ref} & {\it node-number} | ([{\it node-number}]:[{\it node-number}][:{\it int-expr}]) \\
-& {\it node-number} is a positive number. \\
-{\it named-nodes-ref} & {\it nodes-name} [ ( {\it nodes-subscript}
-[,  ...] ) ] \\
-{\it nodes-subscript} & {\it int-expr} | {\it triplet} | {\tt *} \\
+\begin{tabular}{lll}
+{\it nodes-ref} & {\bf is} & ( {\it int-expr} )\\
+                & {\bf or} & ( {\it triplet} ) \\
+                & {\bf or} & {\it nodes-name} [ ( {\it nodes-subscript}
+	 [, {\it nodes-subscript} ]... ) ] \\
 \end{tabular}
 \end{center}
+
+\vspace{0.3cm}
+
+where {\it nodes-subscript} must be one of:
+
+\hspace{\hsize}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it int-expr} \\
+ \hspace{0.5cm} & {\it triplet} \\
+ \hspace{0.5cm} & {\tt *} \\
+\end{tabular}
+
+%\begin{center}
+%\begin{tabular}{ll}
+%{\it nodes-ref} & {\it node-number-ref} $\vert$ {\it named-nodes-ref} \\
+%{\it node-number-ref} & {\it node-number} $\vert$ ([{\it
+%     node-number}]:[{\it node-number}][:{\it int-expr}]) \\
+%& {\it node-number} is a positive number. \\
+%{\it named-nodes-ref} & {\it nodes-name} [ ( {\it nodes-subscript}
+%[,  ...] ) ] \\
+%{\it nodes-subscript} & {\it int-expr} $\vert$ {\it triplet} $\vert$ {\tt *} \\
+%\end{tabular}
+%\end{center}
 
 \subsubsection*{Description}
 
-Node reference by node number refers one node
-by the node number, or a node set by a sequence of node numbers.
+Node reference by node number represents one node specified by the node 
+number, or a node set specified by a triplet that represents a set of
+node numbers.
 
-Node reference by name refers the node set by the node array name or the
-subset of the node set by a subarray of the node array.  
+Node reference by name represents a node set specified by the name of a
+node array or its subarray.
 
-The subscript
-of the subarray of a node array must be either an integer, a triplet, or
-ÅeÅe{\tt *}". The notation of the subarray using a triplet in the subscript is the same as
-that in \Fort. 
+%The subscript of the subarray of a node array must be either an integer,
+%a triplet, or ``{\tt *}''. The notation of the subarray using a triplet
+%in the subscript is the same as that in {\Fort}. 
 
-The ÅeÅe{\tt *}" symbol in {\it nodes-subscript} in a subarray of a
-node array specifies a subscript associated with the executing node in
-the node array of the executing node set. Thus, the following node
-is referenced by name with the $k$-th subscript ÅeÅe{\tt *}": 
-\begin{center}
-{\tt p($s_1$, ..., $s_{k-1}$, *, $s_{k+1}$, ..., $s_n$)} 
-\end{center}
-where, with the exception of $s_k$, subscripts $s_i$ must not be ÅeÅe{\tt *}", 
-is evaluated at the node 
-\begin{center}
-{\tt p($j_1$, ..., $j_{k-1}$, $j_k$, $j_{k+1}$, ..., $j_n$)} 
-\end{center}
-where $j_i$ is an integer, in
-\begin{center}
-{\tt p($s_1$, ..., $s_{k-1}$, $j_k$, $s_{k+1}$, ..., $s_n$)}.
-\end{center}
+The ``{\tt *}'' symbol apperared as {\it nodes-subscript} in a dimension
+of {\it nodes-ref} is interpreted as the position (coordinate) of each
+node in the dimension of the referenced node array.
+%The ``{\tt *}'' symbol in {\it nodes-subscript} in a subarray of a
+%node array specifies a subscript associated with the executing node in
+%the node array of the executing node set.
+%
+Thus, a node reference {\tt p($s_1$, ..., $s_{k-1}$, *, $s_{k+1}$, ...,
+$s_n$)} is interpreted as {\tt p($s_1$, ..., $s_{k-1}$, $j_k$,
+$s_{k+1}$, ..., $s_n$)} on the node corresponding to {\tt p($j_1$, ...,
+$j_{k-1}$, $j_k$, $j_{k+1}$, ..., $j_n$)}.
 
-This node reference composes the node set using nodes with the $k$-th
-subscript $j_k$. The same rule is applied even if more than two subscripts are
-ÅeÅe{\tt *}". This notation can be used only in the node reference of the on clause
-in executable directives. 
+%Thus, the following node is referenced by name with the $k$-th subscript
+%``{\tt *}'':
+%
+%\begin{center}
+%{\tt p($s_1$, ..., $s_{k-1}$, *, $s_{k+1}$, ..., $s_n$)} 
+%\end{center}
+%where, with the exception of $s_k$, subscripts $s_i$ must not be ``{\tt *}'', 
+%is evaluated at the node 
+%\begin{center}
+%{\tt p($j_1$, ..., $j_{k-1}$, $j_k$, $j_{k+1}$, ..., $j_n$)} 
+%\end{center}
+%where $j_i$ is an integer, in
+%\begin{center}
+%{\tt p($s_1$, ..., $s_{k-1}$, $j_k$, $s_{k+1}$, ..., $s_n$)}.
+%\end{center}
+
+Note that ``{\tt *}'' can be used only in the node reference appeared in
+the {\tt on} clause of some executable directives.
+
+%This node reference composes the node set using nodes with the $k$-th
+%subscript $j_k$. The same rule is applied even if more than two
+%subscripts are ``{\tt *}''. This notation can be used only in the node
+%reference of the on clause in executable directives. 
 
 \subsubsection*{Examples}
 
-Assume that {\tt p} is a nodes name and that {\tt m} is an integer variable. 
+Assume that {\tt p} is the name of a node array and that {\tt m} is an
+integer variable.
 
 \begin{itemize}
-\item Target node array by the {\tt distribute} directive
+\item As a target node array in the {\tt distribute} directive
 
 \Example{distribute}
 \begin{tabular}{l}
-\verb|!$xmp distribute a(block) onto p*| \\
-\end{tabular}
+\verb|!$xmp distribute a(block) onto p| \\
+\end{tabular}%$
 
-\item Target the subarray of the node array in the {\tt nodes} directives 
+\item As a target node subarray in the {\tt nodes} directive
 
 \Example{nodes}
 \begin{tabular}{l}
@@ -226,24 +319,33 @@ Assume that {\tt p} is a nodes name and that {\tt m} is an integer variable.
 \verb|!$xmp nodes r(2,2,4) = (1:16)| \\
 \end{tabular}
 
-\item In the {\tt task} directive, a set of executing nodes is specified for the task.
+\item To specify a node array that corresponds to the executing node set
+      of a task in the {\tt task} directive
 
 \Example{task}
 \begin{tabular}{l}
 \verb|!$xmp task on p(1:4,1:4)| \\
 \verb|!$xmp task on (1:16)| \\
 \verb|!$xmp task on p(:,*)| \\
-\verb|!$xmp task on m| \\
+\verb|!$xmp task on (m)| \\
 \end{tabular}
 
-\item In the {\tt loop} directive, sets of executing nodes are specified for the iterations.
+\item To specify a node array with which the iterations of the loop are
+      aligned in the {\tt loop} directive
+
+%In the {\tt loop} directive, sets of executing nodes are specified
+%      for the iterations.
+
 \Example{loop}
 \begin{tabular}{l}
 \verb|!$xmp loop (i) on p(lb(i):lb(i+1)-1)| \\
-\end{tabular}
+\end{tabular}%$
 
-\item In {\tt barrier} directive and the {\tt reduction} directive,
-executing nodes are specified. 
+\item To specify a node array that corresponds to the executing node set
+      in the {\tt barrier} and the {\tt reduction} directive
+
+%In {\tt barrier} directive and the {\tt reduction} directive,
+%executing nodes are specified. 
 
 \Example{barrier}
 \Example{reduction}
@@ -252,7 +354,10 @@ executing nodes are specified.
 \verb|!$xmp reduction (+:a) on p(*,:)| \\
 \end{tabular}
 
-\item In the {\tt bcast} directive, a source node and executing nodes are specified.
+\item To specify the source node and a node array that corresponds to
+      the executing node set in the {\tt bcast} directive 
+
+%In the {\tt bcast} directive, a source node and executing nodes are specified.
 
 \Example{bcast}
 \begin{tabular}{l}
@@ -260,47 +365,55 @@ executing nodes are specified.
 \end{tabular}
 \end{itemize}
 
-\subsubsection*{Examples}
-\Example{nodes}
-\Example{tasks}
-\Example{task}
-\Example{end task}
-\Example{end tasks}
+%\subsubsection*{Examples}
+%\Example{nodes}
+%\Example{tasks}
+%\Example{task}
+%\Example{end task}
+%\Example{end tasks}
+%
+%\begin{minipage}{0.45\hsize}
+%\begin{center}
+%\begin{Fexample}
+%      subroutine caller
+%!$xmp nodes p(1000)
+%      real a(100,100)
+%      ...
+%!$xmp tasks
+%!$xmp  task on p(1:500)
+%        call task1(a)
+%!$xmp  end task
+%!$xmp  task on p(501:800)
+%        call task1(a)
+%!$xmp  end task
+%!$xmp  task on p(801:1000)
+%        call task1(a)
+%!$xmp  end task
+%!$xmp end tasks
+%      ...
+%      end do
+%\end{Fexample}
+%\end{center}
+%\end{minipage}
+%\begin{minipage}{0.45\hsize}
+%\begin{center}
+%\begin{FexampleR}
+%      subroutine task1(a)
+%      ...
+%!$xmp nodes q(*)
+%      real a(100,100)
+%      ...
+%      end subroutine
+%\end{FexampleR}
+%\end{center}
+%\end{minipage}
+%\vspace{1cm}
 
-\begin{minipage}{0.45\hsize}
-\begin{center}
-\begin{Fexample}
-      subroutine caller
-!$xmp nodes p(1000)
-      real a(100,100)
-      ...
-!$xmp tasks
-!$xmp  task on p(1:500)
-        call task1(a)
-!$xmp  end task
-!$xmp  task on p(501:800)
-        call task1(a)
-!$xmp  end task
-!$xmp  task on p(801:1000)
-        call task1(a)
-!$xmp  end task
-!$xmp end tasks
-      ...
-      end do
-\end{Fexample}
-\end{center}
-\end{minipage}
-\begin{minipage}{0.45\hsize}
-\begin{center}
-\begin{FexampleR}
-      subroutine task1(a)
-      ...
-!$xmp nodes q(*)
-      real a(100,100)
-      ...
-      end subroutine
-\end{FexampleR}
-\end{center}
-\end{minipage}
-\vspace{1cm}
 
+\subsection{Correspondence between Node Arrays}
+
+To be described.
+
+\subsection{The Executing Node Set}
+
+To be described.

@@ -1,18 +1,18 @@
 \chapter{Support for local-view programming}
 
-\XMP adopts coarray notations as
+{\XMP} adopts coarray notations as
 an extension of languages for local-view programming. In the case of
-\Fort as the base language, most coarray notations are compatible with
+{\Fort} as the base language, most coarray notations are compatible with
 that of \CAF (CAF), except that the {\tt task} constructs
 are used for task parallelism.
 
 This line was inserted by Sakagami for svn test.
 
 
-\section{Coarray notation of  \XMP}
+\section{Coarray notation of  {\XMP}}
 
 The \Term{coarray} is declared and referenced as in CAF. In addition, the
-notations are extended in \XMP so that the coarray declarations
+notations are extended in {\XMP} so that the coarray declarations
 can be followed by the {\tt on} clause ({\tt on} {\it nodes-ref}). In this
 case, the images of the coarray are allocated on the node set specified by
 {\it nodes-ref}. If the {\tt on} clause is not specified, then the images of
@@ -113,7 +113,7 @@ example, the optimal mapping for the communication between
 mapping for the communication between {\tt two(...)[i,j]} and {\tt
   two(...)[i+1,j]}. 
 
-In \XMP, several mappings can be described. In this example, the
+In {\XMP}, several mappings can be described. In this example, the
 mapping may be compatible with Coarray Fortran, and a different mapping
 can be selected. By switching the runtime option, node sets {\tt w1} and
 {\tt w2} can be different node sets. Coarrays {\tt one} and {\tt two}
@@ -128,15 +128,15 @@ mapped into the same node. Note that this point is not compatible with Coarray F
 
 \end{description}
 
-\section{Coarray in the \C language}
+\section{Coarray in the {\C} language}
 
-\XMP adopts coarray notation. In order to use coarray notation in \C,
+{\XMP} adopts coarray notation. In order to use coarray notation in {\C},
 we propose some extensions of the language.
 
 \subsection{Array section notation}
 
 Array section notation is a notation to describe the part of array that
-is adapted in Fortran90. In \C, an array section has the following form:
+is adapted in Fortran90. In {\C}, an array section has the following form:
 
 \begin{tabular}{ll}
 \hspace{0.5cm} & {\it array-name} '[' [{\it lower-bound}] ':' [{\it
@@ -203,7 +203,7 @@ A[5:9] = B[0:4]; // copy the elements from A[5] to A[9],
 
 \subsection{Declarations and reference of coarray}
 
-A coarray is declared by the coarray directive in \C.
+A coarray is declared by the coarray directive in {\C}.
 
 \Syntax{coarray}
 \begin{tabular}{ll}

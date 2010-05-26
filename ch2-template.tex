@@ -70,7 +70,7 @@ The template reference refers to a subarray of the template array.
 The subscript
 of the subarray of a template array must be either an integer, a
 triplet, or ``{\tt *}''. The notation of the subarray using a triplet in
-the subscript is the same as that in \Fort. 
+the subscript is the same as that in {\Fort}. 
 
 \subsubsection*{Examples}
 
@@ -302,6 +302,7 @@ of blocks in the third dimension are different.
 \end{description}
 
 \subsection{{\tt align} Directive}
+\label{sub:align}
 
 \subsubsection*{Synopsis}
 The {\tt \Directive{align}} directive specifies that arrays are to be
@@ -355,12 +356,12 @@ align-source} and {\it align-subscript} are interpreted as follows:
 
 \begin{enumerate}
 \item The first form of an {\it align-source} and an {\it
-      align-subscript} represent an align dummy variable and an
+      align-subscript} represents an align dummy variable and an
       expression of it, respectively. The align dummy variable ranges
       over all valid index values in the corresponding dimension of the
       array.
 \item The second form ``{\tt *}'' of an {\it align-source} and an {\it
-      align-subscript} represent a dummy variable (not an align dummy
+      align-subscript} represents a dummy variable (not an align dummy
       variable) that does not appear anywhere in the directive.
       \begin{itemize} 
        \item The second form of the {\it align-source} is said to
@@ -373,9 +374,24 @@ align-source} and {\it align-subscript} are interpreted as follows:
 	     corresponding dimension of the template.
       \end{itemize}
 \item The third form of an {\it align-source} and the matching {\it
-      align-subscript} represent a same align dummy variable that
+      align-subscript} represents a same align dummy variable that
       ranges over all valid index values in the corresponding dimension
-      of the array.
+      of the array. The matching of colons (``{\tt :}'') in the sequence
+      of {\it align-source} and {\it align-subscript} is determined as
+      follows:
+
+      \begin{itemize}
+       \item \verb![F]! Colons in the sequence of {\it align-source} and
+	     those in the sequence of {\it align-subscript} are matched
+	     up in corresponding left-to-right order, where any {\it
+	     align-source} and {\it align-subscript} that is not a colon
+	     is ignored.
+       \item \verb![C]! Colons in the sequence of {\it align-source} in
+	     right-to-left order and those in the sequence of {\it 
+	     align-subscript} in left-ro-right order are matched up,
+	     where any {\it align-source} and {\it align-subscript} that
+	     is not a colon is ignored.
+      \end{itemize}
 
 %      If both of {\it align-source} and {\it align-subscript} is ``:'',
 %      then each element of the array is aligned with each element of the
@@ -393,8 +409,7 @@ align-source} and {\it align-subscript} are interpreted as follows:
 \item The {\it int-expr} in an {\it align-subscript} may not contain any
       occurrence of an align dummy variable.
 \item The sequence of {\it align-sources} must contain exactly as many
-      colons (``{\tt :}'') as the sequence of {\it align-subscripts}
-      contains.
+      colons as the sequence of {\it align-subscripts} contains.
 
 \end{itemize}
 

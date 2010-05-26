@@ -1,90 +1,352 @@
+\newcommand{\namelistlabel}[1]{\mbox{#1}\hfil}
+\newenvironment{namelist}[1]{%
+\begin{list}{}
+       {\let\makelabel\namelistlabel
+        \settowidth{\labelwidth}{#1}
+        \setlength{\leftmargin}{1.3\labelwidth}
+}
+}{%
+\end{list}}
+
+\newcommand{\gitem}[1]{\item[{\parbox[b]{3.3cm}{\raggedleft \bf \Term{#1}}}]}
+
 
 \section{Glossary}
-\subsection*{\Term{node}}
-In a distributed memory system, a computation node, which may have several cores sharing main memory, has its own local memory. Each node is connected through a network. An \XMP program begins as a single thread of execution in each node.
 
-\subsection*{\Term{node number}}
-A unique number assigned to each of the nodes in the entire node set. The number starts from 1, larger than or equal to 1 and less than and equal to the number of nodes.Note that the mapping from the node number to the MPI rank is decided by the system. The image index of
-the coarray mapping to the entire node set is equal to the node number. 
+\subsection{Language Terminology}
 
-\subsection*{\Term{node set}}
-A set of nodes
+\begin{namelist}{entire node setxxxx}
 
-\subsection*{\Term{entire node set}, \Term{entire set of nodes}}
-All nodes executing the program, or a set of these nodes. The entire node set is
-decided when staring the program.
+\gitem{base language}
 
-\subsection*{\Term{executing node set}, \Term{executing nodes}}
-A node set executing a certain region of a program. The executing node
-set that executes an entire program is the entire node set. The executing
-node set of a task is the node set that executes the task. 
+ A programming language that serves as the foundation of the {\XMP}
+ specification.
 
-\subsection*{\Term{node array}}
-A multi-dimensional array containing nodes. The node array has a
-name and shape as it attributes.
+\gitem{base program}
 
-\subsection*{\Term{executing node array}}
-Node array that contains the executing node.
+ A program written in a base language.
 
-\subsection*{\Term{task}}
-A specific instance of executable code and
-its data environments executed in a set of nodes. In the context of
-the program text, a set of statement executed by a set of nodes. A task
-can be nested, and a nested task is executed as a subtask of an outer task.
+\gitem{subprogram}
 
-\subsection*{\Term{template}}
-A dummy array used to express an index space associated
-with an array. Template is also used to describe the iteration space of a loop. A template has a name, a dimension, and an upper and  lower bound for each dimension as attributes.
+ A generic term used to refer to ``subprogram'' (including subroutine and
+ function) in Fortran and ``function'' in C.
 
-\subsection*{\Term{replicated execution}}
-Execution of the same code in different nodes. If the state at the starting point is the same and
-the execution has only local side-effects, then the local state in each node remains the same. 
+\gitem{directive}
 
-\subsection*{\Term{data mapping}}
-The combination of the alignment and
-distribution attributes used to describe how a data object is
-allocated to nodes.
+ In C, a {\tt \#pragma}, and in Fortran, a comment, that specifies
+ {\XMP} program behavior.
 
-\subsection*{\Term{work mapping}}
-Assignment of iterations to nodes in
-a parallel loop and tasks to nodes.
+\gitem{declarative directive}
 
-\subsection*{\Term{image index}}
-A number assigned to
-each image of the coarray. The value is equal to or greater than 1. 
-Note that the image index of the coarray mapping to the entire node set is
-identical to the node number.
+ An {\XMP} directive that may only be placed in a declarative context. A
+ declarative directive has no associated executable user code, but
+ instead has one or more associated user declarations.
 
-\subsection*{\Term{local}}
-Execution of a program has
-side-effects only on the data in the node. In this case, no communication
-with other nodes occurs . 
+\gitem{executable directive}
 
-\subsection*{\Term{non-local}}
-Execution of a program requires
-communication with other nodes and has side-effects with respect to other
-nodes. 
+ An {\XMP} directive that is not declarative; i.e., it may be placed in
+ an executable context.
 
-\subsection*{\Term{global data}}
-Data declared as a distributed array and shared by nodes.
+\gitem{construct}
 
-\subsection*{\Term{local data}}
-Data is allocated in each node and is referenced only
-within the node.* collective  An operation must be executed by every
-node in the executing node set in order to perform an operation together.
+ An {\XMP} executable directive (and for Fortran, the paired end
+ directive, if any) and the associated statement, loop or structured
+ block, if any.
 
-\subsection*{\Term{distribution}}
-The partition of the index space of a data
-object among a set of nodes according to a given pattern. The
-{\tt distribute} directive is used to map the elements of a template onto a set of nodes. 
+%, not
+%including the code in any called routines; i.e., the lexical extent of an
+%executable directive.
 
-\subsection*{\Term{alignment}}
-An attribute of a data object that establishes
-the relationship between data objects for distribution. The {\tt align}
-directive is used to describe the correspondence of the element of the data and the template. 
+\gitem{global construct}
 
-\subsection*{\Term{shadow}}
-A data area is used to keep neighbor elements
-temporarily in a distributed array. Shadow is an attribute of
-a distributed array that is declared by the {\tt shadow} directive and is updated by the {\tt reflect} directive.
+ A construct that is executed collectively and synchronously by all
+ nodes in the executing node set. Global constructs are further
+ classified into two groups of {\it global communication constructs},
+ such as {\tt gmove}, {\tt barrier}, etc., which specify communication
+ or synchronization, and {\it work mapping constructs}, such as {\tt
+ loop}, {\tt array} and {\tt tasks}, which specify parallelization of
+ loops, array assignments or a set of tasks.
 
+\gitem{template}
+
+ A dummy array that represents an index space to be distributed onto a
+ node set, which serves as the ``template'' of parallelization in
+ {\XMP} and can be considered to abstract, for example, a set of grid
+ points in the grid method or particles in the particle method.
+%
+ A template is used in an {\XMP} program to specify the data and the
+ work mapping.
+
+%A dummy array used to express an index space associated
+%with an array. Template is also used to describe the iteration space of
+%a loop. A template has a name, a dimension, and an upper and  lower
+%bound for each dimension as attributes.
+
+\gitem{data mapping}
+
+      Allocating elements of an array to nodes in a node set by
+      specifying with the {\tt align} directive that the array is
+      aligned with a distributed template.
+
+%\gitem{work}
+
+\gitem{work mapping}
+
+      Assigning iterations of a loop, elements of an array assignment,
+      or tasks in a task set to nodes in a node set by specifying with
+      one of the work mapping constructs that the loop, the assignment,
+      or the set is aligned with a template or distributed onto a node
+      array.
+
+%\subsection*{\Term{data mapping}}
+%The combination of the alignment and
+%distribution attributes used to describe how a data object is
+%allocated to nodes.
+%
+%\subsection*{\Term{work mapping}}
+%Assignment of iterations to nodes in
+%a parallel loop and tasks to nodes.
+
+\gitem{global}
+
+      A data or a work is {\it global} if and only if there is only one
+      instance of it shared by all nodes in the executing node set.
+
+\gitem{local}
+
+      A data or a work is {\it local} if and only if there is a
+      replicated instance of it in each node in the executing node set.
+
+\gitem{global-view model}
+
+      A model of programming or parallelization on which parallel
+      programs are written by specifying how to map global data and
+      works onto nodes.
+
+\gitem{local-view model}
+
+      A model of programming or parallelization on which parallel
+      programs are written by the specifying how each node owns local
+      data and does local works.
+
+%Execution of a program has side-effects only on the data in the node. In
+%this case, no communication with other nodes occurs .
+
+%\subsection*{\Term{non-local}}
+%
+%Execution of a program requires
+%communication with other nodes and has side-effects with respect to other
+%nodes. 
+
+\end{namelist}
+
+
+\subsection{Node Terminology}
+
+\begin{namelist}{entire node setxxxx}
+
+\gitem{node}
+
+ A computing component of a distributed-memory multicomputer, which has
+ its own main memory and is connected with each other via an
+ interconnect. A node may contain multiple cores sharing the main
+ memory.
+
+%In a distributed memory system, a computation node, which may have
+%several cores sharing main memory, has its own local memory. Each node
+%is connected through a network. An \XMP program begins as a single
+%thread of execution in each node.
+
+\gitem{node set}
+
+ A set of nodes.
+
+\gitem{entire node set}
+
+ A node set that contains all of the nodes participating in the
+ execution of an XcalbleMP program.
+
+\gitem{executing node set}
+
+ A node set that contains all of the nodes participating in the
+ execution of a subprogram, a statement, a loop, a block, etc. of an
+ XcalableMP program. The executing node set can be modified by the {\tt
+ task}, {\tt array}, or {\tt loop} direcitives. Note that the executing
+ node set of the main routine is the entire node set.
+
+\gitem{node array}
+
+ An entity of the same form as a Fortran array that represents a node
+ set in XcalableMP programs. Each element of a node array represents a
+ node in the corresponding node set. A node array is declared by the
+ {\tt nodes} directive.
+
+%\gitem{node number}
+%
+% A number assigned to a node, which is associated with a node array and
+% determined according to Fortran's array element order (i.e. row-major).
+
+%\subsection*{\Term{node number}}
+%
+%A unique number assigned to each of the nodes in the entire node
+%set. The number starts from 1, larger than or equal to 1 and less than
+%and equal to the number of nodes.Note that the mapping from the node
+%number to the MPI rank is decided by the system. The image index of 
+%the coarray mapping to the entire node set is equal to the node number. 
+%
+%\subsection*{\Term{entire node set}, \Term{entire set of nodes}}
+%All nodes executing the program, or a set of these nodes. The entire node set is
+%decided when staring the program.
+%
+%\subsection*{\Term{executing node set}, \Term{executing nodes}}
+%A node set executing a certain region of a program. The executing node
+%set that executes an entire program is the entire node set. The executing
+%node set of a task is the node set that executes the task. 
+%
+%\subsection*{\Term{node array}}
+%A multi-dimensional array containing nodes. The node array has a
+%name and shape as it attributes.
+%
+%\subsection*{\Term{executing node array}}
+%Node array that contains the executing node.
+
+\end{namelist}
+
+
+\subsection{Data Terminology}
+
+\begin{namelist}{entire node setxxxx}
+
+\gitem{global data}
+
+ An array that is aligned with a template. Elements of a global data are
+ distributed onto nodes according to the distribution of the
+ template. As a result, each node owns a part of a global data (called
+ {\it local section}), and can access directly it but cannot those on
+ the other nodes.
+
+%Data declared as a distributed array and shared by nodes.
+
+\gitem{local data}
+
+ Data that is not global. Each node owns a replica of a local data,
+ and can access directly it but cannot those on the other nodes.
+
+%Data is allocated in each node and is referenced only
+%within the node.
+
+\gitem{distribution}
+
+ Assigning each element of a template to nodes in a node set in a
+ specified manner. In the broad sense, it means that of an array, a
+ loop, etc.
+
+% The partition of the index space of a data object among a set of nodes
+% according to a given pattern. The {\tt distribute} directive is used to 
+% map the elements of a template onto a set of nodes.
+
+\gitem{alignment}
+
+ Associating each elemtent of an array, a loop, etc. with an element of
+ the specified template. An Element of an array, a loop, etc. is
+ necessarily mapped to the same node as its associated element of the
+ template is.
+
+% An attribute of a data object that establishes the relationship between
+% data objects for distribution. The {\tt align} directive is used to
+% describe the correspondence of the element of the data and the
+% template.
+
+\gitem{shadow}
+
+ An additional area of the local section of a distributed array, which
+ is used to keep the elements that have to be moved in from neighboring
+ nodes.
+
+% A data area used to keep neighbor elements temporarily in a
+% distributed array.
+% Shadow is an attribute of a distributed array that
+% is declared by the {\tt shadow} directive and is updated by the {\tt
+% reflect} directive.
+
+\end{namelist}
+
+
+\subsection{Work Terminology}
+
+\begin{namelist}{entire node setxxxx}
+
+\gitem{task}
+
+A specific instance of executable codes that is defined by the {\tt
+task} construct and executed by a node set specified by its {\tt on}
+clause.
+
+%A specific instance of executable code and
+%its data environments executed in a set of nodes. In the context of
+%the program text, a set of statement executed by a set of nodes. A task
+%can be nested, and a nested task is executed as a subtask of an outer task.
+
+%\subsection*{\Term{replicated execution}}
+%
+%Execution of the same code in different nodes. If the state at the
+%starting point is the same and the execution has only local
+%side-effects, then the local state in each node remains the same.
+
+\gitem{collective}
+
+      A construct is {\it collective} if and only if it must be executed 
+      synchronously and with the exact same directive and associated
+      statements by every nodes in the executing node set. The behavior
+      of an {\XMP} program is not specified if a collective construct is
+      not executed {\it collectively}.
+
+%An operation must be executed by every
+%node in the executing node set in order to perform an operation together.
+
+\end{namelist}
+
+
+\subsection{Communication and Synchronization Terminology}
+
+
+\subsection{Local-view Terminology}
+
+\begin{namelist}{entire node setxxxx}
+
+\gitem{local alias}
+
+ An alias to the local section of a global data, that is, a distributed
+ array. A local alias can be used in {\XMP} programs in the same way as
+ normal local data can.
+
+\gitem{coarray}
+
+ A special local data that can be accessed directly by other nodes with
+ a specific notation (i.e. the {\it image index} corresponding to the
+ target node in the square brackets) added to the end of the array
+ reference syntax.
+%
+ Every coarray is associated explicitly or implicitly with a node
+ set and allocated on each node of the node set.
+
+ The coarray feature of {\XMP} is based on that of the upcoming Fortran
+ 2008 standard.
+
+%\gitem{image}
+
+\gitem{image index}
+
+ A special identifier, in the style of an integer sequence, which is
+ used in a coarray reference to specify a target node. An image index in
+ the square brackets of a coarray reference refers to a corresponding
+ node in the node set with which the coarray is associated. The
+ correspondence is determined according to Fortran's array element order
+ (i.e. row-major).
+
+%A number assigned to
+%each image of the coarray. The value is equal to or greater than 1. 
+%Note that the image index of the coarray mapping to the entire node set is
+%identical to the node number.
+
+\end{namelist}
