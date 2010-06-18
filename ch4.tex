@@ -1,4 +1,161 @@
-\chapter{Procedure call and data mapping for procedure argument}
+%\chapter{Procedure call and data mapping for procedure argument}
+\chapter{Subprogram Interfaces}
 
-%This line was inserted by Sakagami for svn test.
+This chapter describes the subprogram interfaces, that is, how
+subprograms are invoked and arguments are passed, in {\XMP}.
 
+In order to achieve high composability of {\XMP} programs, it is one of
+the most important requirement that {\XMP} subprograms can invoke
+subprograms written in the base language with as a few restrictions as
+possible. The subprogram interfaces of {\XMP} described in this chapter
+is designed so as to satisfy the requirement.
+
+
+\section{General Rule}
+
+A subprogram invocation itself is a local operation in {\XMP}. Thus, a
+node can invoke any subprogram, whether written in {\XMP} or in the base
+language, at any point of the execution.
+%
+There is no restriction on the characteristics of subprograms invoked by
+an {\XMP} subprogram, except for a few ones on its argument, which is
+explained below.
+
+A local data or part of it (i.e. an array element or a Fortran's array
+section) in the actual or dummy argument list (referred to as a {\it
+local actual argument} and a {\it local dummy argument}, respectively)
+are treated by the {\XMP} compiler in the same way as by the compiler of
+the base language.
+%
+This rule makes it possible that a local actual argument in a subprogram
+written in {\XMP} is associated with a dummy argument of a subprogram
+written in the base language.
+
+\paragraph{Implementation.}
+
+The {\XMP} compiler does not transform local actual and dummy arguments,
+so that the backend compiler of the base language can process them in
+the same way as usual data.
+
+\vspace{1.5zw}
+
+\hspace{-1.2\parindent}
+The rest of this chapter specifies how global data in the actual and
+dummy argument list (referred to as a {\it global actual argument} and a
+{\it global dummy argument}, respectively) are processed by the {\XMP}
+compiler.
+
+
+\section{Argument Passing Mechanism in {\XMP} Fortran}
+
+A section (except for an element) of a global data cannot be put in the
+actual argument list. Therefore only the name or an element of it can be
+put in the actual argument list.
+
+There are two kinds of argument association for global data in {\XMP}
+Fortran: one is {\it sequence association}, which is for a global dummy
+that is an explicit-shape or assumed-size array, and the other is
+{\it descriptor association}, which is for all other global dummy.
+
+
+\subsection{Sequence Association of Global Data}
+
+If the actual argument is the name of a global data, it represents a
+{\it local element sequence} consisting of the elements of its local
+section in array element order on each node.
+%
+Also, if the actual argument is an element of a global data, it
+represents an {\it local element sequence} consisting of the
+corresponding element of its local section and each element that follows
+it in array element order on each node.
+
+An actual argument that represents a local element sequence and
+corresponds to a global dummy argument is {\it sequence associated} with
+the local section of the dummy argument if the dummy argument is an
+explicit-shape or assumed-size array.
+
+The sequence association is the default manner of association for global
+actual arguments and therefore are applied unless it is obvious from the
+interface of the invoked procedure that the corresponding dummy argument
+is neither an explicit-shape nor assumed-size array.
+
+%The rank and shape of the actual argument need not agree with the rank
+%and shape of the dummy argument, but the number of elements in the dummy
+%argument shall not exceed the number of elements in the element sequence
+%of the actual argument. If the dummy argument is assumed-size, the
+%number of elements in the dummy argument is exactly the number of
+%elements in the element sequence.
+
+\paragraph{Implementation.}
+
+In order to implement the sequence association, the name or an element
+of a global data appearing as an actual argument is treated by the
+{\XMP} compiler as the base address of its local section on each node,
+and the global data appearing as the corresponding dummy argument is
+initialized at runtime so as to be composed of the local sections each
+of which starts at the received address.
+%
+Note that on a node that does not own the local section, an unspecified
+value (e.g. null) is passed as the base address.
+
+
+\subsection{Descriptor Association of Global Data}
+
+When the actual argument is a global data and it is obvious from the
+interface of the invoked procedure that the corresponding dummy argument
+is neither an explicit-shape nor assumed-size array, the actual
+argument is {\it descriptor associated} with the dummy argument. That
+is, the dummy argument inherits its shape and storage from the actual
+argument via a runtime data structure.
+
+\paragraph{Implementation.}
+
+In order to implement the descriptor association, a global actual
+argument is treated by the {\XMP} compiler as:
+
+\begin{itemize}
+ \item its {\it global-data descriptor}, which is an internal data
+       structure managed by the {\XMP} runtime system to hold
+       information on a global data, if the dummy is a global data; or
+ \item the array representing its local section, which is to be processed
+       by the backend Fortran compiler in the same way as usual local
+       data, if the dummy is a local data.
+\end{itemize}
+
+For the first case, a global dummy is initialized at runtime with a copy
+of the global-data descriptor received.
+
+
+\section{Argument Passing Mechanism in {\XMP} C}
+
+\subsection{Actual Argument}
+
+When the actual argument is a global data, it is passed by the address
+of its local section.
+
+\paragraph{Implementation.}
+
+The name of a global data appearing in the actual argument list is
+treated by the {\XMP} compiler as the pointer to the first element of
+its local section on each node.
+%
+On a node onto which no part of the global data is mapped, the pointer
+is set to an unspecified value (e.g. null).
+
+Note that an element of a global data in the actual argument list is
+treated in the same way as those in other usual statements because an
+array element is passed by value as in C.
+
+\subsection{Dummy Argument}
+
+When the dummy argument is a global data, an address is received to the
+argument as the base address of each its local section.
+
+\paragraph{Implementation.}
+
+The name of a global data appearing in the dummy argument list is
+treated by the {\XMP} compiler as the pointer to the first element of
+its local section on each node.
+%
+As a result, the global data is initialized at runtime so as to be
+composed of the local sections on the executing node set.
