@@ -10,11 +10,11 @@ The {\tt \Directive{template}} directive declares a template.
 \Syntax{template}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\it template-name} ( {\it template-spec} 
-[, {\it template-spec} ] ... ) \\
+\verb![F]! & \verb|!$xmp| {\it template-name} \verb|(| {\it template-spec} 
+{\openb}, {\it template-spec} {\closeb}... \verb|)| \\
 & \\
-\verb![C]! & \verb|#pragma xmp|  {\it template-name} ( {\it template-spec} 
-[, {\it template-spec} ] ... ) \\
+\verb![C]! & \verb|#pragma xmp|  {\it template-name} \verb|(| {\it template-spec} 
+{\openb}, {\it template-spec} {\closeb}... \verb|)| \\
 \end{tabular}
 \vspace{0.3cm}
 
@@ -23,7 +23,7 @@ where {\it template-spec} must be one of:
 \hspace{\hsize}
 
 \begin{tabular}{ll}
- \hspace{0.5cm} & [{\it int-expr} {\tt :}] {\it int-expr} \\
+ \hspace{0.5cm} & {\openb}{\it int-expr} {\tt :}{\closeb} {\it int-expr} \\
  \hspace{0.5cm} & {\tt :} \\
 \end{tabular}
 
@@ -40,44 +40,68 @@ template-spec}, then the default lower bound is 1.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item Every {\it template-spec} must be either [{\it int-expr} {\tt :}] {\it
-  int-expr} or ``:''.
+\item Every {\it template-spec} must be either {\openb}{\it int-expr}
+      {\tt :}{\closeb} {\it int-expr} or ``:''.
 \end{itemize}
+
 
 \subsection{Template Reference}
 
 \subsubsection*{Synopsis}
 
-The \Term{template reference} expression is used to reference a subset of
-the referenced template.
+The \Term{template reference} expression specified in the {\tt on}
+clause of some directives is used to indirectly specify a node set.
+
+%The \Term{template reference} expression is used to reference a subset of
+%the referenced template.
 
 \subsubsection*{Syntax}
 \Syntax{template reference}
 
 \begin{center}
-\begin{tabular}{ll}
-{\it template-ref} & {\it template-name} [ ( {\it template-subscript}
-[,  ...] ) ] \\
-{\it template-subscript} & {\it int-expr} $\vert$ {\it triplet} $\vert$
-     {\tt *} \\
+\begin{tabular}{lll}
+{\it template-ref} & {\bf is} & {\it template-name} {\openb}\verb|(|
+ {\it template-subscript} {\openb}, {\it
+ template-subscript}{\closeb}... \verb|)|{\closeb} \\
+{\it template-subscript} & {\bf is} & {\it int-expr} $\vert$ {\it
+	 triplet} $\vert$ {\tt *} \\
 \end{tabular}
 \end{center}
 
 \subsubsection*{Description}
 
-The template reference refers to a subarray of the template array.  
+Being specified in the {\tt on} clause of some directives, the template
+reference refers to a subset of a node set onto which the subset of the
+template is distributed.
+%The template reference refers to a subarray of the template array.  
 
-The subscript
-of the subarray of a template array must be either an integer, a
-triplet, or ``{\tt *}''. The notation of the subarray using a triplet in
-the subscript is the same as that in {\Fort}. 
+Specifically, the ``{\tt *}'' symbol apperared as {\it
+template-subscript} in a dimension of {\it template-ref} is interpreted
+by each node at runtime as the indices of the elements in the dimension
+that is distributed onto it. ``{\tt *}'' in the template reference is
+equivalent to ``{\tt *}'' in the node reference.
+%the position (coordinate) of each node in the dimension of the
+%referenced node array.
+%
+%Thus, a template reference {\tt p($s_1$, ..., $s_{k-1}$, *, $s_{k+1}$, ...,
+%$s_n$)} is interpreted as {\tt p($s_1$, ..., $s_{k-1}$, $j_k$,
+%$s_{k+1}$, ..., $s_n$)} on the node corresponding to {\tt p($j_1$, ...,
+%$j_{k-1}$, $j_k$, $j_{k+1}$, ..., $j_n$)}.
+
+%The subscript of the subarray of a template array must be either an integer, a
+%triplet, or ``{\tt *}''. The notation of the subarray using a triplet in
+%the subscript is the same as that in {\Fort}. 
 
 \subsubsection*{Examples}
 
-Assume that {\tt t} is a template name. 
+Assume that {\tt t} is a template.
 
 \begin{itemize}
-\item In the {\tt task} directive, a set of executing nodes is indirectly specified for the task.
+\item In the {\tt task} directive, the executing node set of the task
+      can be indirectly specified with a template reference in the {\tt
+      on} clause.
+%\item In the {\tt task} directive, a set of executing nodes is
+%      indirectly specified for the task.
 
 \Example{task}
 \begin{tabular}{l}
@@ -85,22 +109,29 @@ Assume that {\tt t} is a template name.
 \verb|!$xmp task on t| \\
 \end{tabular}
 
-\item In the {\tt loop} directive, an element of the template at which each loop iteration is aligned.
+\item In the {\tt loop} directive, the executing node set of each
+      iteration of the following loop is indirectly specified with a
+      template reference in the {\tt on} clause.
 
 \Example{loop}
 \begin{tabular}{l}
 \verb|!$xmp loop (i) on t(i-1)| \\
-\end{tabular}
+\end{tabular}%$
 
-\item In the {\tt array} directive, a template which the following array assignment statement is aligned with.
+\item In the {\tt array} directive, the executing node set on which the
+      following array assignment statement is performed in parallel is
+      indirectly specified with a template reference in the {\tt on}
+      clause.
 
 \Example{array}
 \begin{tabular}{l}
 \verb|!$xmp array on t(1:n)| \\
-\end{tabular}
+\end{tabular}%$
 
 \item In the {\tt barrier}, {\tt reduction}, and {\tt bcast} directives,
-executing nodes are specified indirectly. 
+      the node set that is to perform the operation collectively can be
+      indirectly specified with a template reference in the {\tt on}
+      clause.
 
 \Example{barrier}
 \Example{reduction}
@@ -111,6 +142,7 @@ executing nodes are specified indirectly.
 \end{tabular}
 
 \end{itemize}
+
 
 \subsection{{\tt distribute} Directive}
 
@@ -124,10 +156,10 @@ templates.
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt distribute} {\it template-name} 
-({\it dist-format} [, {\it dist-format}]... ) {\tt onto} {\it nodes-name} \\
+\verb|(|{\it dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)| {\tt onto} {\it nodes-name} \\
 & \\
 \verb![C]! & \verb|#pragma xmp| {\tt distribute} {\it template-name} 
-({\it dist-format} [, {\it dist-format}]... ) \\
+\verb|(|{\it dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)| \\
 & \hspace{3cm}{\tt onto} {\it nodes-name} \\
 \end{tabular}
 \vspace{0.3cm}
@@ -137,8 +169,8 @@ where {\it dist-format} must be one of:
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt *} \\
  & {\tt block} \\
- & {\tt cyclic} [ ( {\it int-expr} ) ] \\
- & {\tt gblock} ( {\tt *} $\vert$ {\it int-array} ) \\
+ & {\tt cyclic} {\openb} \verb|(| {\it int-expr} \verb|)| {\closeb} \\
+ & {\tt gblock} \verb|(| {\tt *} $\vert$ {\it int-array} \verb|)| \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -312,15 +344,18 @@ mapped in the same way as a certain template.
 \Syntax{align}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt align} {\it array-name}
-( {\it align-source} [, {\it align-source}] ... ) \\
+\verb![F]! & \verb|!$xmp| {\tt align} {\it array-name} \verb|(| {\it
+ align-source} {\openb}, {\it align-source}{\closeb}... \verb|)| \\
  & \hspace{3cm}{\tt with} {\it template-name}
-({\it align-subscript} [, {\it align-subscript}] ... ) \\
+\verb|(|{\it align-subscript} {\openb}, {\it
+     align-subscript}{\closeb}... \verb|)| \\ 
  & \\
 \verb![C]! & \verb|#pragma xmp| {\tt align} {\it array-name} 
-{\tt [}{\it align-source}{\tt ]} [{\tt [}{\it align-source}{\tt ]}] ... \\
+{\tt [}{\it align-source}{\tt ]} {\openb}{\tt [}{\it align-source}{\tt
+     ]}{\closeb}... \\
  & \hspace{3cm}{\tt with} {\it template-name}
-({\it align-subscript} [, {\it align-subscript}] ... ) \\
+\verb|(|{\it align-subscript} {\openb}, {\it
+     align-subscript}{\closeb}... \verb|)| \\
 \end{tabular}
 \vspace{0.3cm}
 
@@ -336,8 +371,8 @@ where {\it align-source} must be one of:
 and {\it align-subscript} must be one of:
 
 \begin{tabular}{ll}
- \hspace{0.5cm} & {\tt scalar-int-variable} [ ( {\tt +} $\vert$ {\tt -} )
- {\it int-expr} ] \\
+ \hspace{0.5cm} & {\tt scalar-int-variable} {\openb} \{ {\tt +} $\vert$
+ {\tt -} \} {\it int-expr} {\closeb} \\
  & {\tt *} \\
  & {\tt :} \\
 \end{tabular}
@@ -488,11 +523,12 @@ area for a distributed array.
 \Syntax{shadow}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt shadow} {\it array-name}
-( {\it shadow-width} [, {\it shadow-width}] ... ) \\
+\verb![F]! & \verb|!$xmp| {\tt shadow} {\it array-name} \verb|(| {\it
+ shadow-width} {\openb}, {\it shadow-width}{\closeb}... \verb|)| \\
 & \\
-\verb![C]! & \verb|#pragma xmp|  {\tt shadow} {\it array-name}
-{\tt [}{\it shadow-width}{\tt ]}[{\tt [}{\it shadow-width}{\tt ]}] ... \\
+\verb![C]! & \verb|#pragma xmp|  {\tt shadow} {\it array-name} {\tt
+     [}{\it shadow-width}{\tt ]}{\openb}{\tt [}{\it shadow-width}{\tt
+     ]}{\closeb}... \\
 \end{tabular}
 \vspace{0.3cm}
 
@@ -574,20 +610,20 @@ template.
 % & [, {\tt distribute} ( {\it dist-format} [, {\it dist-format}] ...) \\
 %\end{tabular}
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt template\_fix} ( {\it dist-format} [,
- {\it dist-format}]... )\\
- & {\it template-name} [({\it template-spec} [, {\it template-spec}] ... )] \\
+\verb![F]! & \verb|!$xmp| {\tt template\_fix} \verb|(| {\it dist-format} {\openb},
+ {\it dist-format}{\closeb}... \verb|)|\\
+ & {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb} ... \verb|)|{\closeb} \\
 & \\
-\verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} ( {\it dist-format}
-     [, {\it dist-format}] ...)\\
- & {\it template-name} [({\it template-spec} [, {\it template-spec}] ... )] \\
+\verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} \verb|(| {\it dist-format}
+     {\openb}, {\it dist-format}{\closeb} ...\verb|)|\\
+ & {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb} ... \verb|)|{\closeb} \\
 \end{tabular}
 \vspace{0.3cm}
 
 where {\it template-spec} is:
 
 \begin{tabular}{ll}
- \hspace{0.5cm} & [{\it int-expr} :] {\it int-expr} \\
+ \hspace{0.5cm} & {\openb}{\it int-expr} :{\closeb} {\it int-expr} \\
 \end{tabular}
 \vspace{0.3cm}
 
@@ -596,8 +632,8 @@ where {\it dist-format} is one of:
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt *} \\
  & {\tt block} \\
- & {\tt cyclic} [( {\it int-expr} )] \\
- & {\tt gblock} ( {\it int-array} ) \\
+ & {\tt cyclic} {\openb}\verb|(| {\it int-expr} \verb|)|{\closeb} \\
+ & {\tt gblock} \verb|(| {\it int-array} \verb|)| \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -658,3 +694,6 @@ the template {\tt t} is initially undefined. The allocatable array
 {\tt a} is aligned to {\tt t}. After the size {\tt N} of {\tt t} and the
 mapping array {\tt M} is defined, {\tt t} is fixed by the {\tt
   template\_fix} directive, and {\tt a} is allocated.
+
+
+\subsection{Local Section of Mapped Data}

@@ -1,93 +1,109 @@
-
 \section{Work mapping construct}
 
 \subsection{Task construct}
+
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{task}} construct defines an explicit
-task that is executed in a specified node.
+The {\tt \Directive{task}} construct defines a task that is executed by
+a specified node set.
 
 \subsubsection*{Syntax}
 \Syntax{task}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt task on} { {\it node-ref} | {\it
-    template-ref} } \\
+\verb![F]! & \verb|!$xmp| {\tt task on} \{{\it node-ref} $\vert$ {\it
+ template-ref}\} \\
 & {\it block} \\
 & \verb|!$xmp| {\tt end task} \\
 & \\
-\verb![C]! & \verb|#pragma xmp| {\tt task on} { {\it node-ref} | {\it
-    template-ref} } \\
+\verb![C]! & \verb|#pragma xmp| {\tt task on} \{{\it node-ref} $\vert$
+     {\it template-ref}\} \\
 & {\it block} \\
 \end{tabular}
 
 \subsubsection*{Description}
 
-When the execution encounters a {\tt task} construct, a
-block is executed if the executing node is one of the nodes
-specified by {\it nodes-ref} or {\it template-ref}. Otherwise, the
-execution of the block is skipped. 
+When a node encounters a {\tt task} construct at runtime, it executes
+the associated block (called a {\it task}) if it is included by the node
+set specified by the {\tt on} clause; otherwise it skips executing the
+block.
 
-This line was inserted by Sakagami for svn test. 
+%This line was inserted by Sakagami for svn test. 
 
-If the task is not surrounded by the {\tt \Directive{tasks}} construct, {\it
-  nodes-ref} and  {\it template-ref} are evaluated at the entry of 
-the block. Otherwise, {\it nodes-ref} and {\it template-ref} of
-the {\tt task} construct are evaluated at the entry of the surrounding 
-{\tt tasks} construct. The results of the evaluation must be the same in
-every node in the executing node set. 
+Unless a task is surrounded by a {\tt \Directive{tasks}} construct,
+{\it nodes-ref} or {\it template-ref} in the {\tt on} clause is
+evaluated at the entry of the task. However, if it is surrounded by a
+{tasks} construct, then {\it nodes-ref} and {\it template-ref} of the
+{\tt task} construct are evaluated at the entry of the surrounding {\tt
+tasks} construct.
+%
+The results of the evaluation must be the same in every node in the
+executing node set.
 
-In order to execute the block by the nodes specified by {\it nodes-ref} and
-{\it template-ref}, new executing node sets are created conceptually. The
-node set executing outside the {\tt task} construct is referred to as the
-ÅeÅe\Term{parent executing node set}".
+When {\it nodes-ref} or {\it template-ref} is evaluated, the
+corresponding new executing node set is created conceptually. The former
+executing node set that includes the node encountering the {\tt task}
+construct is referred to as the ``\Term{parent executing node set}'' of
+the new executing node set.
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item The node set specified by nodes-ref or template-ref must be a
-  subset of the parent executing node set.
+\item The node set specified by {\it nodes-ref} or {\it template-ref}
+      in the {\tt on} clause of a {\tt task} construct must be a subset
+      of the parent executing node set.
 \end{itemize}
 
+
 \subsection{Tasks construct}
+
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{tasks}} construct executes multiple tasks in
-arbitrary order. 
+The {\tt \Directive{tasks}} construct is used to instruct nodes in
+the executing node set to execute the multiple tasks it surrounds in
+arbitray order.
 
 \subsubsection*{Syntax}
 \Syntax{tasks}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt tasks} [ {\tt nowait} ] \\
-& {\it task-directive-construct} \\
+\verb![F]! & \verb|!$xmp| {\tt tasks} {\openb} {\tt nowait} {\closeb} \\
+& {\it task-construct} \\
 & ... \\
 & \verb|!$xmp| {\tt end tasks} \\
 & \\
-\verb![C]! & \verb|#pragma xmp| {\tt tasks} [ {\tt nowait} ] \\
+\verb![C]! & \verb|#pragma xmp| {\tt tasks} {\openb} {\tt nowait} {\closeb} \\
 & {\tt \{} \\
-& \hspace{0.5cm} {\it task-directive-construct} \\
+& \hspace{0.5cm} {\it task-construct} \\
+& \hspace{0.5cm} ... \\
 & {\tt \}} \\
 \end{tabular}
 
 \subsubsection*{Description}
 
-The {\tt tasks} construct executes the surrounding
-{\tt \Directive{task}} constructs (child task) in arbitrary order
-without implicit synchronization at the entry of each child
-task. As a result, if there is no overlap between executing node sets
-of adjacent tasks, these tasks can be executed in parallel.
+{\tt \Directive{task}} constructs (called {\tt child tasks}) surrounded
+by a {\tt tasks} construct are executed in arbitrary order without
+implicit synchronization at the entry of each child task.
+%
+As a result, if there is no overlap between the executing node sets of
+the adjacent tasks, they can be executed in parallel.
 
 Conceptually, {\it nodes-ref} or {\it template-ref} in the {\tt task}
-constructs of child tasks are evaluated at 
-the beginning of the {\tt tasks} construct.
+constructs of child tasks are evaluated at the entry of their
+surrounding {\tt tasks} construct.
 
-No implicit synchronization is performed at the entry of the {\tt tasks} construct.
+No implicit synchronization is performed at the entry of the {\tt tasks}
+construct;
+%
+implicit synchronization is performed at the exit of the {\tt tasks}
+construct, which guarantees that all communications issued inside child
+tasks are completed, unless a {\tt nowait} clause is specified.
 
-When a {\tt nowait} clause is
-specified, implicit synchronization is not performed at the end of the {\tt tasks}
-construct. Without a {\tt nowait} clause, implicit synchronization, 
-which guarantees the completion of all inter-task communications among the child tasks, is performed in order to ensure that all communications issued inside children tasks are finished.
+%When a {\tt nowait} clause is specified, implicit
+%synchronization is not performed at the end of the {\tt tasks}
+%construct. Without a {\tt nowait} clause, implicit synchronization is
+%performed in order to gurantee that all communications issued inside
+%child tasks are completed.
 
 \subsubsection*{Example}
 \Example{tasks}
@@ -118,6 +134,7 @@ which guarantees the completion of all inter-task communications among the child
 \end{Fexample}
 \end{center}
 \end{minipage}
+%
 \begin{minipage}{0.45\hsize}
 \begin{center}
 \begin{FexampleR}
@@ -132,27 +149,34 @@ which guarantees the completion of all inter-task communications among the child
 \end{minipage}
 \vspace{1cm}
 
+Explanation to be added.
+
+
 \subsection{Loop construct}
 \label{sub:loop_construct}
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{loop}} construct specifies
-that the iterations of a loop will be executed in parallel by threads
-in nodes of the executing node set. The iterations are distributed
-across nodes where the specified data is accessed
-locally.
+The {\tt \Directive{loop}} construct specifies that each iteration of
+the following loop is executed by the node set specified by the {\tt on}
+clause, so that the iterations are distributed among nodes and executed
+in parallel.
+% where the specified data is accessed locally.
 % inserted by Sakagami,H. 09/11/13
-If the loop includes reduction operations, then reduction references must be specified to obtain the correct results.
+%If the loop body includes reduction operations, then they must be
+%specified in the {\tt loop} directive to obtain the correct results.
 
 \subsubsection*{Syntax}
 \Syntax{loop}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt loop} [ ( {\it loop-index} ] [, {\it
-  loop-index}] ... ) ] {\tt on} {\it on-ref} [ {\it reduction-ref} ] \\
-\verb![C]! & \verb|#pragma xmp| {\tt loop} [ ( {\it loop-index} ] [, {\it
-  loop-index}] ... ) ] {\tt on} {\it on-ref} [ {\it reduction-ref} ] \\
+\verb![F]! & \verb|!$xmp| {\tt loop} {\openb} \verb|(| {\it loop-index}
+ {\openb}, {\it loop-index}{\closeb}... \verb|)| {\closeb} {\tt on} {\it
+ on-ref} {\openb} {\it reduction-ref} {\closeb} \\
+\verb![C]! & \verb|#pragma xmp| {\tt loop} {\openb} \verb|(| {\it
+     loop-index} {\openb}, {\it loop-index}{\closeb}... \verb|)|
+     {\closeb} {\tt on} {\it on-ref} {\openb} {\it reduction-ref}
+     {\closeb} \\
 \end{tabular}
 
 \vspace{0.3cm}
@@ -161,7 +185,7 @@ where {\it on-ref} is one of:
 
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\it template-ref} \\
- & {\it nodes-ref}. \\
+ & {\it nodes-ref} \\
 \end{tabular}
 
 \vspace{0.3cm}
@@ -169,17 +193,20 @@ where {\it on-ref} is one of:
 {\it reduction-ref} is:
 
 \begin{tabular}{ll}
- \hspace{0.5cm} & ( {\it reduction-kind} : {\it reduction-spec} [, ... ]
- ) \\
+ \hspace{0.5cm} & \verb|(| {\it reduction-kind} : {\it reduction-spec}
+ {\openb}, {\it reduction-spec} {\closeb}... \verb|)| \\
 \end{tabular}
 
 \vspace{0.3cm}
 
 {\it reduction-kind} is one of:
 
-%ó·Ç¶ÇŒÅC.AND.ÇÕÅCò_óùå^ÇÃïœêîÇ…ëŒÇµÇƒÅCla = la .AND. lgcl(i)ÇÅCIANDÇÕÅCêÆêîå^ïœêîÇ…ëŒÇµÇƒia = IAND( ia, ib(i) ) Ç∆IANDä÷êîÇégÇ§Ç∆Ç´Ç≈Ç∑ÅD
-%HPFÇ…ì¸Ç¡ÇƒÇ¢Ç‹Ç∑ÅDå≥ÅXÅCéÑÇÕèëÇ©Ç»Ç©Ç¡ÇΩÇÃÇ≈Ç∑Ç™ÅCä‚â∫Ç≥ÇÒÇ™çÌèúÇ∑ÇÈïKóvÇ‡Ç»Ç¢ÇæÇÎÇ§Ç∆ÇÃÇ±Ç∆Ç≈ì¸ÇÍÇ‹ÇµÇΩÅD
+%ó·Ç¶ÇŒÅC.AND.ÇÕÅCò_óùå^ÇÃïœêîÇ…ëŒÇµÇƒÅCla = la .AND. lgcl(i)ÇÅCIANDÇÕÅC
+%êÆêîå^ïœêîÇ…ëŒÇµÇƒia = IAND( ia, ib(i) ) Ç∆IANDä÷êîÇégÇ§Ç∆Ç´Ç≈Ç∑ÅD
+%HPFÇ…ì¸Ç¡ÇƒÇ¢Ç‹Ç∑ÅDå≥ÅXÅCéÑÇÕèëÇ©Ç»Ç©Ç¡ÇΩÇÃÇ≈Ç∑Ç™ÅCä‚â∫Ç≥ÇÒÇ™çÌèúÇ∑ÇÈïK
+%óvÇ‡Ç»Ç¢ÇæÇÎÇ§Ç∆ÇÃÇ±Ç∆Ç≈ì¸ÇÍÇ‹ÇµÇΩÅD
 % Reductionéwé¶ï∂Ç…ÇÕì¸Ç¡ÇƒÇ¢Ç‹Ç∑ÇÃÇ≈ÅCí«â¡ÇµÇ‹ÇµÇΩÅD
+
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt +} \\
  & {\tt *} \\
@@ -200,120 +227,174 @@ where {\it on-ref} is one of:
 
 \vspace{0.3cm}
 {
-\it reduction-spec} is:
+and \it reduction-spec} is:
 
 \begin{tabular}{ll}
- \hspace{0.5cm} & {\it reduction-variable} [ / {\it location-variable}
- [, ...] ) / ] \\
+ \hspace{0.5cm} & {\it reduction-variable} {\openb} {\tt /} {\it
+ location-variable} {\openb}, {\it location-variable}
+ {\closeb}... {\tt /} {\closeb} \\
 \end{tabular}
 
 \subsubsection*{Description}
 
-The {\tt \Directive{loop}} construct is associated with a loop nest consisting of
-one or more loops that follow the directive and distribute the execution
-of iterations across nodes in the executing node set. 
+The {\tt \Directive{loop}} construct is associated with a loop nest
+consisting of one or more loops that follow the directive and distribute
+the execution of iterations across nodes in the executing node set. 
 % inserted by Sakagami,H. 09/11/13
-Since the iteration range of the loop for each node is determined before the loop is executed, efficient loop execution can be expected.
+Since the iteration range of the loop for each node is determined before
+the loop is executed, efficient loop execution can be expected.
 
-When {\it on-ref} is {\it template-ref},
-according to the distribution of the specified template, the set of
-loop indices of iterations to be executed in each node is decided, and
-the iterations are executed by this node set as an executing node
-set. Therefore, before the {\tt \Directive{loop}} construct is executed, the
-referenced template must be fixed. When {\it template-spec} is ÅeÅe*",
-the corresponding dimension is collapsed so that it is ignored for
-the distribution of the loop. When {\it template-spec} is ÅeÅe:", the nodes for all of the 
-template elements in the corresponding dimension are assigned to
-iterations for execution. 
+When {\it on-ref} is {\it template-ref}, according to the distribution
+of the specified template, the set of loop indices of iterations to be
+executed in each node is decided, and the iterations are executed by
+this node set as an executing node set. Therefore, before the {\tt
+\Directive{loop}} construct is executed, the referenced template must be
+fixed. When {\it template-spec} is ``*'', the corresponding dimension is
+collapsed so that it is ignored for the distribution of the loop. When
+{\it template-spec} is ``:'', the nodes for all of the template elements
+in the corresponding dimension are assigned to iterations for execution. 
 
 % modified by Sakagami,H. 09/11/13
 When {\it on-ref} is {\it nodes-ref}, the node set associated with the
-loop index is created as an executing node set to execute the iteration of the loop index. 
+loop index is created as an executing node set to execute the iteration
+of the loop index.
 
 % inserted and modified by Sakagami,H. 09/11/13
-When the loop includes reduction operations, proper {\it reduction-ref} must be specified in order to obtain semantically correct results, and the reduction operation is executed on the specified local reduction variable just after the execution of the loop.
+When the loop includes reduction operations, proper {\it reduction-ref}
+must be specified in order to obtain semantically correct results, and
+the reduction operation is executed on the specified local reduction
+variable just after the execution of the loop.
 %If {\it reduction-ref} is specified, the reduction operation is
 %executed on the specified local reduction variable just after the
 %execution of the loop. 
 
 % inserted by Sakagami,H. 09/11/13
-The {\tt \Directive{loop}} construct that has {\it template-ref} as {\it on-ref} and the {\tt reduction} clause, except in cases
-with {\it reduction-kind} of {\tt FIRSTMAX},  {\tt FIRSTMIN}, {\tt LASTMAX}, or {\tt LASTMIN}, is 
-equivalent to the {\tt \Directive{reduction}} construct with the following {\it template-spec} replacements:\\
-ÅeÅe:Åh to Åg *Åh, \\
-Ågthe loop indexÅh to Ågan iteration range of the loopÅh.
+The {\tt \Directive{loop}} construct that has {\it template-ref} as {\it
+on-ref} and the {\tt reduction} clause, except in cases with {\it
+reduction-kind} of {\tt FIRSTMAX}, {\tt FIRSTMIN}, {\tt LASTMAX}, or
+{\tt LASTMIN}, is equivalent to the {\tt \Directive{reduction}}
+construct with the following {\it template-spec} replacements:
+%
+\begin{itemize}
+ \item ``{\tt :}'' to ``{\tt *}'',
+ \item ``the loop index'' to ``an iteration range of the loop''
+\end{itemize}
+%
+%This loop with the reduction clause is equivalent to the code shown
+%below:
+Therefore, for example, the two codes below are equivalent.
 
+\begin{minipage}{0.45\hsize}
+\begin{center}
 \begin{Fexample}
-!$xmp loop (j) on t(:,j) reduction(...)
+!$xmp loop (j) on t(:,j)
+!$xmp+             reduction(op:s)
       do j = js, je
-          ...
-          do i = 1, N
-              ...
-          end do
-          ...
+        ...
+        do i = 1, N
+          s = s op a(i,j)
+        end do
+        ...
       end do
 \end{Fexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.46\hsize}
+\begin{center}
+\begin{FexampleR}
+// Initialize s_tmp to the identity
+// element of the op operator
+      s_tmp = ...
 
-This loop with the reduction clause is equivalent to the code shown below:
-
-\begin{Fexample}
 !$xmp loop (j) on t(:,j) 
       do j = js, je
-          ...
-          do i = 1, N
-              ...
-          end do
-          ...
+        ...
+        do i = 1, N
+          s_tmp = s_tmp op a(i,j)
+        end do
+        ...
       end do
-!$xmp reduction(...) on t(*,js:je)
-\end{Fexample}
+
+!$xmp reduction(op:s_tmp)
+!$xmp+               on t(*,js:je)
+
+      s = s op s_tmp
+\end{FexampleR}
+\end{center}
+\end{minipage}
+
+\vspace{1zw}
 
 % inserted by Sakagami,H. 09/11/13 ----- start ---
-Note that, unlike the {\tt \Directive{loop}} construct with the {\tt reduction} clause, the {\tt \Directive{reduction}} construct does not consider initialization for the reduction variable.
-The following programs return different values of the {\tt sum} variable after the reduction
-operation. When {\tt sum} is initialized to zero, these programs return the same results.
-
-\begin{Fexample}
-      sum = 123.45
-!$xmp loop (i) on t(i) reduction(+:sum)
-      do i = 1, N
-         sum = sum + a(i)
-      end do
-      
-      sum = 123.45
-!$xmp loop (i) on t(i)
-      do i = 1, N
-         sum = sum + a(i)
-      end do
-!$xmp reduction(+:sum) on t(1:N)
-\end{Fexample}
+%Note that, unlike a {\tt \Directive{loop}} construct with the {\tt
+%reduction} clause, a {\tt \Directive{reduction}} construct does not
+%consider initialization for the reduction variable.  The following
+%programs return different values of the {\tt sum} variable after the
+%reduction operation. When {\tt sum} is initialized to zero, these
+%programs return the same results.
+%
+%\vspace{1zw}
+%
+%\begin{minipage}{0.45\hsize}
+%\begin{center}
+%\begin{Fexample}
+%      sum = 123.45
+%!$xmp loop (i) on t(i)
+%!$xmp+            reduction(+:sum)
+%      do i = 1, N
+%         sum = sum + a(i)
+%      end do
+%\end{Fexample}
+%\end{center}
+%\end{minipage}
+%%
+%\begin{minipage}{0.45\hsize}
+%\begin{center}
+%\begin{FexampleR}
+%      sum = 123.45
+%!$xmp loop (i) on t(i)
+%      do i = 1, N
+%         sum = sum + a(i)
+%       end do
+%!$xmp reduction(+:sum) on t(1:N)
+%\end{FexampleR}
+%\end{center}
+%\end{minipage}
 % inserted by Sakagami,H. 09/11/13 ----- end ---
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item {\it loop-index} must be the loop index of the loop
-after the directive or the loop index of the loops nested by the loop.
-\item When the sequence of the {\it loop-index} is omitted, the loop index of the loop after the directive is specified. 
+\item {\it loop-index} must be the loop index of the loop after the
+      directive or the loop index of the loops nested by the loop.
+\item When the sequence of the {\it loop-index} is omitted, the loop
+      index of the loop after the directive is specified.
 \item {\it template-spec} appearing in {\it template-ref} must be
-  either ÅeÅe*",ÅeÅe:", or {\it loop-index}. In the case of {\it loop-index},
-  the loop index must be the loop index of the outer loop of the loop.
-\item {\it nodes-ref} must reference different node
-sets for each {\it loop-index}. These node sets consist of different
-nodes. That is, a node must not be included in more than one node set. 
-\item When more than one {\tt \Directive{loop}} construct is nested, {\it on-ref} of
-  each loop must also be nested.
-\item The initial value, upper bound, and increment of
-{\it loop-index} must be invariant in the loop and the same in all executing
-nodes. 
+      either ÅeÅe*",ÅeÅe:", or {\it loop-index}. In the case of {\it
+      loop-index}, the loop index must be the loop index of the outer
+      loop of the loop.
+\item {\it nodes-ref} must reference different node sets for each {\it
+      loop-index}. These node sets consist of different nodes. That is,
+      a node must not be included in more than one node set. 
+\item When more than one {\tt \Directive{loop}} construct is nested,
+      {\it on-ref} of each loop must also be nested.
+\item The initial value, upper bound, and increment of {\it loop-index}
+      must be invariant in the loop and the same in all executing nodes.
 % modified by Sakagami,H. 09/11/13
-\item If {\it reduction-kind} is {\tt FIRSTMAX},  {\tt FIRSTMIN}, {\tt LASTMAX}, or {\tt LASTMIN}, 
-then {\it reduction-spec} has more than one {\it location-variable}. 
+\item If {\it reduction-kind} is {\tt FIRSTMAX},  {\tt FIRSTMIN}, {\tt
+      LASTMAX}, or {\tt LASTMIN}, then {\it reduction-spec} has more
+      than one {\it location-variable}.
 % inserted by Sakagami,H. 09/11/13
-\item {\it reduction-ref} must reference the reduction operations associated with the loop after the directive or the loops nested by the loop.
-\item {\it location-variable} must be fixed in the loop after the directive or the loops nested by the loop.
-\item {\it reduction-variable} must not be referred at a certain iteration in the loop, except for updating itself.
-\item {\it reduction-variable} and {\it location-variable} must not exist in {\it reduction-ref} of nested loops.
+\item {\it reduction-ref} must reference the reduction operations
+      associated with the loop after the directive or the loops nested
+      by the loop.
+\item {\it location-variable} must be fixed in the loop after the
+      directive or the loops nested by the loop.
+\item {\it reduction-variable} must not be referred at a certain
+      iteration in the loop, except for updating itself.
+\item {\it reduction-variable} and {\it location-variable} must not
+      exist in {\it reduction-ref} of nested loops.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -335,9 +416,11 @@ then {\it reduction-spec} has more than one {\it location-variable}.
       end do
 \end{Fexample}
 
-The {\tt \Directive{loop}} construct decides the node that executes the iterations,
-according to the distribution of template t, and distributes the
-execution. This example is equivalent to the example shown below, but will be faster because the iterations executed in each node are decided before executing the loop.
+The {\tt \Directive{loop}} construct decides the node that executes the
+iterations, according to the distribution of template t, and distributes
+the execution. This example is equivalent to the example shown below,
+but will be faster because the iterations executed in each node are
+decided before executing the loop.
 
 \begin{Fexample}
 !$xmp distribute t(block) onto p
@@ -599,22 +682,37 @@ This example cannot be rewritten with the {\tt reduction} construct.
 
 \end{description}
 
+
 \subsection{Array construct}
+
 \subsubsection*{Synopsis}
-The {\tt \Directive{array}} construct divides the task of array
-assignment among the owners of the array. 
+
+The {\tt \Directive{array}} construct divides the work of an array
+assignment among nodes onto which the array is mapped.
 
 \subsubsection*{Syntax}
 \Syntax{array}
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt array on} {\it template-ref} \\
-\verb![C]! & (not defined) \\
+\verb![C]! & \verb|#pragma xmp| {\tt array on} {\it template-ref} \\
 \end{tabular}
 
 \subsubsection*{Description}
-In {\Fort}, the array assignment can be used instead of the loop of
-the assignment for each element. This directive executes the array assignment in each node. 
+
+The array assignment is an alternative to a loop that performs
+assignments of each element of an array.
+%
+This directive allows parallel execution of an array assignment.
+
+Each sub-assignment to an element is executed by the node determined ???
+
+%The array assignment can be used instead of the loop of the assignment
+%for each element. This directive executes the array assignment in each
+%node.
+
+Note that array assignments can be used also in {\C}, which is a
+extended feature of {\XMP}.
 
 % inserted by Sakagami,H. 09/11/13 --- start ---
 \subsubsection*{Restrictions}

@@ -1,4 +1,3 @@
-
 \section{Directives for Local-view Programming}
 
 \subsection{{\tt local\_alias} Directive}
@@ -158,6 +157,31 @@ accessed in the same manner as a normal coarray in the last line.
 \end{description}
 
 
+\subsection{{\tt async} Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{async}} construct ...
+
+\subsubsection*{Syntax}
+\Syntax{local\_alias}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt async ( {\it async-id} )} \\
+\verb![C]! & \verb|#pragma xmp| {\tt async ( {\it async-id} )} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+To be described.
+
+\subsubsection*{Restriction}
+
+\begin{itemize}
+ \item {\it async-id} must be an integer expression.
+\end{itemize}
+
+
 \subsection{{\tt post} Construct}
 
 \subsubsection*{Synopsis}
@@ -173,13 +197,6 @@ synchronization.
 \verb![F]! & \verb|!$xmp| {\tt post ( {\it nodes-ref}, {\it tag} )}\\
 \verb![C]! & \verb|#pragma xmp| {\tt post ( {\it nodes-ref}, {\it tag} )}\\
 \end{tabular}
-
-\subsubsection*{Restriction}
-
-\begin{itemize}
- \item {\it nodes-ref} must represent one node.
- \item {\it tag} must be an integer expression.
-\end{itemize}
 
 \subsubsection*{Description}
 
@@ -198,6 +215,13 @@ posting node}) dynamically matches at most one {\tt \Directive{wait}}
 construct issued with the arguments of the posting node (unless omitted)
 and the same value as {\it tag} (unless omitted) on the node specified
 by {\it nodes-ref}.
+
+\subsubsection*{Restriction}
+
+\begin{itemize}
+ \item {\it nodes-ref} must represent one node.
+ \item {\it tag} must be an integer expression.
+\end{itemize}
 
 \subsubsection*{Example}
 \Example{post-wait}
@@ -265,18 +289,11 @@ synchronization.
 \Syntax{wait}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt wait} [ {\tt (} {\it nodes-ref} [ , {\it
- tag} ] {\tt )} ]\\
-\verb![C]! & \verb|#pragma xmp| {\tt wait} [ {\tt (} {\it nodes-ref} 
- [ , {\it tag} ] {\tt )} ]\\
+\verb![F]! & \verb|!$xmp| {\tt wait} {\openb}{\tt (} {\it nodes-ref}
+ {\openb}, {\it tag}{\closeb} {\tt )}{\closeb}\\
+\verb![C]! & \verb|#pragma xmp| {\tt wait} {\openb}{\tt (} {\it nodes-ref} 
+ {\openb}, {\it tag}{\closeb} {\tt )}{\closeb}\\
 \end{tabular}
-
-\subsubsection*{Restriction}
-
-\begin{itemize}
- \item {\it nodes-ref} must represent one node.
- \item {\it tag} must be an integer expression.
-\end{itemize}
 
 \subsubsection*{Description}
 
@@ -298,6 +315,13 @@ If both {\it tag} and {\it nodes-ref} are omitted, then the {\tt
 \Directive{wait}} construct can match a {\tt \Directive{post}}
 construct issued with the arguments of the waiting node and any tag on
 any node.
+
+\subsubsection*{Restriction}
+
+\begin{itemize}
+ \item {\it nodes-ref} must represent one node.
+ \item {\it tag} must be an integer expression.
+\end{itemize}
 
 
 \subsection{{\tt critical} Construct}

@@ -12,19 +12,22 @@ having the shadow attribute.
 \Syntax{reflect}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt reflect} \verb|(| {\it array-name} [,
- {\it array-name} ... ] \verb|)| \\
+ \verb![F]! & \verb|!$xmp| {\tt reflect} \verb|(| {\it array-name}
+ {\openb}, {\it array-name}{\closeb}... \verb|)|
+ {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 \verb![C]! & \verb|#pragma xmp| {\tt reflect} \verb|(| {\it array-name}
-     [, {\it array-name} ... ] \verb|)| \\
+     {\openb}, {\it array-name}{\closeb}... \verb|)|
+     {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 \end{tabular}
 
 \subsubsection*{Description}
 
-The {\tt reflect} directive copies the value of
-the reflection source of the reflect-object specified by {\it array-name} to all
-shadow objects. This directive may execute the communications.
+The {\tt reflect} directive copies the value of the reflection source of
+the reflect-object specified by {\it array-name} to all shadow
+objects. This directive may execute the communications.
 
 \subsection{{\tt gmove} Construct}
+
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{gmove}} construct copies the data of a
@@ -34,10 +37,10 @@ distributed array in global view.
 \Syntax{gmove}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt gmove} [{\tt in}$\vert${\tt out}] {\it dest}
-= {\it source} \\
-\verb![C]! & \verb|#pragma xmp| {\tt gmove} [{\tt in}$\vert${\tt out}] {\it
-  dest} = {\it source} \\
+\verb![F]! & \verb|!$xmp| {\tt gmove} {\openb}{\tt in} $\vert$ {\tt
+ out}{\closeb} {\it dest} {\tt =} {\it source} \\
+\verb![C]! & \verb|#pragma xmp| {\tt gmove} {\openb}{\tt in} $\vert$ {\tt
+     out}{\closeb} {\it dest} {\tt =} {\it source} \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -207,8 +210,10 @@ at the point at which the construct appears.
 \Syntax{barrier}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt barrier} [{\tt on} {\it nodes-ref}$\vert${\it template-ref}] \\
-\verb![C]! & \verb|#pragma xmp| {\tt barrier} [{\tt on} {\it nodes-ref}$\vert${\it template-ref}] \\
+\verb![F]! & \verb|!$xmp| {\tt barrier} {\openb}{\tt on} {\it nodes-ref}
+ $\vert${\it template-ref}{\closeb} \\
+\verb![C]! & \verb|#pragma xmp| {\tt barrier} {\openb}{\tt on} {\it
+     nodes-ref} $\vert$ {\it template-ref}{\closeb} \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -244,10 +249,13 @@ operation among nodes.
 \Syntax{reduction}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt reduction( } {\it reduction-kind} {\it
-  :} {\it variable} [, {\it variable} ] ... {\tt )} [{\tt on} {\it
-      node-ref}$\vert${\it template-ref}] \\
+\verb![F]! & \verb|!$xmp| {\tt reduction (} {\it reduction-kind} {\it
+  :} {\it variable} {\openb}, {\it variable} {\closeb}... {\tt )}\\
+ & \hspace{6cm} {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} 
+ {\openb}{\tt on} {\it node-ref} $\vert$ {\it template-ref}{\closeb} \\
 \end{tabular}
+
+\vspace{0.5cm}
 
 where {\it reduction-kind} is one of:
 
@@ -265,11 +273,17 @@ where {\it reduction-kind} is one of:
  & {\tt IEOR} \\
 \end{tabular}
 
+\vspace{0.5cm}
+
 \begin{tabular}{ll}
-\verb![C]! & \verb|#pragma xmp| {\tt reduction(} {\it reduction-kind} {\it
-  :} {\it variable} [, {\it variable} ] ... {\tt )} [{\tt on} {\it
-      node-ref}$\vert${\it template-ref}] \\
+ \hspace{-\parindent}
+ \verb![C]! & \verb|#pragma xmp| {\tt reduction (} {\it reduction-kind} {\it
+  :} {\it variable} {\openb}, {\it variable} {\closeb}... {\tt )}\\
+ & \hspace{6cm} {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} 
+     {\openb}{\tt on} {\it node-ref} $\vert$ {\it template-ref}{\closeb} \\
 \end{tabular}
+
+\vspace{0.5cm}
 
 where {\it reduction-kind} is one of:
 
@@ -479,12 +493,16 @@ from one node.
 \Syntax{bcast}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt bcast} {\it variable} 
-[, {\it variable}...] [{\tt from} {\it nodes-ref} [{\tt on} {\it
-  nodes-ref}$\vert${\it template-ref}] \\
-\verb![C]! & \verb|#pragma xmp| {\tt bcast} {\it variable} 
-[, {\it variable}...] [{\tt from} {\it nodes-ref} [{\tt on} {\it
-  nodes-ref}$\vert${\it template-ref}] \\
+ \verb![F]! & \verb|!$xmp| {\tt bcast} \verb|(| {\it variable} 
+ {\openb}, {\it variable}{\closeb}... \verb|)|
+ {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
+ & \hspace{6cm} {\openb}{\tt from} {\it nodes-ref} {\openb}{\tt on} {\it
+  nodes-ref} $\vert$ {\it template-ref}{\closeb} \\
+ \verb![C]! & \verb|#pragma xmp| {\tt bcast} \verb|(| {\it variable} 
+ {\openb}, {\it variable}{\closeb}... \verb|)|
+ {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
+ & \hspace{6cm} {\openb}{\tt from} {\it nodes-ref} {\openb}{\tt on} {\it
+  nodes-ref} $\vert$ {\it template-ref}{\closeb} \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -493,7 +511,7 @@ The value of the variables specified by {\it variable} is broadcasted
 from the node specified by the {\tt from} clause (called the source node) to
 the nodes in the node set specified by the {\tt on} clause. The specified
 variable to be broadcasted is referred to as the ``\Term{broadcast
-variable}". After executing this construct, the value of the broadcasted
+variable}''. After executing this construct, the value of the broadcasted
 variable becomes the same as the value of the source node. If the {\tt
 from} clause is omitted, then the first node of the specified node set
 is a source node. If the {\tt on} clause is omitted, then the operation
@@ -515,3 +533,30 @@ is performed in the current executing node set.
       the node set specified by the {\tt on} clause. 
 \end{itemize}
 
+
+\subsection{{\tt wait\_comm} Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{wait\_comm}} construct ...
+
+
+\subsubsection*{Syntax}
+\Syntax{bcast}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt wait\_comm ( {\it async-id} {\openb},
+ {\it async-id} {\closeb}... )} \\
+\verb![C]! & \verb|#pragma xmp| {\tt wait\_comm ( {\it async-id} {\openb},
+ {\it async-id} {\closeb}... )} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+To be described.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+\item {\it async-id} must be an integer expression.
+\end{itemize}

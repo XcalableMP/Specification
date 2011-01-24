@@ -12,19 +12,25 @@ The {\tt nodes} directive declares a named node array.
 
 {\small
 \begin{tabular}{ll}
-\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} ( {\it nodes-size}
- [, {\it nodes-spec} ] ... ) \\
-\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} ( {\it nodes-size}
-     [, {\it nodes-spec} ] ... ) {\tt = *}\\
-\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} ( {\it nodes-size}
-     [, {\it nodes-spec} ] ...) {\tt =} {\it nodes-ref}\\
+\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
+     {\it nodes-size} {\openb}, {\it nodes-spec}
+     {\closeb}... \verb|)| \\
+\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
+     {\it nodes-size} {\openb}, {\it nodes-spec}
+     {\closeb}... \verb|)| {\tt = *}\\
+\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
+     {\it nodes-size} {\openb}, {\it nodes-spec}
+     {\closeb}... \verb|)| {\tt =} {\it nodes-ref}\\
 & \\
-\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name} ( {\it
-     nodes-spec} [, {\it nodes-spec} ] ... ) \\
-\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name} ( {\it
-     nodes-size} [, {\it nodes-spec} ] ... ) {\tt = *} \\
-\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name} ( {\it
-     nodes-size} [, {\it nodes-spec} ] ... ) {\tt =} {\it nodes-ref}\\
+\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
+     \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
+     {\closeb}... \verb|)| \\
+\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
+     \verb|(| {\it nodes-size} {\openb}, {\it nodes-spec}
+     {\closeb}... \verb|)| {\tt = *} \\
+\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
+     \verb|(| {\it nodes-size} {\openb}, {\it nodes-spec}
+     {\closeb}... \verb|)| {\tt =} {\it nodes-ref} \\
 \end{tabular}
 }
 \vspace{0.3cm}
@@ -207,8 +213,8 @@ the entire node set. The node array {\tt r} is declared as a subset of
 
 \subsubsection*{Synopsis}
 
-The node reference expression is used to reference a subset of a node
-set.
+The \Term{node reference} expression is used to reference a subset of a
+node set.
 
 \subsubsection*{Syntax}
 \Syntax{node reference}
@@ -218,10 +224,10 @@ A node reference {\it nodes-ref} is specified by either node number
 
 \begin{center}
 \begin{tabular}{lll}
-{\it nodes-ref} & {\bf is} & ( {\it int-expr} )\\
-                & {\bf or} & ( {\it triplet} ) \\
-                & {\bf or} & {\it nodes-name} [ ( {\it nodes-subscript}
-	 [, {\it nodes-subscript} ]... ) ] \\
+{\it nodes-ref} & {\bf is} & \verb|(| {\it int-expr} \verb|)|\\ 
+                & {\bf or} & \verb|(| {\it triplet} \verb|)| \\
+                & {\bf or} & {\it nodes-name} {\openb}\verb|(| {\it nodes-subscript}
+	 {\openb}, {\it nodes-subscript} {\closeb}... \verb|)|{\closeb} \\
 \end{tabular}
 \end{center}
 
@@ -262,9 +268,10 @@ node array or its subarray.
 %a triplet, or ``{\tt *}''. The notation of the subarray using a triplet
 %in the subscript is the same as that in {\Fort}. 
 
-The ``{\tt *}'' symbol apperared as {\it nodes-subscript} in a dimension
-of {\it nodes-ref} is interpreted as the position (coordinate) of each
-node in the dimension of the referenced node array.
+Specifically, the ``{\tt *}'' symbol apperared as {\it nodes-subscript}
+in a dimension of {\it nodes-ref} is interpreted be each node at runtime
+as its position (coordinate) in the dimension of the referenced node
+array.
 %The ``{\tt *}'' symbol in {\it nodes-subscript} in a subarray of a
 %node array specifies a subscript associated with the executing node in
 %the node array of the executing node set.
@@ -290,7 +297,7 @@ $j_{k-1}$, $j_k$, $j_{k+1}$, ..., $j_n$)}.
 %{\tt p($s_1$, ..., $s_{k-1}$, $j_k$, $s_{k+1}$, ..., $s_n$)}.
 %\end{center}
 
-Note that ``{\tt *}'' can be used only in the node reference appeared in
+Note that ``{\tt *}'' can be used only as the node reference in
 the {\tt on} clause of some executable directives.
 
 %This node reference composes the node set using nodes with the $k$-th

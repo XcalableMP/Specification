@@ -141,7 +141,7 @@ mappings (including their shadow attributes) must be identical.
 !$xmp distribute t(block) onto p
       real x(100)
 !$xmp align x(i) with t(i)
-!$xmp shadow a(1:1) 
+!$xmp shadow x(1:1) 
       ...
 \end{Fexample}
 
@@ -236,7 +236,7 @@ mappings (including their shadow attributes) must be identical.
 
 \begin{myfigure}
  \includegraphics[scale=0.7]{figs/fig5.4.eps}
- \caption{Sequence Association with a Global Dummy Argument that Have a
+ \caption{Sequence Association with a Global Dummy Argument that Has
  Full Shadow)}
  \label{fig5.4}
 \end{myfigure}
@@ -303,7 +303,7 @@ may detect and report the error.
 !$xmp distribute t(block) onto p
       real a(100)
 !$xmp align a(i) with t(i)
-!$xmp shadow a(1:1) 
+!$xmp shadow a(1:1)
 
       interface
       subroutine xmp_sub2(x)
@@ -312,7 +312,7 @@ may detect and report the error.
 !$xmp distribute t(block) onto p
       real x(:)
 !$xmp align x(i) with t(i)
-!$xmp shadow a(1:1) 
+!$xmp shadow a(1:1)
       end subroutine xmp_sub2
       end interface
 
@@ -326,7 +326,7 @@ may detect and report the error.
 !$xmp distribute t(block) onto p
       real x(:)
 !$xmp align x(i) with t(i)
-!$xmp shadow a(1:1) 
+!$xmp shadow a(1:1)
       ...
 \end{Fexample}
 
