@@ -161,10 +161,11 @@ accessed in the same manner as a normal coarray in the last line.
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{async}} construct ...
+The {\tt \Directive{async}} construct allows coarrays to be referenced
+asynchronously.
 
 \subsubsection*{Syntax}
-\Syntax{local\_alias}
+\Syntax{async}
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt async ( {\it async-id} )} \\
@@ -173,7 +174,12 @@ The {\tt \Directive{async}} construct ...
 
 \subsubsection*{Description}
 
-To be described.
+An {\tt async} directive and the following statement
+including coarray references constitute an {\tt async} construct.
+
+Coarrays appeared in an {\tt async} construct are referenced
+asynchronously and therefore statements following it may be executed
+before the operation is complete.
 
 \subsubsection*{Restriction}
 

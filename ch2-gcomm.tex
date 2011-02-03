@@ -26,6 +26,20 @@ The {\tt reflect} directive copies the value of the reflection source of
 the reflect-object specified by {\it array-name} to all shadow
 objects. This directive may execute the communications.
 
+When the {\tt async} clause is specified, the statements following this
+construct may be executed before the operation is complete.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item The {\tt reflect} construct is collective and must be
+       executed by all of the nodes onto which the array is distributed,
+       and each variable appearing in the construct must have the same
+       value among all of them.
+ \item {\it async-id} must be an integer expression.
+\end{itemize}
+
+
 \subsection{{\tt gmove} Construct}
 
 \subsubsection*{Synopsis}
@@ -38,9 +52,11 @@ distributed array in global view.
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt gmove} {\openb}{\tt in} $\vert$ {\tt
- out}{\closeb} {\it dest} {\tt =} {\it source} \\
+ out}{\closeb} {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb}\\
+% {\it dest} {\tt =} {\it source} \\
 \verb![C]! & \verb|#pragma xmp| {\tt gmove} {\openb}{\tt in} $\vert$ {\tt
-     out}{\closeb} {\it dest} {\tt =} {\it source} \\
+     out}{\closeb} {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb}\\
+% {\it dest} {\tt =} {\it source} \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -54,8 +70,8 @@ between nodes.
 The assignment statement must be a simple assignment without
 any arithmetic operations.   
 
-In {\XMP}, the {\C} language is extended to support array section notation in order to
-support an assignment of array objects.
+In {\XMP}, the {\C} language is extended to support array section
+notation in order to support an assignment of array objects.
 
 The assignment statement must have one of the following patterns:
 
@@ -118,11 +134,15 @@ must perform synchronization explicitly by a {\tt barrier} construct. If the rea
 and the writer do not belong to the same executing node set, then
 point-to-point synchronization by {\tt post-wait} directive can be used.
 
+When the {\tt async} clause is specified, the statements following this
+construct may be executed before the operation is complete.
+
 \subsubsection*{Restrictions}
 
 \begin{itemize}
 \item The {\tt gmove} construct must be executed by all nodes in the
   executing node set.
+\item {\it async-id} must be an integer expression.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -312,6 +332,9 @@ variable}''. Thus, after the reduction operation, the value of the
 reduction variable becomes the same in every node that performs the
 operatoin.
 
+When the {\tt async} clause is specified, the statements following this
+construct may be executed before the operation is complete.
+
 % inserted by Sakagami,H. 09/11/13 ----- start ----                            
 When {\it template-ref} is specified in the {\tt on} clause, the operation
 is performed in a node set that consists of nodes onto which the
@@ -351,6 +374,7 @@ case, a barrier operation is performed in each node set.
        executed by all of the executing nodes, and each variable
        appearing in the construct must have the same value among all of
        the executing nodes.
+ \item {\it async-id} must be an integer expression.
  \item The node set specified by the {\tt on} clause must be a subset of the
        current executing node set.
 \end{itemize}
@@ -517,6 +541,9 @@ from} clause is omitted, then the first node of the specified node set
 is a source node. If the {\tt on} clause is omitted, then the operation
 is performed in the current executing node set.
 
+When the {\tt async} clause is specified, the statements following this
+construct may be executed before the operation is complete.
+
 \subsubsection*{Restrictions}
 
 \begin{itemize}
@@ -527,6 +554,7 @@ is performed in the current executing node set.
       bcast} construct must be executed by all of the executing nodes,
       and each variable appearing in the construct must have the same
       value among all of the executing nodes.
+\item {\it async-id} must be an integer expression.
 \item The node set specified by the {\tt on} clause must be a subset of the
       current executing node set.
 \item The source node specified by the {\tt from} clause must belong to
@@ -538,11 +566,11 @@ is performed in the current executing node set.
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{wait\_comm}} construct ...
-
+The {\tt \Directive{wait\_comm}} construct guarantees an asynchronous
+communication specified by {\it async-id}.
 
 \subsubsection*{Syntax}
-\Syntax{bcast}
+\Syntax{wait\_comm}
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt wait\_comm ( {\it async-id} {\openb},
@@ -553,10 +581,22 @@ The {\tt \Directive{wait\_comm}} construct ...
 
 \subsubsection*{Description}
 
-To be described.
+The {\tt \Directive{wait\_comm}} construct blocks and therefore
+statements after it are not executed until all of the asynchronous
+communications specified by each of {\it async-id} are complete. 
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
 \item {\it async-id} must be an integer expression.
+\item {\it async-id} must be associated with an asynchronous
+      communciation by the {\tt async} clause of a communication
+      construct or an {\tt async} construct.
+\item The {\tt wait\_comm} construct is collective, which means that a
+      {\tt wait\_comm} construct must be executed by all of the
+      same executing nodes as the asynchronous communication specified by
+      {\it async-id} is, and each variable appearing in the construct
+      must have the same value among all of the executing nodes.
+\item Every communication specified by each {\it async-id} must be
+      executed on the same executing node set.
 \end{itemize}
