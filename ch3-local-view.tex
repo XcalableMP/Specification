@@ -4,9 +4,8 @@
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{local\_alias}} directive declares the local data
-object as an alias to the data of a distributed array allocated in each
-node.
+The {\tt \Directive{local\_alias}} directive declares a local data
+object as an alias to the local section of a distributed array.
 
 \subsubsection*{Syntax}
 \Syntax{local\_alias}
@@ -24,8 +23,8 @@ This directive declares that the local array specified by
 {\it local-array-name} is a ``local alias'' to the global array specified by
 {\it global-array-name}.
 
-The shape of a local alias is the same as that of the local part of the
-corresponding global array that is owned by each node. Note that the
+The shape of a local alias is the same as that of the local section of
+the corresponding global array that is owned by each node. Note that the
 local part includes the shadow area.
 
 A local alias is defined when the corresponding global array
@@ -60,10 +59,10 @@ array is allocated.
 \hspace{\hsize}
 \begin{Fexample}
 !$xmp nodes n(4)
-!$xmp template :: t (100)
+!$xmp template :: t(100)
 !$xmp distribute (block) onto n :: t
 
-      real :: a (100)
+      real :: a(100)
 !$xmp align (i) with t(i) :: a
 !$xmp shadow (1) :: a
 
@@ -71,10 +70,10 @@ array is allocated.
 !$xmp local_alias :: b => a
 \end{Fexample}
 
-Array {\tt a} is distributed by block onto four nodes.
-Node {\tt n(2)} has a local array of twenty-five elements ({\tt
+The array {\tt a} is distributed by block onto four nodes.
+The node {\tt n(2)} has its local section of twenty-five elements ({\tt
 a(25:50)}) with shadow areas of size one on the upper and lower 
-bounds. Local alias {\tt b} is an array of 27 elements
+bounds. The local alias {\tt b} is an array of 27 elements
 ({\tt b(1:27)}) on {\tt n(2)}. The table below shows the correspondence
 of each element of {\tt a} to that of {\tt b}.
 
@@ -95,10 +94,10 @@ upper shadow & 27      \\ \hline
 \hspace{\hsize}
 \begin{Fexample}
 !$xmp nodes n(4)
-!$xmp template :: t (100)
+!$xmp template :: t(100)
 !$xmp distribute (cyclic) onto n :: t
 
-      real :: a (100)
+      real :: a(100)
 !$xmp align (i) with t(i) :: a
 
       real :: b(0:)
@@ -106,14 +105,14 @@ upper shadow & 27      \\ \hline
 \end{Fexample}
 
 An array {\tt a} is distributed cyclically onto four nodes.
-Node {\tt n(2)} has a local array of twenty-five elements ({\tt
+Node {\tt n(2)} has its local section of twenty-five elements ({\tt
 a(2:100:4)}).
 %with shadow areas of size one on the upper and lower 
 %bounds.
 The lower bound of local alias {\tt b} is declared to
-be zero. As a result, {\tt b} is an array of 25 elements
-({\tt b(0:24)}) on {\tt n(2)}. The table below shows the correspondence
-of each element of a to that of {\tt b}.
+be zero. As a result, {\tt b} is an array of size 25 whose lower
+bound is zero ({\tt b(0:24)}) on {\tt n(2)}. The table below shows the
+correspondence of each element of a to that of {\tt b}.
 
 \begin{center}
 \begin{tabular}{|c|c|}\hline
@@ -133,7 +132,7 @@ of each element of a to that of {\tt b}.
 !$xmp template :: t(:)
 !$xmp distribute (block) onto n :: t
 
-      real , allocatable :: a(:)
+      real, allocatable :: a(:)
 !$xmp align (i) with t(i) :: a
 
       real :: b(:)[*]
@@ -255,10 +254,10 @@ by {\it nodes-ref}.
 \end{center}
 \end{minipage}
 
-It is assumed that the code of the left is executed by node {\tt p(1)}
-while that on  the right is executed by node {\tt p(2)}.
+It is assumed that the code of the left is executed by the node {\tt
+p(1)} while that on  the right is executed by node {\tt p(2)}.
 
-The {\tt post} construct on the left match 
+The {\tt post} construct on the left matches
 the {\tt wait} construct on the right because each {\it nodes-ref}
 represents each other  and both {\it tags} have the same value of 1.
 %
@@ -276,9 +275,9 @@ completed by {\tt p(1)}.
 
 It is assumed that this code is executed by node {\tt p(3)}.
 
-The {\tt post} construct in the code on the left in Example 1 may match
+The {\tt post} construct in the code on the left in Example 1 may matches
 this {\tt wait} construct because both {\it nodes-ref} and
-	   {\it tag} are omitted.
+{\it tag} are omitted in this {\tt wait} construct.
 
 \end{description}
 

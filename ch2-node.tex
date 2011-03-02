@@ -13,26 +13,27 @@ The {\tt nodes} directive declares a named node array.
 {\small
 \begin{tabular}{ll}
 \verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
-     {\it nodes-size} {\openb}, {\it nodes-spec}
+     {\it nodes-spec} {\openb}, {\it nodes-spec}
      {\closeb}... \verb|)| \\
 \verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
-     {\it nodes-size} {\openb}, {\it nodes-spec}
+     {\it nodes-spec} {\openb}, {\it nodes-spec}
      {\closeb}... \verb|)| {\tt = *}\\
 \verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
-     {\it nodes-size} {\openb}, {\it nodes-spec}
+     {\it nodes-spec} {\openb}, {\it nodes-spec}
      {\closeb}... \verb|)| {\tt =} {\it nodes-ref}\\
 & \\
 \verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
      \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
      {\closeb}... \verb|)| \\
 \verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
-     \verb|(| {\it nodes-size} {\openb}, {\it nodes-spec}
+     \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
      {\closeb}... \verb|)| {\tt = *} \\
 \verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
-     \verb|(| {\it nodes-size} {\openb}, {\it nodes-spec}
+     \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
      {\closeb}... \verb|)| {\tt =} {\it nodes-ref} \\
 \end{tabular}
 }
+
 \vspace{0.3cm}
 
 where {\it nodes-spec} must be one of:
@@ -93,24 +94,25 @@ node set specified by {\it nodes-ref}.
 
 If {\it node-size} in the last dimension is ``{\tt *}'', then the size
 of the node array is automatically adjusted according to the total size
-of the entire node set in the first form, the referenced node set in the
-second form, or the executing node set in the third form.
+of the entire node set in the first form, the executing node set in the
+second form, or the referenced node set in the third form.
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
 %\item {\it nodes-name} is an identifier in class (1) and must not
 %  conflict with other names in class (1).
-\item {\it nodes-name} must not conflict with any other local name.
+\item {\it nodes-name} must not conflict with any other local name in
+      the same scoping unit.
 \item In {\Fort}, the second form cannot be used in either the main
       program or a module.
-\item {\it nodes-size} can be ``{\tt *}'' only in the last dimension.
+\item {\it nodes-spec} can be ``{\tt *}'' only in the last dimension.
 \item {\it nodes-ref} must not reference {\it nodes-name} either
       directly or indirectly.
-\item If no {\it nodes-size} is ``{\tt *}'', then the product
-      of all {\it nodes-size} must be equal to the total size of the
-      entire node set in the first form, the referenced node set in the
-      second form, or the executing node set in the third form.
+\item If no {\it nodes-spec} is ``{\tt *}'', then the product
+      of all {\it nodes-spec} must be equal to the total size of the
+      entire node set in the first form, the executing node set in the
+      second form, or the referenced node set in the third form.
 %
 %      The referenced node set must consist of all nodes in the first form,
 %      the executing node set in the second form, and the node set
@@ -184,10 +186,10 @@ int main() {
 %      end program
 %\end{Fexample}
 
-The following is an example of a node declaration in a subprogram.
+The following is an example of a node declaration in a procedure.
 Since {\tt p} is declared in the second form to be of size 16 and
-correspond to the executing node set, the caller of the {\tt foo}
-subroutine must be executed on 16 nodes.
+correspond to the executing node set, the invocation of the {\tt foo}
+function must be executed by 16 nodes.
 %
 The node array {\tt q} is declared in the first form and corresponds to
 the entire node set. The node array {\tt r} is declared as a subset of
@@ -220,19 +222,18 @@ node set.
 \Syntax{node reference}
 
 A node reference {\it nodes-ref} is specified by either node number
-({\it node-number-ref}) or the name of a node array ({\it named-nodes-ref}).
+or the name of a node array.
 
 \begin{center}
 \begin{tabular}{lll}
-{\it nodes-ref} & {\bf is} & \verb|(| {\it int-expr} \verb|)|\\ 
-                & {\bf or} & \verb|(| {\it triplet} \verb|)| \\
+{\it nodes-ref} & {\bf is} & \verb|(| {\it nodes-subscript} \verb|)|\\ 
                 & {\bf or} & {\it nodes-name} {\openb}\verb|(| {\it nodes-subscript}
 	 {\openb}, {\it nodes-subscript} {\closeb}... \verb|)|{\closeb} \\
 \end{tabular}
 \end{center}
-
+%
 \vspace{0.3cm}
-
+%
 where {\it nodes-subscript} must be one of:
 
 \hspace{\hsize}
@@ -269,7 +270,7 @@ node array or its subarray.
 %in the subscript is the same as that in {\Fort}. 
 
 Specifically, the ``{\tt *}'' symbol apperared as {\it nodes-subscript}
-in a dimension of {\it nodes-ref} is interpreted be each node at runtime
+in a dimension of {\it nodes-ref} is interpreted by each node at runtime
 as its position (coordinate) in the dimension of the referenced node
 array.
 %The ``{\tt *}'' symbol in {\it nodes-subscript} in a subarray of a
@@ -318,7 +319,8 @@ integer variable.
 \verb|!$xmp distribute a(block) onto p| \\
 \end{tabular}%$
 
-\item As a target node subarray in the {\tt nodes} directive
+\item To specify a node set to which the declared node array corresponds
+      in the second form of the {\tt nodes} directive
 
 \Example{nodes}
 \begin{tabular}{l}
@@ -361,7 +363,7 @@ integer variable.
 \verb|!$xmp reduction (+:a) on p(*,:)| \\
 \end{tabular}
 
-\item To specify the source node and a node array that corresponds to
+\item To specify the source node and the node array that corresponds to
       the executing node set in the {\tt bcast} directive 
 
 %In the {\tt bcast} directive, a source node and executing nodes are specified.
@@ -421,6 +423,6 @@ integer variable.
 
 To be described.
 
-\subsection{The Executing Node Set}
+\subsection{Executing Node Sets}
 
 To be described.

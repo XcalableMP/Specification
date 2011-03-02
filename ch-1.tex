@@ -9,7 +9,7 @@ language extension of {\C} and {\Fort} for scalable and
 performance-aware parallel programming.
 %
 The specification includes a collection of compiler directives and
-runtime library routines, and provide a model of parallel programming
+runtime library routines, and provides a model of parallel programming
 for distributed memory multiprocessor systems.
 
 %This document specifies a collection of compiler directives and runtime
@@ -36,10 +36,10 @@ The features of {\XMP} are summarized as follows:
 
  \item The important design principle of {\XMP} is
        ``performance-awareness.'' All actions of communication and
-       synchronization are taken by directives, different from automatic
-       parallelizing compilers. The user should be aware of what happens
-       by {\XMP} directives in the execution model on the distributed
-       memory architecture.
+       synchronization are taken by directives, which is different from
+       automatic parallelizing compilers. The user should be aware of
+       what happens by {\XMP} directives in the execution model on the
+       distributed memory architecture.
 
  \item {\XMP} also includes features from PGAS (Partitioned Global
        Address Space) languages, such as coarray of the upcoming {\Fort}
@@ -134,8 +134,8 @@ much slower than accessing local memory.
 An {\XMP} program execution is based on the Single Program Multiple Data
 (SPMD) model, where each node starts execution from the same main
 routine and keep executing the same code independently
-(i.e. aynchronously), which is referred to as the {\it \Term{duplicate
-execution}}, until it encounters any {\XMP} directive.
+(i.e. aynchronously), which is referred to as the {\it \Term{replicated
+execution}}, until it encounters an {\XMP} construct.
 
 %The basic execution model of {\XMP} is a Single Program Multiple Data
 %(SPMD) model on distributed memory. In each node, a program starts from
@@ -148,10 +148,29 @@ execution}}, until it encounters any {\XMP} directive.
 %An {\XMP} program begins as a single thread of
 %execution in each node. 
 
-When a node encounters a {\tt loop} or an {\tt array} construct, it
-executes the loop or the array assignment in parallel with other nodes,
-so that each iteration of the loop or element of the computation is
-executed by the node where the specified data element is located.
+%In this case, the
+%program performs duplicate execution of the same program on local memory
+%in each node.
+
+%{\OMP} API can be used in order to make use of multicores in a node. In
+%this specification, we define actions only when {\XMP} directives are
+%executed one thread at a time.
+
+A set of the nodes that are executing a procedure, a statement, a loop,
+a block, etc. is referred to as its {\it executing node set} and
+determeined by the innermost {\tt task} or {\tt loop} directive
+surrounding it dynamically.
+%
+The initial executing node set (or the {\it entire node set}) at the
+beggining of the program execution is the set of all available nodes,
+which can be specified in a implementation-dependent way (e.g. a
+command-line option).
+
+When a node in the executing node set encounters a {\tt loop} or an {\tt
+array} construct, it executes the loop or the array assignment in
+parallel with other nodes, so that each iteration of the loop or element
+of the assignment is independently executed by the node where the
+specified data element is located.
 %
 When a node encounters a synchronization or a communication directive,
 synchronization or communication occurs between it and other nodes.
@@ -162,23 +181,6 @@ nodes in the executing node set.
 Note that nither synchronizations nor communications occur without these
 constructs specified.
 
-%In this case, the
-%program performs duplicate execution of the same program on local memory
-%in each node.
-
-%{\OMP} API can be used in order to make use of multicores in a node. In
-%this specification, we define actions only when {\XMP} directives are
-%executed one thread at a time.
-
-A set of the nodes that are executing a subprogram, a statement, a loop,
-a block, etc. is referred to as its {\it executing node set} and
-determeined by the innermost {\tt task} or {\tt loop} directive
-surrounding it dynamically.
-%
-The initial executing node set (or the {\it entire node set}) at the
-beggining of the program execution is the set of all available nodes,
-which can be specified in a implementation-dependent way (e.g. a
-command-line option).
 
 \section{Data Model}
 
@@ -186,7 +188,8 @@ command-line option).
 %are referenced locally by threads executed in the node. 
 
 There are two classes of data in {\XMP}: {\it \Term{global data}} and
-{\it local data}. Data declared in a program are local by default.
+{\it local data}. Data declared in an {\XMP} program are local by
+default.
 
 Global data are ones that are distributed onto the executing node set by
 the {\tt align} directive (see section \ref{sub:align}). Each fragment
@@ -201,7 +204,7 @@ executing node set.
 %nodes. The variables in the global-view programming model appear as a
 %shared memory spanning the nodes.
 %
-Local data are all of the ones that are not global. They are duplicated
+Local data are all of the ones that are not global. They are replicated
 in the local memory of each node in the executing node set.
 
 %{\XMP} supports two models of data viewing: the global-view programming
@@ -211,12 +214,12 @@ in the local memory of each node in the executing node set.
 %with the node number of the target nodes, while reference to local data
 %is executed implicitly.
 
-A node can access directly only a local data and a region of global data
+A node can access directly only local data and regions of global data
 that are allocated in its local memory.
 %
-To accesse the data in remote memory, explicit communication must be
-specified in some ways, such as global comuunication constructs and
-coarray assignment.
+To accesse data in remote memory, explicit communication must be
+specified in such ways as the global comuunication constructs and
+the coarray assignments.
 
 Description on memory layout to be added.
 
@@ -224,8 +227,7 @@ Description on memory layout to be added.
 
 The global-view programming model is useful when, starting from
 sequential version of a program, the programmer parallelizes it in
-data-parallel style by adding directives incrementally with minimum 
-modification.
+data-parallel style by adding directives with minimum modification.
 %
 In the global-view programming model, the programmer describes the data
 distribution of the data shared among the nodes using the data
@@ -234,9 +236,9 @@ distribution directives.
 The {\tt loop} construct assigns each iteration of a loop to the node
 where the computed data is located. 
 %
-Global-view communication directives are used for synchronization
-between nodes, to maintain the consistency of the shadow area, and to
-move part of the distributed data globally.
+The global-view communication directives are used to synchronize nodes,
+to maintain the consistency of the shadow area, and to move part of the
+distributed data globally.
 %
 Note that the programmer must specify explicitly communications to make
 all data referrence in the program local by using appropriate directives.
@@ -245,7 +247,7 @@ all data referrence in the program local by using appropriate directives.
 
 In many cases, the {\XMP} program according to the global-view
 programming model is based on a sequential program and can produce the
-same results regardless of the number of computation nodes (Figure
+same results as it, regardless of the number of compute nodes (Figure
 \ref{fig2}).
 %The global view provides a 
 %programming model in which computation and data are distributed onto
@@ -254,7 +256,7 @@ same results regardless of the number of computation nodes (Figure
 There are three groups of directives for the global-view programming
 model. Since these directives are ignored as a comment by the
 compilers of base languages ({\C} and {\Fort}), an {\XMP} program can be
-compiled by them and run rightly.
+compiled by them to run properly.
 
 %an  {\XMP} program derived from a sequential program can preserve the
 %integrity of the original program when the program is run sequentially. 
@@ -264,15 +266,15 @@ Specifies the data distribution and mapping to nodes (partially
 inherited from HPF).
 
 \subsubsection*{Work Mapping (Parallelization)}
-Assigns a work to a node set. The {\tt loop} construct maps each iteration of
-a loop to nodes containing the referenced data elements. The {\tt task}
-construct creates an amount of work (called a {\it task}) and assigns it
-to a node set.
+Assigns a work to a node set. The {\tt loop} construct maps each
+iteration of a loop to nodes containing the referenced data
+elements. The {\tt task} construct defines an amount of work as a
+{\it task} and assigns it to a node set.
 
 \subsubsection*{Communication and Synchronization}
-Describes how to communicate and synchronize with the other compute
-nodes. In {\XMP}, inter-node communication must be described
-explicitly. The compiler guarantees that no communication occurs
+Specifies how to communicate and synchronize with the other compute
+nodes. In {\XMP}, inter-node communication must be explicitly specified
+by the programmer. The compiler guarantees that no communication occurs
 unless it is explicitly specified by the programmer.
 
 \begin{myfigure}
@@ -284,20 +286,21 @@ unless it is explicitly specified by the programmer.
 \section{Local-view programming model}
 
 The local-view programming model is suitable for programs that
-explicitly describe the algorithm of each node and explicit remote
-data reference (Figure \ref{fig3}). Since MPI is based on the local-view
-model, the local-view programming model of {\XMP} has high
-interoperability with MPI.
+explicitly describe an algorithm and remote
+data reference to be done by each node (Figure \ref{fig3}). Since MPI is
+based on the local-view model, the local-view programming model of
+{\XMP} has high interoperability with MPI.
 
 For the local-view programming model, some language extensions and 
 directives are provided. The coarray notation imported from {\CAF} (CAF)
-is such an extension. For example, the expression of {\tt A(i)[N]} is
-used to access an array element of {\tt A(i)} located on compute node
+is one of such extensions. For example, the expression of {\tt A(i)[N]}
+is used to access an array element of {\tt A(i)} located on compute node 
 {\tt N}.
 %
 If the access is a reference, then communication to obtain the value
-(i.e. get operation) occurs. If the access is a definition, then
-communication to set a new value (i.e. put operation) occurs.
+from remote memory (i.e. {\it get} operation) occurs. If the access is a
+definition, then communication to set a value to remote memory
+(i.e. {\it put} operation) occurs.
 
 \begin{myfigure}
 \includegraphics[width=12cm]{figs/Fig3.eps}
@@ -308,7 +311,7 @@ communication to set a new value (i.e. put operation) occurs.
 \section{Interactions between the global view and the local view}
 
 In the global view, nodes are used to distribute data and computational
-load. In the local view, nodes are used to addresse data in the coarray
+load. In the local view, nodes are used to address data in the coarray
 notation.
 %
 In the application program,
@@ -319,9 +322,9 @@ and the local view of data.
 Data may have both a global view and a local view, and can be accessed
 from either. {\XMP} provides some directives to give the local name
 (alias) to the global data declared in the global-view programming model
-so that they can also be referenced in the local-view programming
+so that they can be accessed also in the local-view programming
 model. This feature is useful to optimize a certain part of the program
-by using explicit remote data reference in the local-view programming
+by using explicit remote data access in the local-view programming
 model.
 
 \begin{myfigure}

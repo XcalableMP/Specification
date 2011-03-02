@@ -40,6 +40,8 @@ template-spec}, then the default lower bound is 1.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
+\item {\it template-name} must not conflict with any other local name in
+      the same scoping unit.
 \item Every {\it template-spec} must be either {\openb}{\it int-expr}
       {\tt :}{\closeb} {\it int-expr} or ``:''.
 \end{itemize}
@@ -63,22 +65,35 @@ clause of some directives is used to indirectly specify a node set.
 {\it template-ref} & {\bf is} & {\it template-name} {\openb}\verb|(|
  {\it template-subscript} {\openb}, {\it
  template-subscript}{\closeb}... \verb|)|{\closeb} \\
-{\it template-subscript} & {\bf is} & {\it int-expr} $\vert$ {\it
-	 triplet} $\vert$ {\tt *} \\
+%{\it template-subscript} & {\bf is} & {\it int-expr} $\vert$ {\it
+%	 triplet} $\vert$ {\tt *} \\
 \end{tabular}
 \end{center}
+%
+\vspace{0.3cm}
+%
+where {\it template-subscript} must be one of:
+
+\hspace{\hsize}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it int-expr} \\
+ \hspace{0.5cm} & {\it triplet} \\
+ \hspace{0.5cm} & {\tt *} \\
+\end{tabular}
+
 
 \subsubsection*{Description}
 
 Being specified in the {\tt on} clause of some directives, the template
-reference refers to a subset of a node set onto which the subset of the
-template is distributed.
+reference refers to a subset of a node set where the subset of the
+template resides.
 %The template reference refers to a subarray of the template array.  
 
 Specifically, the ``{\tt *}'' symbol apperared as {\it
 template-subscript} in a dimension of {\it template-ref} is interpreted
 by each node at runtime as the indices of the elements in the dimension
-that is distributed onto it. ``{\tt *}'' in the template reference is
+that reside in the node. ``{\tt *}'' in the template reference is
 equivalent to ``{\tt *}'' in the node reference.
 %the position (coordinate) of each node in the dimension of the
 %referenced node array.
@@ -148,8 +163,8 @@ Assume that {\tt t} is a template.
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{distribute}} directive specifies a distribution of
-templates.
+The {\tt \Directive{distribute}} directive specifies the distribution of
+a template.
 
 \subsubsection*{Syntax}
 \Syntax{distribute}
@@ -176,7 +191,7 @@ where {\it dist-format} must be one of:
 \subsubsection*{Description}
 
 According to the specified distribution format, a template is distributed
-onto a node set. The dimension of the node set appearing in an {\tt
+onto a node set. The dimension of the node set appearing in the {\tt
 onto} clause corresponds, in left-to-right order, with the dimension of
 the distributed template for which the corresponding {\it dist-format} is
 not ``{\tt *}''. 
@@ -227,10 +242,10 @@ is defined by {\it template\_fix} directives at runtime.
 
 \begin{itemize}
 \item The number of {\it dist-format} that is not ``{\tt *}'' must be
-      equal to the rank of the node set specified by {\it nodes-name}.  
+      equal to the rank of the node array specified by {\it nodes-name}.  
 \item The array {\it int-array} in parentheses following {\tt gblock}
       must be an integer one-dimensional array, and its size must be
-      equal to the size of the corresponding dimension of the node set
+      equal to the size of the corresponding dimension of the node array
       specified by {\it nodes-name}.
 \item Every element of the array {\it int-array} in parentheses
       following {\tt gblock} must be a non-negative integer.
@@ -316,19 +331,19 @@ are as follows:
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
-{\tt p(1)} & {\tt t(1:64, 1:57:8, 1:13)} \\
+{\tt p(1,1)} & {\tt t(1:64, 1:57:8, 1:13)} \\
 \hline
-{\tt p(2)} & {\tt t(1:64, 2:58:8, 1:13)} \\
+{\tt p(2,1)} & {\tt t(1:64, 2:58:8, 1:13)} \\
 \hline
 ... & ... \\
 \hline
-{\tt p(4)} & {\tt t(1:64), 8:64:8, 53:64)} \\
+{\tt p(8,5)} & {\tt t(1:64), 8:64:8, 53:64)} \\
 \hline
 \end{tabular}
 \end{center}
 
 Note that the size of the third dimension is 64 and is not divisible by
-the size of the second dimension of {\tt p}. Then, the sizes of a number
+the size of the second dimension of {\tt p}. Thus, the sizes of a number
 of blocks in the third dimension are different.
 
 \end{description}
@@ -337,7 +352,7 @@ of blocks in the third dimension are different.
 \label{sub:align}
 
 \subsubsection*{Synopsis}
-The {\tt \Directive{align}} directive specifies that arrays are to be
+The {\tt \Directive{align}} directive specifies that an array is to be
 mapped in the same way as a certain template.
 
 \subsubsection*{Syntax}
@@ -361,8 +376,10 @@ mapped in the same way as a certain template.
 
 where {\it align-source} must be one of:
 
+\vspace{0.3cm}
+
 \begin{tabular}{ll}
- \hspace{0.5cm} & {\tt scalar-int-variable} \\
+ \hspace{0.5cm} & {\it scalar-int-variable} \\
  & {\tt *} \\
  & {\tt :} \\
 \end{tabular}
@@ -370,8 +387,10 @@ where {\it align-source} must be one of:
 
 and {\it align-subscript} must be one of:
 
+\vspace{0.3cm}
+
 \begin{tabular}{ll}
- \hspace{0.5cm} & {\tt scalar-int-variable} {\openb} \{ {\tt +} $\vert$
+ \hspace{0.5cm} & {\it scalar-int-variable} {\openb} \{ {\tt +} $\vert$
  {\tt -} \} {\it int-expr} {\closeb} \\
  & {\tt *} \\
  & {\tt :} \\
@@ -423,7 +442,7 @@ align-source} and {\it align-subscript} are interpreted as follows:
 	     is ignored.
        \item \verb![C]! Colons in the sequence of {\it align-source} in
 	     right-to-left order and those in the sequence of {\it 
-	     align-subscript} in left-ro-right order are matched up,
+	     align-subscript} in left-to-right order are matched up,
 	     where any {\it align-source} and {\it align-subscript} that
 	     is not a colon is ignored.
       \end{itemize}
@@ -460,7 +479,7 @@ align-source} and {\it align-subscript} are interpreted as follows:
 %$
 
 The array element {\tt a(i)} is aligned with the template element {\tt
-t(i)}. This is equivalent to the following code:
+t(i)}. This is equivalent to the following code.
 
 \begin{Fexample}
 !$xmp align a(:) with t(:)
@@ -485,7 +504,7 @@ t(j)}. Note that the first dimension of {\tt a} is collapsed.
 %$
 
 The array element {\tt a(j)} is replicated, and aligned with each
-template element {\tt t(1,j) $\sim$ t(10,j)}. Assume that the upper
+template element of {\tt t(:,j)}, assuming that the upper
 and lower bounds of the first dimension of the template {\tt t} are
 1 and 10, respectively.
 
@@ -499,13 +518,20 @@ and lower bounds of the first dimension of the template {\tt t} are
 %$
 
 	   The subarray {\tt a(:,j)} is aligned with each template
-	   element, {\tt t(1,j) $\sim$ t(n1,j)}.
+	   element of {\tt t(:,j)}.
 
-	   If ``{\tt *}'' in the first
-	   dimension of the array {\tt a} is replaced by a dummy
-	   variable {\tt i}, and ``{\tt *}'' in the first dimension of
-	   the template {\tt t} is replaced by a dummy variable {\tt k},
-	   then we have:
+
+	   By replacing ``{\tt *}'' in the first dimension of the array
+	   {\tt a} and ``{\tt *}'' in the first dimension of the
+	   template {\tt t} with a dummy variable {\tt i} and {\tt k},
+	   respectively, this alignment can be interpreted as the
+	   following mapping.
+
+%	   If ``{\tt *}'' in the first
+%	   dimension of the array {\tt a} is replaced by a dummy
+%	   variable {\tt i}, and ``{\tt *}'' in the first dimension of
+%	   the template {\tt t} is replaced by a dummy variable {\tt k},
+%	   then we have:
 
 $${a(i,j) \rightarrow t(k,j) \mid (i,j,k) \in (1:n1,\,1:n2,\,1:m1)}$$
 
@@ -534,6 +560,8 @@ area for a distributed array.
 
 where {\it shadow-width} must be one of:
 
+\vspace{0.3cm}
+
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\it int-expr} \\
  & {\it int-expr} : {\it int-expr}\\
@@ -542,14 +570,15 @@ where {\it shadow-width} must be one of:
 
 \subsubsection*{Description}
 
-The {\tt shadow} directive specifies the shadow width the area of which
-is used to communicate the neighbor element of the block of the array
-specified by {\it array-name} that is distributed onto each node.
+The {\tt shadow} directive specifies the width of the shadow area of an
+array, which is used to communicate the neighbor element of the block of
+the array specified by {\it array-name} that is distributed onto each
+node.
 %
 When {\it shadow-width} is of the form ``{\it int-expr} : {\it
 int-expr},'' the shadow area of the width specified by the first {\it
-int-expr} is added at the upper bound and that specified by the second
-one at the lower bound in the specified dimension.
+int-expr} is added at the lower bound and that specified by the second
+one at the upper bound in the specified dimension.
 %
 When {\it shadow-width} is of the form {\it int-expr}, the shadow
 area of the same width specified is added at both the upper and lower
@@ -567,9 +596,9 @@ directive is referred to as a \Term{shadow object}.
 %The shadow object can be
 %explicitly defined and referenced only by the below-described method.
 %
-A shadow object represents an array element of a distributed array. A
-shadow object corresponds to the data object that represent the same
-element as it. Such corresponding data object is referred to as a
+A shadow object represents an element of a distributed array and 
+corresponds to the data object that represents the same
+element as it. The corresponding data object is referred to as the
 reflection source of the shadow object.
 
 %Of the data allocated to a storage area other than a shadow area, data
@@ -594,8 +623,8 @@ reflection source of the shadow object.
 \label{subsec:template_fix directive}
 
 \subsubsection*{Synopsis}
-This directive is an executable directive that fixes the shape of the
-template. 
+This directive is an executable directive that fixes the shape of an
+undefined template. 
 
 \subsubsection*{Syntax}
 \Syntax{template\_fix}
@@ -622,12 +651,16 @@ template.
 
 where {\it template-spec} is:
 
+\vspace{0.3cm}
+
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\openb}{\it int-expr} :{\closeb} {\it int-expr} \\
 \end{tabular}
 \vspace{0.3cm}
 
-where {\it dist-format} is one of:
+and {\it dist-format} is one of:
+
+\vspace{0.3cm}
 
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt *} \\
@@ -644,7 +677,7 @@ sizes of each dimension and the distribution format at runtime. The array
 aligned to an initially undefined template must be an allocatable
 array, which cannot be allocated until the template is fixed by the
 {\tt template\_fix} directive. Any executable directives that have such a
-template in their {\tt on} clause must not be executed before the
+template in their {\tt on} clause must not be executed until the
 template is fixed by the
 {\tt template\_fix} directive. Any undefined template can be fixed only
 once by the {\tt template\_fix} directive. 
@@ -655,13 +688,14 @@ the {\tt distribute} directive.
 
 \subsubsection*{Restrictions}
 \begin{itemize}
-\item When the {\tt template\_fix} directive is executed, the
+\item When the {\tt template\_fix} directive is executed at runtime, the
 template specified by {\it template-name} must be undefined.
 \item The sequence
 of {\it dist-format} in the {\tt template\_fix} directive and the
       sequence of {\it dist-format} in the {\tt distribute} directive
-      specified by {\it template-name} must be identical, except for the
-      brackets following {\tt gblock}. 
+      for the template specified by {\it template-name} must be
+      identical, except for a parenthetical {\it int-array} following
+      {\tt gblock}.
 \item Either the sequence of {\it template-spec} or {\tt distribute}
   clause must be given. 
 \item The {\tt template\_fix} directive must appear in executable

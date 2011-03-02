@@ -28,9 +28,9 @@
 
 \gitem{structured block}
 
-\gitem{subprogram}
+\gitem{procedure}
 
- A generic term used to refer to ``subprogram'' (including subroutine and
+ A generic term used to refer to ``procedure'' (including subroutine and
  function) in Fortran and ``function'' in C.
 
 \gitem{directive}
@@ -46,8 +46,8 @@
 
 \gitem{executable directive}
 
- An {\XMP} directive that is not declarative; i.e., it may be placed in
- an executable context.
+ An {\XMP} directive that is not declarative; it may be placed in an
+ executable context.
 
 \gitem{construct}
 
@@ -128,7 +128,7 @@
 \gitem{local-view model}
 
       A model of programming or parallelization on which parallel
-      programs are written by the specifying how each node owns local
+      programs are written by specifying how each node owns local
       data and does local works.
 
 %Execution of a program has side-effects only on the data in the node. In
@@ -147,7 +147,9 @@
 
 \begin{namelist}{entire node setxxxx}
 
-\gitem{node}
+\gitem{phisical node}
+
+\gitem{(logical) node}
 
  A computing component of a distributed-memory multicomputer, which has
  its own main memory and is connected with each other via an
@@ -168,13 +170,14 @@
  A node set that contains all of the nodes participating in the
  execution of an XcalbleMP program.
 
-\gitem{executing node set}
+\gitem{(current) executing node set}
 
  A node set that contains all of the nodes participating in the
- execution of a subprogram, a statement, a loop, a block, etc. of an
- XcalableMP program. The executing node set can be modified by the {\tt
- task}, {\tt array}, or {\tt loop} direcitives. Note that the executing
- node set of the main routine is the entire node set.
+ execution of a procedure, a statement, a construct, etc. of an
+ XcalableMP program is called its executing node set. The current
+ executing node set can be modified by the {\tt task}, {\tt array}, or
+ {\tt loop} direcitives. Note that the executing node set of the main
+ routine is the entire node set.
 
 \gitem{node array}
 
@@ -234,10 +237,14 @@
 \gitem{local data}
 
  Data that is not global. Each node owns a replica of a local data,
- and can access directly it but cannot those on the other nodes.
+ and can access directly it but cannot those on the other nodes. Note
+ that the replicas of a local data do not necessarily have the same
+ value.
 
 %Data is allocated in each node and is referenced only
 %within the node.
+
+\gitem{replicated data}
 
 \gitem{distribution}
 
@@ -305,13 +312,13 @@ clause.
 %starting point is the same and the execution has only local
 %side-effects, then the local state in each node remains the same.
 
-\gitem{collective}
-
-      A construct is {\it collective} if and only if it must be executed 
-      synchronously and with the exact same directive and associated
-      statements by every nodes in the executing node set. The behavior
-      of an {\XMP} program is not specified if a collective construct is
-      not executed {\it collectively}.
+%\gitem{collective}
+%
+%      A construct is {\it collective} if and only if it must be executed 
+%      synchronously and with the exact same directive and associated
+%      statements by every nodes in the executing node set. The behavior
+%      of an {\XMP} program is not specified if a collective construct is
+%      not executed {\it collectively}.
 
 %An operation must be executed by every
 %node in the executing node set in order to perform an operation together.

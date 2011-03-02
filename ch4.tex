@@ -1,25 +1,25 @@
 %\chapter{Procedure call and data mapping for procedure argument}
-\chapter{Subprogram Interfaces}
+\chapter{Procedure Interfaces}
 
-This chapter describes the subprogram interfaces, that is, how
-subprograms are invoked and arguments are passed, in {\XMP}.
+This chapter describes the procedure interfaces, that is, how
+procedures are invoked and arguments are passed, in {\XMP}.
 
 In order to achieve high composability of {\XMP} programs, it is one of
-the most important requirement that {\XMP} subprograms can invoke
-subprograms written in the base language with as a few restrictions as
-possible. The subprogram interfaces in {\XMP} described in this chapter
-is designed so as to satisfy the requirement.
+the most important requirement that {\XMP} procedures can invoke
+procedures written in the base language with as a few restrictions as
+possible. The procedure interfaces in {\XMP} is designed so as to
+satisfy the requirement.
 
 
 \section{General Rule}
 
-In {\XMP}, a subprogram invocation itself is a local operation and does
-not cause any communication at runtime. Thus, a node can invoke any
-subprogram, whether written in {\XMP} or in the base language, at any
-point of the execution.
+In {\XMP}, a procedure invocation itself is a local operation and does
+not cause any communication or synchronization at runtime. Thus, a node
+can invoke any procedure, whether written in {\XMP} or in the base
+language, at any point of the execution.
 %
-There is no restriction on the characteristics of subprograms invoked by
-an {\XMP} subprogram, except for a few ones on its argument, which is
+There is no restriction on the characteristics of procedures invoked by
+an {\XMP} procedure, except for a few ones on its argument, which is
 explained below.
 
 A local data or part of it (i.e. an array element or a Fortran's array
@@ -28,16 +28,16 @@ local actual argument} and a {\it local dummy argument}, respectively)
 are treated by the {\XMP} compiler in the same manner as by the compiler
 of the base language.
 %
-This rule makes it possible that a local actual argument in a subprogram
-written in {\XMP} is associated with a dummy argument of a subprogram
+This rule makes it possible that a local actual argument in a procedure
+written in {\XMP} is associated with a dummy argument of a procedure
 written in the base language.
 
 
 \paragraph{Implementation.}
 
-The {\XMP} compiler does not transform local actual and dummy arguments,
-so that the backend compiler of the base language can process them in
-the same manner as usual data.
+The {\XMP} compiler does not transform either local actual or dummy
+arguments, so that the backend compiler of the base language can treat
+them in its usual way.
 
 \vspace{1.5zw}
 
@@ -50,9 +50,9 @@ are processed by the {\XMP} compiler.
 
 \section{Argument Passing Mechanism in {\XMP} Fortran}
 
-A section (except for an element) of a global data cannot be put in the
-actual argument list. Therefore only the name or an element of it can be
-put in the actual argument list.
+Any section (except for an element) of a global data may not be put in
+the actual argument list. Therefore only the name or an element of it
+may be put in the actual argument list.
 
 There are two kinds of argument association for global data in {\XMP}
 Fortran: one is {\it sequence association}, which is for a global dummy
@@ -109,7 +109,7 @@ mappings (including their shadow attributes) must be identical.
 
 
 \subsubsection*{Examples}
-\Example{subprogram}
+\Example{procedure}
 
 \begin{description}
 
@@ -270,12 +270,12 @@ argument is treated by the {\XMP} compiler as:
 For the first case, a global dummy is initialized at runtime with a copy
 of the global-data descriptor received.
 
-When an actual argument is descriptor associated with the dummy
-argument and their mappings are not identical, the {\XMP} runtime system
-may detect and report the error.
+When an actual argument is descriptor associated with the dummy argument
+and their mappings are not identical, the {\XMP} runtime system may
+detect and report the error.
 
 \subsubsection*{Examples}
-\Example{subprogram}
+\Example{procedure}
 
 \begin{description}
 
@@ -422,7 +422,7 @@ argument, their mappings (including their shadow attributes) must be
 identical.
 
 \subsubsection*{Examples}
-\Example{subprogram}
+\Example{procedure}
 
 \begin{description}
 
@@ -503,13 +503,13 @@ void c_func2(float x[27])
 
 \item[Example 3]
 
-	   The actual argument {\tt a(1)} is an element of the global
+	   The actual argument {\tt a[0]} is an element of the global
 	   data and the dummy argument {\tt x} is a scalar, in which
 	   case the normal argument-passing rule of {\C} for variables a
 	   basic type (i.e. ``pass-by-value'') is applied. However, the
 	   value to be passed is unspecified on the nodes {\tt p(2)},
 	   {\tt p(3)} and {\tt p(4)} because they does not own the
-	   actual argument {\tt a(1)}.
+	   actual argument {\tt a[0]}.
 
 	   As a result, {\tt x} in {\tt c\_func2} has an unspecified
 	   value on the nodes {\tt p(2)}, {\tt p(3)} and {\tt p(4)}
@@ -525,7 +525,7 @@ void xmp_func1()
 #pragma xmp align a[i] with t(i)
 #pragma xmp shadow a[1:1]
 
-  c_func2(a[5]);
+  c_func2(a[0]);
 }
 \end{Cexample}
 \begin{Cexample}
@@ -542,3 +542,4 @@ void c_func2(float x)
 \end{myfigure}
 
 \end{description}
+
