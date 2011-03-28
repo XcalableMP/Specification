@@ -40,8 +40,8 @@ construct may be executed before the operation is complete.
  \item The arrays specified by the sequence of {\it array-name} must be
        mapped onto the executing node set.
  \item The {\tt reflect} construct is global, which means that it must be
-       executed by all of the executing nodes, and each variable
-       appearing in the construct must have the same value among all of
+       executed by all of the executing nodes, and each local variable
+       referenced in the construct must have the same value among all of
        them.
  \item {\it async-id} must be an integer expression.
 \end{itemize}
@@ -51,8 +51,12 @@ construct may be executed before the operation is complete.
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{gmove}} construct copies the data of a
-distributed array in the global view. 
+%The {\tt \Directive{gmove}} construct copies the data of a
+%distributed array in the global view. 
+
+The {\tt \Directive{gmove}} construct allows an assignment statement,
+which may cause communication, to be executed possibly in parallel by
+the executing nodes.
 
 \subsubsection*{Syntax}
 \Syntax{gmove}
@@ -68,78 +72,131 @@ distributed array in the global view.
 
 \subsubsection*{Description}
 
-This directive executes a copy operation of the global data array object
-distributed into nodes. This directive is followed by the assignment
-statement of the scalar value and array sections. The assignment operation
-of the array sections of a distributed array may require communication
-between nodes.
+This construct copies the value of the right-hand side variable into
+the left-hand side of the associated assignment statement, which may
+require communication between nodes in the executing node set. Such
+communication is detected, scheduled, and performed by the XcalableMP
+runtime system.
 
-The assignment statement must be a simple assignment without
-any arithmetic operations.   
+%This construct executes a copy operation of the global data array object
+%distributed into nodes.
+%This directive is followed by the assignment
+%statement of the scalar value and array sections.
+%The assignment may require communication between nodes.
 
-In {\XMP}, the {\C} language is extended to support array section
-notation in order to support an assignment of array objects.
+%Note that, in {\XMP}, the {\C} language is extended to support array
+%section notation in order to support an assignment of array objects.
 
-The assignment statement must have one of the following patterns:
+%The assignment statement must have one of the following patterns:
+%
+%\begin{itemize}
+%\item  Scalar assignment. For example:
+%
+%\begin{tabular}{lll}
+%\hspace{0.5cm} & {\tt s1 = s2} & ! {\tt s1} and {\tt s2} is a scalar
+%variable \\ 
+%& {\tt a(3) = b(i, j)} & ! {\tt a} and {\tt b} are arrays. \\
+%\end{tabular}
+%
+%\item Array assignment. The left-hand-side variable must be either an
+%      array name, an array section, or a scalar object. For example:
+%
+%\begin{tabular}{lll}
+%\hspace{0.5cm} & {\tt a = b} & ! {\tt a} and {\tt b} are arrays \\
+% & {\tt a(1:10) = b(n:n+9, k)} & ! lhs and rhs are array sections \\
+% & {\tt a(1:10) = s2} & ! lhs is an array section and rhs is a
+% scalar variable \\
+% & {\tt a(1:10) = b(i, j)} & ! lhs is an array section and rhs is a
+% scalar object \\
+%\end{tabular}
+%\end{itemize}
+
+%The {\tt gmove} construct must be executed by all of the executing
+%nodes. The value of scalar objects, the index value, and the range
+%value of the array section in the assignment statement must be the same in
+%every node executing this directive.
+
+There are three operating modes of the {\tt gmove} construct:
 
 \begin{itemize}
-\item  Scalar assignment. For example:
+ \item {\bf collective mode}
 
-\begin{tabular}{lll}
-\hspace{0.5cm} & {\tt s1 = s2} & ! {\tt s1} and {\tt s2} is a scalar
-variable \\ 
-& {\tt a(3) = b(i, j)} & ! {\tt a} and {\tt b} are arrays. \\
-\end{tabular}
+       When neither the {\tt in} nor the {\tt out} clause is specified,
+       the copy operation is performed collectively and cause an
+       implicit synchronization after it inside the executing node set.
 
-\item Array assignment. The left-hand-side variable must be either an
-      array name, an array section, or a scalar object. For example:
+%In this case, all elements in both the source array and the target array
+%must be distributed onto the executing node set.
+%If the object on the right-hand side is a local
+%object, then the value of the local object must be the same.
+%
+%In this case, the assignment is performed locally, where the object on
+%the left-hand side is distributed.
+%
+%If the object on the left-hand side is a local object
+%and the object on the right-hand side is global, then this operation
+%performs broadcast operation.
 
-\begin{tabular}{lll}
-\hspace{0.5cm} & {\tt a = b} & ! {\tt a} and {\tt b} are arrays \\
- & {\tt a(1:10) = b(n:n+9, k)} & ! lhs and rhs are array sections \\
- & {\tt a(1:10) = s2} & ! lhs is an array section and rhs is a
- scalar variable \\
- & {\tt a(1:10) = b(i, j)} & ! lhs is an array section and rhs is a
- scalar object \\
-\end{tabular}
+ \item {\bf in mode}
+
+       When the {\tt in} clause is specified, the rhs data of the
+       assignment, whole or parts of which may reside outside the
+       executing node set, can be transferred from its owner nodes.
+
+       If the {\tt async} clause is not specified, then the construct is
+       ''synchronous'' and it is guaranteed that the lhs data
+       can be read and overwritten and all of the operations of the
+       construct on the owner nodes (origin) and the executing node
+       (target) are completed when returning from the construct;
+       otherwise, the construct is ''asynchronous'' and it is not
+       guaranteed until returning from the associating {\tt wait\_all}
+       construct.
+
+ \item {\bf out mode}
+
+       When the {\tt out} clause is specified, the lhs data of the
+       assignment, whole or parts of which may reside outside the 
+       executing node set, can be transferred to its owner nodes.
+
+       If the {\tt async} clause is not specified, then the construct is
+       ''synchronous'' and it is guaranteed that the rhs data
+       can be overwritten and all of the operations of the construct on
+       the owner nodes (origin) and the executing node (target) are
+       completed when returning from the construct; otherwise, the
+       construct is ''asynchronous'' and it is not guaranteed until
+       returning from the associating {\tt wait\_all} construct.
+
 \end{itemize}
 
-The {\tt gmove} construct must be executed by nodes in the executing
-node set. The value of scalar objects, the index value, and the range
-value of the array section in the assignment statement must be the same in
-every node executing this directive.
+%Note that, in these cases, no synchronization is implied and it is not
+%ensured that the copy operation is completed. Thus, if a synchronization
+%between the executing nodes and the owner nodes is required, the
+%programmer must specify it explicitly by using a {\tt barrier} construct
+%or a pair of a {\tt post} and an {\tt wait} construct.
 
-When no option is specified, the copy operation is performed
-collectively by all nodes in the executing node set. In this case, all
-elements in both the source array and the target array must be distributed on
-to the executing node set. If the object on the right-hand side is a local
-object, then the value of the local object must be the same. In this case, the
-assignment is performed locally, where the object on the left-hand side is 
-distributed. If the object on the left-hand side is a local object
-and the object on the right-hand side is global, then this operation
-performs broadcast operation.
+%When an {\tt in} clause is specified, then the node that owns the
+%element of the object on the left-hand side obtains the data on the
+%right-hand side by the remote copy (get) operation.
+%Therefore, the object on the left-hand side must be distributed onto
+%the executing node set.
+%
+%When an {\tt out} clause is specified, then the node that owns the element
+%of the object on the right-hand side places the data on the left-hand
+%side by the remote copy (put) operation.
+%Therefore, the object on the
+%right-hand side must be distributed onto the executing node set.
 
-If an {\tt in} option is specified, then the node that owns the element of
-the object on the left-hand side obtains the data on the right-hand side by the 
-remote copy (get) operation. Therefore, the object on the left-hand side
-must be distributed onto the executing node set. 
+%If no option is specified, then the copy can be performed by two-side
+%communication. In this case, the receiver side waits for the sender side,
+%resulting in implicit synchronization. 
 
-If an {\tt out} operation is specified, then the node that owns the element
-of the object on the right-hand side places the data on the left-hand side by the
-remote copy (put) operation. Therefore, the object on the right-hand side
-must be distributed onto the executing node set.
-
-If no option is specified, then the copy can be performed by two-side
-communication. In this case, the receiver side waits for the sender side,
-resulting in implicit synchronization. 
-
-If an {\tt in} or {\tt out} clause is specified, then the
-copy operation should be performed by one-side communication for remote
-memory access. Thus, no synchronization is implied. If
-synchronization between reader and writer is required, then the programmer
-must perform synchronization explicitly by a {\tt barrier} construct. If the reader
-and the writer do not belong to the same executing node set, then
-point-to-point synchronization by {\tt post-wait} directive can be used.
+%If an {\tt in} or {\tt out} clause is specified, then the
+%copy operation should be performed by one-side communication for remote
+%memory access. Thus, no synchronization is implied. If
+%synchronization between reader and writer is required, then the programmer
+%must perform synchronization explicitly by a {\tt barrier} construct. If
+%the reader and the writer do not belong to the same executing node set,
+%then point-to-point synchronization by {\tt post-wait} directive can be used.
 
 When the {\tt async} clause is specified, the statements following this
 construct may be executed before the operation is complete.
@@ -147,11 +204,26 @@ construct may be executed before the operation is complete.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
+ \item The {\tt gmove} directive must be followed by (i.e. associated
+       with) a simple assignment statement that contains neither
+       arithmetic operations nor function calls.
  \item The {\tt gmove} construct is global, which means that it must be
-       executed by all of the executing nodes, and each variable
-       appearing in the construct must have the same value among all of
+       executed by all of the executing nodes, and each local variable
+       referenced in the construct must have the same value among all of
        them.
-\item {\it async-id} must be an integer expression.
+ \item If the {\tt gmove} construct is in {\it collective} mode, then
+       all elements of the distributed arrays appearing in both the
+       left-hand and the right-hand side of the associated assignment
+       statement must reside in the executing node set.
+ \item If the {\tt gmove} construct is in {\it in} mode, then
+       all elements of the distributed array appearing in the left-hand
+       side of the associated assignment statement must reside in the
+       executing node set.
+ \item If the {\tt gmove} construct is in {\it out} mode, then
+       all elements of the distributed array appearing in the right-hand
+       side of the associated assignment statement must reside in the
+       executing node set.
+ \item {\it async-id} must be an integer expression.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -188,8 +260,7 @@ replicated array, then no communication is required.
 \item[Example 2: Scalar assignment to an array] 
 
 When the right-hand side is an element of a distributed array, the copy
-is performed by 
-broadcast communication from the owner of the element of the array. If
+is performed by broadcast communication from the owner of the element. If 
 the right-hand side is a replicated array, then no communication is required.
 
 \vspace{0.5cm}
@@ -212,20 +283,38 @@ the right-hand side is a replicated array, then no communication is required.
 \end{minipage}
 \vspace{1cm}
 
-\item[Example 3]
-\hspace{\hsize}
+\item[Example 3: in mode assignment]
+
+	   Since {\tt b(3)} referenced in the right-hand side of the
+	   {\tt gmove} construct does not reside in the executing node
+	   set ({\tt p(1:2)}), the construct is executed in in
+	   mode. Thus, {\tt b(3)} is transferred from its owner node
+	   {\tt p(3)} to the executing node set.
+
+	   It is not guaranteed until {\tt p(1:2)} returns from the
+	   construct that any node can read and overwrite {\tt a(1:2)}
+	   and any relevant operations on {\tt p(1:2)} and {\tt p(3)}
+	   are completed.
+
+\vspace{0.5cm}
+
 \begin{Fexample}
 !$xmp nodes p(4)
+!$xmp template t(4)
+!$xmp distribute t(block) onto p
+
       real a(4), b(4)
-!$xmp distribute (block) onto p :: a,b
+!$xmp align (i) with t(i) : a, b
       ...
-!$xmp task on p(1:2)	! Only p(1), p(2) execute this section
+!$xmp task on p(1:2)
       ...
-!$xmp gmove
-      a(1:2) - b(2:3)	! Communication to outside
-      ...		! of executing node occurs
+!$xmp gmove in
+      a(1:2) = b(2:3)
+      ...
 !$xmp end task
 \end{Fexample}
+
+%$
 
 \end{description}
 
@@ -343,6 +432,10 @@ variable}''. Thus, after the reduction operation, the value of the
 reduction variable becomes the same in every node that performs the
 operatoin.
 
+The reduction result is computed by combining the reduction variables on
+all of the nodes using the reduction operator. The ordering of this
+reduction is implementation-dependent.
+
 When the {\tt async} clause is specified, the statements following this
 construct may be executed before the operation is complete.
 
@@ -382,8 +475,8 @@ case, a barrier operation is performed in each node set.
        either not be aligned or be replicated among nodes of the node
        set specified by the {\tt on} clause.
  \item The {\tt reduction} construct is global, which means that it must
-       be executed by all of the executing nodes, and each variable
-       appearing in the construct must have the same value among all of
+       be executed by all of the executing nodes, and each local variable
+       referenced in the construct must have the same value among all of
        the executing nodes.
  \item {\it async-id} must be an integer expression.
  \item The node set specified by the {\tt on} clause must be a subset of the
@@ -559,8 +652,8 @@ construct may be executed before the operation is complete.
       either not be aligned or be replicated among nodes of the node set
       specified by the {\tt on} clause.
 \item The {\tt bcast} construct is global, which means that it must be
-      executed by all of the executing nodes, and each variable
-      appearing in the construct must have the same value among all of
+      executed by all of the executing nodes, and each local variable
+      referenced in the construct must have the same value among all of
       the executing nodes.
 \item {\it async-id} must be an integer expression.
 \item The node set specified by the {\tt on} clause must be a subset of the
@@ -601,8 +694,8 @@ communications specified by each of {\it async-id} are complete.
       communciation by the {\tt async} clause of a communication
       construct or an {\tt async} construct.
 \item The {\tt wait\_comm} construct is global, which means that it must
-      be executed by all of the executing nodes, and each variable
-      appearing in the construct must have the same value among all of
+      be executed by all of the executing nodes, and each local variable
+      referenced in the construct must have the same value among all of
       the executing nodes.
 \item The executing node set of the {\\tt wait\_comm} construct must be
       the same as that of the asynchronous communication specified by

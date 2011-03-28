@@ -1,5 +1,6 @@
 %\chapter{Procedure call and data mapping for procedure argument}
 \chapter{Procedure Interfaces}
+\label{chap:procedure}
 
 This chapter describes the procedure interfaces, that is, how
 procedures are invoked and arguments are passed, in {\XMP}.
@@ -31,6 +32,9 @@ of the base language.
 This rule makes it possible that a local actual argument in a procedure
 written in {\XMP} is associated with a dummy argument of a procedure
 written in the base language.
+
+If both of an acutual and its associating dummy arguments are coarrays,
+they must be declared on the same node set.
 
 
 \paragraph{Implementation.}

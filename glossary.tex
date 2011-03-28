@@ -28,6 +28,11 @@
 
 \gitem{structured block}
 
+ For C, an executable statement, possibly compound, with a single entry
+ at the top and a single exit at the bottom, or an OpenMP construct.
+ For Fortran, a block of executable statements with a single entry at
+ the top and a single exit at the bottom, or an OpenMP construct.
+
 \gitem{procedure}
 
  A generic term used to refer to ``procedure'' (including subroutine and
@@ -86,19 +91,18 @@
 
 \gitem{data mapping}
 
-      Allocating elements of an array to nodes in a node set by
-      specifying with the {\tt align} directive that the array is
-      aligned with a distributed template.
+ Allocating elements of an array to nodes in a node set by specifying
+ with the {\tt align} directive that the array is aligned with a
+ distributed template.
 
 %\gitem{work}
 
 \gitem{work mapping}
 
-      Assigning iterations of a loop, elements of an array assignment,
-      or tasks in a task set to nodes in a node set by specifying with
-      one of the work mapping constructs that the loop, the assignment,
-      or the set is aligned with a template or distributed onto a node
-      array.
+ Assigning iterations of a loop, elements of an array assignment, or
+ tasks in a task set to nodes in a node set by specifying with one of
+ the work mapping constructs that the loop, the assignment, or the set
+ is aligned with a template or distributed onto a node array.
 
 %\subsection*{\Term{data mapping}}
 %The combination of the alignment and
@@ -111,25 +115,24 @@
 
 \gitem{global}
 
-      A data or a work is {\it global} if and only if there is only one
-      instance of it shared by all nodes in the executing node set.
+ A data or a work is {\it global} if and only if there is only one
+ instance of it shared by all nodes in the executing node set.
 
 \gitem{local}
 
-      A data or a work is {\it local} if and only if there is a
-      replicated instance of it in each node in the executing node set.
+ A data or a work is {\it local} if and only if there is a replicated
+ instance of it in each node in the executing node set.
 
 \gitem{global-view model}
 
-      A model of programming or parallelization on which parallel
-      programs are written by specifying how to map global data and
-      works onto nodes.
+ A model of programming or parallelization on which parallel programs
+ are written by specifying how to map global data and works onto nodes.
 
 \gitem{local-view model}
 
-      A model of programming or parallelization on which parallel
-      programs are written by specifying how each node owns local
-      data and does local works.
+ A model of programming or parallelization on which parallel programs
+ are written by specifying how each node owns local data and does local
+ works.
 
 %Execution of a program has side-effects only on the data in the node. In
 %this case, no communication with other nodes occurs .
@@ -149,8 +152,6 @@
 
 \gitem{phisical node}
 
-\gitem{(logical) node}
-
  A computing component of a distributed-memory multicomputer, which has
  its own main memory and is connected with each other via an
  interconnect. A node may contain multiple cores sharing the main
@@ -160,6 +161,13 @@
 %several cores sharing main memory, has its own local memory. Each node
 %is connected through a network. An \XMP program begins as a single
 %thread of execution in each node.
+
+\gitem{(logical) node}
+
+ An execution entity managed and assigned to a phisical node at runtime
+ by the {\XMP} runtime system, which has its own memory and can
+ communicate with other nodes. A node can execute one or more threads
+ concurrently.
 
 \gitem{node set}
 
@@ -187,6 +195,10 @@
  {\tt nodes} directive.
 
 \gitem{parent node set}
+
+ The parent node set of a node set is the last executing node set, which
+ encounterd the innermost {\tt task}, {\tt loop}, or {\tt array}
+ construct that it is executing.
 
 %\gitem{node number}
 %
@@ -246,6 +258,10 @@
 
 \gitem{replicated data}
 
+ A data whose storage is allocated on multiple nodes. A replicated data
+ is either a local data or a global data replicated by an {\tt align}
+ directive.
+
 \gitem{distribution}
 
  Assigning each element of a template to nodes in a node set in a
@@ -270,11 +286,10 @@
 
 \gitem{local section}
 
-of course, data in the base language
-
-% Data storage 
-% The local section of a global data on each node includes its shadow
-% objects.
+ A section of a global data that is allocated as an array on each node
+ at runtime.
+%
+ The local section of a global data includes its shadow objects.
 
 \gitem{shadow}
 
@@ -297,9 +312,9 @@ of course, data in the base language
 
 \gitem{task}
 
-A specific instance of executable codes that is defined by the {\tt
-task} construct and executed by a node set specified by its {\tt on}
-clause.
+ A specific instance of executable codes that is defined by the {\tt
+ task} construct and executed by a node set specified by its {\tt on}
+ clause.
 
 %A specific instance of executable code and
 %its data environments executed in a set of nodes. In the context of

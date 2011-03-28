@@ -363,3 +363,164 @@ which a node waits until no other node is executing it.
 %      ...
 %!$xmp end critical
 %\end{Fexample}
+
+
+
+\chapter{Base Language Extensions}
+
+\section{Array section notation in C}
+
+\subsubsection*{Synopsis}
+
+The array section notation is a notation to describe a part of an array, 
+which is adapted in Fortran.
+
+\subsubsection*{Syntax}
+
+\begin{tabular}{ll}
+\verb![C]! & {\it array-name}{\tt [} {\it triplet} $\vert$ {\it
+ int-expr} {\tt ]}...
+\end{tabular}
+
+\vspace{0.5cm}
+
+where {\it triplet} is:
+
+\vspace{0.3cm}
+
+\hspace{0.5cm} {\openb}{\it lower-bound}{\closeb} {\tt :} {\openb}{\it
+  upper-bound}{\closeb} {\openb}{\tt :} {\it step}{\closeb}
+
+\subsubsection*{Description}
+
+In {\XMP}, the base language C is extended so that a part of an array,
+that is, an array section can be put in an {\it array assignment
+statement}, which is described in \ref{sec:Array assignment statements
+in C}. An array section is built from a subset of the elements of an
+array, which is specified by this notation including at least one {\it
+triplet}.
+
+When {\it step} is positive, the {\it triplet} specifies a set of
+subscripts that is a regularly spaced sequence of integers beginning
+with {\it lower-bound} and proceeding in increments of the {\it stride}
+to the largest such integer not greater than the {\it upper-bound}.
+%
+When {\it step} is negative, the {\it triplet} specifies a set of
+subscripts that is a regularly spaced sequence of integers beginning
+with the {\it lower-bound} and proceeds in increments of the {\it step}
+down to the smallest such integer equal to or greater than the {\it
+upper-bound}.
+
+%{\it lower-bound} and {\it upper-bound} specify an index range of array
+%elements. {\it lower-bound} and/or {\it upper-bound} can be omitted, in
+%which case they default to the lower and/or the upper bound of the
+%array. Therefore, {\tt A[:]} is a section containing the whole of {\tt
+%A}.
+%%
+%If {\it step} is specified, then the elements of an array section are
+%every ``step''-th element in the range specified by {\it lower-bound}
+%and/or {\it upper-bound}. For example, {\tt B[1:10:3]} is an array 
+%section of size 4 containing every third element of {\tt B} with indices
+%between 1 and 10 (i.e., indices 1, 4, 7, 10).
+
+An array section forms a virtual array containing the set of elements
+from the original array determined by all possible subscript lists
+specified by the sequence of {\it triplet}'s or {\it int-expr}'s in square
+brackets.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item \verb![C]! Each of {\it lower-bound}, {\it upper-bound} and {\it
+       step} must be an {\it integer-expr}.
+ \item \verb![C]! When {\it step} is positive, {\it lower-bound} must be
+       greater than or equal to the lower bound and {\it upper-bound}
+       must be smaller than or equal to the upper bound of the dimension
+       of the array specified by {\it array-name}.
+ \item \verb![C]! When {\it step} is negative, {\it lower-bound} must be
+       smaller than or equal to the upper bound and {\it upper-bound}
+       must be greater than or equal to the lower bound of the dimension
+       of the array specified by {\it array-name}.
+ \item \verb![C]! {\it step} must not be zero.
+\end{itemize}
+
+\subsubsection*{Example}
+
+Assuming that an array {\tt A} is declared by the following statement,
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+\hspace{0.5cm} & {\tt int A[100];} \\
+\end{tabular}
+
+\vspace{0.3cm}
+
+\hspace{-0.55cm}some array sections can be specified as follows:
+
+\vspace{0.3cm}
+
+\begin{tabular}{lll}
+\hspace{0.5cm} & {\tt A[10:19]} & array section of 10 elements from {\tt
+ A[10]} to {\tt A[19]} \\
+ & {\tt A[10:]} & array section of 90 elements from {\tt A[10]} to {\tt
+	 A[99]} \\
+ & {\tt A[:9]} & array section of 10 elements from {\tt A[0]} to {\tt
+	 A[9]} \\
+ & {\tt A[10:19:2]} & array section of 5 elements from {\tt A[10]} to
+	 {\tt A[18]} by step 2 \\
+ & {\tt A[:]} & the whole of {\tt A} \\
+\end{tabular}
+
+\section{Array assignment statements in C}
+\label{sec:Array assignment statements in C}
+
+\subsubsection*{Synopsis}
+
+An array assignment statement copies a value into each element of
+an array section.
+
+%Array-valued expressions can be used by array section in assignments.
+
+\subsubsection*{Syntax}
+
+\begin{tabular}{ll}
+\verb![C]! & {\it array-section} {\openb}{\tt :}{\tt [}{\it int-expr}{\tt
+ ]}...{\closeb} {\tt =} {\it \{ array-section} $\vert$
+ {\it int-expr \}}{\openb}{\tt :}{\tt [}{\it int-expr}{\tt
+ ]}...{\closeb}{\tt ;} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+When the rhs is an array section, the value of each element of the rhs
+array section is assigned to the corresponding element of the lhs array
+section. When the rhs is an integer expression, its value is assigned to
+each element of the lhs array section.
+
+The rhs and/or the lhs data can have cosubscripts.
+
+Note that an array assignment is a statement and therefore cannot
+referenced as an expression in any other statements.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item \verb![C]! When the rhs is an array section, the lhs and the rhs
+       must have the same shape, i.e., the same number of dimensions and
+       size of each dimension.
+\end{itemize}
+
+\subsubsection*{Examples}
+
+The array assignment statement in the fourth line copies the elements
+from {\tt B[0]} to {\tt B[4]} into the elements from {\tt A[5]} to {\tt
+A[9]}, respectively.
+
+\hspace{\hsize}
+\begin{Cexample}
+int A[10];
+int B[5];
+    ...
+A[5:9] = B[0:4]; 
+\end{Cexample}

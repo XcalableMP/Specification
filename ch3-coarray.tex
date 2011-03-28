@@ -1,22 +1,76 @@
 \chapter{Support for local-view programming}
 
-{\XMP} adopts coarray notations as
-an extension of languages for local-view programming. In the case of
-{\Fort} as the base language, most coarray notations are compatible with
-that of \CAF (CAF), except that the {\tt task} constructs
-are used for task parallelism.
+{\XMP} adopts coarray notations for the local-view
+programming. Particularly in the case of {\Fort} as the base language,
+the notations are compatible with that of Fortran 2008.
 
-This line was inserted by Sakagami for svn test.
+\section{Coarray in XcalableMP}
+
+The specification of the coarray features in XcalableMP conforms to that
+of Fortran 2008 unless otherwise provided.
 
 
-\section{Coarray notation of  {\XMP}}
+\subsection{Declaration of coarrays}
 
-The \Term{coarray} is declared and referenced as in CAF. In addition, the
-notations are extended in {\XMP} so that the coarray declarations
-can be followed by the {\tt on} clause ({\tt on} {\it nodes-ref}). In this
-case, the images of the coarray are allocated on the node set specified by
-{\it nodes-ref}. If the {\tt on} clause is not specified, then the images of
-the coarray are allocated on the executing node set as a default.
+\subsubsection*{Synopsis}
+
+Coarrays are declared in the same manner as in Fortran 2008 for the
+Fortran base language, or with the {\tt coarray} directive for the C
+base language.
+
+\subsubsection*{Syntax}
+
+\Syntax{coarray}
+\begin{tabular}{ll}
+\verb![F]! & {\it type-declaration-stmt} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
+\verb![C]! & \verb|#pragma xmp coarray| {\it variable-name} {\tt :} 
+{\it codimensions} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
+\end{tabular}
+
+\vspace{0.5cm}
+
+where {\it codimensions} is:
+
+\vspace{0.3cm}
+\hspace{0.5cm} {\openb}{\tt [}{\it int-expr}{\tt ]}...{\closeb}{\tt [*]}
+
+\subsubsection*{Description}
+
+For the Fortran base language, coarrays are declared in the same manner
+as in Fortran 2008. For the C base language, coarrays are declared with
+the {\tt coarray} directive where {\it codimensions} specify the coshape
+of a variable.
+%
+Terms realated to coarray in {\XMP} (e.g. coshape, coindex,
+cobound, cosubscript, image, image index, etc.) are derived from that in
+Fortran 2008.
+
+In addition, the coarray declaration statements or directives can be
+followed by the {\tt on} clause ({\tt on} {\it nodes-ref}).
+%
+Such an {\tt on} clause specifies a node array on each element of which
+the coarray object is allocated, and associates each {\it image} of the
+coarray with a node so that an image having an {\it image index} is
+associated with a node that have the same index of the node array in the
+Fortran's array element order.
+%
+If the {\tt on} clause is not specified, then it is assumed that 
+the executing node set is specified.
+
+Note that an acutual coarray and its associating dummy coarray must be
+declared on the same node set (see chapter \ref{chap:procedure}).
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item \verb![F]! All of the variables declared by {\it
+       type-declaration-stmt} with the {\tt on} clause must have the
+       CODIMENSION attribute.
+ \item \verb![F]! At most one {\tt on} clause can be specified for a
+       variable in a scoping unit.
+% \item The cosize of each declared coarray must be less than or equal to
+%       the size of the node set specified by the {\tt on} clause.
+\end{itemize}
 
 \subsubsection*{Examples}
 \Example{nodes}
@@ -54,44 +108,54 @@ the coarray are allocated on the executing node set as a default.
       ...
 \end{Fexample}
 
-Coarray {\tt wa} mapped onto the entire node set {\tt w} is passed as an
-argument to subroutines {\tt task1} and {\tt task2}. In these
-subroutines, the argument is referenced by the parameter {\tt aa}. In this
-case, the declaration of the coarray for the parameter {\tt aa} requires an on
-clause to specify the executing node set, which is different from the
-entire node set. By this declaration, the subroutine can access {\tt
-  wa}. Note that coarrays {\tt b} and {\tt c} are local
-variables in subroutines {\tt task1} and {\tt task2}, respectively, and
-these coarrays are mapped onto the executing node set indicated by {\tt
-  p}. Since {\tt b} is mapped to {\tt w(1:30)} and {\tt c} is mapped
-onto {\tt   w(31:51)}, there is no way to access coarray {\tt c}
-({\tt b}) from {\tt task1} ({\tt task2}) because a subroutine can
-access the entire node set or its subset as well as the executing node set. 
+	   The coarray {\tt wa} declared on the entire node set {\tt w}
+	   is passed as an actual argument to subroutines {\tt task1}
+	   and {\tt task2}.
+	   In these subroutines, the coarray object is referenced as the
+	   formal argument {\tt aa} and its declaration requires an {\tt
+	   on} clause to specify the entire node set, which is
+	   different from the executing node set.
+%	   By this declaration, the subroutine can
+%	   access {\tt wa}.
+	   Note that the coarrays {\tt b} and {\tt c} are
+	   local variables in the subroutines {\tt task1} and {\tt
+	   task2}, respectively, and therefore they are declared on the
+	   executing node set specified by {\tt p}.
+%	   Since {\tt b} is
+%	   mapped to {\tt w(1:30)} and {\tt c} is mapped onto {\tt
+%	   w(31:51)}, there is no way to access coarray {\tt c} ({\tt
+%	   b}) from {\tt task1} ({\tt task2}) because a subroutine can
+%	   access the entire node set or its subset as well as the
+%	   executing node set.
 
 \item[Example 2]
 \hspace{\hsize}
 \begin{Fexample}
-!$xmp nodes w1(20)
+!$xmp nodes w1(200)
       real one(100)[*]
       real two(50)[20,*]
 \end{Fexample}
 
-The entire node set has 200 nodes, onto which coarray one and two are
-mapped. In this case, it is guaranteed that {\tt one(...)[i+(j-1)*20]}
-and {\tt two(...)[i,j]} are mapped into the same node. This mapping rule 
-is compatible with Coarray Fortran. This is also the case for the following
-code. That is, the shape of the entire node set has nothing to coarray.  
+%$
+
+	   The entire node set contains 200 nodes, on which coarray {\tt
+	   one} and {\tt two} are declared. In this case, it is
+	   guaranteed that {\tt one(...)[i+(j-1)*20]} and {\tt
+	   two(...)[i,j]} reside in the same node, which is also the
+	   case for the following codes. Such a rule is compatible with
+	   that of Fortran 2008. The shape of the entire node set has
+	   nothing to the image of coarrays.
 
 \begin{Fexample}
 !$xmp nodes w2(20,10)
       real one(100)[*]
       real two(50)[20,*]
-      ...
-OR
+\end{Fexample}
+
+\begin{Fexample}
 !$xmp nodes w3(10,5,4)
       real one(100)[*]
       real two(50)[20,*]
-      ...
 \end{Fexample}
 
 \item[Example 2]
@@ -105,138 +169,153 @@ OR
       real ni(50)[20,*] on w2
 \end{Fexample}
 
-In many application programs, neighbor communication
-is an important communication pattern. The optimal mapping from
-the logical node to the physical node depends on the number of dimensions. For
-example, the optimal mapping for the communication between
-{\tt one(...)[i]} and {\tt one(...)[i+1]} is different from the
-mapping for the communication between {\tt two(...)[i,j]} and {\tt
-  two(...)[i+1,j]}. 
+%In many application programs, neighbor communication
+%is an important communication pattern. The optimal mapping from
+%the logical node to the physical node depends on the number of dimensions. For
+%example, the optimal mapping for the communication between
+%{\tt one(...)[i]} and {\tt one(...)[i+1]} is different from the
+%mapping for the communication between {\tt two(...)[i,j]} and {\tt
+%  two(...)[i+1,j]}. 
 
-In {\XMP}, several mappings can be described. In this example, the
-mapping may be compatible with Coarray Fortran, and a different mapping
-can be selected. By switching the runtime option, node sets {\tt w1} and
-{\tt w2} can be different node sets. Coarrays {\tt one} and {\tt two}
-are mapped to node set {\tt w1} (that is, the entire node set), and
-{\tt one(...)[i+(j-1)*20]} and {\tt two(...)[i,j]} are mapped to the
-same node. Coarrays {\tt ichi} and {\tt ni} are mapped onto a different
-node set {\tt w2}, and {\tt ichi(...)[i+(j-1)*20]} and {\tt
-  ni(...)[i,j]} are mapped onto the same physical node. However, it is not
-guaranteed that a pair of {\tt one(...)[i]} and {\tt ichi(...)[i]} and a
-pair of {\tt two(...)[i,j]} and {\tt ni(...)[i,j]} are
-mapped into the same node. Note that this point is not compatible with Coarray Fortran. 
+%In {\XMP}, several mappings can be described. In this example, the
+%mapping may be compatible with Coarray Fortran, and a different mapping
+%can be selected. By switching the runtime option, node sets {\tt w1} and
+%{\tt w2} can be different node sets. 
+
+	   The coarrays {\tt one} and {\tt two} are declared on the node
+	   set {\tt w1} (that is, the entire node set), and thefore {\tt
+	   one(...)[i+(j-1)*20]} and {\tt two(...)[i,j]} reside in the
+	   same node. The coarrays {\tt ichi} and {\tt ni} are declared
+	   on the different node set {\tt w2}, and {\tt
+	   ichi(...)[i+(j-1)*20]} and {\tt ni(...)[i,j]} reside in the
+	   same node.
+%
+	   However, it is not guaranteed either that {\tt one(...)[i]}
+	   and {\tt ichi(...)[i]} reside in the same node or that {\tt 
+	   two(...)[i,j]} and {\tt ni(...)[i,j]} reside in the same
+	   node.
+%
+	   Note that this point is {\it not} compatible with Fortran
+	   2008.
 
 \end{description}
 
-\section{Coarray in the {\C} language}
 
-{\XMP} adopts coarray notation. In order to use coarray notation in {\C},
-we propose some extensions of the language.
+\subsection{Reference of coarrays}
 
-\subsection{Array section notation}
+\subsubsection*{Synopsis}
 
-Array section notation is a notation to describe the part of array that
-is adapted in Fortran90. In {\C}, an array section has the following form:
+A coarray can be directly referenced or defined by any node in the node
+set on which it is declared. The target node is specified in the same
+manner as in Fortran 2008 in the Fortran base language or using an
+extended notation in the C base language.
 
-\begin{tabular}{ll}
-\hspace{0.5cm} & {\it array-name} '[' [{\it lower-bound}] ':' [{\it
-  upper-bound}] [':' {\it step}] ']' ...
-\end{tabular}
-
-An array section is built from subsets of the elements of an array
-object -- those associated with a selected subset of the index range
-attached to the object. The {\it upper-bound} and the {\it lower-bound} 
-specify the range of array elements of an array object. Either the
-{\it upper-bound} or the {\it lower-bound} can be omitted in the index
-range of a section, in which case they default to the lowest or
-highest values taken by the index of the array. Therefore, {\tt A[:]} is a section
-containing the whole of {\tt A}. If the {\it step} is specified,  
-then the elements of an array section are every ÅeÅestep"-th element in the
-specified range. For example, {\tt B[1:10:3]} is an array section of
-size 4 containing every third element of {\tt B} with indices between
-1 and 10 (i.e., indices 1, 4, 7, 10). Collectively, ranges specified by
-{\it upper-bound}, {\it lower-bound}, and {\it step} are referred to as
-triplets. For multi-dimensional arrays, some dimensions can be
-subscripted with a normal scalar expression, and some dimensions can be ``sectioned'' with triplets.  
-
-\subsubsection*{Example}
-
-Array {\tt A} is declared by
-
-\begin{tabular}{ll}
-\hspace{0.5cm} & {\tt int A[100];} \\
-\end{tabular}
-
-Then:
-
-\begin{tabular}{lll}
-\hspace{0.5cm} & {\tt A[10:19]} & array section of 10 elements from A[10] to
-A[19] \\
- & {\tt A[10:]} & array section of 90 elements from A[10] to A[99] \\
- & {\tt A[:9]} & array section of 10 elements from A[0] to A[9] \\
- & {\tt A[10:19:2]} & array section of 5 elements from A[10] to A[18]
- by step 2 \\
- & {\tt A[:]} & entire array of A \\
-\end{tabular}
-
-\subsection{Assignment of array sections}
-
-Array-valued expressions can be used by array section in assignments.
-
-\begin{tabular}{ll}
-\hspace{0.5cm} & {\tt {\it array-section1} = {\it array-section2}} \\
-\end{tabular}
-
-The expression on the right-hand side of the assignment must be
-conformable with the array variable on the left-hand side. Thus, both sides must have the same shape, i.e., the same number of dimensions and size of each dimension.
-
-\subsubsection*{Examples}
-
-\hspace{\hsize}
-\begin{Cexample}
-int A[10];
-int B[5];
-    ...
-A[5:9] = B[0:4]; // copy the elements from A[5] to A[9],
-                 // to the elements from B[0} to B[4]
-\end{Cexample}
-
-\subsection{Declarations and reference of coarray}
-
-A coarray is declared by the coarray directive in {\C}.
+\subsubsection*{Syntax}
 
 \Syntax{coarray}
 \begin{tabular}{ll}
-\verb![C]! & \verb|#pragma xmp| {\tt coarray} {\it coarray-dimension}
-  {\tt ::} {\it array-variable} \\
-\verb![C]! & \verb|#pragma xmp| {\tt coarray} {\it array-variable}
-{\it coarray-dimension} \\
+\verb![F]! & {\it variable} {\tt [} {\it int-expr} 
+{\openb}, {\it int-expr} {\closeb}... {\tt ]}\\
+\verb![C]! & {\it variable} {\tt :} {\tt [}{\it int-expr}{\tt ]}...\\
 \end{tabular}
 
-The coarray directive declares a coarray with the coarray dimension.
+\subsubsection*{Description}
+
+A sequence of {\it int-expr} in a square bracket in the Fortran base
+language and a sequence of {\tt [}{\it
+int-expr}{\tt ]} preceded by a colon in the C base language determine
+the image index for a coarray to be accessed.
+
+Note that a coarray cannot be directly accessed by a node outside the
+node set on which it is declared, unlike that in Fortran 2008.
 
 \subsubsection*{Examples}
 \Example{coarray}
 
-\hspace{\hsize}
-\begin{Cexample}
+In each of the following two codes, two coarrays {\tt A} and {\tt B} are
+declared on the executing node set, and each executing node gets whole
+of {\tt B} from the image 10 (that is, the tenth node of the executing
+node set) and copies it into {\tt A}.
+
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{Fexample}
+      integer A(10)[*], B(10)[*]
+
+
+      A(:) = B(:)[10]
+\end{Fexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{CexampleR}
 int A[10], B[10];
-#pragma xmp coarray [*]: A, B
+#pragma xmp coarray A:[*], B:[*]
 
-double p[100][100];
-#pragma xmp coarray p[20][*]
-\end{Cexample}
+A[:] = B[:]:[10];
+\end{CexampleR}
+\end{center}
+\end{minipage}
 
-The coarray object is referenced in the following expression:
 
-\begin{tabular}{ll}
-\hspace{0.5cm} & {\it scalar-variable} {\tt :} {\it image-index} \\
- & {\it array-section-expression} {\tt :} {\it image-index} \\
-\end{tabular}
+%\subsubsection*{Restrictions}
+%
+%\begin{itemize}
+% \item \verb![C]! The variable specified by {\it variable} must be a
+%       coarray.
+% \item \verb![C]! The number of {\tt [}{\it int-expr}{\tt ]} must be
+%       equal to the corank of the variable specified by {\it variable}.
+% \item \verb![C]! The value of a each {\it int-expr} must be within the
+%       cobounds for its codimension.
+% \item \verb![C]! The sequence of {\tt [}{\it int-expr}{\tt ]} must
+%       specify an image index value that is not greater than the cosize
+%       of the variable specified by {\it variable}.
+%\end{itemize}
 
-This expression indicates the co-array on the image indicated by {\it image-index}.
 
-\hspace{\hsize}
-\begin{Cexample}
-      A[:] = B[:]:[10];    // copy from B on image 10 to A
-\end{Cexample}
+%\section{Coarray in the {\C} language}
+%
+%{\XMP} adopts coarray notation. In order to use coarray notation in {\C},
+%we propose some extensions of the language.
+
+%\subsection{Declarations and reference of coarray}
+%
+%A coarray is declared by the coarray directive in {\C}.
+%
+%\Syntax{coarray}
+%\begin{tabular}{ll}
+%\verb![C]! & \verb|#pragma xmp| {\tt coarray} {\it coarray-dimension}
+%  {\tt ::} {\it array-variable} \\
+%\verb![C]! & \verb|#pragma xmp| {\tt coarray} {\it array-variable}
+%{\it coarray-dimension} \\
+%\end{tabular}
+%
+%The coarray directive declares a coarray with the coarray dimension.
+%
+%\subsubsection*{Examples}
+%\Example{coarray}
+%
+%\hspace{\hsize}
+%\begin{Cexample}
+%int A[10], B[10];
+%#pragma xmp coarray [*]: A, B
+%
+%double p[100][100];
+%#pragma xmp coarray p[20][*]
+%\end{Cexample}
+%
+%The coarray object is referenced in the following expression:
+%
+%\begin{tabular}{ll}
+%\hspace{0.5cm} & {\it scalar-variable} {\tt :} {\it image-index} \\
+% & {\it array-section-expression} {\tt :} {\it image-index} \\
+%\end{tabular}
+%
+%This expression indicates the co-array on the image indicated by {\it image-index}.
+%
+%\hspace{\hsize}
+%\begin{Cexample}
+%      A[:] = B[:]:[10];    // copy from B on image 10 to A
+%\end{Cexample}

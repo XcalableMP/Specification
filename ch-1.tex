@@ -166,12 +166,19 @@ beggining of the program execution is the set of all available nodes,
 which can be specified in a implementation-dependent way (e.g. a
 command-line option).
 
-When a node in the executing node set encounters a {\tt loop} or an {\tt
-array} construct, it executes the loop or the array assignment in
-parallel with other nodes, so that each iteration of the loop or element
-of the assignment is independently executed by the node where the
-specified data element is located.
-%
+When a node encounters at runtime either a {\tt loop}, {\tt array}, or
+{\tt task} construct, and is contained by the node set specified by the
+{\tt on} clause of the directive, it updates the executing node set with
+the specified node set and executes the body of the construct, after
+which it resumes the last executing node set and proceeds to execute the
+following statements.
+
+Particularly when a node in the executing node set encounters a {\tt
+loop} or an {\tt array} construct, it executes the loop or the array
+assignment in parallel with other nodes, so that each iteration of the
+loop or element of the assignment is independently executed by the node
+where the specified data element is located.
+
 When a node encounters a synchronization or a communication directive,
 synchronization or communication occurs between it and other nodes.
 %
