@@ -176,7 +176,8 @@
 \gitem{entire node set}
 
  A node set that contains all of the nodes participating in the
- execution of an XcalbleMP program.
+ execution of an XcalbleMP program. Nodes in the entire node set are
+ linearly ordered.
 
 \gitem{(current) executing node set}
 
@@ -199,6 +200,11 @@
  The parent node set of a node set is the last executing node set, which
  encounterd the innermost {\tt task}, {\tt loop}, or {\tt array}
  construct that it is executing.
+
+\gitem{node number}
+
+ A unique number assigned to each node, which corresponds to its
+ position within the linearly-ordered entire node set.
 
 %\gitem{node number}
 %
@@ -235,6 +241,14 @@
 \subsection{Data Terminology}
 
 \begin{namelist}{entire node setxxxx}
+
+\gitem{variable}
+
+ A named data storage block, whose value can be defined and redefined
+ during the execution of a program. Note that {\it variables} include
+ array sections.
+% and that they do not include array names for the C
+% base language.
 
 \gitem{global data}
 

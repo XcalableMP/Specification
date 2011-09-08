@@ -329,40 +329,40 @@ any node.
 \end{itemize}
 
 
-\subsection{{\tt critical} Construct}
-
-\subsubsection*{Synopsis}
-
-The {\tt \Directive{critical}} construct restricts execution of the
-associated structured block to a single node at any given time.
-
-\subsubsection*{Syntax}
-\Syntax{critical}
-
-\begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt critical} \\
-& {\it block} \\
-& \verb|!$xmp| {\tt end critical} \\
-& \\
-\verb![C]! & \verb|#pragma xmp| {\tt critical} \\
-& {\it block} \\
-\end{tabular}
-
-%\subsubsection*{Restriction}
-
-\subsubsection*{Description}
-
-This construct specifies a {\it critical region}, at the beginning of
-which a node waits until no other node is executing it. 
-
-%\subsubsection*{Examples}
-%\Example{critical}
+%\subsection{{\tt critical} Construct}
 %
-%\begin{Fexample}
-%!$xmp critical
-%      ...
-%!$xmp end critical
-%\end{Fexample}
+%\subsubsection*{Synopsis}
+%
+%The {\tt \Directive{critical}} construct restricts execution of the
+%associated structured block to a single node at any given time.
+%
+%\subsubsection*{Syntax}
+%\Syntax{critical}
+%
+%\begin{tabular}{ll}
+%\verb![F]! & \verb|!$xmp| {\tt critical} \\
+%& {\it block} \\
+%& \verb|!$xmp| {\tt end critical} \\
+%& \\
+%\verb![C]! & \verb|#pragma xmp| {\tt critical} \\
+%& {\it block} \\
+%\end{tabular}
+%
+%%\subsubsection*{Restriction}
+%
+%\subsubsection*{Description}
+%
+%This construct specifies a {\it critical region}, at the beginning of
+%which a node waits until no other node is executing it. 
+%
+%%\subsubsection*{Examples}
+%%\Example{critical}
+%%
+%%\begin{Fexample}
+%%!$xmp critical
+%%      ...
+%%!$xmp end critical
+%%\end{Fexample}
 
 
 
@@ -377,8 +377,8 @@ which is adapted in Fortran.
 
 \subsubsection*{Syntax}
 
-\begin{tabular}{ll}
-\verb![C]! & {\it array-name}{\tt [} {\it triplet} $\vert$ {\it
+\begin{tabular}{llll}
+\verb![C]! & {\it array-section} & {\bf is} & {\it array-name}{\tt [} {\it triplet} $\vert$ {\it
  int-expr} {\tt ]}...
 \end{tabular}
 
@@ -388,28 +388,27 @@ where {\it triplet} is:
 
 \vspace{0.3cm}
 
-\hspace{0.5cm} {\openb}{\it lower-bound}{\closeb} {\tt :} {\openb}{\it
-  upper-bound}{\closeb} {\openb}{\tt :} {\it step}{\closeb}
+\hspace{0.5cm} {\openb}{\it base}{\closeb} {\tt :} {\openb}{\it
+length}{\closeb} {\openb}{\tt :} {\it step}{\closeb}
 
 \subsubsection*{Description}
 
 In {\XMP}, the base language C is extended so that a part of an array,
 that is, an array section can be put in an {\it array assignment
 statement}, which is described in \ref{sec:Array assignment statements
-in C}. An array section is built from a subset of the elements of an
-array, which is specified by this notation including at least one {\it
-triplet}.
+in C}, and some {\XMP} constructs. An array section is built from a
+subset of the elements of an array, which is specified by this notation
+including at least one {\it triplet}.
 
 When {\it step} is positive, the {\it triplet} specifies a set of
-subscripts that is a regularly spaced sequence of integers beginning
-with {\it lower-bound} and proceeding in increments of the {\it stride}
-to the largest such integer not greater than the {\it upper-bound}.
+subscripts that is a regularly spaced integer sequence of length {\it
+length} beginning with {\it base} and proceeding in increments of {\it
+step} up to the largest.
 %
 When {\it step} is negative, the {\it triplet} specifies a set of
-subscripts that is a regularly spaced sequence of integers beginning
-with the {\it lower-bound} and proceeds in increments of the {\it step}
-down to the smallest such integer equal to or greater than the {\it
-upper-bound}.
+subscripts that is a regularly spaced integer sequence of length {\it
+length} beginning with {\it base} and proceeding in increments of {\it
+step} down to the smallest.
 
 %{\it lower-bound} and {\it upper-bound} specify an index range of array
 %elements. {\it lower-bound} and/or {\it upper-bound} can be omitted, in
@@ -423,6 +422,14 @@ upper-bound}.
 %section of size 4 containing every third element of {\tt B} with indices
 %between 1 and 10 (i.e., indices 1, 4, 7, 10).
 
+When {\it base} is omitted, it is assumed that '0' is specified.
+%
+When {\it length} is omitted, it is assumed that an integer obtained by
+subtracting the value of {\it base} from the size of the dimension of
+the array is specified.
+%
+When {\it step} is omitted, it is assumed that '1' is specified.
+
 An array section forms a virtual array containing the set of elements
 from the original array determined by all possible subscript lists
 specified by the sequence of {\it triplet}'s or {\it int-expr}'s in square
@@ -431,16 +438,17 @@ brackets.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
- \item \verb![C]! Each of {\it lower-bound}, {\it upper-bound} and {\it
-       step} must be an {\it integer-expr}.
- \item \verb![C]! When {\it step} is positive, {\it lower-bound} must be
-       greater than or equal to the lower bound and {\it upper-bound}
-       must be smaller than or equal to the upper bound of the dimension
-       of the array specified by {\it array-name}.
- \item \verb![C]! When {\it step} is negative, {\it lower-bound} must be
-       smaller than or equal to the upper bound and {\it upper-bound}
-       must be greater than or equal to the lower bound of the dimension
-       of the array specified by {\it array-name}.
+ \item \verb![C]! Each of {\it base}, {\it length} and {\it step} must
+       be an {\it integer-expr}.
+% \item \verb![C]! When {\it step} is positive, {\it lower-bound} must be
+%       greater than or equal to the lower bound and {\it upper-bound}
+%       must be smaller than or equal to the upper bound of the dimension
+%       of the array specified by {\it array-name}.
+% \item \verb![C]! When {\it step} is negative, {\it lower-bound} must be
+%       smaller than or equal to the upper bound and {\it upper-bound}
+%       must be greater than or equal to the lower bound of the dimension
+%       of the array specified by {\it array-name}.
+ \item \verb![C]! {\it length} must be greater than zero.
  \item \verb![C]! {\it step} must not be zero.
 \end{itemize}
 
@@ -461,13 +469,13 @@ Assuming that an array {\tt A} is declared by the following statement,
 \vspace{0.3cm}
 
 \begin{tabular}{lll}
-\hspace{0.5cm} & {\tt A[10:19]} & array section of 10 elements from {\tt
+\hspace{0.5cm} & {\tt A[10:10]} & array section of 10 elements from {\tt
  A[10]} to {\tt A[19]} \\
  & {\tt A[10:]} & array section of 90 elements from {\tt A[10]} to {\tt
 	 A[99]} \\
- & {\tt A[:9]} & array section of 10 elements from {\tt A[0]} to {\tt
+ & {\tt A[:10]} & array section of 10 elements from {\tt A[0]} to {\tt
 	 A[9]} \\
- & {\tt A[10:19:2]} & array section of 5 elements from {\tt A[10]} to
+ & {\tt A[10:5:2]} & array section of 5 elements from {\tt A[10]} to
 	 {\tt A[18]} by step 2 \\
  & {\tt A[:]} & the whole of {\tt A} \\
 \end{tabular}

@@ -54,9 +54,24 @@ are processed by the {\XMP} compiler.
 
 \section{Argument Passing Mechanism in {\XMP} Fortran}
 
-Any section (except for an element) of a global data may not be put in
-the actual argument list. Therefore only the name or an element of it
-may be put in the actual argument list.
+%Any section (except for an element) of a global data may not be put in
+%the actual argument list. Therefore only the name or an element of it
+%may be put in the actual argument list.
+
+Either of the following global data can be put in the actual argument list:
+
+\begin{itemize}
+ \item an array name;
+ \item an array element; or
+ \item an array section that satisfies both of the following two
+       conditions:
+       \begin{itemize}
+	\item its subscript list is a list of zero or more colons
+	      (``{\tt :}'') followed by zero or more {\it int-expr}'s;
+	\item a subscript of the dimension having shadow is {\it
+	      int-expr} unless it is the last dimension.
+       \end{itemize}
+\end{itemize}
 
 There are two kinds of argument association for global data in {\XMP}
 Fortran: one is {\it sequence association}, which is for a global dummy
@@ -69,16 +84,16 @@ that is an explicit-shape or assumed-size array, and the other is
 The concept of sequence association in {\Fort} is extended for global
 actual and dummy arguments in {\XMP} as follows.
 
-If the actual argument is the name of a global data, it represents a
-element sequence consisting of the elements of its local section in
-Fortran's array element order on each node.
+If the actual argument is an array name or an array section,
+it represents an element sequence consisting of the elements of its
+local section in Fortran's array element order on each node.
 %
 Also, if the actual argument is an element of a global data, it
 represents an element sequence consisting of the corresponding element
 in the local section and each element that follows it in array element
 order on each node.
 
-An global actual argument that represents a element sequence and
+An global actual argument that represents an element sequence and
 corresponds to a global dummy argument is sequence associated with
 the the dummy argument if the dummy argument is an explicit-shape or
 assumed-size array.
@@ -96,12 +111,12 @@ is neither an explicit-shape nor assumed-size array.
 
 \paragraph{Implementation.}
 
-In order to implement sequence association, the name or an element
-of a global data appearing as an actual argument is treated by the
-{\XMP} compiler as the base address of its local section on each node,
-and the global data appearing as the corresponding dummy argument is
-initialized at runtime so as to be composed of the local sections each
-of which starts from the received address.
+In order to implement sequence association, the name, a section, or an
+element of a global data appearing as an actual argument is treated by
+the {\XMP} compiler as the base address of its local section on each
+node, and the global data appearing as the corresponding dummy argument
+is initialized at runtime so as to be composed of the local sections
+each of which starts from the received address.
 %
 On a node that does not have the local section corresponding to the
 actual argument, an unspecified value (e.g. null) is passed as the base
@@ -192,6 +207,45 @@ mappings (including their shadow attributes) must be identical.
 
 \item[Example 3]
 
+	   The actual argument {\tt a(:,1)} is a contiguous section of
+	   the global data, and the dummy argument {\tt x} is a local
+	   explicit-shape array. Sequence association is applied 
+	   in this case, but the value to be passed is unspecified on 
+	   the nodes {\tt p(2)}, {\tt p(3)} and {\tt p(4)} because they
+	   does not own any part of the actual argument {\tt a(:,1)}.
+
+	   As a result, the storage for {\tt x} in {\tt f\_sub2} may be
+	   unavailable on the nodes {\tt p(2)}, {\tt p(3)} and {\tt
+	   p(4)} (Figure \ref{fig5.25}).
+
+\begin{Fexample}
+      subroutine xmp_sub3
+!$xmp nodes p(4)
+!$xmp template t(100,100)
+!$xmp distribute t(*,block) onto p
+      real a(100,100)
+!$xmp align a(i,j) with t(i,j)
+!$xmp shadow a(0,1:1)
+      call f_sub3(a(:,1))
+      end subroutine
+\end{Fexample}
+\begin{Fexample}
+      subroutine f_sub3(x)
+      real x(100)
+      ...
+\end{Fexample}
+
+\clearpage
+
+\begin{myfigure}
+ \includegraphics[scale=0.7]{figs/fig5.25.eps}
+ \caption{Sequence Association of an Section of a Global Data as an
+ Actual Argument with a Local Dummy Argument}
+ \label{fig5.25}
+\end{myfigure}
+
+\item[Example 4]
+
 	   The actual argument {\tt a(1)} is an element of the global
 	   data, and the dummy argument {\tt x} is a local
 	   explicit-shape array. Sequence association is applied 
@@ -210,7 +264,7 @@ mappings (including their shadow attributes) must be identical.
 !$xmp distribute t(block) onto p
       real a(100)
 !$xmp align a(i) with t(i)
-!$xmp shadow a(1:1) 
+!$xmp shadow a(1:1)
       call f_sub2(a(1))
       end subroutine
 \end{Fexample}
@@ -227,7 +281,7 @@ mappings (including their shadow attributes) must be identical.
  \label{fig5.3}
 \end{myfigure}
 
-\item[Example 4]
+\item[Example 5]
 
 	   Even if either the global actual or dummy argument has a full
 	   shadow, the sequence association rule is the same in
@@ -235,8 +289,6 @@ mappings (including their shadow attributes) must be identical.
 	   {\tt a} is passed between these subroutines on each node, and
 	   each the local section of {\tt x} starts from the received
 	   address (Figure \ref{fig5.4}).
-
-\clearpage
 
 \begin{myfigure}
  \includegraphics[scale=0.7]{figs/fig5.4.eps}

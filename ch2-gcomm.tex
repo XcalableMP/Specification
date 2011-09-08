@@ -43,7 +43,8 @@ construct may be executed before the operation is complete.
        executed by all of the executing nodes, and each local variable
        referenced in the construct must have the same value among all of
        them.
- \item {\it async-id} must be an integer expression.
+ \item {\it async-id} must be an expression of type default integer, in
+       Fortran, or type {\tt int}, in C.
 \end{itemize}
 
 
@@ -149,7 +150,7 @@ There are three operating modes of the {\tt gmove} construct:
        construct on the owner nodes (origin) and the executing node
        (target) are completed when returning from the construct;
        otherwise, the construct is ''asynchronous'' and it is not
-       guaranteed until returning from the associating {\tt wait\_all}
+       guaranteed until returning from the associating {\tt wait\_async}
        construct.
 
  \item {\bf out mode}
@@ -164,7 +165,7 @@ There are three operating modes of the {\tt gmove} construct:
        the owner nodes (origin) and the executing node (target) are
        completed when returning from the construct; otherwise, the
        construct is ''asynchronous'' and it is not guaranteed until
-       returning from the associating {\tt wait\_all} construct.
+       returning from the associating {\tt wait\_async} construct.
 
 \end{itemize}
 
@@ -223,7 +224,8 @@ construct may be executed before the operation is complete.
        all elements of the distributed array appearing in the right-hand
        side of the associated assignment statement must reside in the
        executing node set.
- \item {\it async-id} must be an integer expression.
+ \item {\it async-id} must be an expression of type default integer, in
+       Fortran, or type {\tt int}, in C.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -369,8 +371,9 @@ operation among nodes.
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt reduction (} {\it reduction-kind} {\it
   :} {\it variable} {\openb}, {\it variable} {\closeb}... {\tt )}\\
- & \hspace{6cm} {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} 
- {\openb}{\tt on} {\it node-ref} $\vert$ {\it template-ref}{\closeb} \\
+ & \hspace{6cm} {\openb}{\tt on} {\it node-ref} $\vert$ {\it
+     template-ref}{\closeb} {\openb}{\tt async (} {\it async-id} {\tt
+     )}{\closeb} \\
 \end{tabular}
 
 \vspace{0.5cm}
@@ -398,8 +401,9 @@ where {\it reduction-kind} is one of:
  \hspace{-\parindent}
  \verb![C]! & \verb|#pragma xmp| {\tt reduction (} {\it reduction-kind} {\it
   :} {\it variable} {\openb}, {\it variable} {\closeb}... {\tt )}\\
- & \hspace{6cm} {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} 
-     {\openb}{\tt on} {\it node-ref} $\vert$ {\it template-ref}{\closeb} \\
+ & \hspace{6cm} {\openb}{\tt on} {\it node-ref} $\vert$ {\it
+     template-ref}{\closeb} {\openb}{\tt async (} {\it async-id} {\tt
+     )}{\closeb} \\
 \end{tabular}
 
 \vspace{0.5cm}
@@ -426,7 +430,15 @@ The {\tt reduction} construct performs a type of
 reduction operation specified by {\it reduction-kind} for the specified
 local variables among the node set specified by the {\tt on}
 clause and sets the reduction results to the variables in each
-node. The variable specified by {\it variable}, which is the target of the
+node.
+%
+Note that some of the reduction operation ({\tt FIRSTMAX}, {\tt
+FIRSTMIN}, {\tt LASTMAX}, and {\tt LASTMIN}) that could be specified in
+the {\tt reduction} clause of the {\tt loop} directive cannot be
+specified in the {\tt reduction} construct, because their semantics are
+not defined in it.
+%
+The variable specified by {\it variable}, which is the target of the
 reduction operation, is referred to as the ``\Term{reduction
 variable}''. Thus, after the reduction operation, the value of the
 reduction variable becomes the same in every node that performs the
@@ -478,7 +490,8 @@ case, a barrier operation is performed in each node set.
        be executed by all of the executing nodes, and each local variable
        referenced in the construct must have the same value among all of
        the executing nodes.
- \item {\it async-id} must be an integer expression.
+ \item {\it async-id} must be an expression of type default integer, in
+       Fortran, or type {\tt int}, in C.
  \item The node set specified by the {\tt on} clause must be a subset of the
        executing node set.
 \end{itemize}
@@ -618,14 +631,18 @@ from one node.
 \begin{tabular}{ll}
  \verb![F]! & \verb|!$xmp| {\tt bcast} \verb|(| {\it variable} 
  {\openb}, {\it variable}{\closeb}... \verb|)|
+ {\openb}{\tt from} {\it nodes-ref}{\closeb}\\
+ & \hspace{6cm} {\openb}{\tt on} {\it nodes-ref} $\vert$ {\it
+     template-ref}{\closeb}
  {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
- & \hspace{6cm} {\openb}{\tt from} {\it nodes-ref} {\openb}{\tt on} {\it
-  nodes-ref} $\vert$ {\it template-ref}{\closeb} \\
+
  \verb![C]! & \verb|#pragma xmp| {\tt bcast} \verb|(| {\it variable} 
  {\openb}, {\it variable}{\closeb}... \verb|)|
+     {\openb}{\tt from} {\it nodes-ref}{\closeb}\\
+ & \hspace{6cm} {\openb}{\tt on} {\it nodes-ref} $\vert$ {\it
+     template-ref}{\closeb}
  {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
- & \hspace{6cm} {\openb}{\tt from} {\it nodes-ref} {\openb}{\tt on} {\it
-  nodes-ref} $\vert$ {\it template-ref}{\closeb} \\
+
 \end{tabular}
 
 \subsubsection*{Description}
@@ -655,7 +672,8 @@ construct may be executed before the operation is complete.
       executed by all of the executing nodes, and each local variable
       referenced in the construct must have the same value among all of
       the executing nodes.
-\item {\it async-id} must be an integer expression.
+ \item {\it async-id} must be an expression of type default integer, in
+       Fortran, or type {\tt int}, in C.
 \item The node set specified by the {\tt on} clause must be a subset of the
       current executing node set.
 \item The source node specified by the {\tt from} clause must belong to
@@ -663,41 +681,42 @@ construct may be executed before the operation is complete.
 \end{itemize}
 
 
-\subsection{{\tt wait\_comm} Construct}
+\subsection{{\tt wait\_async} Construct}
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{wait\_comm}} construct guarantees an asynchronous
+The {\tt \Directive{wait\_async}} construct guarantees an asynchronous
 communication specified by {\it async-id}.
 
 \subsubsection*{Syntax}
-\Syntax{wait\_comm}
+\Syntax{wait\_async}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt wait\_comm ( {\it async-id} {\openb},
+\verb![F]! & \verb|!$xmp| {\tt wait\_async ( {\it async-id} {\openb},
  {\it async-id} {\closeb}... )} \\
-\verb![C]! & \verb|#pragma xmp| {\tt wait\_comm ( {\it async-id} {\openb},
+\verb![C]! & \verb|#pragma xmp| {\tt wait\_async ( {\it async-id} {\openb},
  {\it async-id} {\closeb}... )} \\
 \end{tabular}
 
 \subsubsection*{Description}
 
-The {\tt \Directive{wait\_comm}} construct blocks and therefore
+The {\tt \Directive{wait\_async}} construct blocks and therefore
 statements after it are not executed until all of the asynchronous
 communications specified by each of {\it async-id} are complete. 
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item {\it async-id} must be an integer expression.
+ \item {\it async-id} must be an expression of type default integer, in
+       Fortran, or type {\tt int}, in C.
 \item {\it async-id} must be associated with an asynchronous
       communciation by the {\tt async} clause of a communication
       construct or an {\tt async} construct.
-\item The {\tt wait\_comm} construct is global, which means that it must
+\item The {\tt wait\_async} construct is global, which means that it must
       be executed by all of the executing nodes, and each local variable
       referenced in the construct must have the same value among all of
       the executing nodes.
-\item The executing node set of the {\\tt wait\_comm} construct must be
+\item The executing node set of the {\\tt wait\_async} construct must be
       the same as that of the asynchronous communication specified by
       {\it async-id}.
 \item Every communication specified by each {\it async-id} must be
@@ -720,12 +739,12 @@ is performed asynchronously and therefore statements following it may be
 executed before the communication is complete.
 
 \subsubsection*{Example}
-\Example{wait\_comm}
+\Example{wait\_async}
 
 \begin{Fexample}
 !$xmp reflect (a) async(1)
       S1
-!$xmp wait_comm(1)
+!$xmp wait_async(1)
       S2
 \end{Fexample}
 
