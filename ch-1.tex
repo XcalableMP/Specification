@@ -203,6 +203,10 @@ the {\tt align} directive (see section \ref{sub:align}). Each fragment
 of a global data is allocated in the local memory of a node in the
 executing node set.
 %
+Note that the ``address'' of a global data is defined as that of its
+local section in each node and the results of any operations on such
+address are undefined.
+%
 %In contrast to a local-view programming model, a global-view programming
 %model is a model in which programmers express their algorithm and data
 %structure in their entirety, mapping them to the node set. The
@@ -210,7 +214,7 @@ executing node set.
 %to express how to distribute data and share the workload among
 %nodes. The variables in the global-view programming model appear as a
 %shared memory spanning the nodes.
-%
+
 Local data are all of the ones that are not global. They are replicated
 in the local memory of each node in the executing node set.
 
@@ -228,7 +232,7 @@ To accesse data in remote memory, explicit communication must be
 specified in such ways as the global comuunication constructs and
 the coarray assignments.
 
-Description on memory layout to be added.
+\underline{Description on memory layout to be added.}
 
 \section{Global-view Programming Model}
 

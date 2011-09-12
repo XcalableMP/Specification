@@ -24,7 +24,8 @@ having the shadow attribute.
 
 The {\tt reflect} construct updates each of the shadow object of the
 array specified by {\it array-name} with the value of its corresponding
-reflection source.
+reflection source. Note that the shadow objects for
+``obliquely-neighboring'' elements are also updated.
 
 %copies the value of the reflection source of
 %the reflect-object specified by {\it array-name} to all shadow
@@ -631,14 +632,14 @@ from one node.
 \begin{tabular}{ll}
  \verb![F]! & \verb|!$xmp| {\tt bcast} \verb|(| {\it variable} 
  {\openb}, {\it variable}{\closeb}... \verb|)|
- {\openb}{\tt from} {\it nodes-ref}{\closeb}\\
+ {\openb}{\tt from} {\it nodes-ref} $\vert$ {\it template-ref}{\closeb}\\
  & \hspace{6cm} {\openb}{\tt on} {\it nodes-ref} $\vert$ {\it
      template-ref}{\closeb}
  {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 
  \verb![C]! & \verb|#pragma xmp| {\tt bcast} \verb|(| {\it variable} 
  {\openb}, {\it variable}{\closeb}... \verb|)|
-     {\openb}{\tt from} {\it nodes-ref}{\closeb}\\
+ {\openb}{\tt from} {\it nodes-ref}  $\vert$ {\it template-ref}{\closeb}\\
  & \hspace{6cm} {\openb}{\tt on} {\it nodes-ref} $\vert$ {\it
      template-ref}{\closeb}
  {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
@@ -665,19 +666,20 @@ construct may be executed before the operation is complete.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item The variables specified by the sequence of {\it variable} must
-      either not be aligned or be replicated among nodes of the node set
-      specified by the {\tt on} clause.
-\item The {\tt bcast} construct is global, which means that it must be
-      executed by all of the executing nodes, and each local variable
-      referenced in the construct must have the same value among all of
-      the executing nodes.
+ \item The variables specified by the sequence of {\it variable} must
+       either not be aligned or be replicated among nodes of the node set
+       specified by the {\tt on} clause.
+ \item The {\tt bcast} construct is global, which means that it must be
+       executed by all of the executing nodes, and each local variable
+       referenced in the construct must have the same value among all of
+       the executing nodes.
  \item {\it async-id} must be an expression of type default integer, in
        Fortran, or type {\tt int}, in C.
-\item The node set specified by the {\tt on} clause must be a subset of the
-      current executing node set.
-\item The source node specified by the {\tt from} clause must belong to
-      the node set specified by the {\tt on} clause. 
+ \item The node set specified by the {\tt on} clause must be a subset of the
+       current executing node set.
+ \item The source node specified by the {\tt from} clause must belong to
+       the node set specified by the {\tt on} clause.
+ \item The source node specified by the {\tt from} clause must be one node.
 \end{itemize}
 
 

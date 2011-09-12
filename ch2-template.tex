@@ -51,8 +51,9 @@ template-spec}, then the default lower bound is 1.
 
 \subsubsection*{Synopsis}
 
-The \Term{template reference} expression specified in the {\tt on}
-clause of some directives is used to indirectly specify a node set.
+The \Term{template reference} expression specified in the {\tt on} or
+the {\tt from} clause of some directives is used to indirectly specify a
+node set.
 
 %The \Term{template reference} expression is used to reference a subset of
 %the referenced template.
@@ -588,8 +589,11 @@ When {\it shadow-width} is of the form ``\verb|*|'', the entire area of
 the array is allocated on each node, and all of the area that it does not
 own is regarded as shadow.
 %
-Note that this type of shadow is sometimes referred to as a ``full
-shadow.''
+This type of shadow is sometimes referred to as a ``full shadow.''
+
+Note that the shadow area of a multi-dimensional array include
+``obliquely-neighboring'' elements, which are the ones owned by the node 
+whose indices are different in more than one dimension.
 
 The data stored in the storage area declared by the {\tt shadow}
 directive is referred to as a \Term{shadow object}.
@@ -617,6 +621,40 @@ reflection source of the shadow object.
 \item The value specified by {\it shadow-width} must be a non-negative
       integer.
 \end{itemize}
+
+\subsubsection*{Example}
+\Example{shadow}
+
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{Fexample}
+!$xmp nodes p(4,4)
+!$xmp template t(64,64)
+!$xmp distribute t(block,block) onto p
+
+      real a(64,64)
+!$xmp align a(i,j) with t(i,j)
+!$xmp shadow a(1,1)
+\end{Fexample}
+\end{center}
+\end{minipage}
+%
+\hspace{0.5cm}
+%
+\begin{minipage}{0.4\hsize}
+\begin{center}
+\includegraphics[width=\hsize]{figs/Fig3.1.eps}
+\end{center}
+\end{minipage}
+
+\vspace{0.5cm}
+
+The node {\tt p(2,2)} has {\tt a(17:32,17:32)} as a data object, and
+{\tt a(16,16)}, {\tt a(17:32,16)}, {\tt a(33,16)}, {\tt a(16,17:32)},
+{\tt a(33,17:32)}, {\tt a(16,33)}, {\tt a(17:32,33)} and {\tt a(33,33)}
+as shadow objects. Among them, {\tt a(16,16)}, {\tt a(33,16)}, {\tt
+a(16,33)} and {\tt a(33,33)} are ``obliquely-neigboring'' elements of
+{\tt p(2,2)}.
 
 
 \subsection{{\tt template\_fix} Directive}
