@@ -593,7 +593,9 @@ This type of shadow is sometimes referred to as a ``full shadow.''
 
 Note that the shadow area of a multi-dimensional array include
 ``obliquely-neighboring'' elements, which are the ones owned by the node 
-whose indices are different in more than one dimension.
+whose indices are different in more than one dimension, and that the
+shadow area can be allocated also at the global lower and upper bound of
+an array.
 
 The data stored in the storage area declared by the {\tt shadow}
 directive is referred to as a \Term{shadow object}.
@@ -677,12 +679,13 @@ undefined template.
 % & [, {\tt distribute} ( {\it dist-format} [, {\it dist-format}] ...) \\
 %\end{tabular}
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt template\_fix} \verb|(| {\it dist-format} {\openb},
- {\it dist-format}{\closeb}... \verb|)|\\
+\verb![F]! & \verb|!$xmp| {\tt template\_fix} {\openb}\verb|(| {\it
+ dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)|{\closeb}\\
  & {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb} ... \verb|)|{\closeb} \\
 & \\
-\verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} \verb|(| {\it dist-format}
-     {\openb}, {\it dist-format}{\closeb} ...\verb|)|\\
+\verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} {\openb}\verb|(|
+     {\it dist-format} {\openb}, {\it dist-format}{\closeb}
+     ...\verb|)|{\closeb}\\
  & {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb} ... \verb|)|{\closeb} \\
 \end{tabular}
 \vspace{0.3cm}
@@ -712,7 +715,7 @@ and {\it dist-format} is one of:
 The {\tt template\_fix} directive is an executable directive to fix the
 shape of the template that is initially undefined, by specifying the
 sizes of each dimension and the distribution format at runtime. The array
-aligned to an initially undefined template must be an allocatable
+aligned with an initially undefined template must be an allocatable
 array, which cannot be allocated until the template is fixed by the
 {\tt template\_fix} directive. Any executable directives that have such a
 template in their {\tt on} clause must not be executed until the
@@ -720,22 +723,20 @@ template is fixed by the
 {\tt template\_fix} directive. Any undefined template can be fixed only
 once by the {\tt template\_fix} directive. 
 
-Note that the meaning of
-{\it dist-format} in the {\tt distribute} clause is the same as that in
-the {\tt distribute} directive.
+Note that the meaning of the sequence of {\it dist-format} is the same
+as that in the {\tt distribute} directive.
 
 \subsubsection*{Restrictions}
 \begin{itemize}
 \item When the {\tt template\_fix} directive is executed at runtime, the
-template specified by {\it template-name} must be undefined.
-\item The sequence
-of {\it dist-format} in the {\tt template\_fix} directive and the
+      template specified by {\it template-name} must be undefined.
+\item If the sequence of {\it dist-format} exists in the {\tt
+      template\_fix} directive, it must be identical with the 
       sequence of {\it dist-format} in the {\tt distribute} directive
-      for the template specified by {\it template-name} must be
-      identical, except for a parenthetical {\it int-array} following
-      {\tt gblock}.
-\item Either the sequence of {\it template-spec} or {\tt distribute}
-  clause must be given. 
+      for the template specified by {\it template-name}, except for a
+      parenthetical {\it int-array} following {\tt gblock}.
+\item Either the sequence of {\it dist-format} or the sequence of {\it
+      template-spec} must be given. 
 \item The {\tt template\_fix} directive must appear in executable
       context.
 \end{itemize}

@@ -13,11 +13,26 @@ having the shadow attribute.
 
 \begin{tabular}{ll}
  \verb![F]! & \verb|!$xmp| {\tt reflect} \verb|(| {\it array-name}
- {\openb}, {\it array-name}{\closeb}... \verb|)|
- {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
-\verb![C]! & \verb|#pragma xmp| {\tt reflect} \verb|(| {\it array-name}
-     {\openb}, {\it array-name}{\closeb}... \verb|)|
+ {\openb}, {\it array-name}{\closeb}... \verb|)|\\
+ &\hspace{3cm} {\openb}{\tt width (} {\it reflect-width} {\openb}, {\it
+     reflect-width}{\closeb}... {\tt )}{\closeb}
      {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
+\verb![C]! & \verb|#pragma xmp| {\tt reflect} \verb|(| {\it array-name}
+     {\openb}, {\it array-name}{\closeb}... \verb|)|\\
+ &\hspace{3cm} {\openb}{\tt width (} {\it reflect-width} {\openb}, {\it
+     reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
+\end{tabular}
+
+\vspace{0.3cm}
+
+where {\it reflect-width} must be one of:
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\openb}{\tt /periodic/}{\closeb} {\it int-expr} \\
+                & {\openb}{\tt /periodic/}{\closeb} {\it int-expr} : {\it int-expr}
 \end{tabular}
 
 \subsubsection*{Description}
@@ -33,6 +48,25 @@ construct.
 %objects.
 %This directive may execute the communications.
 
+When the {\tt width} clause is specified and of the form ``{\it
+int-expr} : {\it int-expr},'' the shadow area of the width specified by
+the first {\it int-expr} at the upper bound and that specified by the
+second one at the lower bound in the specified dimension are updated.
+%
+When the {\tt width} clause is specified and of the form {\it int-expr},
+the shadow areas of the same width specified at both the upper
+and lower bounds in the specified dimension are updated.
+%
+When the {\tt width} clause is omitted, whole shadow area of the array
+is updated.
+
+Particularly when the {\tt /periodic/} modifier is specified in {\it
+reflect-width}, the update of the shadow object in the dimension is
+``periodic,'' which means that the shadow object at the global lower
+(upper) bound is treated as if corresponding to the data object of the
+global upper (lower) bound and updated with that value in the {\tt
+reflect} construct.
+
 When the {\tt async} clause is specified, the statements following this
 construct may be executed before the operation is complete.
 
@@ -41,6 +75,8 @@ construct may be executed before the operation is complete.
 \begin{itemize}
  \item The arrays specified by the sequence of {\it array-name} must be
        mapped onto the executing node set.
+ \item The reflect width of each dimension specified by {\it
+       reflect-width} must not exceed the shadow width of the arrays.
  \item The {\tt reflect} construct is global, which means that it must be
        executed by all of the executing nodes, and each local variable
        referenced in the construct must have the same value among all of

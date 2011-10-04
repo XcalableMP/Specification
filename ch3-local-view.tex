@@ -11,9 +11,9 @@ object as an alias to the local section of a distributed array.
 \Syntax{local\_alias}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt local\_alias ::} {\it local-array-name}
+\verb![F]! & \verb|!$xmp| {\tt local\_alias} {\it local-array-name}
 \verb|=>| {\it global-array-name} \\
-\verb![C]! & \verb|#pragma xmp| {\tt local\_alias ::} {\it local-array-name}
+\verb![C]! & \verb|#pragma xmp| {\tt local\_alias} {\it local-array-name}
 \verb|=>| {\it global-array-name} \\
 \end{tabular}
 
@@ -67,7 +67,7 @@ array is allocated.
 !$xmp shadow (1) :: a
 
       real :: b
-!$xmp local_alias :: b => a
+!$xmp local_alias b => a
 \end{Fexample}
 
 The array {\tt a} is distributed by block onto four nodes.
@@ -101,7 +101,7 @@ upper shadow & 27      \\ \hline
 !$xmp align (i) with t(i) :: a
 
       real :: b(0:)
-!$xmp local_alias :: b => a
+!$xmp local_alias b => a
 \end{Fexample}
 
 An array {\tt a} is distributed cyclically onto four nodes.
@@ -136,7 +136,7 @@ correspondence of each element of a to that of {\tt b}.
 !$xmp align (i) with t(i) :: a
 
       real :: b(:)[*]
-!$xmp local_alias :: b => a
+!$xmp local_alias b => a
 
       Åc
 
