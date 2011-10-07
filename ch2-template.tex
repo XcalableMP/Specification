@@ -644,9 +644,13 @@ reflection source of the shadow object.
 \hspace{0.5cm}
 %
 \begin{minipage}{0.4\hsize}
+\begin{figure}[H]
 \begin{center}
-\includegraphics[width=\hsize]{figs/Fig3.1.eps}
+\includegraphics[width=\hsize]{figs/fig3.1.eps}
 \end{center}
+\caption{Example of Shadow of a Two-dimensional Array}
+\label{fig3.1}
+\end{figure}
 \end{minipage}
 
 \vspace{0.5cm}
@@ -654,9 +658,9 @@ reflection source of the shadow object.
 The node {\tt p(2,2)} has {\tt a(17:32,17:32)} as a data object, and
 {\tt a(16,16)}, {\tt a(17:32,16)}, {\tt a(33,16)}, {\tt a(16,17:32)},
 {\tt a(33,17:32)}, {\tt a(16,33)}, {\tt a(17:32,33)} and {\tt a(33,33)}
-as shadow objects. Among them, {\tt a(16,16)}, {\tt a(33,16)}, {\tt
-a(16,33)} and {\tt a(33,33)} are ``obliquely-neigboring'' elements of
-{\tt p(2,2)}.
+as shadow objects (Figure \ref{fig3.1}). Among them, {\tt a(16,16)},
+{\tt a(33,16)}, {\tt a(16,33)} and {\tt a(33,33)} are
+``obliquely-neigboring'' elements of {\tt p(2,2)}.
 
 
 \subsection{{\tt template\_fix} Directive}

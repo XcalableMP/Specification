@@ -85,6 +85,37 @@ construct may be executed before the operation is complete.
        Fortran, or type {\tt int}, in C.
 \end{itemize}
 
+\subsubsection*{Example}
+\Example{reflect}
+\Example{shadow}
+
+\begin{Fexample}
+!$xmp nodes p(4)
+!$xmp template t(100)
+!$xmp distribute t(block) onto p:: t
+
+      real a(100)
+!$xmp align a(i) with t(i)
+!$xmp shdow a(1)
+
+      ...
+!$xmp reflect (a) width (/periodic/1)
+\end{Fexample}
+
+\begin{myfigure}
+\begin{center}
+\includegraphics[width=0.7\hsize]{figs/fig3.2.eps}
+\end{center}
+\caption{Example of Periodic Shadow Reflection}
+\label{fig3.2}
+\end{myfigure}
+
+The {\tt shadow} directive allocates ``periodic'' shadow areas 
+The {\tt reflect} construct updates ``periodically'' the shadow area of
+the array {\tt a} (Figure \ref{fig3.2}). A periodic shadow at the lower
+bound on the node {\tt p(1)} is updated with the value of {\tt a(100)}
+and that at the upper bound on {\tt p(4)} with the value of {\tt a(1)}.
+
 
 \subsection{{\tt gmove} Construct}
 

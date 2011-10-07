@@ -1,5 +1,43 @@
+\chapter{Intrinsic and library procedures}
 
-\chapter{Runtime library}
+This specification defines various procedures for system inquiry,
+synchronization, computations, etc. The procedures are provided as
+intrinsic procedures in Fortran and library procedures in C.
+
+\section{Fortran}
+
+\subsection{Miscellaneous intrinsic procedures}
+
+\begin{itemize}
+ \item {\tt xmp\_desc\_t d = xmp\_dec\_of(XMPóvëf)}
+ \item {\tt xmp\_all\_node\_num}
+ \item {\tt xmp\_all\_num\_nodes}
+ \item {\tt xmp\_node\_num}
+ \item {\tt xmp\_num\_nodes}
+ \item {\tt xmp\_mpi\_comm}
+ \item {\tt xmp\_wtime}
+ \item {\tt xmp\_async\_test}
+ \item {\tt xmp\_gtol(xmp\_desc\_t d, int g\_dims[], int l\_dims[])}
+\end{itemize}
+
+\subsection{Computational intrinsic procedures}
+
+\begin{itemize}
+ \item {\tt x = xmp\_scatter(a, idx1, idx2, ...)}
+ \item {\tt x = xmp\_gather(a, idx1, idx2, ...)}
+ \item {\tt v = xmp\_pack(a, mask)}
+ \item {\tt a = xmp\_unpack(v, mask)}
+ \item {\tt x = xmp\_sort\_up(a)}
+ \item {\tt x = xmp\_sort\_down(a)}
+ \item {\tt x = xmp\_cshift(a, shift, dim)}
+ \item {\tt x = xmp\_eoshift(a, shift, b, dim)}
+ \item {\tt m = xmp\_transpose(m)}
+\end{itemize}
+
+
+\section{C}
+
+\subsection{Miscellaneous library procedures}
 
 \begin{itemize}
  \item {\tt xmp\_desc\_t d = xmp\_dec\_of(XMPóvëf)}
@@ -12,5 +50,18 @@
  \item {\tt xmp\_async\_test}
  \item {\tt xmp\_gtol(xmp\_desc\_t d, int g\_dims[], int l\_dims[])}
  \item {\tt xmp\_malloc}
- \item îzóÒèàóùä÷êî
+\end{itemize}
+
+\subsection{Computational library procedures}
+
+\begin{itemize}
+ \item {\tt x = xmp\_scatter(a, idx1, idx2, ...)}
+ \item {\tt x = xmp\_gather(a, idx1, idx2, ...)}
+ \item {\tt v = xmp\_pack(a, mask)}
+ \item {\tt a = xmp\_unpack(v, mask)}
+ \item {\tt x = xmp\_sort\_up(a)}
+ \item {\tt x = xmp\_sort\_down(a)}
+ \item {\tt x = xmp\_cshift(a, shift, dim)}
+ \item {\tt x = xmp\_eoshift(a, shift, b, dim)}
+ \item {\tt m = xmp\_transpose(m)}
 \end{itemize}
