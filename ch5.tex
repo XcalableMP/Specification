@@ -9,7 +9,7 @@ intrinsic procedures in Fortran and library procedures in C.
 \subsection{Miscellaneous intrinsic procedures}
 
 \begin{itemize}
- \item {\tt xmp\_desc\_t d = xmp\_dec\_of(XMP—v‘f)}
+ \item {\tt xmp\_desc\_t d = xmp\_dec\_of(XMP object)}
  \item {\tt xmp\_all\_node\_num}
  \item {\tt xmp\_all\_num\_nodes}
  \item {\tt xmp\_node\_num}
@@ -55,13 +55,13 @@ intrinsic procedures in Fortran and library procedures in C.
 \subsection{Computational library procedures}
 
 \begin{itemize}
- \item {\tt x = xmp\_scatter(a, idx1, idx2, ...)}
- \item {\tt x = xmp\_gather(a, idx1, idx2, ...)}
- \item {\tt v = xmp\_pack(a, mask)}
- \item {\tt a = xmp\_unpack(v, mask)}
- \item {\tt x = xmp\_sort\_up(a)}
- \item {\tt x = xmp\_sort\_down(a)}
- \item {\tt x = xmp\_cshift(a, shift, dim)}
- \item {\tt x = xmp\_eoshift(a, shift, b, dim)}
- \item {\tt m = xmp\_transpose(m)}
+ \item {\tt x = xmp\_scatter(desc\_a, idx1, idx2, ...)}
+ \item {\tt x = xmp\_gather(desc\_a, idx1, idx2, ...)}
+ \item {\tt v = xmp\_pack(desc\_a, mask)}
+ \item {\tt a = xmp\_unpack(desc\_v, mask)}
+ \item {\tt x = xmp\_sort\_up(desc\_a)}
+ \item {\tt x = xmp\_sort\_down(desc\_a)}
+ \item {\tt x = xmp\_cshift(desc\_a, shift, dim)}
+ \item {\tt x = xmp\_eoshift(desc\_a, shift, b, dim)}
+ \item {\tt m = xmp\_transpose(desc\_m)}
 \end{itemize}

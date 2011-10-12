@@ -17,6 +17,8 @@ repeated. \\
 
 \section{Directive Format}
 
+\subsection{General Rule}
+
 In {\Fort}, {\XMP} directives are specified using special comments that
 are identified by unique sentinels {\tt\verb|!$xmp|}. The rules of
 {\Fort} directives in fixed source format and free source format follow
@@ -34,9 +36,9 @@ the \verb|#pragma| mechanism provided by the {\C} standards.
 
 \vspace{0.5cm}
 
-Additionally, in {\Fort}, directives of the {\it attribute form}
-analogous to type declaration statements in Fortran using the ``{\tt
-::}'' punctuation can also be used.
+%Additionally, in {\Fort}, directives of the {\it attribute form}
+%analogous to type declaration statements in Fortran using the ``{\tt
+%::}'' punctuation can also be used.
 
 Directives are classified as declarative directives and executable
 directives. The declarative directive is a directive that may only be
@@ -88,6 +90,78 @@ and, in C, the associated statement can be a compound-statement.
 \end{tabular}
 
 
+\subsection{Combined Directive}
 
+\subsubsection*{Synopsis}
 
+For the Fortran base language, declarative directives can be specified
+in one combined directive, which is analogous to type declaration
+statements in Fortran using the ``{\tt ::}'' punctuation.
 
+\subsubsection*{Syntax}
+
+\begin{center}
+\begin{tabular}{llll}
+\verb![F]! & \verb|!$xmp| {\it combined-directive} & {\bf is} & {\it
+ combined-attribute} {\openb}, {\it combined-attribute}
+ {\closeb}... {\tt ::} \\
+ & & & {\it combined-decl} {\openb}, {\it combined-decl}
+ {\closeb}...
+\end{tabular}
+\end{center}
+
+{\it combined-attribute} is one of:
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\tt nodes} \\
+ & {\tt template} \\
+ & {\tt distribute} \verb|(|{\it dist-format} {\openb}, {\it
+     dist-format}{\closeb}... \verb|)| {\tt onto} {\it nodes-name} \\
+ & {\tt align} \verb|(| {\it align-source} {\openb}, {\it
+     align-source}{\closeb}... \verb|)| \\
+ & \hspace{4cm}{\tt with} {\it template-name} \verb|(|{\it
+     align-subscript} {\openb}, {\it
+     align-subscript}{\closeb}... \verb|)| \\
+ & {\tt shadow} \verb|(| {\it shadow-width} {\openb},
+     {\it shadow-width}{\closeb}... \verb|)| \\
+ & {\tt dimension} \verb|(| {\it explicit-shape-spec} {\openb},
+     {\it explicit-shape-spec}{\closeb}... \verb|)|
+\end{tabular}
+
+\vspace{0.3cm}
+
+{\it combined-decl} is one of:
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
+ {\it nodes-spec} {\closeb}... \verb|)| \\
+ & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
+     {\closeb}... \verb|)| {\tt = *} \\
+ & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
+     {\closeb}... \verb|)| {\tt =} {\it nodes-ref} \\
+ & {\it template-name} \verb|(| {\it template-spec} {\openb}, {\it
+     template-spec} {\closeb}... \verb|)| \\
+ & {\it array-name}
+\end{tabular}
+
+\subsubsection*{Description}
+
+A combined directives is interpreted as if an object corresponding to
+each {\it combined-decl} is declared in a directive corresponding to
+each {\it combined-attribute}, where all restrictions of each directive,
+in addition to the following ones, are applied.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item The same kind of {\it combined-attribute} must not appear more
+       than once in a given {\it combined-directive}.
+ \item If the {\tt dimension} attribute appears in a {\it
+       combined-directive}, any object to which it applies must be
+       declared with either the {\tt template} or the {\tt nodes}
+       attribute.
+\end{itemize}
