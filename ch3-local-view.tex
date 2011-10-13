@@ -561,11 +561,33 @@ not always evaluated to the same value.
 
 \section{Dynamic Allocation of Global Data in C}
 
-It is possible to allocate global arrays at runtime only when they are
-one-dimensional.
-
-The specification of {\tt xmp\_malloc} is described in
+In C, it is possible to allocate global arrays at runtime only when they
+are one-dimensional.
+%
+Such allocation is done through the following steps.
+%
+\begin{enumerate}
+ \item Declare a pointer to an object of the type of the global array to
+       be allocated.
+ \item Align the pointer with a template as if it were a one-dimensional
+       array.
+ \item Allocate a storage of the global size with the {\tt xmp\_malloc}
+       runtime library routine and assign the result value to the
+       pointer on each node.
+\end{enumerate}
+%
+The specification of {\tt xmp\_malloc} is described in Chapter
 \ref{chap:Intrinsic and library procedures}.
+
+\subsection*{Example}
+
+A pointer {\tt p} to a float is declared in line 5 and aligned with a
+template {\tt t} in line 6. {\tt t} is initially undefined and fixed by
+the {\tt template\_fix} directive in line 10. The storage for the global
+data, that is, each of the local section is allocated with {\tt
+xmp\_malloc} and {\tt p} is set to point it on each node in line 12. For
+details of the {\tt xmp\_desc\_of} runtime library routine, refer to
+Chapter \ref{chap:Intrinsic and library procedures}.
 
 \begin{Cexample}
 #pragma nodes p(NP)
