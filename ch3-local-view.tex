@@ -532,3 +532,52 @@ int B[5];
     ...
 A[5:9] = B[0:4]; 
 \end{Cexample}
+
+
+\section{Pointer to Global Data in C}
+
+\subsection{Name of Global Array}
+
+The name of a global array is considered to represent an abstract object
+in the {\XMP} language. It is not interpreted as the pointer to it,
+while the name of a local array is.
+
+However, the name of a global array appeared in an expression is
+evaluated to the pointer to the base address of its local section on
+each node. The pointer, as a normal (local) pointer, can be operated on
+each node.
+
+\subsection{The Address-of Operator}
+
+The result of the address-of operator (``{\tt \&}'') applied to an
+element of a global array is the pointer to the corresponding element of
+its local section. Note that the value of the result pointer is defined
+only on the node that owns the element. The pointer, as a normal (local)
+pointer, can be operated on the node.
+
+As a result, for a global array {\tt a}, {\tt a} and {\tt \&a[0]} are
+not always evaluated to the same value.
+
+
+\section{Dynamic Allocation of Global Data in C}
+
+It is possible to allocate global arrays at runtime only when they are
+one-dimensional.
+
+The specification of {\tt xmp\_malloc} is described in
+\ref{chap:Intrinsic and library procedures}.
+
+\begin{Cexample}
+#pragma nodes p(NP)
+#pragma xmp template t(:)
+#pragma xmp distribute t(block) onto p
+
+float *p;
+#pragma xmp align p[i] with t(i)
+
+...
+
+#pragma xmp template_fix t(N)
+
+P = (float *)xmp_malloc(xmp_desc_of(p), N);
+\end{Cexample}
