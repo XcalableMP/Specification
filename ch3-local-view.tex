@@ -368,7 +368,7 @@ any node.
 
 \chapter{Base Language Extensions}
 
-\section{Array section notation in C}
+\section{Array Section Notation in C}
 
 \subsubsection*{Synopsis}
 
@@ -422,13 +422,13 @@ step} down to the smallest.
 %section of size 4 containing every third element of {\tt B} with indices
 %between 1 and 10 (i.e., indices 1, 4, 7, 10).
 
-When {\it base} is omitted, it is assumed that '0' is specified.
+When {\it base} is omitted, it is assumed that ``0'' is specified.
 %
 When {\it length} is omitted, it is assumed that an integer obtained by
 subtracting the value of {\it base} from the size of the dimension of
 the array is specified.
 %
-When {\it step} is omitted, it is assumed that '1' is specified.
+When {\it step} is omitted, it is assumed that ``1'' is specified.
 
 An array section forms a virtual array containing the set of elements
 from the original array determined by all possible subscript lists
@@ -480,7 +480,7 @@ Assuming that an array {\tt A} is declared by the following statement,
  & {\tt A[:]} & the whole of {\tt A} \\
 \end{tabular}
 
-\section{Array assignment statements in C}
+\section{Array Assignment Statements in C}
 \label{sec:Array assignment statements in C}
 
 \subsubsection*{Synopsis}
@@ -560,6 +560,7 @@ not always evaluated to the same value.
 
 
 \section{Dynamic Allocation of Global Data in C}
+\label{sec:Dynamic Allocation of Global Data in C}
 
 In C, it is possible to allocate global arrays at runtime only when they
 are one-dimensional.
@@ -572,7 +573,7 @@ Such allocation is done through the following steps.
  \item Align the pointer with a template as if it were a one-dimensional
        array.
  \item Allocate a storage of the global size with the {\tt xmp\_malloc}
-       runtime library routine and assign the result value to the
+       library procedure and assign the result value to the
        pointer on each node.
 \end{enumerate}
 %
@@ -586,7 +587,7 @@ template {\tt t} in line 6. {\tt t} is initially undefined and fixed by
 the {\tt template\_fix} directive in line 10. The storage for the global
 data, that is, each of the local section is allocated with {\tt
 xmp\_malloc} and {\tt p} is set to point it on each node in line 12. For
-details of the {\tt xmp\_desc\_of} runtime library routine, refer to
+details of the {\tt xmp\_desc\_of} library procedure, refer to
 Chapter \ref{chap:Intrinsic and library procedures}.
 
 \begin{Cexample}

@@ -20,17 +20,28 @@ repeated. \\
 \subsection{General Rule}
 
 In {\Fort}, {\XMP} directives are specified using special comments that
-are identified by unique sentinels {\tt\verb|!$xmp|}. The rules of
-{\Fort} directives in fixed source format and free source format follow
-those in {\OMP} and HPF.  In {\C}, {\XMP} directives are specified using
-the \verb|#pragma| mechanism provided by the {\C} standards.
+are identified by unique sentinels {\tt\verb|!$xmp|}. An {\XMP}
+directive follows the rules for comment lines of either the Fortran free
+or fixed source form, depending on the source form of the surrounding
+program unit. {\XMP} directives in {\Fort} are case-insensitive.
 
 \vspace{0.5cm}
 
 \Syntax{directive}
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\it directive-name clause} \\
-& \\
+\end{tabular}
+
+\vspace{0.5cm}
+
+In {\C}, {\XMP} directives are specified using the \verb|#pragma|
+mechanism provided by the {\C} standards. {\XMP} directives in {\C} are
+case-sensitive.
+
+\vspace{0.5cm}
+
+\Syntax{directive}
+\begin{tabular}{ll}
 \verb![C]! & \verb|#pragma xmp| {\it directive-name clause} \\
 \end{tabular}
 
@@ -94,9 +105,9 @@ and, in C, the associated statement can be a compound-statement.
 
 \subsubsection*{Synopsis}
 
-For the Fortran base language, declarative directives can be specified
-in one combined directive, which is analogous to type declaration
-statements in Fortran using the ``{\tt ::}'' punctuation.
+For the Fortran base language, multiple attributes can be specified
+in one combined declarative directive, which is analogous to type
+declaration statements in Fortran using the ``{\tt ::}'' punctuation.
 
 \subsubsection*{Syntax}
 
@@ -132,25 +143,19 @@ statements in Fortran using the ``{\tt ::}'' punctuation.
 
 \vspace{0.3cm}
 
-{\it combined-decl} is one of:
+and {\it combined-decl} is one of:
 
 \vspace{0.3cm}
 
 \begin{tabular}{ll}
- \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
- {\it nodes-spec} {\closeb}... \verb|)| \\
- & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
-     {\closeb}... \verb|)| {\tt = *} \\
- & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
-     {\closeb}... \verb|)| {\tt =} {\it nodes-ref} \\
- & {\it template-name} \verb|(| {\it template-spec} {\openb}, {\it
-     template-spec} {\closeb}... \verb|)| \\
+ \hspace{0.5cm} & {\it nodes-decl} \\
+ & {\it template-decl} \\
  & {\it array-name}
 \end{tabular}
 
 \subsubsection*{Description}
 
-A combined directives is interpreted as if an object corresponding to
+A combined directive is interpreted as if an object corresponding to
 each {\it combined-decl} is declared in a directive corresponding to
 each {\it combined-attribute}, where all restrictions of each directive,
 in addition to the following ones, are applied.

@@ -10,70 +10,70 @@ The {\tt nodes} directive declares a named node array.
 \Syntax{nodes}
 \subsubsection*{Syntax}
 
-{\small
 \begin{tabular}{ll}
-\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
-     {\it nodes-spec} {\openb}, {\it nodes-spec}
-     {\closeb}... \verb|)| \\
-\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
-     {\it nodes-spec} {\openb}, {\it nodes-spec}
-     {\closeb}... \verb|)| {\tt = *}\\
-\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
-     {\it nodes-spec} {\openb}, {\it nodes-spec}
-     {\closeb}... \verb|)| {\tt =} {\it nodes-ref}\\
+\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-decl} {\openb},
+ {\it nodes-decl} {\closeb}...\\
 & \\
-\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
-     \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
-     {\closeb}... \verb|)| \\
-\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
-     \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
-     {\closeb}... \verb|)| {\tt = *} \\
-\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
-     \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
-     {\closeb}... \verb|)| {\tt =} {\it nodes-ref} \\
+\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-decl} {\openb},
+ {\it nodes-decl} {\closeb}...\\
 \end{tabular}
-}
+
+%\begin{tabular}{ll}
+%\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
+%     {\it nodes-spec} {\openb}, {\it nodes-spec}
+%     {\closeb}... \verb|)| \\
+%\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
+%     {\it nodes-spec} {\openb}, {\it nodes-spec}
+%     {\closeb}... \verb|)| {\tt = *}\\
+%\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
+%     {\it nodes-spec} {\openb}, {\it nodes-spec}
+%     {\closeb}... \verb|)| {\tt =} {\it nodes-ref}\\
+%& \\
+%\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
+%     \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
+%     {\closeb}... \verb|)| \\
+%\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
+%     \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
+%     {\closeb}... \verb|)| {\tt = *} \\
+%\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}
+%     \verb|(| {\it nodes-spec} {\openb}, {\it nodes-spec}
+%     {\closeb}... \verb|)| {\tt =} {\it nodes-ref} \\
+%\end{tabular}
 
 \vspace{0.3cm}
 
-where {\it nodes-spec} must be one of:
+where {\it nodes-decl} is one of:
 
-\hspace{\hsize}
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
+ {\it nodes-spec} {\closeb}... \verb|)| \\
+ \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
+     {\it nodes-spec} {\closeb}... \verb|)| {\tt = *} \\
+ \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
+     {\it nodes-spec} {\closeb}... \verb|)| {\tt =} {\it nodes-ref} \\
+\end{tabular}
+
+\vspace{0.3cm}
+
+and {\it nodes-spec} must be one of:
+
+\vspace{0.3cm}
 
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\it int-expr} \\
  \hspace{0.5cm} & {\tt *} \\
 \end{tabular}
 
-%{\small
-%\begin{tabular}{ll}
-%\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name}({\it nodes-size})
-% [, {\it nodes-name}({\it nodes-size})]... \\
-%\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name}({\it nodes-size})
-%     [, {\it nodes-name}({\it nodes-size})]... {\tt = *}\\
-%\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name}({\it nodes-size})
-%     [, {\it nodes-name}({\it nodes-size})]... {\tt =} {\it nodes-ref}\\
-%& \\
-%\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}({\it
-%     nodes-size}) [, {\it nodes-name}({\it nodes-size})]... \\
-%\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}({\it
-%     nodes-size}) [, {\it nodes-name}({\it nodes-size})]... {\tt = *} \\
-%\verb![C]!&\verb|#pragma xmp| {\tt nodes} {\it nodes-name}({\it
-%     nodes-size}) [, {\it nodes-name}({\it nodes-size})]... {\tt =} {\it
-%     nodes-ref}\\
-%\end{tabular}
-%}
-%\vspace{0.3cm}
-
-%where {\it nodes-size} is a positive integer expression.
 
 \subsubsection*{Description}
 
 The {\tt nodes} directive declares a node array that corresponds to a
 node set.
 
-The first form is used to declare a node array that corresponds to the
-entire node set.
+The first form of the {\tt nodes} directive is used to declare a node
+array that corresponds to the entire node set.
 %The second and third forms declare a new node array with a name, a
 %dimension, and a size in order to reference a set of nodes.
 The second form is used to declare a node array that corresponds to the
@@ -104,7 +104,7 @@ second form, or the referenced node set in the third form.
 %  conflict with other names in class (1).
 \item {\it nodes-name} must not conflict with any other local name in
       the same scoping unit.
-\item In {\Fort}, the second form cannot be used in either the main
+\item \verb![F]! The second form cannot be used in either the main
       program or a module.
 \item {\it nodes-spec} can be ``{\tt *}'' only in the last dimension.
 \item {\it nodes-ref} must not reference {\it nodes-name} either
@@ -126,7 +126,7 @@ second form, or the referenced node set in the third form.
 The following are examples of the first and the third forms appeared in
 the main program. Since the node array {\tt p}, which corresponds to the
 entire node set, is declared to be of size 16, this program must be
-executed on 16 nodes.
+executed by 16 nodes.
 
 %Since the declaration of node array {\tt p} specifies
 %16 nodes as its size, this program must be executed with 16 nodes.
@@ -279,8 +279,8 @@ array.
 %
 Thus, a node reference {\tt p($s_1$, ..., $s_{k-1}$, *, $s_{k+1}$, ...,
 $s_n$)} is interpreted as {\tt p($s_1$, ..., $s_{k-1}$, $j_k$,
-$s_{k+1}$, ..., $s_n$)} on the node corresponding to {\tt p($j_1$, ...,
-$j_{k-1}$, $j_k$, $j_{k+1}$, ..., $j_n$)}.
+$s_{k+1}$, ..., $s_n$)} on the node {\tt p($j_1$, ..., $j_{k-1}$, $j_k$,
+$j_{k+1}$, ..., $j_n$)}.
 
 %Thus, the following node is referenced by name with the $k$-th subscript
 %``{\tt *}'':
@@ -422,7 +422,7 @@ integer variable.
 \subsection{Correspondence between Node Arrays}
 
 If one node array and the other have the same shape and correspond to
-the same node set, an element of the one node array and the
-corresponding element of the other are assigned to the same node;
+the same node set, an element of the one node array and the element of
+the other are assigned to the same node;
 %
 otherwise, correspondence between any two node arrays is not specified.

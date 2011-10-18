@@ -10,17 +10,37 @@ The {\tt \Directive{template}} directive declares a template.
 \Syntax{template}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp template| {\it template-name} \verb|(| {\it template-spec} 
-{\openb}, {\it template-spec} {\closeb}... \verb|)| \\
+\verb![F]! & \verb|!$xmp template| {\it template-decl} {\openb}, {\it
+ template-decl} {\closeb}... \\
 & \\
-\verb![C]! & \verb|#pragma xmp template| {\it template-name} \verb|(| {\it template-spec} 
-{\openb}, {\it template-spec} {\closeb}... \verb|)| \\
+\verb![C]! & \verb|#pragma xmp template| {\it template-decl} {\openb},
+     {\it template-decl} {\closeb}... \\
 \end{tabular}
+
+%\begin{tabular}{ll}
+%\verb![F]! & \verb|!$xmp template| {\it template-name} \verb|(| {\it template-spec} 
+%{\openb}, {\it template-spec} {\closeb}... \verb|)| \\
+%& \\
+%\verb![C]! & \verb|#pragma xmp template| {\it template-name} \verb|(| {\it template-spec} 
+%{\openb}, {\it template-spec} {\closeb}... \verb|)| \\
+%\end{tabular}
+
 \vspace{0.3cm}
 
-where {\it template-spec} must be one of:
+where {\it template-decl} is:
 
-\hspace{\hsize}
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it template-name} \verb|(| {\it template-spec}
+ {\openb}, {\it template-spec} {\closeb}... \verb|)|
+\end{tabular}
+
+\vspace{0.3cm}
+
+and {\it template-spec} must be one of:
+
+\vspace{0.3cm}
 
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\openb}{\it int-expr} {\tt :}{\closeb} {\it int-expr} \\
@@ -30,9 +50,9 @@ where {\it template-spec} must be one of:
 \subsubsection*{Description}
 
 The {\tt template} directive declares a template with the shape specified by
-the sequence of {\it template-spec}. If every {\it template-spec} is
+the sequence of {\it template-spec}'s. If every {\it template-spec} is
 ``:'', then the shape of the template is initially undefined. This
-template must not be referenced until the shape is defined by {\it
+template must not be referenced until the shape is defined by {\tt
 template\_fix} directives (see section \ref{subsec:template_fix
 directive}) at runtime. If {\it int-expr} is specified as {\it
 template-spec}, then the default lower bound is 1.
@@ -86,9 +106,9 @@ where {\it template-subscript} must be one of:
 
 \subsubsection*{Description}
 
-Being specified in the {\tt on} clause of some directives, the template
-reference refers to a subset of a node set where the subset of the
-template resides.
+Being specified in the {\tt on} or the {\tt from} clause of some
+directives, the template reference refers to a subset of a node set
+where the specified subset of the template resides.
 %The template reference refers to a subarray of the template array.  
 
 Specifically, the ``{\tt *}'' symbol apperared as {\it
@@ -186,14 +206,14 @@ where {\it dist-format} must be one of:
  \hspace{0.5cm} & {\tt *} \\
  & {\tt block} \\
  & {\tt cyclic} {\openb} \verb|(| {\it int-expr} \verb|)| {\closeb} \\
- & {\tt gblock} \verb|(| {\tt *} $\vert$ {\it int-array} \verb|)| \\
+ & {\tt gblock} \verb|(| \{ {\tt *} $\vert$ {\it int-array} \} \verb|)| \\
 \end{tabular}
 
 \subsubsection*{Description}
 
 According to the specified distribution format, a template is distributed
-onto a node set. The dimension of the node set appearing in the {\tt
-onto} clause corresponds, in left-to-right order, with the dimension of
+onto a specified node array. The dimension of the node array appearing in
+the {\tt onto} clause corresponds, in left-to-right order, with the dimension of
 the distributed template for which the corresponding {\it dist-format} is
 not ``{\tt *}''. 
 
@@ -201,19 +221,19 @@ The interpretation of {\it dist-format} is as follows:
 
 \begin{description}
 \item[``{\tt *}'']
-	   The corresponding dimension is not distributed.
+	   The dimension is not distributed.
 
 \item[{\tt block}]
-	   The corresponding dimension of the template is divided into
+	   The dimension of the template is divided into
 	   contiguous blocks of the same size, which are distributed onto
-	   the corresponding dimension of the node set. Let {\tt d} be
-	   the size of the corresponding dimension of the template, and
+	   the corresponding dimension of the node array. Let {\tt d} be
+	   the size of the dimension of the template, and
 	   let {\tt p} be the size of the corresponding dimension of the
-	   node sets. If {\tt d mod p} is not zero, then the dimension
+	   node array. If {\tt d mod p} is not zero, then the dimension
 	   of the template is divided into {\tt d/ceil(d/p)} blocks of
 	   size {\tt ceil(d/p)} and one block of size {\tt d\%ceil(d/p)},
 	   and each block is assigned sequentially to an index along the
-	   corresponding dimension of the node set. Note that if {\tt
+	   corresponding dimension of the node array. Note that if {\tt
 	   k = p-d/ceil(d/p)-1 > 0}, then there is no block for the last
 	   {\tt k} indices.
 
@@ -221,22 +241,21 @@ The interpretation of {\it dist-format} is as follows:
 	   Equivalent to {\tt cyclic(1)}.
 
 \item[{\tt cyclic(n)}]
-	   The corresponding dimension of the template is divided into
+	   The dimension of the template is divided into
 	   contiguous blocks of size {\tt n}, and these blocks are
-	   distributed onto the corresponding dimension of the node set
-	   in a round-robin manner.
+	   distributed onto the corresponding dimension of the node
+	   array in a round-robin manner.
 
 \item[{\tt gblock(m)}]
-	   {\tt m} is referred to as a mapping array. The corresponding
-	   dimension of the template is divided into contiguous
-	   blocks so that the i'th block is of size {\tt m(i)}, and
-	   these blocks are distributed onto the corresponding dimension
-	   of the node set.
+	   {\tt m} is referred to as a mapping array. The dimension of
+	   the template is divided into contiguous blocks so that the
+	   i'th block is of size {\tt m(i)}, and these blocks are
+	   distributed onto the corresponding dimension of the node array.
 \end{description}
 
 If more than one {\tt gblock(*)} is specified in {\it dist-format},
 then the template must not be referenced until the shape of the template
-is defined by {\it template\_fix} directives at runtime.
+is defined by {\tt template\_fix} directives at runtime.
 
 
 \subsubsection*{Restrictions}
@@ -266,9 +285,9 @@ is defined by {\it template\_fix} directives at runtime.
 \hspace{\hsize}
 \begin{Fexample}
       program main
-!$xmp nodes p(8,5)
-!$xmp template t(64,64,64)
-!$xmp distribute t(*,cyclic,block) onto p
+!$xmp nodes p(4)
+!$xmp template t(64)
+!$xmp distribute t(block) onto p
 \end{Fexample}
 
 The template {\tt t} is distributed in block format, as shown in the
@@ -324,10 +343,9 @@ shown in the following table.
 \end{Fexample}
 
 The first dimension of the template {\tt t} is not distributed. The
-second dimension is distributed onto the first dimension of the node set
+second dimension is distributed onto the first dimension of the node array
 {\tt p} in cyclic format. The third dimension is distributed onto the
-second dimension of the node set {\tt p} in block format. The results
-are as follows:
+second dimension of {\tt p} in block format. The results are as follows:
 
 \begin{center}
 \begin{tabular}{|c|c|}
@@ -338,14 +356,14 @@ are as follows:
 \hline
 ... & ... \\
 \hline
-{\tt p(8,5)} & {\tt t(1:64), 8:64:8, 53:64)} \\
+{\tt p(8,5)} & {\tt t(1:64, 8:64:8, 53:64)} \\
 \hline
 \end{tabular}
 \end{center}
 
-Note that the size of the third dimension is 64 and is not divisible by
-the size of the second dimension of {\tt p}. Thus, the sizes of a number
-of blocks in the third dimension are different.
+Note that the size of the third dimension of {\tt t} is 64 and is not
+divisible by the size of the second dimension of {\tt p}. Thus, sizes of
+the blocks in the third dimension are different among nodes.
 
 \end{description}
 
@@ -354,7 +372,7 @@ of blocks in the third dimension are different.
 
 \subsubsection*{Synopsis}
 The {\tt \Directive{align}} directive specifies that an array is to be
-mapped in the same way as a certain template.
+mapped in the same way as a specified template.
 
 \subsubsection*{Syntax}
 \Syntax{align}
@@ -399,15 +417,16 @@ and {\it align-subscript} must be one of:
 \vspace{0.3cm}
 
 Note that the variable {\it scalar-int-variable} appearing in {\it
-align-source} is referred to as an ``\Term{align dummy variable}''.
+align-source} is referred to as an ``\Term{align dummy variable}.''
 
 \subsubsection*{Description}
 
 The array specified by {\it array-name} is aligned with the template
-specified by {\it template-name} so that each element indexed by the
-sequence of {\it align-source} is aligned with the element of the
-template indexed by the sequence of {\it align-subscript}, where {\it
-align-source} and {\it align-subscript} are interpreted as follows:
+specified by {\it template-name} so that each element of the array
+indexed by the sequence of {\it align-source}'s is aligned with the
+element of the template indexed by the sequence of {\it
+align-subscript}'s, where {\it align-source}'s and {\it
+align-subscript}'s are interpreted as follows:
 
 \begin{enumerate}
 \item The first form of an {\it align-source} and an {\it
@@ -432,18 +451,18 @@ align-source} and {\it align-subscript} are interpreted as follows:
       align-subscript} represents a same align dummy variable that
       ranges over all valid index values in the corresponding dimension
       of the array. The matching of colons (``{\tt :}'') in the sequence
-      of {\it align-source} and {\it align-subscript} is determined as
-      follows:
+      of {\it align-source}'s and {\it align-subscript}'s is determined
+      as follows:
 
       \begin{itemize}
-       \item \verb![F]! Colons in the sequence of {\it align-source} and
-	     those in the sequence of {\it align-subscript} are matched
-	     up in corresponding left-to-right order, where any {\it
-	     align-source} and {\it align-subscript} that is not a colon
-	     is ignored.
-       \item \verb![C]! Colons in the sequence of {\it align-source} in
-	     right-to-left order and those in the sequence of {\it 
-	     align-subscript} in left-to-right order are matched up,
+       \item \verb![F]! Colons in the sequence of {\it align-source}'s
+	     and those in the sequence of {\it align-subscript}'s are
+	     matched up in corresponding left-to-right order, where any
+	     {\it align-source} and {\it align-subscript} that is not a
+	     colon is ignored.
+       \item \verb![C]! Colons in the sequence of {\it align-source}'s
+	     in right-to-left order and those in the sequence of {\it 
+	     align-subscript}'s in left-to-right order are matched up,
 	     where any {\it align-source} and {\it align-subscript} that
 	     is not a colon is ignored.
       \end{itemize}
@@ -458,13 +477,13 @@ align-source} and {\it align-subscript} are interpreted as follows:
 
 \begin{itemize}
 \item An align dummy variable may appear at most once in the sequence of
-      {\it align-subscript}.
+      {\it align-subscript}'s.
 \item An {\it align-subscript} may contain at most one occurrence of an
       align dummy variable.
 \item The {\it int-expr} in an {\it align-subscript} may not contain any
       occurrence of an align dummy variable.
-\item The sequence of {\it align-sources} must contain exactly as many
-      colons as the sequence of {\it align-subscripts} contains.
+\item The sequence of {\it align-sources}'s must contain exactly as many
+      colons as the sequence of {\it align-subscript}'s contains.
 
 \end{itemize}
 
@@ -505,9 +524,7 @@ t(j)}. Note that the first dimension of {\tt a} is collapsed.
 %$
 
 The array element {\tt a(j)} is replicated, and aligned with each
-template element of {\tt t(:,j)}, assuming that the upper
-and lower bounds of the first dimension of the template {\tt t} are
-1 and 10, respectively.
+template element of {\tt t(:,j)}.
 
 \item[Example 4]
 \hspace{\hsize}
@@ -572,18 +589,17 @@ where {\it shadow-width} must be one of:
 \subsubsection*{Description}
 
 The {\tt shadow} directive specifies the width of the shadow area of an
-array, which is used to communicate the neighbor element of the block of
-the array specified by {\it array-name} that is distributed onto each
-node.
+array specified by {\it array-name}, which is used to communicate the
+neighbor element of the block of the array.
 %
 When {\it shadow-width} is of the form ``{\it int-expr} : {\it
 int-expr},'' the shadow area of the width specified by the first {\it
 int-expr} is added at the lower bound and that specified by the second
-one at the upper bound in the specified dimension.
+one at the upper bound in the dimension.
 %
 When {\it shadow-width} is of the form {\it int-expr}, the shadow
 area of the same width specified is added at both the upper and lower
-bounds in the specified dimension.
+bounds in the dimension.
 %
 When {\it shadow-width} is of the form ``\verb|*|'', the entire area of
 the array is allocated on each node, and all of the area that it does not
@@ -598,7 +614,7 @@ shadow area can be allocated also at the global lower and upper bound of
 an array.
 
 The data stored in the storage area declared by the {\tt shadow}
-directive is referred to as a \Term{shadow object}.
+directive is referred to as a ``\Term{shadow object}.''
 %The shadow object can be
 %explicitly defined and referenced only by the below-described method.
 %
@@ -667,30 +683,24 @@ as shadow objects (Figure \ref{fig3.1}). Among them, {\tt a(16,16)},
 \label{subsec:template_fix directive}
 
 \subsubsection*{Synopsis}
-This directive is an executable directive that fixes the shape of an
-undefined template. 
+
+This directive is an executable directive that fixes the shape and/or
+the distribution of an undefined template. 
 
 \subsubsection*{Syntax}
 \Syntax{template\_fix}
 
-%\begin{tabular}{ll}
-%\verb![F]! & \verb|!$xmp| {\tt template\_fix} {\it template-name} \\
-% & [({\it template-spec} [, {\it template-spec}] ... )] \\
-% & [, {\tt distribute} ( {\it dist-format} [, {\it dist-format}]... ) \\
-%& \\
-%\verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} {\it template-name} \\
-% & [({\it template-spec} [, {\it template-spec}] ... )] \\
-% & [, {\tt distribute} ( {\it dist-format} [, {\it dist-format}] ...) \\
-%\end{tabular}
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt template\_fix} {\openb}\verb|(| {\it
  dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)|{\closeb}\\
- & {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb} ... \verb|)|{\closeb} \\
+ & \hspace{3cm}{\it template-name} {\openb}\verb|(|{\it template-spec}
+ {\openb}, {\it template-spec}{\closeb}... \verb|)|{\closeb} \\
 & \\
 \verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} {\openb}\verb|(|
-     {\it dist-format} {\openb}, {\it dist-format}{\closeb}
-     ...\verb|)|{\closeb}\\
- & {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb} ... \verb|)|{\closeb} \\
+     {\it dist-format} {\openb}, {\it
+     dist-format}{\closeb}...\verb|)|{\closeb}\\
+ & \hspace{3cm}{\it template-name} {\openb}\verb|(|{\it template-spec}
+     {\openb}, {\it template-spec}{\closeb}... \verb|)|{\closeb} \\
 \end{tabular}
 \vspace{0.3cm}
 
@@ -717,30 +727,34 @@ and {\it dist-format} is one of:
 \subsubsection*{Description}
 
 The {\tt template\_fix} directive is an executable directive to fix the
-shape of the template that is initially undefined, by specifying the
-sizes of each dimension and the distribution format at runtime. The array
-aligned with an initially undefined template must be an allocatable
-array, which cannot be allocated until the template is fixed by the
+shape and/or the distribution of the template that is initially
+undefined, by specifying the sizes and/or the distribution format of
+each dimension at runtime. The array aligned with an initially undefined
+template must be an allocatable array, in {\Fort}, or a pointer (see
+Section \ref{sec:Dynamic Allocation of Global Data in C}), in
+{\C}, which cannot be allocated until the template is fixed by the
 {\tt template\_fix} directive. Any executable directives that have such a
-template in their {\tt on} clause must not be executed until the
+template in their {\tt on} clause must not be encountered until the
 template is fixed by the
 {\tt template\_fix} directive. Any undefined template can be fixed only
-once by the {\tt template\_fix} directive. 
+once by the {\tt template\_fix} directive in its scoping unit.
 
-Note that the meaning of the sequence of {\it dist-format} is the same
+The meaning of the sequence of {\it dist-format}'s is the same
 as that in the {\tt distribute} directive.
 
 \subsubsection*{Restrictions}
+
 \begin{itemize}
-\item When the {\tt template\_fix} directive is executed at runtime, the
-      template specified by {\it template-name} must be undefined.
-\item If the sequence of {\it dist-format} exists in the {\tt
+\item When a node encounters a {\tt template\_fix} directive at runtime,
+      the template specified by {\it template-name} must be undefined.
+\item If the sequence of {\it dist-format}'s exists in a {\tt
       template\_fix} directive, it must be identical with the 
-      sequence of {\it dist-format} in the {\tt distribute} directive
-      for the template specified by {\it template-name}, except for a
-      parenthetical {\it int-array} following {\tt gblock}.
-\item Either the sequence of {\it dist-format} or the sequence of {\it
-      template-spec} must be given. 
+      sequence of {\it dist-format}'s in the {\tt distribute} directive
+      for the template specified by {\it template-name}, except for {\it
+      int-array}, not an asterisk (``{\tt *}''), specified in the
+      parenthesis following {\tt gblock}.
+\item Either the sequence of {\it dist-format}'s or the sequence of {\it
+      template-spec}'s must be given. 
 \item The {\tt template\_fix} directive must appear in executable
       context.
 \end{itemize}
@@ -770,7 +784,7 @@ gblock(*)},
 the template {\tt t} is initially undefined. The allocatable array
 {\tt a} is aligned to {\tt t}. After the size {\tt N} of {\tt t} and the
 mapping array {\tt M} is defined, {\tt t} is fixed by the {\tt
-  template\_fix} directive, and {\tt a} is allocated.
+  template\_fix} directive and {\tt a} is allocated.
 
 
-\subsection{Local Section of Mapped Data}
+%\subsection{Local Section of Mapped Data}
