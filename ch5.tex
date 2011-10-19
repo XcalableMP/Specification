@@ -5,9 +5,7 @@ This specification defines various procedures for system inquiry,
 synchronization, computations, etc. The procedures are provided as
 intrinsic procedures in Fortran and library procedures in C.
 
-\section{Fortran}
-
-\subsection{Miscellaneous Intrinsic Procedures}
+\section{Miscellaneous Intrinsic Procedures}
 
 \begin{itemize}
  \item {\tt xmp\_desc\_t d = xmp\_dec\_of(XMP object)}
@@ -21,7 +19,227 @@ intrinsic procedures in Fortran and library procedures in C.
  \item {\tt xmp\_gtol(xmp\_desc\_t d, int g\_dims[], int l\_dims[])}
 \end{itemize}
 
-\subsection{Computational Intrinsic Procedures}
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_desc\_t d = xmp\_dec\_of(XMP object)}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of(array-name} $\vert$ {\tt template-name);}\\
+
+\verb![F]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of(array-name} $\vert$ {\tt template-name)}
+\end{tabular}
+
+             Note that, in C, xmp\_desc\_of is an operator,
+             in Fortran, xmp\_desc\_of is a built-in function.
+
+\subsubsection*{Synopsis}
+
+    A xmp\_desc\_of is an input argument of query functions.
+    When Query functions get descriptor information of array
+    from XMP compiler, they must set a xmp\_desc\_of as an
+    input argument.
+
+\subsubsection*{Type}
+
+    Formally, a name of type of xmp\_desc\_of is xmp\_desc\_t.
+    Specification of xmp\_desc\_t depends on the XMP compiler implementation.
+
+\subsubsection*{Arguments}
+
+   The argument of xmp\_desc\_of is an array-name or a template-name.
+   In the case of array-name, return value d is a pointer to
+   be able to access array descriptor information.
+   In the case of template-name, return value d is a pointer to
+   be able to access template descriptor information.
+   If the argument of xmp\_desc\_of is a local data, it is unchanged.
+
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_all\_node\_num}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt int}& {\tt xmp\_all\_num\_nodes(void);}\\
+
+\verb![F]!&  {\tt integer function}& {\tt xmp\_all\_num\_nodes()}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+     The {\tt xmp\_all\_node\_num} routine returns the current node number in all available nodes.
+
+
+\subsubsection*{Arguments}
+    none.
+
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_all\_num\_nodes}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt int}& {\tt xmp\_all\_num\_nodes(void);}\\
+
+\verb![F]!&  {\tt integer function}& {\tt xmp\_all\_num\_nodes()}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+     The {\tt xmp\_all\_num\_nodes} routine returns the number of all available nodes.
+
+\subsubsection*{Arguments}
+    none.
+
+
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_node\_num}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt int}& {\tt xmp\_node\_num({\it nodes-name});}\\
+
+\verb![F]!&  {\tt integer function}& {\tt xmp\_all\_num\_nodes({\it nodes-name})}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+     The {\tt xmp\_node\_num} routine returns the current node number 
+     in the executing node set indicated by {\it nodes-name}.
+
+\subsubsection*{Arguments}
+     The argument of {\tt xmp\_node\_num} is a {\it nodes-name} of the executing node set.
+
+
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_num\_nodes}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt int}& {\tt xmp\_num\_nodes({\it nodes-name});}\\
+
+\verb![F]!&  {\tt integer function}& {\tt xmp\_num\_nodes({\it nodes-name})}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+     The {\tt xmp\_num\_nodes} routine returns the number of nodes 
+     in the executing node set indicated by {\it nodes-name}.
+
+\subsubsection*{Arguments}
+    The argument of {\tt xmp\_num\_nodes} is a {\it nodes-name} of the executing node set.
+
+
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_mpi\_comm}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt int}& {\tt xmp\_mpi\_comm({\it nodes-name});}\\
+
+\verb![F]!&  {\tt integer function}& {\tt xmp\_mpi\_comm({\it nodes-name})}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+     The {\tt xmp\_mpi\_comm} routine returns the integer value with associated communicator
+     to which nodes-name belongs. If non {\it nodes-name}, {\tt xmp\_mpi\_comm} returns 
+     the vlue of MPI\_Comm\_World.
+
+\subsubsection*{Arguments}
+    The argument of {\tt xmp\_mpi\_comm} is a{\it nodes-name} of the executing node set.
+
+
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_wtime}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt double}& {\tt xmp\_wtime(void);}\\
+
+\verb![F]!&  {\tt double precision function}& {\tt xmp\_wtime()}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+    The {\tt xmp\_wtime} routine returns elapsed wall clock time in seconds 
+    since some time in the past. The "time in the past" is guaranteed not to change
+    during the life of the process.
+    There is no requirement that different nodes return "the same time".
+
+\subsubsection*{Arguments}
+    none.
+
+
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_wtick}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt double}& {\tt xmp\_wtick(void);}\\
+
+\verb![F]!&  {\tt double precision function}& {\tt xmp\_wtick()}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+    The {\tt xmp\_wtick} routine returns the resolution of the timer used by {\tt xmp\_wtime}.
+    It returns a double precision value equal to the number of seconds 
+    between successive clock ticks.
+
+\subsubsection*{Arguments}
+    none.
+
+
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_barrier}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt void}& {\tt  xmp\_barrier({\it nodes-name};}\\
+
+\verb![F]!&  & {\tt xmp\_barrier({\it nodes-name})}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+    The {\tt xmp\_barrier} routine blocks the caller until all nodes in the executing node set 
+    indicated by{\it nodes-name} have called it.
+    The call returns at any process only after all {\it nodes-name} member's nodes
+    have entered the call.
+
+\subsubsection*{Arguments}
+    The argument of{\tt xmp\_barrier} is a {\it nodes-name} of the executing node set.
+
+
+
+\section{Computational Intrinsic Procedures}
+
+\subsection{Fortran}
 
 \begin{itemize}
  \item {\tt x = xmp\_scatter(a, idx1, idx2, ...)}
@@ -36,24 +254,8 @@ intrinsic procedures in Fortran and library procedures in C.
 \end{itemize}
 
 
-\section{C}
+\subsection{C}
 
-\subsection{Miscellaneous Library Procedures}
-
-\begin{itemize}
- \item {\tt xmp\_desc\_t d = xmp\_dec\_of(XMP—v‘f)}
- \item {\tt xmp\_all\_node\_num}
- \item {\tt xmp\_all\_num\_nodes}
- \item {\tt xmp\_node\_num}
- \item {\tt xmp\_num\_nodes}
- \item {\tt xmp\_mpi\_comm}
- \item {\tt xmp\_wtime}
- \item {\tt xmp\_async\_test}
- \item {\tt xmp\_gtol(xmp\_desc\_t d, int g\_dims[], int l\_dims[])}
- \item {\tt xmp\_malloc}
-\end{itemize}
-
-\subsection{Computational Library Procedures}
 
 \begin{itemize}
  \item {\tt x = xmp\_scatter(desc\_a, idx1, idx2, ...)}
