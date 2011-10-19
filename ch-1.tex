@@ -134,7 +134,7 @@ much slower than accessing local memory.
 An {\XMP} program execution is based on the Single Program Multiple Data
 (SPMD) model, where each node starts execution from the same main
 routine and keep executing the same code independently
-(i.e. aynchronously), which is referred to as the {\it \Term{replicated
+(i.e. asynchronously), which is referred to as the {\it \Term{replicated
 execution}}, until it encounters an {\XMP} construct.
 
 %The basic execution model of {\XMP} is a Single Program Multiple Data
@@ -142,7 +142,7 @@ execution}}, until it encounters an {\XMP} construct.
 %the same main routine.
 %
 %Unless the nodes encounter some {\XMP} directives, they executes the same
-%code locally (i.e. aynchronously), which is referred to as
+%code locally (i.e. asynchronously), which is referred to as
 %{\it \Term{duplicate execution}}.
 
 %An {\XMP} program begins as a single thread of
@@ -158,11 +158,11 @@ execution}}, until it encounters an {\XMP} construct.
 
 A set of the nodes that are executing a procedure, a statement, a loop,
 a block, etc. is referred to as its {\it executing node set} and
-determeined by the innermost {\tt task} or {\tt loop} directive
+determined by the innermost {\tt task} or {\tt loop} directive
 surrounding it dynamically, or at runtime.
 %
 The initial executing node set (or the {\it entire node set}) at the
-beggining of the program execution is the set of all available nodes,
+beginning of the program execution is the set of all available nodes,
 which can be specified in an implementation-dependent way (e.g. through
 a command-line option).
 
@@ -229,7 +229,7 @@ A node can access directly only local data and sections of global data
 that are allocated in its local memory.
 %
 To access data in remote memory, explicit communication must be
-specified in such ways as the global comuunication constructs and
+specified in such ways as the global communication constructs and
 the coarray assignments.
 
 %\underline{Description on memory layout to be added.}
@@ -252,7 +252,7 @@ to maintain the consistency of the shadow area, and to move part of the
 distributed data globally.
 %
 Note that the programmer must specify explicitly communications to make
-all data referrence in the program local by using appropriate directives.
+all data reference in the program local by using appropriate directives.
 %Note that the programmer must perform all computations that require data
 %reference locally by any appropriate directives.
 

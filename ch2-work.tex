@@ -59,7 +59,7 @@ corresponding new executing node set is created conceptually.
 
 The {\tt \Directive{tasks}} construct is used to instruct nodes in
 the executing node set to execute the multiple tasks it surrounds in
-arbitray order.
+arbitrary order.
 
 \subsubsection*{Syntax}
 \Syntax{tasks}
@@ -100,7 +100,7 @@ tasks are completed, unless a {\tt nowait} clause is specified.
 %When a {\tt nowait} clause is specified, implicit
 %synchronization is not performed at the end of the {\tt tasks}
 %construct. Without a {\tt nowait} clause, implicit synchronization is
-%performed in order to gurantee that all communications issued inside
+%performed in order to guarantee that all communications issued inside
 %child tasks are completed.
 
 \subsubsection*{Example}
@@ -797,7 +797,7 @@ an assignment to each element of an array.
 %
 This directive specifies parallel execution of an array assignment,
 where each sub-assignment and sub-operation of an element is executed by
-the node determined by the {\tt on} clasue.
+the node determined by the {\tt on} clause.
 
 %The array assignment can be used instead of the loop of the assignment
 %for each element. This directive executes the array assignment in each

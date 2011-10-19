@@ -213,7 +213,7 @@ There are three operating modes of the {\tt gmove} construct:
        When the {\tt in} clause is specified, the rhs data of the
        assignment, whole or parts of which may reside outside the
        executing node set, can be transferred from its owner nodes to
-       the executing nodes by this consturct.
+       the executing nodes by this construct.
 
        If the {\tt async} clause is not specified, then the construct is
        ``synchronous'' and it is guaranteed that the lhs data
@@ -516,7 +516,7 @@ The variable specified by {\it variable}, which is the target of the
 reduction operation, is referred to as the ``\Term{reduction
 variable}.'' After the reduction operation, the value of the
 reduction variable becomes the same in every node that performs the
-operatoin.
+operation.
 
 The reduction result is computed by combining the reduction variables on
 all of the nodes using the reduction operator. The ordering of this
@@ -788,7 +788,7 @@ communications specified by each of {\it async-id} are complete.
  \item {\it async-id} must be an expression of type default integer, in
        Fortran, or type {\tt int}, in C.
 \item {\it async-id} must be associated with an asynchronous
-      communciation by the {\tt async} clause of a communication
+      communication by the {\tt async} clause of a communication
       construct or an {\tt async} construct.
 \item The {\tt wait\_async} construct is global, which means that it must
       be executed by all of the executing nodes, and each local variable
