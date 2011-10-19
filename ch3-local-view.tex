@@ -1,4 +1,4 @@
-\section{Directives for Local-view Programming}
+\section{Directives for the Local-view Programming}
 
 \subsection{{\tt local\_alias} Directive}
 
@@ -19,19 +19,21 @@ object as an alias to the local section of a distributed array.
 
 \subsubsection*{Description}
 
-This directive declares that the local array specified by
-{\it local-array-name} is a ``local alias'' to the global array specified by
-{\it global-array-name}.
+This directive declares that a local array specified by
+{\it local-array-name} is a ``local alias'' to the global array
+specified by {\it global-array-name}.
 
 The shape of a local alias is the same as that of the local section of
-the corresponding global array that is owned by each node. Note that the
-local part includes the shadow area.
+the global array that is owned by each node.
+%Note that the local part includes the shadow area.
 
 A local alias is defined when the corresponding global array
 is defined. If the corresponding global array is statically
 allocated, then the local alias is always defined in its scoping unit;
 if not, the local alias is not defined until the corresponding global
 array is allocated.
+
+An array specified by {\it local-array-name} may be a coarray.
 
 \subsubsection*{Restriction}
 
@@ -72,7 +74,7 @@ array is allocated.
 
 The array {\tt a} is distributed by block onto four nodes.
 The node {\tt n(2)} has its local section of twenty-five elements ({\tt
-a(25:50)}) with shadow areas of size one on the upper and lower 
+a(25:50)}) with shadow areas of size one on both of the upper and lower 
 bounds. The local alias {\tt b} is an array of 27 elements
 ({\tt b(1:27)}) on {\tt n(2)}. The table below shows the correspondence
 of each element of {\tt a} to that of {\tt b}.
@@ -218,7 +220,7 @@ A {\tt \Directive{post}} construct issued with the arguments of {\it
 nodes-ref} and {\it tag} on a node (called a {\it
 posting node}) dynamically matches at most one {\tt \Directive{wait}}
 construct issued with the arguments of the posting node (unless omitted)
-and the same value as {\it tag} (unless omitted) on the node specified
+and the same value as {\it tag} (unless omitted) by the node specified
 by {\it nodes-ref}.
 
 \subsubsection*{Restriction}
@@ -257,9 +259,9 @@ by {\it nodes-ref}.
 It is assumed that the code of the left is executed by the node {\tt
 p(1)} while that on  the right is executed by node {\tt p(2)}.
 
-The {\tt post} construct on the left matches
-the {\tt wait} construct on the right because each {\it nodes-ref}
-represents each other  and both {\it tags} have the same value of 1.
+The {\tt post} construct on the left matches the {\tt wait} construct on
+the right because their {\it nodes-ref}'s represent each other and both
+{\it tags}'s have the same value of 1.
 %
 These constructs ensure that no statement in {\tt S2} is executed by
 {\tt p(2)} until the execution of all statements in {\tt S1} is
@@ -275,7 +277,7 @@ completed by {\tt p(1)}.
 
 It is assumed that this code is executed by node {\tt p(3)}.
 
-The {\tt post} construct in the code on the left in Example 1 may matches
+The {\tt post} construct in the left code in Example 1 may matches
 this {\tt wait} construct because both {\it nodes-ref} and
 {\it tag} are omitted in this {\tt wait} construct.
 
@@ -302,19 +304,20 @@ synchronization.
 
 \subsubsection*{Description}
 
-This construct prohibits statements that follow this construct from being executed
-until the execution of all statements preceding a matching
-\Directive{post} construct is completed on the node specified by {\it node-ref}.
+This construct prohibits statements that follow this construct from
+being executed until the execution of all statements preceding a
+matching \Directive{post} construct is completed on the node specified
+by {\it node-ref}.
 
 A {\tt \Directive{wait}} construct issued with the arguments of {\it
 nodes-ref} and {\it tag} on a node (called a {\it waiting node})
 dynamically matches a {\tt \Directive{post}} construct issued with the
-arguments of the waiting node and the same value as {\it tag} on the
+arguments of the waiting node and the same value as {\it tag} the
 node specified by {\it nodes-ref}.
 
 If {\it tag} is omitted, then the {\tt \Directive{wait}} construct can
 match a {\tt \Directive{post}} construct issued with the arguments of
-the waiting node and any tag on the node specified by {\it nodes-ref}.
+the waiting node and any tag by the node specified by {\it nodes-ref}.
 %
 If both {\it tag} and {\it nodes-ref} are omitted, then the {\tt
 \Directive{wait}} construct can match a {\tt \Directive{post}}
@@ -378,8 +381,8 @@ which is adapted in Fortran.
 \subsubsection*{Syntax}
 
 \begin{tabular}{llll}
-\verb![C]! & {\it array-section} & {\bf is} & {\it array-name}{\tt [} {\it triplet} $\vert$ {\it
- int-expr} {\tt ]}...
+\verb![C]! & {\it array-section} & {\bf is} & {\it array-name}{\tt [} \{
+ {\it triplet} $\vert$ {\it int-expr} \} {\tt ]}...
 \end{tabular}
 
 \vspace{0.5cm}
@@ -430,16 +433,16 @@ the array is specified.
 %
 When {\it step} is omitted, it is assumed that ``1'' is specified.
 
-An array section forms a virtual array containing the set of elements
-from the original array determined by all possible subscript lists
-specified by the sequence of {\it triplet}'s or {\it int-expr}'s in square
-brackets.
+An array section can be considered as a virtual array containing the set
+of elements from the original array determined by all possible subscript
+lists specified by the sequence of {\it triplet}'s or {\it int-expr}'s
+in square brackets.
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
  \item \verb![C]! Each of {\it base}, {\it length} and {\it step} must
-       be an {\it integer-expr}.
+       be an integer expression.
 % \item \verb![C]! When {\it step} is positive, {\it lower-bound} must be
 %       greater than or equal to the lower bound and {\it upper-bound}
 %       must be smaller than or equal to the upper bound of the dimension
@@ -480,7 +483,7 @@ Assuming that an array {\tt A} is declared by the following statement,
  & {\tt A[:]} & the whole of {\tt A} \\
 \end{tabular}
 
-\section{Array Assignment Statements in C}
+\section{Array Assignment Statement in C}
 \label{sec:Array assignment statements in C}
 
 \subsubsection*{Synopsis}
@@ -494,22 +497,21 @@ an array section.
 
 \begin{tabular}{ll}
 \verb![C]! & {\it array-section} {\openb}{\tt :}{\tt [}{\it int-expr}{\tt
- ]}...{\closeb} {\tt =} {\it \{ array-section} $\vert$
- {\it int-expr \}}{\openb}{\tt :}{\tt [}{\it int-expr}{\tt
- ]}...{\closeb}{\tt ;} \\
+ ]}...{\closeb} {\tt =} \{ {\it variable} {\openb}{\tt :}{\tt [}{\it
+ int-expr}{\tt ]}...{\closeb} $\vert$ {\it int-expr \}}{\tt ;} \\
 \end{tabular}
 
 \subsubsection*{Description}
 
-When the rhs is an array section, the value of each element of the rhs
-array section is assigned to the corresponding element of the lhs array
+When the rhs is an array section, the value of each element of it is
+assigned to the corresponding element of the lhs array 
 section. When the rhs is an integer expression, its value is assigned to
 each element of the lhs array section.
 
 The rhs and/or the lhs data can have cosubscripts.
 
 Note that an array assignment is a statement and therefore cannot
-referenced as an expression in any other statements.
+appear as an expression in any other statements.
 
 \subsubsection*{Restrictions}
 
@@ -517,6 +519,10 @@ referenced as an expression in any other statements.
  \item \verb![C]! When the rhs is an array section, the lhs and the rhs
        must have the same shape, i.e., the same number of dimensions and
        size of each dimension.
+ \item \verb![C]! If {\it array-section} on the lhs is followed by
+       ``{\tt :}{\tt [}{\it int-expr}{\tt ]}...'', it must be a coarray.
+ \item \verb![C]! If {\it variable} on the rhs is followed by
+       ``{\tt :}{\tt [}{\it int-expr}{\tt ]}...'', it must be a coarray.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -538,8 +544,8 @@ A[5:9] = B[0:4];
 
 \subsection{Name of Global Array}
 
-The name of a global array is considered to represent an abstract object
-in the {\XMP} language. It is not interpreted as the pointer to it,
+The name of a global array is considered to represent an abstract entity
+in the {\XMP} language. It is not interpreted as the pointer to the array,
 while the name of a local array is.
 
 However, the name of a global array appeared in an expression is
@@ -562,8 +568,8 @@ not always evaluated to the same value.
 \section{Dynamic Allocation of Global Data in C}
 \label{sec:Dynamic Allocation of Global Data in C}
 
-In C, it is possible to allocate global arrays at runtime only when they
-are one-dimensional.
+In the C base language, it is possible to allocate global arrays at
+runtime only when they are one-dimensional.
 %
 Such allocation is done through the following steps.
 %
@@ -582,11 +588,11 @@ The specification of {\tt xmp\_malloc} is described in Chapter
 
 \subsection*{Example}
 
-A pointer {\tt p} to a float is declared in line 5 and aligned with a
+A pointer {\tt pa} to a float is declared in line 5 and aligned with a
 template {\tt t} in line 6. {\tt t} is initially undefined and fixed by
-the {\tt template\_fix} directive in line 10. The storage for the global
-data, that is, each of the local section is allocated with {\tt
-xmp\_malloc} and {\tt p} is set to point it on each node in line 12. For
+the {\tt template\_fix} directive in line 10. The storage for a global
+data, that is, each of its local section is allocated with {\tt
+xmp\_malloc} and {\tt pa} is set to point it on each node in line 12. For
 details of the {\tt xmp\_desc\_of} library procedure, refer to
 Chapter \ref{chap:Intrinsic and library procedures}.
 
@@ -595,12 +601,12 @@ Chapter \ref{chap:Intrinsic and library procedures}.
 #pragma xmp template t(:)
 #pragma xmp distribute t(block) onto p
 
-float *p;
-#pragma xmp align p[i] with t(i)
+float *pa;
+#pragma xmp align pa[i] with t(i)
 
 ...
 
 #pragma xmp template_fix t(N)
 
-P = (float *)xmp_malloc(xmp_desc_of(p), N);
+pa = (float *)xmp_malloc(xmp_desc_of(pa), N);
 \end{Cexample}

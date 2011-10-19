@@ -1,10 +1,10 @@
-\chapter{Support for local-view programming}
+\chapter{Support for the Local-view Programming}
 
 {\XMP} adopts coarray notations for the local-view
-programming. Particularly in the case of {\Fort} as the base language,
-the notations are compatible with that of Fortran 2008.
+programming. Particularly in the case of {\Fort} being the base
+language, the notations are compatible with that of Fortran 2008.
 
-\section{Coarray in XcalableMP}
+\section{Coarrays in XcalableMP}
 
 The specification of the coarray features in XcalableMP conforms to that
 of Fortran 2008 unless otherwise provided.
@@ -22,7 +22,9 @@ base language.
 
 \Syntax{coarray}
 \begin{tabular}{ll}
-\verb![F]! & {\it type-declaration-stmt} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
+\verb![F]! & {\it type-declaration-stmt} {\openb}{\tt on} {\it
+ nodes-ref}{\closeb}\\
+\verb![F]! & {\it codimension-stmt} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
 \verb![C]! & \verb|#pragma xmp coarray| {\it variable-name} {\tt :} 
 {\it codimensions} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
 \end{tabular}
@@ -41,7 +43,7 @@ as in Fortran 2008. For the C base language, coarrays are declared with
 the {\tt coarray} directive where {\it codimensions} specify the coshape
 of a variable.
 %
-Terms realated to coarray in {\XMP} (e.g. coshape, coindex,
+Terms related to coarrays in {\XMP} (e.g. coshape, coindex,
 cobound, cosubscript, image, image index, etc.) are derived from that in
 Fortran 2008.
 
@@ -57,15 +59,15 @@ Fortran's array element order.
 If the {\tt on} clause is not specified, then it is assumed that 
 the executing node set is specified.
 
-Note that an acutual coarray and its associating dummy coarray must be
+Note that an actual coarray and its associating dummy coarray must be
 declared on the same node set (see chapter \ref{chap:procedure}).
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
  \item \verb![F]! All of the variables declared by {\it
-       type-declaration-stmt} with the {\tt on} clause must have the
-       CODIMENSION attribute.
+       type-declaration-stmt} in the first form with the {\tt on} clause
+       must have the codimension attribute.
  \item \verb![F]! At most one {\tt on} clause can be specified for a
        variable in a scoping unit.
 % \item The cosize of each declared coarray must be less than or equal to
@@ -112,7 +114,7 @@ declared on the same node set (see chapter \ref{chap:procedure}).
 	   is passed as an actual argument to subroutines {\tt task1}
 	   and {\tt task2}.
 	   In these subroutines, the coarray object is referenced as the
-	   formal argument {\tt aa} and its declaration requires an {\tt
+	   formal argument {\tt aa} and its declaration requires the {\tt
 	   on} clause to specify the entire node set, which is
 	   different from the executing node set.
 %	   By this declaration, the subroutine can
@@ -138,13 +140,13 @@ declared on the same node set (see chapter \ref{chap:procedure}).
 
 %$
 
-	   The entire node set contains 200 nodes, on which coarray {\tt
+	   The entire node set contains 200 nodes, on which coarrays {\tt
 	   one} and {\tt two} are declared. In this case, it is
 	   guaranteed that {\tt one(...)[i+(j-1)*20]} and {\tt
 	   two(...)[i,j]} reside in the same node, which is also the
 	   case for the following codes. Such a rule is compatible with
 	   that of Fortran 2008. The shape of the entire node set has
-	   nothing to the image of coarrays.
+	   nothing to do with the image of coarrays.
 
 \begin{Fexample}
 !$xmp nodes w2(20,10)
@@ -163,8 +165,8 @@ declared on the same node set (see chapter \ref{chap:procedure}).
 \begin{Fexample}
 !$xmp nodes w1(200)
 !$xmp nodes w2(20,10)
-      real one(100)[*]
-      real two(50)[20,*]
+      real one(100)[*] on w1
+      real two(50)[20,*] on w1
       real ichi(100)[*] on w2
       real ni(50)[20,*] on w2
 \end{Fexample}
@@ -183,10 +185,10 @@ declared on the same node set (see chapter \ref{chap:procedure}).
 %{\tt w2} can be different node sets. 
 
 	   The coarrays {\tt one} and {\tt two} are declared on the node
-	   set {\tt w1} (that is, the entire node set), and thefore {\tt
+	   set {\tt w1}, and thefore {\tt
 	   one(...)[i+(j-1)*20]} and {\tt two(...)[i,j]} reside in the
 	   same node. The coarrays {\tt ichi} and {\tt ni} are declared
-	   on the different node set {\tt w2}, and {\tt
+	   on a node set {\tt w2}, and {\tt
 	   ichi(...)[i+(j-1)*20]} and {\tt ni(...)[i,j]} reside in the
 	   same node.
 %
@@ -221,13 +223,13 @@ extended notation in the C base language.
 
 \subsubsection*{Description}
 
-A sequence of {\it int-expr} in a square bracket in the Fortran base
+A sequence of {\it int-expr}'s in a square bracket in the Fortran base
 language and a sequence of {\tt [}{\it
-int-expr}{\tt ]} preceded by a colon in the C base language determine
+int-expr}{\tt ]}'s preceded by a colon in the C base language determine
 the image index for a coarray to be accessed.
 
 Note that a coarray cannot be directly accessed by a node outside the
-node set on which it is declared, unlike that in Fortran 2008.
+node set on which it is declared, unlike in Fortran 2008.
 
 \subsubsection*{Examples}
 \Example{coarray}
@@ -235,7 +237,9 @@ node set on which it is declared, unlike that in Fortran 2008.
 In each of the following two codes, two coarrays {\tt A} and {\tt B} are
 declared on the executing node set, and each executing node gets whole
 of {\tt B} from the image 10 (that is, the tenth node of the executing
-node set) and copies it into {\tt A}.
+node set) and copies it into the local storage for {\tt A}.
+
+\vspace{0.5cm}
 
 \begin{minipage}{0.45\hsize}
 \begin{center}

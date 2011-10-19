@@ -456,8 +456,8 @@ set after executing the {\tt loop} construct as follows:
 %       a node must not be included in more than one node set. 
 
  \item The node set specified by {\it nodes-ref} or {\it template-ref}
-       in the {\tt on} clause of a {\tt loop} construct must be a subset
-       of the parent executing node set.
+       in the {\tt on} clause must be a subset of the parent executing
+       node set.
 
  \item The template specified by {\it template-ref} must be fixed 
        before the {\tt loop} construct is executed.
@@ -465,8 +465,8 @@ set after executing the {\tt loop} construct as follows:
  \item The {\tt loop} construct is global, which means that it must be
        executed by all of the executing nodes, and each local variable
        referenced in the directive must have the same value among all of
-       them, and the lower bound, upper bound and step of the loops must
-       must have the same value among all of them.
+       them, and the lower bound, upper bound and step of the associated
+       loop must have the same value among all of them.
 
 % modified by Sakagami,H. 09/11/13
  \item {\it reduction-spec} must have one or more {\it
@@ -509,12 +509,12 @@ set after executing the {\tt loop} construct as follows:
       end do
 \end{Fexample}
 
-The {\tt \Directive{loop}} construct decides the node that executes each
+The {\tt loop} construct determines the node that executes each
 of the iterations, according to the distribution of template {\tt t}, and
 distributes 
 the execution. This example is syntactically equivalent to the one
 shown below, but will be faster because iterations to be executed by
-	   each node can be decided before executing the loop.
+each node can be determined before executing the loop.
 
 \begin{Fexample}
 !$xmp distribute t(block) onto p
@@ -580,12 +580,12 @@ shown below, but will be faster because iterations to be executed by
 
 % modified by Sakagami,H. 09/11/13
 The distribution of loops in the nested loop can be specified
-using the sequence of {\it loop-index} in one {\tt loop}
+using the sequence of {\it loop-index}'s in one {\tt loop}
 construct. This example is equivalent to the loop shown
 below, but will run faster because the iterations 
-to be executed by each node can be decided outside of the nested
-	   loop. Note that the node set specified by the inner {\tt on}
-	   clause is a subset of that specified by the outer one.
+to be executed by each node can be determined outside of the nested
+loop. Note that the node set specified by the inner {\tt on}
+clause is a subset of that specified by the outer one.
 
 \begin{Fexample}
 !$xmp distribute t(block,block) onto p
@@ -648,15 +648,6 @@ constructs (below right).
 !$xmp end task
 !$xmp task on p(:,2)
       call subtask ( 2 )
-!$xmp end task
-!$xmp task on p(:,3)
-      call subtask ( 3 )
-!$xmp end task
-!$xmp task on p(:,3)
-      call subtask ( 3 )
-!$xmp end task
-!$xmp task on p(:,3)
-      call subtask ( 3 )
 !$xmp end task
 !$xmp task on p(:,3)
       call subtask ( 3 )
@@ -733,10 +724,9 @@ The executing node sets of different sizes are created by
       end do
 \end{Fexample}
 
-This loop computes the sum of {\tt a(i)} in the variable {\tt s} on each
-node. Note that 
-only the partial sum is computed on {\tt s} without the reduction clause. This
-example is equivalent to the code given below. 
+This loop computes the sum of {\tt a(i)} into the variable {\tt s} on
+each node. Note that only the partial sum is computed on {\tt s} without
+the reduction clause. This example is equivalent to the code given below. 
 
 \begin{Fexample}
       ...
@@ -790,7 +780,7 @@ example is equivalent to the code given below.
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{array}} construct divides the work of an array
-assignment among nodes onto which the array is mapped.
+assignment among nodes specified by the {\tt on} clause.
 
 \subsubsection*{Syntax}
 \Syntax{array}
@@ -813,14 +803,15 @@ the node determined by the {\tt on} clasue.
 %for each element. This directive executes the array assignment in each
 %node.
 
-Note that array assignments can be used also in {\C}, which is an
-extended feature of {\XMP}.
+Note that array assignments can be used also in {\C}, which is one of
+the language extensions introduced by {\XMP} (see Section \ref{sec:Array
+assignment statements in C}).
 
 % inserted by Sakagami,H. 09/11/13 --- start ---
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item The template subset specified by {\it template-ref} must have the
+\item The template section specified by {\it template-ref} must have the
       same shape with the associated array assignment.
 %\item If the range in {\it template-ref} is omitted, all of the ranges
 %      are assumed to be specified.

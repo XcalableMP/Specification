@@ -30,7 +30,7 @@ are treated by the {\XMP} compiler in the same manner as by the compiler
 of the base language.
 %
 This rule makes it possible that a local actual argument in a procedure
-written in {\XMP} is associated with a dummy argument of a procedure
+written in {\XMP} can be associated with a dummy argument of a procedure
 written in the base language.
 
 If both of an acutual and its associating dummy arguments are coarrays,
@@ -116,11 +116,10 @@ element of a global data appearing as an actual argument is treated by
 the {\XMP} compiler as the base address of its local section on each
 node, and the global data appearing as the corresponding dummy argument
 is initialized at runtime so as to be composed of the local sections
-each of which starts from the received address.
+each of which starts from the address received as the argument.
 %
 On a node that does not have the local section corresponding to the
-actual argument, an unspecified value (e.g. null) is passed as the base
-address.
+actual argument, an unspecified value (e.g. null) is received.
 
 Such implementation implies that in many cases, in order to associate
 properly a global actual argument with the global dummy argument, their
@@ -178,9 +177,8 @@ mappings (including their shadow attributes) must be identical.
 
 	   The caller subroutine {\tt xmp\_sub1} passes the base address
 	   of the local section of {\tt a} on each node, and the callee
-	   {\tt f\_sub2} receives it and initializes each the local
-	   section of {\tt x} with the storage starting from it (Figure
-	   \ref{fig5.2}).
+	   {\tt f\_sub2} receives it and initializes {\tt x} with the
+	   storage starting from it (Figure \ref{fig5.2}).
 
 \begin{Fexample}
       subroutine xmp_sub1
@@ -212,7 +210,7 @@ mappings (including their shadow attributes) must be identical.
 	   explicit-shape array. Sequence association is applied 
 	   in this case, but the value to be passed is unspecified on 
 	   the nodes {\tt p(2)}, {\tt p(3)} and {\tt p(4)} because they
-	   does not own any part of the actual argument {\tt a(:,1)}.
+	   do not own any part of the actual argument {\tt a(:,1)}.
 
 	   As a result, the storage for {\tt x} in {\tt f\_sub2} may be
 	   unavailable on the nodes {\tt p(2)}, {\tt p(3)} and {\tt
@@ -239,7 +237,7 @@ mappings (including their shadow attributes) must be identical.
 
 \begin{myfigure}
  \includegraphics[scale=0.7]{figs/fig5.25.eps}
- \caption{Sequence Association of an Section of a Global Data as an
+ \caption{Sequence Association of a Section of a Global Data as an
  Actual Argument with a Local Dummy Argument}
  \label{fig5.25}
 \end{myfigure}
@@ -251,7 +249,7 @@ mappings (including their shadow attributes) must be identical.
 	   explicit-shape array. Sequence association is applied 
 	   in this case, but the value to be passed is unspecified on 
 	   the nodes {\tt p(2)}, {\tt p(3)} and {\tt p(4)} because they
-	   does not own the actual argument {\tt a(1)}.
+	   do not own the actual argument {\tt a(1)}.
 
 	   As a result, the storage for {\tt x} in {\tt f\_sub2} may be
 	   unavailable on the nodes {\tt p(2)}, {\tt p(3)} and {\tt
@@ -306,8 +304,8 @@ When the actual argument is a global data and it is obvious from the
 interface of the invoked procedure that the corresponding dummy argument
 is neither an explicit-shape nor assumed-size array, the actual
 argument is {\it descriptor associated} with the dummy
-argument. According to descriptor association, the dummy argument 
-inherits its shape and storage from the actual argument.
+argument. According to the descriptor association rule, the dummy
+argument inherits its shape and storage from the actual argument.
 
 \paragraph{Implementation.}
 
@@ -395,14 +393,14 @@ detect and report the error.
 \item[Example 2]
 
 	   There is the explicit interface of the subroutine
-	   {\tt f\_sub2}, which is written in the base language Fortran,
+	   {\tt f\_sub2}, which is written in the Fortran base language,
 	   specified by an interface block in the subroutine {\tt
-	   xmp\_sub1} and the dummy argument {\tt x} is a local
+	   xmp\_sub1}, and the dummy argument {\tt x} is a local
 	   (i.e. non-mapped) assumed-shape array. Therefore the global
 	   actual argument {\tt a} is descriptor associated with the
 	   local dummy argument {\tt x}.
 
-	   The global dummy argument is replaced with its local section
+	   The global actual argument is replaced with its local section
 	   by the {\XMP} compiler and the association of the local
 	   section with the dummy argument is to be processed by the
 	   backend Fortran compiler in the same manner as usual data 
@@ -449,7 +447,7 @@ When the actual argument is a global data, it is passed by the address
 of its local section.
 %
 When the dummy argument is a global data, an address is received and
-used as the base address of each its local section.
+used as the base address of each of its local section.
 
 
 \paragraph{Implementation.}
@@ -489,7 +487,7 @@ identical.
 	   section, which is passed to the callee, on each node.
 
 	   The global dummy argument {\tt x} is initialized so that each
-	   the local section of it starts from the address held by the
+	   of its local section starts from the address held by the
 	   received pointer (Figure \ref{fig5.7}).
 
 \begin{Cexample}
@@ -559,10 +557,10 @@ void c_func2(float x[27])
 
 	   The actual argument {\tt a[0]} is an element of the global
 	   data and the dummy argument {\tt x} is a scalar, in which
-	   case the normal argument-passing rule of {\C} for variables a
-	   basic type (i.e. ``pass-by-value'') is applied. However, the
-	   value to be passed is unspecified on the nodes {\tt p(2)},
-	   {\tt p(3)} and {\tt p(4)} because they does not own the
+	   case the normal argument-passing rule of {\C} for variables
+	   of a basic type (i.e. ``pass-by-value'') is applied. However,
+	   the value to be passed is unspecified on the nodes {\tt
+	   p(2)}, {\tt p(3)} and {\tt p(4)} because they do not own the
 	   actual argument {\tt a[0]}.
 
 	   As a result, {\tt x} in {\tt c\_func2} has an unspecified
