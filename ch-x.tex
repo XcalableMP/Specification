@@ -8,5 +8,28 @@
 
 \section{Interface to Numerical Libraries}
 
+   This section describe XcalableMP interfaces to existing MPI parallel library, 
+   in order to develop good productive and high performance XcalableMP programs 
+   using existing MPI parallel libraries.
+   
 \subsection{ScaLAPACK}
 
+   This subsection shows main characteristics in case of developing
+   XcalableMP programs using XcalableMP interfaces to ScaLAPACK library routines.
+
+\begin{itemize}
+\item The name of XcalableMP interface prefixes "XMP\_" or "xmp\_" 
+      to ScaLAPACK library routine name.
+\item Execution flow is the following:\\
+      XMP programs $\to$ XMP interface $\to$ native ScaLAPACK library routines
+\item If arguments of subroutines have array descriptor,
+      we replace the argument with "xmp\_desc\_of".
+      Then we don't need array descriptor. 
+\item For ScaLAPACK library routine having descriptor array as argumet,
+      the XcalableMP interface routine have BLACS context handle including 
+      the descriptor array as new argument.
+\item The blacs\_exit routine is unnecessary, because XcalableMP program executes process 
+      corresponding to MPI\_Finalize routines.
+\item A valid value of the argument "order" of BLACS routine "blacs\_gridinit" is 
+      only column-major. 
+\end{itemize}
