@@ -360,9 +360,25 @@
 
 \gitem{communication}
 
-\gitem{synchronization}
+ A data movement among nodes. Communication in {\XMP} occurs only when
+ the programmer instruct it explicitly with a global communication
+ construct or a coarray reference.
 
-\gitem{asynchronous}
+\gitem{(node) synchronization}
+
+ Synchronization is a mechanism to ensure that multiple nodes do not
+ execute specific portions of a program at the same
+ time. Synchronization among any number of nodes is specified by the
+ {\tt barrier} construct and that between two nodes by the {\tt post} and
+ {\tt wait} constructs.
+
+\gitem{asynchronous communication}
+
+ Communication that does not block and returns before it is
+ complete. Thus statements that follow it can overtake it. An
+ asynchronous communication is specified by the {\tt async} clause of
+ global communication constructs or the {\tt async} directive for
+ a coarray reference.
 
 \end{namelist}
 

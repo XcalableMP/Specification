@@ -15,7 +15,7 @@ intrinsic procedures in Fortran and library procedures in C.
  \item {\tt xmp\_num\_nodes}
  \item {\tt xmp\_mpi\_comm}
  \item {\tt xmp\_wtime}
- \item {\tt xmp\_async\_test}
+ \item {\tt xmp\_test\_async}
  \item {\tt xmp\_gtol(xmp\_desc\_t d, int g\_dims[], int l\_dims[])}
 \end{itemize}
 
@@ -220,7 +220,7 @@ intrinsic procedures in Fortran and library procedures in C.
 
 \begin{tabular}{lll}
 
-\verb![C]!&  {\tt void}& {\tt  xmp\_barrier({\it nodes-name};}\\
+\verb![C]!&  {\tt void}& {\tt  xmp\_barrier({\it nodes-name})}\\
 
 \verb![F]!&  & {\tt xmp\_barrier({\it nodes-name})}
 
@@ -233,38 +233,79 @@ intrinsic procedures in Fortran and library procedures in C.
     have entered the call.
 
 \subsubsection*{Arguments}
-    The argument of{\tt xmp\_barrier} is a {\it nodes-name} of the executing node set.
+    The argument of {\tt xmp\_barrier} is a {\it nodes-name} of the executing node set.
+
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_test\_async}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt logical function} & {\tt xmp\_test\_async(async\_id)}\\
+\verb![F]!& {\tt integer} & {\tt async\_id}\\
+          & & \\
+\verb![C]!&  {\tt int} & {\tt  xmp\_test\_async({\tt async\_id})}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_test\_async} routine returns {\tt .true.}, in {\Fort}, or
+{\tt 1}, in {\C}, if an asynchronous communication specified by the
+argument {\tt async\_id} is complete; otherwise, it returns {\tt .false.}
+or {\tt 0}.
+
+\subsubsection*{Arguments}
+
+The argument {\tt async\_id} is an integer expression that specifies an
+asynchronous communication initiated by a global communication construct
+with the {\tt async} clause or a coarray reference preceded by the {\tt
+async} directive.
+
+\vspace{0.3cm}
+
+\subsection{\tt xmp\_gtol}
+
+\begin{tabular}{lll}
+
+\verb![F]!& & {\tt xmp\_gtol(d, g\_dims, l\_dims)} \\
+\verb![F]!& {\tt xmp\_desc\_t} & {\tt d}\\
+\verb![F]!& {\tt integer} & {\tt g\_dims[NDIMS]}\\
+\verb![F]!& {\tt integer} & {\tt l\_dims[NDIMS]}\\
+          & & \\
+\verb![C]!&  {\tt void} & {\tt xmp\_gtol(xmp\_desc\_t d, int g\_dims[], int l\_dims[])}
+
+\end{tabular}
 
 
-
-\section{Computational Intrinsic Procedures}
-
-\subsection{Fortran}
-
-\begin{itemize}
- \item {\tt x = xmp\_scatter(a, idx1, idx2, ...)}
- \item {\tt x = xmp\_gather(a, idx1, idx2, ...)}
- \item {\tt v = xmp\_pack(a, mask)}
- \item {\tt a = xmp\_unpack(v, mask)}
- \item {\tt x = xmp\_sort\_up(a)}
- \item {\tt x = xmp\_sort\_down(a)}
- \item {\tt x = xmp\_cshift(a, shift, dim)}
- \item {\tt x = xmp\_eoshift(a, shift, b, dim)}
- \item {\tt m = xmp\_transpose(m)}
-\end{itemize}
-
-
-\subsection{C}
-
-
-\begin{itemize}
- \item {\tt x = xmp\_scatter(desc\_a, idx1, idx2, ...)}
- \item {\tt x = xmp\_gather(desc\_a, idx1, idx2, ...)}
- \item {\tt v = xmp\_pack(desc\_a, mask)}
- \item {\tt a = xmp\_unpack(desc\_v, mask)}
- \item {\tt x = xmp\_sort\_up(desc\_a)}
- \item {\tt x = xmp\_sort\_down(desc\_a)}
- \item {\tt x = xmp\_cshift(desc\_a, shift, dim)}
- \item {\tt x = xmp\_eoshift(desc\_a, shift, b, dim)}
- \item {\tt m = xmp\_transpose(desc\_m)}
-\end{itemize}
+%\section{Computational Intrinsic Procedures}
+%
+%\subsection{Fortran}
+%
+%\begin{itemize}
+% \item {\tt x = xmp\_scatter(a, idx1, idx2, ...)}
+% \item {\tt x = xmp\_gather(a, idx1, idx2, ...)}
+% \item {\tt v = xmp\_pack(a, mask)}
+% \item {\tt a = xmp\_unpack(v, mask)}
+% \item {\tt x = xmp\_sort\_up(a)}
+% \item {\tt x = xmp\_sort\_down(a)}
+% \item {\tt x = xmp\_cshift(a, shift, dim)}
+% \item {\tt x = xmp\_eoshift(a, shift, b, dim)}
+% \item {\tt m = xmp\_transpose(m)}
+%\end{itemize}
+%
+%
+%\subsection{C}
+%
+%
+%\begin{itemize}
+% \item {\tt x = xmp\_scatter(desc\_a, idx1, idx2, ...)}
+% \item {\tt x = xmp\_gather(desc\_a, idx1, idx2, ...)}
+% \item {\tt v = xmp\_pack(desc\_a, mask)}
+% \item {\tt a = xmp\_unpack(desc\_v, mask)}
+% \item {\tt x = xmp\_sort\_up(desc\_a)}
+% \item {\tt x = xmp\_sort\_down(desc\_a)}
+% \item {\tt x = xmp\_cshift(desc\_a, shift, dim)}
+% \item {\tt x = xmp\_eoshift(desc\_a, shift, b, dim)}
+% \item {\tt m = xmp\_transpose(desc\_m)}
+%\end{itemize}
