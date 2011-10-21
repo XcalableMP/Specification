@@ -8,7 +8,7 @@ intrinsic procedures in Fortran and library procedures in C.
 \section{Miscellaneous Intrinsic Procedures}
 
 \begin{itemize}
- \item {\tt xmp\_desc\_t d = xmp\_dec\_of(XMP object)}
+ \item {\tt xmp\_dec\_of}
  \item {\tt xmp\_all\_node\_num}
  \item {\tt xmp\_all\_num\_nodes}
  \item {\tt xmp\_node\_num}
@@ -16,7 +16,8 @@ intrinsic procedures in Fortran and library procedures in C.
  \item {\tt xmp\_mpi\_comm}
  \item {\tt xmp\_wtime}
  \item {\tt xmp\_test\_async}
- \item {\tt xmp\_gtol(xmp\_desc\_t d, int g\_dims[], int l\_dims[])}
+ \item {\tt xmp\_gtol}
+ \item \verb![C]! {\tt xmp\_malloc}
 \end{itemize}
 
 \vspace{0.3cm}
@@ -244,7 +245,7 @@ intrinsic procedures in Fortran and library procedures in C.
 \verb![F]!& {\tt logical function} & {\tt xmp\_test\_async(async\_id)}\\
 \verb![F]!& {\tt integer} & {\tt async\_id}\\
           & & \\
-\verb![C]!&  {\tt int} & {\tt  xmp\_test\_async({\tt async\_id})}
+\verb![C]!&  {\tt int} & {\tt  xmp\_test\_async(int async\_id)}
 
 \end{tabular}
 
@@ -268,14 +269,63 @@ async} directive.
 
 \begin{tabular}{lll}
 
-\verb![F]!& & {\tt xmp\_gtol(d, g\_dims, l\_dims)} \\
+\verb![F]!& {\tt subroutine} & {\tt xmp\_gtol(d, g\_idx, l\_idx)} \\
 \verb![F]!& {\tt xmp\_desc\_t} & {\tt d}\\
-\verb![F]!& {\tt integer} & {\tt g\_dims[NDIMS]}\\
-\verb![F]!& {\tt integer} & {\tt l\_dims[NDIMS]}\\
+\verb![F]!& {\tt integer} & {\tt g\_idx(NDIMS)}\\
+\verb![F]!& {\tt integer} & {\tt l\_idx(NDIMS)}\\
           & & \\
-\verb![C]!&  {\tt void} & {\tt xmp\_gtol(xmp\_desc\_t d, int g\_dims[], int l\_dims[])}
+\verb![C]!&  {\tt void} & {\tt xmp\_gtol(xmp\_desc\_t d, int g\_idx[], int l\_idx[])}
 
 \end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_test\_async} routine translates an index (specified by
+{\tt g\_idx}) of a global array (specified by {\tt d}) into the
+corresponding index of its local section and sets to an array specified
+by {\tt l\_idx}. If the element of the specified index does not reside
+in the caller of the routine, the resulting array is set to an
+unspecified value.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target global array.
+ \item \verb![F]! {\tt g\_idx} is a rank-one integer array of the size
+       equal to the rank of the target global array specified by {\tt
+       d}.
+ \item \verb![F]! {\tt l\_idx} is a rank-one integer array of the size
+       equal to the rank of the target global array specified by {\tt
+       d}.
+ \item \verb![C]! {\tt g\_idx} is a one-dimensional integer array.
+ \item \verb![C]! {\tt l\_idx} is a one-dimensional integer array.
+\end{itemize}
+
+
+\subsection{\tt [C] xmp\_malloc}
+
+\begin{tabular}{ll}
+
+{\tt void*} & {\tt xmp\_malloc(xmp\_desc\_t d, size\_t size)}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_malloc} routine allocates a storage for the local section
+of a one-dimensional global array of size {\tt size} that is associated
+with a descriptor specified by {\tt d}, and returns the pointer to it on
+each node.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with a pointer to the
+       one-dimensional global array to be allocated.
+ \item {\tt size} is the size of the global array to be allocated.
+\end{itemize}
 
 
 %\section{Computational Intrinsic Procedures}
