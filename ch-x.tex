@@ -1,6 +1,106 @@
-\chapter{Hybrid Programming with {\MPI} and {\OMP}}
+\chapter{Programming Interface for {\MPI} and {\OMP}}
 
-\section{{\MPI}}
+   This section describes the programming interface for {\MPI} and {\OMP},
+   which are widely used for parallel programming for cluster computing.
+   Users can introduce {\MPI} and {\OMP} functions to {\XMP} using the interface.   
+
+\section{{\MPI} Interface}
+
+   {\XMP} provides the following user API functions to mix {\MPI} functions with {\XMP}
+
+\begin{itemize}
+\item {\tt xmp\_get\_mpi\_comm}
+\item {\tt xmp\_init\_mpi}
+\item {\tt xmp\_finalize\_mpi}
+\end{itemize}
+
+\subsection{\tt xmp\_get\_mpi\_comm}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt int}& {\tt xmp\_get\_mpi\_comm(nodes-name)}\\
+
+\verb![F]!&  {\tt integer function}& {\tt xmp\_get\_mpi\_comm(nodes-name)}
+\end{tabular}
+
+\subsubsection*{Synopsis}
+   xmp\_get\_mpi\_comm returns the integer value with the associated communicator to which
+   nodes-name belongs. xmp\_mpi\_comm returns the executing MPI communicator when nodes-name is omitted.
+
+\subsubsection*{Arguments}
+   nodes-name is the name of a node set.
+
+\subsection{\tt xmp\_init\_mpi}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt void}& {\tt xmp\_init\_mpi(int *args, char ***argv)}\\
+
+\verb![F]!&  {\tt }& {\tt xmp\_init\_mpi()}
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+   xmp\_init\_mpi initializes MPI execution environment.
+
+\subsubsection*{Arguments}
+
+   In C, argc and argv, command-line arguments, should be given to xmp\_init\_mpi.
+
+
+\subsection{\tt xmp\_finalzie\_mpi}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt void}& {\tt xmp\_finalize\_mpi(void)}\\
+
+\verb![F]!&  {\tt }& {\tt xmp\_finalize\_mpi()}
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+   xmp\_finalize\_mpi terminates MPI execution enviroment.
+
+\subsubsection*{Arguments}
+
+   none.
+
+\subsection*{Example}
+\begin{Cexample}
+#include <stdio.h>
+#include "mpi.h"
+#include "xmp.h"
+
+#pragma xmp nodes p(4)
+
+int main(int argc, char *argv[]) {
+  xmp_init_mpi(&argc, &argv)
+
+  int rank, size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+#pragma xmp task on p(2:3)
+{
+  MPI_Comm comm = xmp_get_mpi_comm(); // get the MPI communicator of p(2:3)
+
+  int rank, size;
+  MPI_Comm_rank(comm, &rank);
+  MPI_Comm_size(comm, &size);
+}
+
+  xmp_finalize_mpi();
+
+  return 0;
+}
+\end{Cexample}
+
 
 \section{{\OMP}}
 
