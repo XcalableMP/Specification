@@ -174,18 +174,80 @@ int main(void) {
    XcalableMP programs using XcalableMP interfaces to ScaLAPACK library routines.
 
 \begin{itemize}
-\item The name of XcalableMP interface prefixes "XMP\_" or "xmp\_" 
+\item The name of XcalableMP interface prefixes "{\tt XMP\_}" or "{\tt xmp\_}" 
       to ScaLAPACK library routine name.
 \item Execution flow is the following:\\
       XMP programs $\to$ XMP interface $\to$ native ScaLAPACK library routines
 \item If arguments of subroutines have array descriptor,
-      we replace the argument with "xmp\_desc\_of".
+      we replace the argument with "{\tt xmp\_desc\_of}".
       Then we don't need array descriptor. 
-\item For ScaLAPACK library routine having descriptor array as argumet,
+\item For ScaLAPACK library routine having descriptor array as argument,
       the XcalableMP interface routine have BLACS context handle including 
       the descriptor array as new argument.
 \item The blacs\_exit routine is unnecessary, because XcalableMP program executes process 
       corresponding to MPI\_Finalize routines.
-\item A valid value of the argument "order" of BLACS routine "blacs\_gridinit" is 
+\item A valid value of the argument "order" of BLACS routine "{\tt blacs\_gridinit}" is 
       only column-major. 
 \end{itemize}
+
+\subsection*{Example}
+\begin{Fexample}
+      program xmptdgesv
+
+      double precision a(1000,1000)
+      double precision b(1000)
+      integer ipiv(2*1000,2)
+!$xmp nodes p(2,2)
+!$xmp nodes q(2)=p(1:2,1)
+!$xmp template t(1000,1000)
+!$xmp template t1(2*1000,2)
+!$xmp template s(1000)
+!$xmp distribute t(block,block) onto p
+!$xmp distribute t1(block,block) onto p
+!$xmp distribute s(block) onto q
+!$xmp align a(i,j) with t(i,j)
+!$xmp align ipiv(i,j) with t1(i,j)
+!$xmp align b(i) with s(i)
+
+      integer i,j,ictxt,myrow,mycol
+      integer m=1000,n=1000,nprow=2,npcol=2
+      integer icontxt=-1,iwhat=0
+      integer nrhs=1,ia=1,ja=1,ib=1,jb=1,info
+      character*1 order
+
+      ...
+      
+      order="C"
+
+      ...
+
+      call blacs_get(icontxt,iwhat,ictxt)
+      call blacs_gridinit(ictxt,order,nprow,npcol)
+      call blacs_gridinfo(ictxt,nprow,npcol,myrow,mycol)
+
+      ...
+
+!$xmp loop (i,j) on t(i,j)
+      do i=1,m
+         do j=1,n
+            a(i,j) = ...
+         end do
+      end do
+
+      ...
+ 
+!$xmp loop on s(i)
+      do i=1,m
+         b(i)= ...
+      end do
+
+      call xmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
+                      b,ib,jb,xmp_desc_of(b),ictxt,info);
+
+      ...
+
+      call blacs_gridexit(ictxt);
+
+      stop
+      end
+\end{Fexample}
