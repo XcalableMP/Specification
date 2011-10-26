@@ -51,16 +51,16 @@ cobound, cosubscript, image, image index, etc.) are derived from that in
 Fortran 2008.
 
 In addition, the {\tt on} clause of the {\tt coarray} directive
-specifies a node array on each element of which 
-the coarray object is allocated, and associates each {\it image} of the
-coarray with a node so that an image having an {\it image index} is
+specifies a node array on each element of which the coarray object is
+allocated, and associates each {\it image} of the coarray with a node of
+the node array so that an image having an {\it image index} is
 associated with a node that have the same index of the node array in the
 Fortran's array element order.
 %
 If the {\tt coarray} directive is not specified in {\XMPF} or the {\tt
 on} clause of the {\tt coarray} directive is not specified in {\XMPC},
-then it is assumed that a node array corresponding to the executing node
-set is specified.
+then it is assumed that an implicit node array corresponding to the
+executing node set of the procedure is specified.
 
 Note that an actual coarray and its associating dummy coarray must be
 declared on the same node set (see chapter \ref{chap:procedure}).
@@ -70,6 +70,9 @@ declared on the same node set (see chapter \ref{chap:procedure}).
 \begin{itemize}
  \item \verb![F]! All of the variables appeared in a {\tt coarray}
        directive must have the codimension attributes.
+ \item The node array specified by the {\tt on} clause of the {\tt
+       coarray} directive for a procedure-local variable must
+       correspond to the executing node set of the procedure.
 % \item \verb![F]! All of the variables declared by {\it
 %       type-declaration-stmt} in the first form with the {\tt on} clause
 %       must have the codimension attribute.

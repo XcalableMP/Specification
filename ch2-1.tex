@@ -42,7 +42,7 @@ case-sensitive.
 
 \vspace{0.5cm}
 
-\Syntax{directive}
+Syntax{directive}
 \begin{tabular}{ll}
 \verb![C]! & \verb|#pragma xmp| {\it directive-name clause} \\
 \end{tabular}
@@ -58,15 +58,18 @@ directives. The declarative directive is a directive that may only be
 placed in a declarative context. A declarative directive has no
 associated executable user code. The scope rule of declarative
 directives obeys that of the declaration statements in the base
-language. For example, in {\XMPC}, node declarations by {\tt node}
-directives are effective from the declaring point to the end of the
-function when specified within a function, or of the file when specified
-outside any functions, and, in {\XMPF}, node declarations by {\tt node}
-directives are effective within either the program unit, the derived-type
-declaration or the interface body that immediately encloses the
-directives.
+language.
+%
+For example, in {\XMPC}, a node array declared by a {\tt nodes}
+directive is visible in the range from the declaring point to the end of
+the function when placed within a function, or of the file when
+placed outside any functions,
+%
+and, in {\XMPF}, a node array declared by a {\tt nodes} directive is
+visible within either the program unit, the derived-type declaration
+or the interface body that immediately encloses the directives.
 
-The executable directives are placed in a executable context. A
+The executable directives are placed in an executable context. A
 stand-alone directive is an executable directive that has no associated
 user code, such as a {\tt barrier} directive.
 %
@@ -77,30 +80,30 @@ An executable directive and its associated user code make up an
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\it directive-name clause} ...\\
- & \hspace{0.5cm} {\it statement} \\
+ & \hspace{0.5cm} {\it structured-block} \\
 \end{tabular}
 
 \vspace{0.3cm}
 
 \begin{tabular}{ll}
 \verb![C]! & \verb|#pragma xmp| {\it directive-name clause} ...\\
- & \hspace{0.5cm} {\it statement} \\
+ & \hspace{0.5cm} {\it structured-block} \\
 \end{tabular}
 
 \vspace{0.5cm}
 
 Note that, in {\XMPF}, a corresponding {\tt end} directive is required
-for the {\tt task} and the {\tt tasks} constructs (see below)
-and, in {\XMPC}, the associated statement can be a compound-statement.
+for some executable directives such as {\tt task} and {\tt tasks} and,
+in {\XMPC}, the associated statement can be a compound-statement.
 
-\vspace{0.5cm}
-
-\begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp tasks| \\
- & \hspace{0.5cm} {\it structured-block} \\
- & \hspace{0.5cm} ... \\
- & \verb|!$xmp| {\tt end tasks}\\
-\end{tabular}
+%\vspace{0.5cm}
+%
+%\begin{tabular}{ll}
+%\verb![F]! & \verb|!$xmp tasks| \\
+% & \hspace{0.5cm} {\it structured-block} \\
+% & \hspace{0.5cm} ... \\
+% & \verb|!$xmp| {\tt end tasks}\\
+%\end{tabular}
 
 
 \subsection{Combined Directive}
