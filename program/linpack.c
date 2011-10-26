@@ -4,13 +4,13 @@
  */
 #pragma xmp nodes p(*)
 #pragma xmp template t(0:LDA-1)
-#pragma xmp distribute (cyclic): t
+#pragma xmp distribute t(cyclic) onto p
 
 double pvt_v[N];  // local
 
 /*     gaussian elimination with partial pivoting	*/
 dgefa(double a[n][LDA],int lda, int n,int ipvt,int *info)
-#pragma xmp align a[:][i] to t(i)
+#pragma xmp align a[:][i] with t(i)
 {
     REAL t;
     int idamax(),j,k,kp1,l,nm1,i;
@@ -26,7 +26,7 @@ dgefa(double a[n][LDA],int lda, int n,int ipvt,int *info)
       /* if (a[k][l] != ZERO) */
 #ifdef XMP
 #pragma xmp gmove
-      pvt_v[k:n-1] = a[l][k:n-1];
+      pvt_v[k:n-k] = a[l][k:n-k];
 #else
       for(i = k; i < n; i++) pvt_v[i] = a[i][l];
 #endif
@@ -57,8 +57,8 @@ dgefa(double a[n][LDA],int lda, int n,int ipvt,int *info)
 }
 
 dgesl(double a[n][LDA],int lda,int n,int pvt[n],double b,int job)
-#pragma xmp align a[:][i] to t(i)
-#pragma xmp align b[i] to t(i)
+#pragma xmp align a[:][i] with t(i)
+#pragma xmp align b[i] with t(i)
 {
     REAL t;
     int k,kb,l,nm1;
@@ -86,7 +86,7 @@ dgesl(double a[n][LDA],int lda,int n,int pvt[n],double b,int job)
 	b[k] = b[k]/a[k][k];
 	t = -b[k];
 }
-#pragma xmp bcast t from t(k)
+#pragma xmp bcast (t) from t(k)
 	A_daxpy(0,k,t,a[k],b);
     }
 }
@@ -95,7 +95,8 @@ dgesl(double a[n][LDA],int lda,int n,int pvt[n],double b,int job)
 * distributed array based routine 
 */
 A_daxpy(int b,int n,double da,double dx[n],double dy[n])
-#pragma xmp align dx[i], dy[i] to t(i)
+#pragma xmp align dx[i] with t(i)
+#pragma xmp align dy[i] with t(i)
 {
     int i,ix,iy,m,mp1;
     if(n <= 0) return;
@@ -108,7 +109,7 @@ A_daxpy(int b,int n,double da,double dx[n],double dy[n])
 }
 
 int A_idamax(int b,int n,double dx[n])
-#pragma xmp align dx[i] to t(i)
+#pragma xmp align dx[i] with t(i)
 {
   double dmax, g_dmax;
     int i, ix, itemp;
@@ -128,7 +129,8 @@ int A_idamax(int b,int n,double dx[n])
 }
 
 A_dscal(int b,int n,double da,double dx[n])
-#pragma xmp align dx[i], dy[i] to t(i)
+#pragma xmp align dx[i] with t(i)
+#pragma xmp align dy[i] with t(i)
 {
     int i;
     if(n <= 0)return;

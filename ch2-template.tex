@@ -204,7 +204,7 @@ where {\it dist-format} must be one of:
 
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt *} \\
- & {\tt block} \\
+ & {\tt block} {\openb} \verb|(| {\it int-expr} \verb|)| {\closeb} \\
  & {\tt cyclic} {\openb} \verb|(| {\it int-expr} \verb|)| {\closeb} \\
  & {\tt gblock} \verb|(| \{ {\tt *} $\vert$ {\it int-array} \} \verb|)| \\
 \end{tabular}
@@ -217,6 +217,11 @@ the {\tt onto} clause corresponds, in left-to-right order, with the dimension of
 the distributed template for which the corresponding {\it dist-format} is
 not ``{\tt *}''. 
 
+Let {\tt d} be the size of the dimension of the template, {\tt
+p} be the size of the corresponding dimension of the node array, {\tt
+ceiling} and {\tt mod} be Fortran's intrinsic functions, and each of the
+arithmetic operators be that of Fortran.
+%
 The interpretation of {\it dist-format} is as follows:
 
 \begin{description}
@@ -224,18 +229,23 @@ The interpretation of {\it dist-format} is as follows:
 	   The dimension is not distributed.
 
 \item[{\tt block}]
+	   Equivalent to {\tt block(ceiling(d/p))}.
+
+\item[{\tt block(n)}]
+
 	   The dimension of the template is divided into
-	   contiguous blocks of the same size, which are distributed onto
-	   the corresponding dimension of the node array. Let {\tt d} be
-	   the size of the dimension of the template, and
-	   let {\tt p} be the size of the corresponding dimension of the
-	   node array. If {\tt d mod p} is not zero, then the dimension
-	   of the template is divided into {\tt d/ceil(d/p)} blocks of
-	   size {\tt ceil(d/p)} and one block of size {\tt d\%ceil(d/p)},
-	   and each block is assigned sequentially to an index along the
-	   corresponding dimension of the node array. Note that if {\tt
-	   k = p-d/ceil(d/p)-1 > 0}, then there is no block for the last
-	   {\tt k} indices.
+	   contiguous blocks of size {\tt n}, which are distributed onto
+	   the corresponding dimension of the node array.
+%
+	   The dimension of the template is divided into {\tt d/n}
+	   blocks of size {\tt n}, and one block of size {\tt
+	   mod(d,n)} if any, and each block is assigned sequentially
+	   to an index along the corresponding dimension of the node
+	   array.
+%
+	   Note that if {\tt k = p-d/n-1 > 0}, then there is no block
+	   assigned to the last {\tt k} indices.
+
 
 \item[{\tt cyclic}]
 	   Equivalent to {\tt cyclic(1)}.
@@ -283,12 +293,12 @@ is defined by {\tt template\_fix} directives at runtime.
 \begin{description}
 \item[Example 1]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
       program main
 !$xmp nodes p(4)
 !$xmp template t(64)
 !$xmp distribute t(block) onto p
-\end{Fexample}
+\end{XFexample}
 
 The template {\tt t} is distributed in block format, as shown in the
 following table.
@@ -309,12 +319,12 @@ following table.
 
 \item[Example 2]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
       program main
 !$xmp nodes p(4)
 !$xmp template t(64)
 !$xmp distribute t(cyclic(8)) onto p
-\end{Fexample}
+\end{XFexample}
 
 The template {\tt t} is distributed in cyclic format of size eight, as
 shown in the following table.
@@ -335,12 +345,12 @@ shown in the following table.
 
 \item[Example 3]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
       program main
 !$xmp nodes p(8,5)
 !$xmp template t(64,64,64)
 !$xmp distribute t(*,cyclic,block) onto p
-\end{Fexample}
+\end{XFexample}
 
 The first dimension of the template {\tt t} is not distributed. The
 second dimension is distributed onto the first dimension of the node array
@@ -493,24 +503,24 @@ align-subscript}'s are interpreted as follows:
 \begin{description}
 \item[Example 1]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp align a(i) with t(i)
-\end{Fexample}
+\end{XFexample}
 %$
 
 The array element {\tt a(i)} is aligned with the template element {\tt
 t(i)}. This is equivalent to the following code.
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp align a(:) with t(:)
-\end{Fexample}
+\end{XFexample}
 %$
 
 \item[Example 2]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp align a(*,j) with t(j)
-\end{Fexample}
+\end{XFexample}
 %$
 
 The subarray {\tt a(:,j)} is aligned with the template element {\tt
@@ -518,9 +528,9 @@ t(j)}. Note that the first dimension of {\tt a} is collapsed.
 
 \item[Example 3]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp align a(j) with t(*,j)
-\end{Fexample}
+\end{XFexample}
 %$
 
 The array element {\tt a(j)} is replicated, and aligned with each
@@ -528,11 +538,11 @@ template element of {\tt t(:,j)}.
 
 \item[Example 4]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp template t(n1,n2)
       real a(m1,m2)
 !$xmp align a(*,j) with t(*,j)
-\end{Fexample}
+\end{XFexample}
 %$
 
 	   The subarray {\tt a(:,j)} is aligned with each template
@@ -645,7 +655,7 @@ reflection source of the shadow object.
 
 \begin{minipage}{0.5\hsize}
 \begin{center}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp nodes p(4,4)
 !$xmp template t(64,64)
 !$xmp distribute t(block,block) onto p
@@ -653,7 +663,7 @@ reflection source of the shadow object.
       real a(64,64)
 !$xmp align a(i,j) with t(i,j)
 !$xmp shadow a(1,1)
-\end{Fexample}
+\end{XFexample}
 \end{center}
 \end{minipage}
 %
@@ -719,7 +729,7 @@ and {\it dist-format} is one of:
 
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt *} \\
- & {\tt block} \\
+ & {\tt block} {\openb}\verb|(| {\it int-expr} \verb|)|{\closeb} \\
  & {\tt cyclic} {\openb}\verb|(| {\it int-expr} \verb|)|{\closeb} \\
  & {\tt gblock} \verb|(| {\it int-array} \verb|)| \\
 \end{tabular}
@@ -730,9 +740,9 @@ The {\tt template\_fix} directive is an executable directive to fix the
 shape and/or the distribution of the template that is initially
 undefined, by specifying the sizes and/or the distribution format of
 each dimension at runtime. The array aligned with an initially undefined
-template must be an allocatable array, in {\Fort}, or a pointer (see
+template must be an allocatable array, in {\XMPF}, or a pointer (see
 Section \ref{sec:Dynamic Allocation of Global Data in C}), in
-{\C}, which cannot be allocated until the template is fixed by the
+{\XMPC}, which cannot be allocated until the template is fixed by the
 {\tt template\_fix} directive. Any executable directives that have such a
 template in their {\tt on} clause must not be encountered until the
 template is fixed by the
@@ -765,7 +775,7 @@ as that in the {\tt distribute} directive.
 \Example{align}
 \Example{template\_fix}
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp template :: t(:)
 !$xmp distribute (gblock(*)) :: t
 
@@ -777,7 +787,7 @@ as that in the {\tt distribute} directive.
 !$xmp template_fix(gblock(M)) t(N)
       ...
       allocate (a(N))
-\end{Fexample}
+\end{XFexample}
 
 Since the shape is {\tt (:)} and the distribution format is {\tt
 gblock(*)}, 

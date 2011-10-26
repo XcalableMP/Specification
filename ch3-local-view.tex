@@ -59,7 +59,7 @@ An array specified by {\it local-array-name} may be a coarray.
 
 \item[Example 1]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp nodes n(4)
 !$xmp template :: t(100)
 !$xmp distribute (block) onto n :: t
@@ -70,7 +70,7 @@ An array specified by {\it local-array-name} may be a coarray.
 
       real :: b
 !$xmp local_alias b => a
-\end{Fexample}
+\end{XFexample}
 
 The array {\tt a} is distributed by block onto four nodes.
 The node {\tt n(2)} has its local section of twenty-five elements ({\tt
@@ -94,7 +94,7 @@ upper shadow & 27      \\ \hline
 
 \item[Example 2]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp nodes n(4)
 !$xmp template :: t(100)
 !$xmp distribute (cyclic) onto n :: t
@@ -104,7 +104,7 @@ upper shadow & 27      \\ \hline
 
       real :: b(0:)
 !$xmp local_alias b => a
-\end{Fexample}
+\end{XFexample}
 
 An array {\tt a} is distributed cyclically onto four nodes.
 Node {\tt n(2)} has its local section of twenty-five elements ({\tt
@@ -129,7 +129,7 @@ correspondence of each element of a to that of {\tt b}.
 
 \item[Example 3]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp nodes n(4)
 !$xmp template :: t(:)
 !$xmp distribute (block) onto n :: t
@@ -147,7 +147,7 @@ correspondence of each element of a to that of {\tt b}.
       allocate (a(128))
 
       if (me < 4) b(4) = b(4)[me +1]
-\end{Fexample}
+\end{XFexample}
 
 Since the global array {\tt a} is an allocatable array, its local alias
 {\tt b} is not defined when the subroutine starts execution. {\tt b} is
@@ -240,19 +240,19 @@ by {\it nodes-ref}.
 
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{Fexample}
+\begin{XFexample}
       S1
 !$xmp post (p(2), 1)
-\end{Fexample}
+\end{XFexample}
 \end{center}
 \end{minipage}
 %
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp wait (p(1), 1)
       S2
-\end{Fexample}
+\end{XFexample}
 \end{center}
 \end{minipage}
 
@@ -270,10 +270,10 @@ completed by {\tt p(1)}.
 \item[Example 2]
 \hspace{\hsize}
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp wait
       S3
-\end{Fexample}
+\end{XFexample}
 
 It is assumed that this code is executed by node {\tt p(3)}.
 
@@ -361,17 +361,17 @@ any node.
 %%\subsubsection*{Examples}
 %%\Example{critical}
 %%
-%%\begin{Fexample}
+%%\begin{XFexample}
 %%!$xmp critical
 %%      ...
 %%!$xmp end critical
-%%\end{Fexample}
+%%\end{XFexample}
 
 
 
-\chapter{Base Language Extensions}
+\chapter{Base Language Extensions in {\XMPC}}
 
-\section{Array Section Notation in C}
+\section{Array Section Notation}
 
 \subsubsection*{Synopsis}
 
@@ -396,7 +396,7 @@ length}{\closeb} {\openb}{\tt :} {\it step}{\closeb}
 
 \subsubsection*{Description}
 
-In {\XMP}, the base language C is extended so that a part of an array,
+In {\XMPC}, the base language C is extended so that a part of an array,
 that is, an array section can be put in an {\it array assignment
 statement}, which is described in \ref{sec:Array assignment statements
 in C}, and some {\XMP} constructs. An array section is built from a
@@ -483,7 +483,7 @@ Assuming that an array {\tt A} is declared by the following statement,
  & {\tt A[:]} & the whole of {\tt A} \\
 \end{tabular}
 
-\section{Array Assignment Statement in C}
+\section{Array Assignment Statement}
 \label{sec:Array assignment statements in C}
 
 \subsubsection*{Synopsis}
@@ -532,15 +532,15 @@ from {\tt B[0]} to {\tt B[4]} into the elements from {\tt A[5]} to {\tt
 A[9]}, respectively.
 
 \hspace{\hsize}
-\begin{Cexample}
+\begin{XCexample}
 int A[10];
 int B[5];
     ...
 A[5:9] = B[0:4]; 
-\end{Cexample}
+\end{XCexample}
 
 
-\section{Pointer to Global Data in C}
+\section{Pointer to Global Data}
 
 \subsection{Name of Global Array}
 
@@ -564,21 +564,11 @@ pointer, can be operated on the node.
 As a result, for a global array {\tt a}, {\tt a} and {\tt \&a[0]} are
 not always evaluated to the same value.
 
-\section{Descriptor of Global Data in C}
-\label{sec:Descriptor of Global Data in C}
-
-\subsection{Operator which indicate descriptor}
-
-When distribution of Global data is defined, query function which have 
-operator {\tt xmp\_desc\_of} as argument can return some descriptor information. 
-For details of the {\tt xmp\_desc\_of} library procedure, refer to
-Chapter \ref{chap:Intrinsic and library procedures}.
-
-\section{Dynamic Allocation of Global Data in C}
+\section{Dynamic Allocation of Global Data}
 \label{sec:Dynamic Allocation of Global Data in C}
 
-In the C base language, it is possible to allocate global arrays at
-runtime only when they are one-dimensional.
+In {\XMPC}, it is possible to allocate global arrays at runtime only
+when they are one-dimensional.
 %
 Such allocation is done through the following steps.
 %
@@ -605,7 +595,7 @@ xmp\_malloc} and {\tt pa} is set to point it on each node in line 12. For
 details of the {\tt xmp\_desc\_of} library procedure, refer to
 Chapter \ref{chap:Intrinsic and library procedures}.
 
-\begin{Cexample}
+\begin{XCexample}
 #pragma nodes p(NP)
 #pragma xmp template t(:)
 #pragma xmp distribute t(block) onto p
@@ -618,4 +608,22 @@ float *pa;
 #pragma xmp template_fix t(N)
 
 pa = (float *)xmp_malloc(xmp_desc_of(pa), N);
-\end{Cexample}
+\end{XCexample}
+
+\section{The Descriptor-of Operator}
+\label{sec:Descriptor of Global Data in C}
+
+%When distribution of Global data is defined, query function which have 
+%operator {\tt xmp\_desc\_of} as argument can return some descriptor
+%information. 
+
+The result of the descriptor-of operator (``{\tt xmp\_desc\_of}'')
+applied to {\XMP} entities such as node arrays, templates and global
+arrays is their {\it descriptor}, which can be used, for example, as an
+argument of query functions.
+
+For the {\tt xmp\_desc\_of} intrinsic function in {\XMPF}, refer to
+Chapter \ref{chap:Intrinsic and library procedures}.
+
+%For details of the {\tt xmp\_desc\_of} library procedure, refer to
+%Chapter \ref{chap:Intrinsic and library procedures}.

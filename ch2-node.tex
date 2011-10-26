@@ -104,8 +104,8 @@ second form, or the referenced node set in the third form.
 %  conflict with other names in class (1).
 \item {\it nodes-name} must not conflict with any other local name in
       the same scoping unit.
-\item \verb![F]! The second form cannot be used in either the main
-      program or a module.
+%\item \verb![F]! The second form cannot be used in either the main
+%      program or a module.
 \item {\it nodes-spec} can be ``{\tt *}'' only in the last dimension.
 \item {\it nodes-ref} must not reference {\it nodes-name} either
       directly or indirectly.
@@ -139,7 +139,7 @@ executed by 16 nodes.
 
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{Fexample}
+\begin{XFexample}
       program main
 !$xmp nodes p(16)
 !$xmp nodes q(4,*)
@@ -147,13 +147,13 @@ executed by 16 nodes.
 !$xmp nodes z(2,3)=(1:6)
       ...       
       end program 
-\end{Fexample}
+\end{XFexample}
 \end{center}
 \end{minipage}
 %
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{CexampleR}
+\begin{XCexampleR}
 int main() {
 #pragma xmp nodes p(16)
 #pragma xmp nodes q(4,*)
@@ -161,7 +161,7 @@ int main() {
 #pragma xmp nodes z(2,3)=(1:6)
     ...
 }
-\end{CexampleR}
+\end{XCexampleR}
 \end{center}
 \end{minipage}
 
@@ -176,7 +176,7 @@ int main() {
 %{\tt z(1,1), z(2,1), z(1,2), z(2,2), z(1,3), z(2,3), ...} have the
 %node numbers 1, 2, 3, 4, 5, 6, ...
 %
-%\begin{Fexample}
+%\begin{XFexample}
 %      program main
 %!$xmp nodes p(16)
 %!$xmp nodes(regular) q(4,*)
@@ -184,7 +184,7 @@ int main() {
 %!$xmp nodes(regular) z(2,3)=(1:6)
 %      ...
 %      end program
-%\end{Fexample}
+%\end{XFexample}
 
 The following is an example of a node declaration in a procedure.
 Since {\tt p} is declared in the second form to be of size 16 and
@@ -200,7 +200,7 @@ the entire node set. The node array {\tt r} is declared as a subset of
 %is a subset of {\tt p}, and the node array of {\tt x} is a subset of
 %{\tt q}.
 
-\begin{Fexample}
+\begin{XFexample}
       function foo()
 !$xmp nodes p(16)=*
 !$xmp nodes q(4,*)
@@ -208,7 +208,7 @@ the entire node set. The node array {\tt r} is declared as a subset of
 !$xmp nodes x(2,3)=q(1:2,1:3)
       ...
       end function
-\end{Fexample}
+\end{XFexample}
 
 
 \subsection{Node Reference}
@@ -383,7 +383,7 @@ integer variable.
 %
 %\begin{minipage}{0.45\hsize}
 %\begin{center}
-%\begin{Fexample}
+%\begin{XFexample}
 %      subroutine caller
 %!$xmp nodes p(1000)
 %      real a(100,100)
@@ -401,19 +401,19 @@ integer variable.
 %!$xmp end tasks
 %      ...
 %      end do
-%\end{Fexample}
+%\end{XFexample}
 %\end{center}
 %\end{minipage}
 %\begin{minipage}{0.45\hsize}
 %\begin{center}
-%\begin{FexampleR}
+%\begin{XFexampleR}
 %      subroutine task1(a)
 %      ...
 %!$xmp nodes q(*)
 %      real a(100,100)
 %      ...
 %      end subroutine
-%\end{FexampleR}
+%\end{XFexampleR}
 %\end{center}
 %\end{minipage}
 %\vspace{1cm}

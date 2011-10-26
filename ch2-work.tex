@@ -1,6 +1,6 @@
-\section{Work mapping construct}
+\section{Work Mapping Construct}
 
-\subsection{{\tt task} construct}
+\subsection{{\tt task} Construct}
 
 \subsubsection*{Synopsis}
 
@@ -13,12 +13,12 @@ a specified node set.
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt task on} \{{\it nodes-ref} $\vert$ {\it
  template-ref}\} \\
-& {\it block} \\
+& {\it structured-block} \\
 & \verb|!$xmp| {\tt end task} \\
 & \\
 \verb![C]! & \verb|#pragma xmp| {\tt task on} \{{\it nodes-ref} $\vert$
      {\it template-ref}\} \\
-& {\it block} \\
+& {\it structured-block} \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -53,7 +53,7 @@ corresponding new executing node set is created conceptually.
 \end{itemize}
 
 
-\subsection{{\tt tasks} construct}
+\subsection{{\tt tasks} Construct}
 
 \subsubsection*{Synopsis}
 
@@ -65,12 +65,12 @@ arbitrary order.
 \Syntax{tasks}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt tasks} {\openb} {\tt nowait} {\closeb} \\
+\verb![F]! & \verb|!$xmp| {\tt tasks} \\
 & {\it task-construct} \\
 & ... \\
 & \verb|!$xmp| {\tt end tasks} \\
 & \\
-\verb![C]! & \verb|#pragma xmp| {\tt tasks} {\openb} {\tt nowait} {\closeb} \\
+\verb![C]! & \verb|#pragma xmp| {\tt tasks} \\
 & {\tt \{} \\
 & \hspace{0.5cm} {\it task-construct} \\
 & \hspace{0.5cm} ... \\
@@ -80,22 +80,22 @@ arbitrary order.
 \subsubsection*{Description}
 
 {\tt \Directive{task}} constructs surrounded by a {\tt tasks} construct
-(called {\it child tasks}) are executed in arbitrary order without 
-implicit synchronization at the entry of each child task.
+are executed in arbitrary order without implicit synchronization at the
+entry of each task.
 %
 As a result, if there is no overlap between the executing node sets of
-the adjacent child tasks, they can be executed in parallel.
+the adjacent tasks, they can be executed in parallel.
 
-Conceptually, {\it nodes-ref} or {\it template-ref} in the {\tt task}
-constructs of child tasks are evaluated at the entry of the immediately
-surrounding {\tt tasks} construct.
+Conceptually, {\it nodes-ref} or {\it template-ref} of each task
+immediately surrounded by a {\tt tasks} construct is evaluated at the
+entry of the {\tt tasks} construct.
 
-No implicit synchronization is performed at the entry of the {\tt tasks}
-construct;
+No implicit synchronization is performed at the entry and exit of the
+{\tt tasks} construct.
 %
-implicit synchronization is performed at the exit of the {\tt tasks}
-construct, which guarantees that all communications issued inside child
-tasks are completed, unless a {\tt nowait} clause is specified.
+%implicit synchronization is performed at the exit of the {\tt tasks}
+%construct, which guarantees that all communications issued inside child
+%tasks are completed, unless a {\tt nowait} clause is specified.
 
 %When a {\tt nowait} clause is specified, implicit
 %synchronization is not performed at the end of the {\tt tasks}
@@ -111,7 +111,7 @@ tasks are completed, unless a {\tt nowait} clause is specified.
 
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{Fexample}
+\begin{XFexample}
       subroutine caller
 !$xmp nodes p(1000)
       real a(100,100)
@@ -129,20 +129,20 @@ tasks are completed, unless a {\tt nowait} clause is specified.
 !$xmp end tasks
       ...
       end do
-\end{Fexample}
+\end{XFexample}
 \end{center}
 \end{minipage}
 %
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{FexampleR}
+\begin{XFexampleR}
       subroutine task1(a)
       ...
 !$xmp nodes q(*)
       real a(100,100)
       ...
       end subroutine
-\end{FexampleR}
+\end{XFexampleR}
 \end{center}
 \end{minipage}
 \vspace{1cm}
@@ -150,7 +150,7 @@ tasks are completed, unless a {\tt nowait} clause is specified.
 \underline{Explanation to be added.}
 
 
-\subsection{{\tt loop} construct}
+\subsection{{\tt loop} Construct}
 \label{sub:loop_construct}
 
 \subsubsection*{Synopsis}
@@ -172,11 +172,14 @@ in parallel.
  {\openb}, {\it loop-index}{\closeb}... \verb|)| {\closeb} \\
  & \hspace{6cm}{\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\}
      {\openb} {\it reduction-clause} {\closeb} \\
+ & {\it do-loops} \\
+ & \\
 \verb![C]! & \verb|#pragma xmp| {\tt loop} {\openb} \verb|(| {\it
      loop-index} {\openb}, {\it loop-index}{\closeb}... \verb|)|
      {\closeb} \\
  & \hspace{6cm}{\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\}
      {\openb} {\it reduction-clause} {\closeb} \\
+ & {\it for-loops} \\
 \end{tabular}
 
 %\vspace{0.3cm}
@@ -342,7 +345,7 @@ Therefore, for example, the two codes below are equivalent.
 
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp loop (j) on t(:,j)
 !$xmp+             reduction(op:s)
       do j = js, je
@@ -352,13 +355,13 @@ Therefore, for example, the two codes below are equivalent.
         end do
         ...
       end do
-\end{Fexample}
+\end{XFexample}
 \end{center}
 \end{minipage}
 %
 \begin{minipage}{0.46\hsize}
 \begin{center}
-\begin{FexampleR}
+\begin{XFexampleR}
 // Initialize s_tmp to the identity
 // element of the op operator
       s_tmp = ...
@@ -376,7 +379,7 @@ Therefore, for example, the two codes below are equivalent.
 !$xmp+               on t(*,js:je)
 
       s = s op s_tmp
-\end{FexampleR}
+\end{XFexampleR}
 \end{center}
 \end{minipage}
 
@@ -414,27 +417,27 @@ set after executing the {\tt loop} construct as follows:
 %
 %\begin{minipage}{0.45\hsize}
 %\begin{center}
-%\begin{Fexample}
+%\begin{XFexample}
 %      sum = 123.45
 %!$xmp loop (i) on t(i)
 %!$xmp+            reduction(+:sum)
 %      do i = 1, N
 %         sum = sum + a(i)
 %      end do
-%\end{Fexample}
+%\end{XFexample}
 %\end{center}
 %\end{minipage}
 %%
 %\begin{minipage}{0.45\hsize}
 %\begin{center}
-%\begin{FexampleR}
+%\begin{XFexampleR}
 %      sum = 123.45
 %!$xmp loop (i) on t(i)
 %      do i = 1, N
 %         sum = sum + a(i)
 %       end do
 %!$xmp reduction(+:sum) on t(1:N)
-%\end{FexampleR}
+%\end{XFexampleR}
 %\end{center}
 %\end{minipage}
 % inserted by Sakagami,H. 09/11/13 ----- end ---
@@ -498,7 +501,7 @@ set after executing the {\tt loop} construct as follows:
 \begin{description}
 \item[Example 1]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp distribute t(block) onto p
 !$xmp align (i) with t(i) :: a, b
       ...
@@ -507,7 +510,7 @@ set after executing the {\tt loop} construct as follows:
           a(i) = 1.0
           b(i) = a(i)
       end do
-\end{Fexample}
+\end{XFexample}
 
 The {\tt loop} construct determines the node that executes each
 of the iterations, according to the distribution of template {\tt t}, and
@@ -516,7 +519,7 @@ the execution. This example is syntactically equivalent to the one
 shown below, but will be faster because iterations to be executed by
 each node can be determined before executing the loop.
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp distribute t(block) onto p
 !$xmp align (i) with t(i) :: a, b
       ...
@@ -526,11 +529,11 @@ each node can be determined before executing the loop.
           b(i) = a(i)
 !$xmp end task
       end do
-\end{Fexample}
+\end{XFexample}
 
 \item[Example 2]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp distribute t(*,block) onto p
 !$xmp align (i,j) with t(i,j) :: a, b
       ...
@@ -541,7 +544,7 @@ each node can be determined before executing the loop.
               b(i,j) = a(i,j)
           end do
       end do
-\end{Fexample}
+\end{XFexample}
 
 	   Since the first dimension of template {\tt t} is not
 	   distributed, only the {\tt j} loop, which is aligned with the
@@ -549,7 +552,7 @@ each node can be determined before executing the loop.
 	   syntactically equivalent to the {\tt task} construct shown
 	   below.
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp distribute t(*,block) onto p
 !$xmp align (*,j) with t(*,j) :: a, b
       ...
@@ -561,11 +564,11 @@ each node can be determined before executing the loop.
           end do
 !$xmp end task 
       end do
-\end{Fexample}
+\end{XFexample}
 
 \item[Example 3]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp distribute t(block,block) onto p
 !$xmp align (i,j) with t(i,j) :: a, b
       ...
@@ -576,7 +579,7 @@ each node can be determined before executing the loop.
               b(i,j) = a(i,j)
           end do
       end do
-\end{Fexample}
+\end{XFexample}
 
 % modified by Sakagami,H. 09/11/13
 The distribution of loops in the nested loop can be specified
@@ -587,7 +590,7 @@ to be executed by each node can be determined outside of the nested
 loop. Note that the node set specified by the inner {\tt on}
 clause is a subset of that specified by the outer one.
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp distribute t(block,block) onto p
 !$xmp align (i,j) with t(i,j) :: a, b
       ...
@@ -599,18 +602,18 @@ clause is a subset of that specified by the outer one.
               b(i,j) = a(i,j)
           end do
       end do
-\end{Fexample}
+\end{XFexample}
 
 \item[Example 4]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp nodes p(10,3)
       ...
 !$xmp loop on p(:,i)
       do i = 1, 3
           call subtask ( i )
       end do
-\end{Fexample}
+\end{XFexample}
 
 	   Three node sets {\tt p(:,1)}, {\tt p(:,2)} and {\tt p(:,3)}
 	   are created as the executing node sets, and each of them
@@ -626,7 +629,7 @@ constructs (below right).
 
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp nodes p(10,3)
       ...
       do i = 1, 3
@@ -634,12 +637,12 @@ constructs (below right).
           call subtask ( i )
 !$xmp end task
       end do
-\end{Fexample}
+\end{XFexample}
 \end{center}
 \end{minipage}
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{FexampleR}
+\begin{XFexampleR}
 !$xmp nodes p(10,3)
       ...
 !$xmp tasks
@@ -653,14 +656,14 @@ constructs (below right).
       call subtask ( 3 )
 !$xmp end task
 !$xmp end tasks
-\end{FexampleR}
+\end{XFexampleR}
 \end{center}
 \end{minipage}
 \vspace{1cm}
 
 \item[Example 5]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
       ...
       lb(1)  = 1
       iub(1) = 10
@@ -672,7 +675,7 @@ constructs (below right).
       do i = 1, 3
           call subtask ( i )
       end do
-\end{Fexample}
+\end{XFexample}
 
 The executing node sets of different sizes are created by
 {\tt p(lb(i):iub(i))} with different values of i for unbalanced workloads. This example is equivalent to the loop containing 
@@ -684,19 +687,19 @@ The executing node sets of different sizes are created by
 
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{Fexample}
+\begin{XFexample}
       do i = 1, 3
 !$xmp task on p(lb(i):iub(i))
           call subtask ( i )
 !$xmp end task
       end do
       ...
-\end{Fexample}
+\end{XFexample}
 \end{center}
 \end{minipage}
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{FexampleR}
+\begin{XFexampleR}
 !$xmp tasks
 !$xmp task on p(1:10)
       call subtask ( 1 )
@@ -708,27 +711,27 @@ The executing node sets of different sizes are created by
       call subtask ( 3 )
 !$xmp end task
 !$xmp end tasks
-\end{FexampleR}
+\end{XFexampleR}
 \end{center}
 \end{minipage}
 \vspace{1cm}
 
 \item[Example 6]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
       ...
       s = 0.0
 !$xmp loop (i) on t(i) reduction(+:s)
       do i = 1, N
           s = s + a(i)
       end do
-\end{Fexample}
+\end{XFexample}
 
 This loop computes the sum of {\tt a(i)} into the variable {\tt s} on
 each node. Note that only the partial sum is computed on {\tt s} without
 the reduction clause. This example is equivalent to the code given below. 
 
-\begin{Fexample}
+\begin{XFexample}
       ...
       s = 0.0
 !$xmp loop (i) on t(i) 
@@ -736,11 +739,11 @@ the reduction clause. This example is equivalent to the code given below.
           s = s + a(i)
       end do
 !$xmp reduction(+:s) on t(1:N)
-\end{Fexample}
+\end{XFexample}
 
 \item[Example 7]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
       ...
       amax = -1.0e30
       ip = -1
@@ -755,7 +758,7 @@ the reduction clause. This example is equivalent to the code given below.
               end if
           end do
       end do
-\end{Fexample}
+\end{XFexample}
 
 	   This loop computes the maximum value of {\tt a(i,j)} and
 	   stores it into the variable {\tt amax} in each node. In
@@ -768,14 +771,14 @@ the reduction clause. This example is equivalent to the code given below.
 % modified by Sakagami,H. 09/11/13
 
 %\comment{This example is equivalent to the code below. 
-%\begin{Fexample}
+%\begin{XFexample}
 %???????????????? no example ?????????????????
-%\end{Fexample}}
+%\end{XFexample}}
 
 \end{description}
 
 
-\subsection{{\tt array} construct}
+\subsection{{\tt array} Construct}
 
 \subsubsection*{Synopsis}
 
@@ -787,7 +790,10 @@ assignment among nodes specified by the {\tt on} clause.
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt array on} {\it template-ref} \\
+ & {\it array-assignment-statement} \\
+ & \\
 \verb![C]! & \verb|#pragma xmp| {\tt array on} {\it template-ref} \\
+ & {\it array-assignment-statement} \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -803,7 +809,7 @@ the node determined by the {\tt on} clause.
 %for each element. This directive executes the array assignment in each
 %node.
 
-Note that array assignments can be used also in {\C}, which is one of
+Note that array assignments can be used also in {\XMPC}, which is one of
 the language extensions introduced by {\XMP} (see Section \ref{sec:Array
 assignment statements in C}).
 
@@ -829,17 +835,17 @@ assignment statements in C}).
 
 \item[Example 1]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp distribute t(block) onto p
 !$xmp align (i) with t(i) :: a
       ...
 !$xmp array on t(1:N)
       a(1:N) = 1.0
-\end{Fexample}
+\end{XFexample}
 
 This example is equivalent to the code shown below.
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp distribute t(block) onto p
 !$xmp align (i) with t(i) :: a
       ...
@@ -847,12 +853,12 @@ This example is equivalent to the code shown below.
       do i = 1, N
           a(i) = 1.0
       end do
-\end{Fexample}
+\end{XFexample}
 
 % inserted by Sakagami,H. 09/11/13 --- start ---
 \item[Example 2]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp template t(100,20)
 !$xmp distribute t(block,block) onto p
       dimension a(100,20), b(100,20)
@@ -860,11 +866,11 @@ This example is equivalent to the code shown below.
       ...
 !$xmp array on t
       a = b + 2.0
-\end{Fexample}
+\end{XFexample}
 
 This example is equivalent to the code shown below.
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp template t(100,20)
 !$xmp distribute t(block,block) onto p
       dimension a(100,20), b(100,20)
@@ -876,6 +882,6 @@ This example is equivalent to the code shown below.
             a(i,j) = b(i,j) + 2.0
          end do
       end do
-\end{Fexample}
+\end{XFexample}
 \end{description}
 % inserted by Sakagami,H. 09/11/13 --- end ---

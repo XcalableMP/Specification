@@ -6,6 +6,7 @@
 \usepackage{fancyvrb}
 \usepackage{makeidx}
 \usepackage{here}
+\usepackage[sectionbib]{chapterbib}
 
 \usepackage{vruler}  %% if vertical ruler (line number) is needed
 
@@ -43,6 +44,8 @@
 \def\MPI{MPI}
 \def\Fort{Fortran}
 \def\C{C}
+\def\XMPF{XcalableMP Fortran}
+\def\XMPC{XcalableMP C}
 
 \def\Directive#1{{\tt #1}\index{{\tt #1}}\index{Directive!{\tt #1}}}
 \def\Syntax#1{\index{#1}\index{Syntax!{\tt #1}}}
@@ -95,6 +98,14 @@
 
 \DefineVerbatimEnvironment{CexampleR}{Verbatim}{numbers=right,numbersep=3pt,stepnumber=5,frame=single,label=\C}
 
+\DefineVerbatimEnvironment{XFexample}{Verbatim}{numbers=left,numbersep=3pt,stepnumber=5,frame=single,label=\XMPF}
+
+\DefineVerbatimEnvironment{XFexampleR}{Verbatim}{numbers=right,numbersep=3pt,stepnumber=5,frame=single,label=\XMPF}
+
+\DefineVerbatimEnvironment{XCexample}{Verbatim}{numbers=left,numbersep=3pt,stepnumber=5,frame=single,label=\XMPC}
+
+\DefineVerbatimEnvironment{XCexampleR}{Verbatim}{numbers=right,numbersep=3pt,stepnumber=5,frame=single,label=\XMPC}
+
 %% End of Preemble
 
 \title{{\Huge XcalableMP}\\
@@ -129,37 +140,37 @@ of {\XMP} Specification Working Group.
 
 The specification of {\XMP} is designed by the {\XMP} Specification
 Working Group, which consists of the following members from academia,
-research laboratories and industries.
+research laboratories, and industries.
 
 \begin{itemize}
 \setlength{\itemsep}{-1mm}
-\item Hidetoshi Iwashita \dotfill \ Fujitsu
-\item Koh Hotta          \dotfill \ Fujitsu
-\item Tokuro Anzaki      \dotfill \ Hitachi
-\item Kiyoshi Negishi    \dotfill \ Hitachi
-\item Hitoshi Uehara     \dotfill \ JAMSTEC
-\item Yuichi Matsuo      \dotfill \ JAXA
-\item Takashi Nakamura   \dotfill \ JAXA
-\item Yasuo Okabe        \dotfill \ Kyoto University
-\item Masahiro Yasugi    \dotfill \ Kyoto University
-\item Takeshi Nanri      \dotfill \ Kyusyu University
-\item Yasuharu Hayashi   \dotfill \ NEC
-\item Shoich Sakon       \dotfill \ NEC
-\item Hitoshi Sakagami   \dotfill \ NIFS
 \item Tatsuya Abe        \dotfill \ RIKEN
+\item Tokuro Anzaki      \dotfill \ Hitachi
+\item Taisuke Boku       \dotfill \ University of Tsukuba
+\item Toshio Endo        \dotfill \ TITECH
+\item Yasuharu Hayashi   \dotfill \ NEC
 \item Atsushi Hori       \dotfill \ RIKEN
+\item Kohichiro Hotta    \dotfill \ Fujitsu
+\item Hidetoshi Iwashita \dotfill \ Fujitsu
+\item Jinpil Lee         \dotfill \ University of Tsukuba
+\item Yuichi Matsuo      \dotfill \ JAXA
 \item Kazuo Minami       \dotfill \ RIKEN
 \item Hitoshi Murai      \dotfill \ RIKEN
-\item Tomotake Nakamura  \dotfill \ RIKEN
-\item Takenori Shimosaka \dotfill \ RIKEN
-\item Mitsuo Yokokawa    \dotfill \ RIKEN
-\item Yoshihisa Shizawa  \dotfill \ RIST
-\item Toshio Endo        \dotfill \ TITECH
 \item Kengo Nakajima     \dotfill \ University of Tokyo
-\item Mitsuhisa Sato     \dotfill \ University of Tsukuba
-\item Taisuke Boku       \dotfill \ University of Tsukuba
-\item Jinpil Lee         \dotfill \ University of Tsukuba
+\item Takashi Nakamura   \dotfill \ JAXA
+\item Tomotake Nakamura  \dotfill \ RIKEN
 \item Masahiro Nakao     \dotfill \ University of Tsukuba
+\item Takeshi Nanri      \dotfill \ Kyusyu University
+\item Kiyoshi Negishi    \dotfill \ Hitachi
+\item Yasuo Okabe        \dotfill \ Kyoto University
+\item Hitoshi Sakagami   \dotfill \ NIFS
+\item Shoich Sakon       \dotfill \ NEC
+\item Mitsuhisa Sato     \dotfill \ University of Tsukuba
+\item Takenori Shimosaka \dotfill \ RIKEN
+\item Yoshihisa Shizawa  \dotfill \ RIST
+\item Hitoshi Uehara     \dotfill \ JAMSTEC
+\item Masahiro Yasugi    \dotfill \ Kyoto University
+\item Mitsuo Yokokawa    \dotfill \ RIKEN
 \end{itemize}
 
 This work is supported by ``Seamless and Highly-productive Parallel
@@ -181,6 +192,42 @@ Japan.
 
 \input{ch4.tex}
 \input{ch5.tex}
+
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{\bibname}
+ \bibitem{hpf} High Performance Fortran Forum,
+	 ``High Performance Fortran Language Specification Version 2.0'',
+	 \url{http://hpff.rice.edu/versions/hpf2/hpf-v20.pdf}
+	 (1997).
+ \bibitem{hpfja} Japan Association of High Performance Fortran,
+	 ``HPF/JA Language Specification'',
+	 \url{http://www.hpfpc.org/jahpf/spec/hpfja-v10-eng.pdf}
+	 (1999).
+ \bibitem{XPF} Yuanyuan Zhang, Hidetoshi Iwashita, Kuninori Ishii,
+	 Masanori Kaneko, Tomotake Nakamura, and Kohichiro Hotta,
+	 ``Hybrid Parallel Programming on SMP Clusters Using XPFortran
+	 and OpenMP'',
+	 Proceedings of the International Workshop on OpenMP (IWOMP
+	 2010), 
+	 Vol.~6132 of Lecture Notes in Computer Science,
+	 pp.~133--148,
+	 Springer
+	 (2010).
+ \bibitem{VPPFORTRAN} Hidetoshi Iwashita, Naoki Sueyasu, Sachio Kamiya,
+	 and Matthijs van Waveren,
+	 ``VPP Fortran and the design of HPF/JA extensions'',
+	 Concurrency and Computation | Practice \& Experience,
+	 Vol.~14, No.~8--9, pp.~575--588,
+	 Wiley
+	 (2002).
+
+ \bibitem{OpenMPD} Jinpil Lee, Mitsuhisa Sato, and Taisuke Boku,
+	 ``OpenMPD: A Directive-Based Data Parallel Language Extension
+	 for Distributed Memory Systems'',
+	 Proceedings of the 2008 International Conference on Parallel
+	 Processing, pp.~121-128
+	 (2008).
+\end{thebibliography}
 
 \appendix
 \input{ch-x.tex}

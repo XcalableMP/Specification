@@ -82,14 +82,14 @@ construct may be executed before the operation is complete.
        referenced in the construct must have the same value among all of
        them.
  \item {\it async-id} must be an expression of type default integer, in
-       Fortran, or type {\tt int}, in C.
+       {\XMPF}, or type {\tt int}, in {\XMPC}.
 \end{itemize}
 
 \subsubsection*{Example}
 \Example{reflect}
 \Example{shadow}
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp nodes p(4)
 !$xmp template t(100)
 !$xmp distribute t(block) onto p:: t
@@ -100,11 +100,11 @@ construct may be executed before the operation is complete.
 
       ...
 !$xmp reflect (a) width (/periodic/1)
-\end{Fexample}
+\end{XFexample}
 
 \begin{myfigure}
 \begin{center}
-\includegraphics[width=0.7\hsize]{figs/fig3.2.eps}
+\includegraphics[width=0.9\hsize]{figs/fig3.2.eps}
 \end{center}
 \caption{Example of Periodic Shadow Reflection}
 \label{fig3.2}
@@ -299,7 +299,7 @@ construct may be executed before the operation is complete.
        associated assignment statement must reside in the executing node
        set.
  \item {\it async-id} must be an expression of type default integer, in
-       Fortran, or type {\tt int}, in C.
+       {\XMPF}, or type {\tt int}, in {\XMPC}.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -317,18 +317,18 @@ replicated array, then no communication is required.
 
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp gmove
       a(:,1:N) = b(:,3,0:N-1)
-\end{Fexample}
+\end{XFexample}
 \end{center}
 \end{minipage}
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{CexampleR}
+\begin{XCexampleR}
 #pragma xmp gmove
-      a[1:N][:] = b[0:N-1][3][:];
-\end{CexampleR}
+      a[1:N][:] = b[0:N][3][:];
+\end{XCexampleR}
 \end{center}
 \end{minipage}
 \vspace{1cm}
@@ -343,18 +343,18 @@ the rhs is a replicated array, then no communication is required.
 
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp gmove
       a(:,1:N) = c(k)
-\end{Fexample}
+\end{XFexample}
 \end{center}
 \end{minipage}
 \begin{minipage}{0.45\hsize}
 \begin{center}
-\begin{CexampleR}
+\begin{XCexampleR}
 #pragma xmp gmove
       a[1:N][:] = c[k]
-\end{CexampleR}
+\end{XCexampleR}
 \end{center}
 \end{minipage}
 \vspace{1cm}
@@ -374,7 +374,7 @@ the rhs is a replicated array, then no communication is required.
 
 \vspace{0.5cm}
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp nodes p(4)
 !$xmp template t(4)
 !$xmp distribute t(block) onto p
@@ -388,7 +388,7 @@ the rhs is a replicated array, then no communication is required.
       a(1:2) = b(2:3)
       ...
 !$xmp end task
-\end{Fexample}
+\end{XFexample}
 
 %$
 
@@ -565,7 +565,7 @@ case, a reduction operation is performed in each node set.
        referenced in the construct must have the same value among all of
        the executing nodes.
  \item {\it async-id} must be an expression of type default integer, in
-       Fortran, or type {\tt int}, in C.
+       {\XMPF}, or type {\tt int}, in {\XMPC}.
  \item The node set specified by the {\tt on} clause must be a subset of the
        executing node set.
 \end{itemize}
@@ -577,11 +577,11 @@ case, a reduction operation is performed in each node set.
 \begin{description}
 \item[Example 1]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
 !$xmp reduction(+:s)
 !$xmp reduction(max:aa) on t(*,:)
 !$xmp reduction(min:bb) on p(10:30)
-\end{Fexample}
+\end{XFexample}
 
 % modified by Sakagami,H. 09/11/13                                             
 %In the first example, the scalar variable {\tt s} is assumed to contain the 
@@ -604,15 +604,15 @@ In the third line, the minimum value of the variable {\tt bb} in the node
 set specified by {\tt p(10:30)} is calculated. This example is
 equivalent to the following code using the {\tt \Directive{task}} construct.
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp task on p(10:30)
 !$xmp reduction(min:bb)
 !$xmp end task
-\end{Fexample}
+\end{XFexample}
 
 \item[Example 2]
 \hspace{\hsize}
-\begin{Fexample}
+\begin{XFexample}
       dimension a(n,n), p(n), w(n)
 !$xmp align a(i,j) with t(i,j)
 !$xmp align p(i) with t(i,*)
@@ -627,7 +627,7 @@ equivalent to the following code using the {\tt \Directive{task}} construct.
           end do
           w(j) = sum
       end do
-\end{Fexample}
+\end{XFexample}
 
 This code computes the matrix vector product,
 % modified by Sakagami,H. 09/11/13
@@ -635,7 +635,7 @@ where a {\tt reduction} clause is specified for the {\tt \Directive{loop}}
 construct of the inner loop. This is equivalent to the following code
 snippet. 
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp loop (j) on t(:,j)
       do j = 1, n
           sum = 0
@@ -646,7 +646,7 @@ snippet.
 !$xmp reduction(+:sum) on t(1:n,j)
           w(j) = sum
       end do
-\end{Fexample}
+\end{XFexample}
 
 In these cases, the reduction operation on the scalar variable {\tt sum}
 is performed for every iteration in the outer loop, which may cause a
@@ -666,7 +666,7 @@ that of the inner one.
 However, this code can be modified with the {\tt \Directive{reduction}}
 construct as follows: 
 
-\begin{Fexample}
+\begin{XFexample}
       dimension a(n,n), p(n), w(n)
 !$xmp align a(i,j) with t(i,j)
 !$xmp align p(i) with t(i,*)
@@ -682,7 +682,7 @@ construct as follows:
           w(j) = sum
       end do
 !$xmp reduction(+:w) on t(1:n,*)
-\end{Fexample}
+\end{XFexample}
 
 This code performs a reduction operation on the array {\tt w} only once,
 which may result in faster operation.  
@@ -749,7 +749,7 @@ construct may be executed before the operation is complete.
        referenced in the construct must have the same value among all of
        the executing nodes.
  \item {\it async-id} must be an expression of type default integer, in
-       Fortran, or type {\tt int}, in C.
+       {\XMPF}, or type {\tt int}, in {\XMPC}.
  \item The node set specified by the {\tt on} clause must be a subset of the
        current executing node set.
  \item The source node specified by the {\tt from} clause must belong to
@@ -786,7 +786,7 @@ communications specified by each of {\it async-id} are complete.
 
 \begin{itemize}
  \item {\it async-id} must be an expression of type default integer, in
-       Fortran, or type {\tt int}, in C.
+       {\XMPF}, or type {\tt int}, in {\XMPC}.
 \item {\it async-id} must be associated with an asynchronous
       communication by the {\tt async} clause of a communication
       construct or an {\tt async} construct.
@@ -820,12 +820,12 @@ communication is complete.
 \subsubsection*{Example}
 \Example{wait\_async}
 
-\begin{Fexample}
+\begin{XFexample}
 !$xmp reflect (a) async(1)
       S1
 !$xmp wait_async(1)
       S2
-\end{Fexample}
+\end{XFexample}
 
 The {\tt reflect} construct on the first line matches
 the {\tt wait} construct on the third line because both of their {\it

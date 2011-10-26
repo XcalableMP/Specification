@@ -11,19 +11,21 @@ directives.
 {\it xxx...} & If the line is followed by ``...'', then xxx can be
 repeated. \\
 {\it [xxx]} & {\it xxx} is optional. \\
-\verb![F]! & The following lines are effective only in {\Fort}. \\
-\verb![C]! & The following lines are effective only in {\C}. \\
+\verb![F]! & The following lines are effective only in {\XMPF}. \\
+\verb![C]! & The following lines are effective only in {\XMPC}. \\
 \end{tabular}
 
 \section{Directive Format}
 
 \subsection{General Rule}
 
-In {\Fort}, {\XMP} directives are specified using special comments that
+In {\XMPF}, {\XMP} directives are specified using special comments that
 are identified by unique sentinels {\tt\verb|!$xmp|}. An {\XMP}
 directive follows the rules for comment lines of either the Fortran free
 or fixed source form, depending on the source form of the surrounding
-program unit. {\XMP} directives in {\Fort} are case-insensitive.
+program unit\footnote{Consequently, the rules of comment lines that an
+{\XMP} directive follows is the same as the ones that an {\OMP}
+directive follows.}. {\XMPF} directives are case-insensitive.
 
 \vspace{0.5cm}
 
@@ -34,8 +36,8 @@ program unit. {\XMP} directives in {\Fort} are case-insensitive.
 
 \vspace{0.5cm}
 
-In {\C}, {\XMP} directives are specified using the \verb|#pragma|
-mechanism provided by the {\C} standards. {\XMP} directives in {\C} are
+In {\XMPC}, {\XMP} directives are specified using the \verb|#pragma|
+mechanism provided by the {\C} standards. {\XMPC} directives are
 case-sensitive.
 
 \vspace{0.5cm}
@@ -56,11 +58,11 @@ directives. The declarative directive is a directive that may only be
 placed in a declarative context. A declarative directive has no
 associated executable user code. The scope rule of declarative
 directives obeys that of the declaration statements in the base
-language. For example, in C, node declarations by {\tt node} directives
-are effective from the declaring point to the end of the function when
-specified within a function, or of the file when specified outside any
-functions, and, in {\Fort}, node declarations by {\tt node} directives
-are effective within either the program unit, the derived-type
+language. For example, in {\XMPC}, node declarations by {\tt node}
+directives are effective from the declaring point to the end of the
+function when specified within a function, or of the file when specified
+outside any functions, and, in {\XMPF}, node declarations by {\tt node}
+directives are effective within either the program unit, the derived-type
 declaration or the interface body that immediately encloses the
 directives.
 
@@ -87,15 +89,15 @@ An executable directive and its associated user code make up an
 
 \vspace{0.5cm}
 
-Note that, in Fortran, a corresponding {\tt end} directive is required
+Note that, in {\XMPF}, a corresponding {\tt end} directive is required
 for the {\tt task} and the {\tt tasks} constructs (see below)
-and, in C, the associated statement can be a compound-statement.
+and, in {\XMPC}, the associated statement can be a compound-statement.
 
 \vspace{0.5cm}
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp tasks| \\
- & \hspace{0.5cm} {\it statement} \\
+ & \hspace{0.5cm} {\it structured-block} \\
  & \hspace{0.5cm} ... \\
  & \verb|!$xmp| {\tt end tasks}\\
 \end{tabular}
@@ -105,7 +107,7 @@ and, in C, the associated statement can be a compound-statement.
 
 \subsubsection*{Synopsis}
 
-For the Fortran base language, multiple attributes can be specified
+For {\XMP} {\Fort}, multiple attributes can be specified
 in one combined declarative directive, which is analogous to type
 declaration statements in Fortran using the ``{\tt ::}'' punctuation.
 

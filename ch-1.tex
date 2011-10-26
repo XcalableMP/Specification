@@ -1,5 +1,5 @@
-
 \setvruler[][][][3][0]
+
 \chapter{Introduction}
 \pagenumbering{arabic}
 \setcounter{page}{1}
@@ -36,14 +36,14 @@ The features of {\XMP} are summarized as follows:
 
  \item The important design principle of {\XMP} is
        ``performance-awareness.'' All actions of communication and
-       synchronization are taken by directives, which is different from
-       automatic parallelizing compilers. The user should be aware of
-       what happens by {\XMP} directives in the execution model on the
-       distributed memory architecture.
+       synchronization are taken by directives and coarray features,
+       which is different from automatic parallelizing compilers. The
+       user should be aware of what happens by {\XMP} directives in the
+       execution model on the distributed memory architecture.
 
  \item {\XMP} also includes features from Partitioned Global Address
-       Space (PGAS) languages, such as coarray of the upcoming {\Fort}
-       2008 standard, for the ``local-view'' programming.
+       Space (PGAS) languages, such as coarray of the {\Fort} 2008
+       standard, for the ``local-view'' programming.
 
  \item Extention of existing base languages with directives is useful to
        reduce code-rewriting and education costs. The {\XMP} language
@@ -86,8 +86,8 @@ The features of {\XMP} are summarized as follows:
 \end{itemize}
 
 {\XMP} is being designed based on experiences obtained in the
-development of HPF, Fujitsu XPF (VPP FORTRAN), and OpenMPD.  
-
+development of HPF \cite{hpf}, HPF/JA \cite{hpfja}, Fujitsu XPF (VPP
+FORTRAN) \cite{XPF,VPPFORTRAN}, and OpenMPD \cite{OpenMPD}.
 
 \section{Scope}
 
@@ -301,9 +301,9 @@ unless it is explicitly specified by the programmer.
 
 The local-view programming model is suitable for programs that
 explicitly describe an algorithm and remote data reference that are to
-be done by each node (Figure \ref{fig3}). Since MPI is 
-based on the local-view model, the local-view programming model of
-{\XMP} has high interoperability with MPI.
+be done by each node (Figure \ref{fig3}).
+%Since MPI is based on the local-view model, the local-view programming
+%model of {\XMP} has high interoperability with MPI.
 
 For the local-view programming model, some language extensions and 
 directives are provided. The coarray notation imported from {\Fort} 2008

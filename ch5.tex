@@ -3,7 +3,7 @@
 
 This specification defines various procedures for system inquiry,
 synchronization, computations, etc. The procedures are provided as
-intrinsic procedures in Fortran and library procedures in C.
+intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
 
 \section{Miscellaneous Intrinsic Procedures}
 
@@ -36,8 +36,8 @@ $\vert$ {\it nodes-name});}
 
 \end{tabular}
 
-             Note that, in Fortran, {\tt xmp\_desc\_of} is a built-in function,
-             in C, {\tt xmp\_desc\_of} is an operator.
+             Note that, in {\XMPF}, {\tt xmp\_desc\_of} is a built-in function,
+             in {\XMPC}, {\tt xmp\_desc\_of} is an operator.
 
 \subsubsection*{Synopsis}
 
@@ -256,8 +256,8 @@ $\vert$ {\it nodes-name});}
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_test\_async} routine returns {\tt .true.}, in {\Fort}, or
-{\tt 1}, in {\C}, if an asynchronous communication specified by the
+The {\tt xmp\_test\_async} routine returns {\tt .true.}, in {\XMPF}, or
+{\tt 1}, in {\XMPC}, if an asynchronous communication specified by the
 argument {\tt async\_id} is complete; otherwise, it returns {\tt .false.}
 or {\tt 0}.
 

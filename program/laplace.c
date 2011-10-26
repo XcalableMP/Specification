@@ -3,7 +3,7 @@
  */
 #pragma xmp nodes p(NPROCS)
 #pragma xmp template t(1:N)
-#pragma xmp distribute t(block) on p
+#pragma xmp distribute t(block) onto p
 
 double u[XSIZE+2][YSIZE+2],
        uu[XSIZE+2][YSIZE+2];
@@ -21,7 +21,7 @@ for(k = 0; k < NITER; k++){
 	for(x = 1; x <= XSIZE; x++)
 	  for(y = 1; y <= YSIZE; y++)
 	    uu[x][y] = u[x][y];
-#pragma xmp reflect uu
+#pragma xmp reflect (uu)
 #pragma xmp loop on t(x)
 	for(x = 1; x <= XSIZE; x++)
 	  for(y = 1; y <= YSIZE; y++)
@@ -34,6 +34,6 @@ m */
     for(x = 1; x <= XSIZE; x++)
 	for(y = 1; y <= YSIZE; y++)
 	  sum += (uu[x][y]-u[x][y]);
-#pragma xmp task on master
+#pragma xmp task on p(1)
     printf("sum = %g\n",sum);
 }

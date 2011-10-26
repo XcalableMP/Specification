@@ -26,6 +26,14 @@
 
  A program written in a base language.
 
+\gitem{\XMPF}
+
+ The {\XMP} language specification for a base language {\Fort}.
+
+\gitem{\XMPC}
+
+ The {\XMP} language specification for a base language {\C}.
+
 \gitem{structured block}
 
  For C, an executable statement, possibly compound, with a single entry
@@ -36,11 +44,11 @@
 \gitem{procedure}
 
  A generic term used to refer to ``procedure'' (including subroutine and
- function) in Fortran and ``function'' in C.
+ function) in {\XMPF} and ``function'' in {\XMPC}.
 
 \gitem{directive}
 
- In C, a {\tt \#pragma}, and in Fortran, a comment, that specifies
+ In {\XMPF}, a comment, and in {\XMPC}, a {\tt \#pragma}, that specifies
  {\XMP} program behavior.
 
 \gitem{declarative directive}
@@ -115,8 +123,9 @@
 
 \gitem{global}
 
- A data or a work is {\it global} if and only if there is only one
- instance of it shared by all nodes in the executing node set.
+ A data or a work is {\it global} if and only if there is one or more
+ replicated instances of it each of which is shared by nodes in the
+ executing node set.
 
 \gitem{local}
 
@@ -150,24 +159,29 @@
 
 \begin{namelist}{entire node setxxxx}
 
-\gitem{phisical node}
-
- A computing component of a distributed-memory multicomputer, which has
- its own main memory and is connected with each other via an
- interconnect. A node may contain multiple cores sharing the main
- memory.
+%\gitem{physical node}
+%
+% A computing component of a distributed-memory multicomputer, which has
+% its own main memory and is connected with each other via an
+% interconnect. A node may contain multiple cores sharing the main
+% memory.
 
 %In a distributed memory system, a computation node, which may have
 %several cores sharing main memory, has its own local memory. Each node
 %is connected through a network. An \XMP program begins as a single
 %thread of execution in each node.
 
-\gitem{(logical) node}
+\gitem{node}
 
- An execution entity managed and assigned to a phisical node at runtime
- by the {\XMP} runtime system, which has its own memory and can
- communicate with other nodes. A node can execute one or more threads
- concurrently.
+ An execution entity managed by the {\XMP} runtime system, which has its
+ own memory and can communicate with other nodes. A node can execute one
+ or more threads concurrently.
+
+%\gitem{logical node}
+%
+% An execution entity managed by the {\XMP} runtime system, which has its
+% own memory and can communicate with other nodes. A logical node can
+% execute one or more threads concurrently.
 
 \gitem{node set}
 
@@ -179,14 +193,23 @@
  execution of an XcalbleMP program. Nodes in the entire node set are
  linearly ordered.
 
-\gitem{(current) executing node set}
+\gitem{executing node set}
 
  A node set that contains all of the nodes participating in the
  execution of a procedure, a statement, a construct, etc. of an
- XcalableMP program is called its executing node set. The current
- executing node set can be modified by the {\tt task}, {\tt array}, or
- {\tt loop} direcitives. Note that the executing node set of the main
- routine is the entire node set.
+ XcalableMP program is called its executing node set.
+%
+ The term is used in this document to represent the {\it current
+ executing node set} unless it is ambiguous.
+
+\gitem{current executing node set}
+
+ An executing node set of the current context, which is managed by the
+ {\XMP} runtimes system.
+%
+ The current executing node set can be modified by the {\tt task}, {\tt
+ array}, or {\tt loop} direcitives. Note that the executing node set of
+ the main routine is the entire node set.
 
 \gitem{node array}
 
@@ -364,7 +387,7 @@
  the programmer instruct it explicitly with a global communication
  construct or a coarray reference.
 
-\gitem{(node) synchronization}
+\gitem{synchronization}
 
  Synchronization is a mechanism to ensure that multiple nodes do not
  execute specific portions of a program at the same
@@ -402,8 +425,8 @@
  Every coarray is associated explicitly or implicitly with a node
  set and allocated on each node of the node set.
 
- The coarray feature of {\XMP} is based on that of the upcoming Fortran
- 2008 standard.
+ The coarray feature of {\XMP} is based on that of the Fortran 2008
+ standard.
 
 %\gitem{image}
 

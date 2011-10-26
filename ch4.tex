@@ -142,7 +142,7 @@ mappings (including their shadow attributes) must be identical.
 	   section of {\tt x} starts from the received address (Figure
 	   \ref{fig5.1}).
 
-\begin{Fexample}
+\begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
 !$xmp template t(100)
@@ -161,7 +161,7 @@ mappings (including their shadow attributes) must be identical.
 !$xmp align x(i) with t(i)
 !$xmp shadow x(1:1) 
       ...
-\end{Fexample}
+\end{XFexample}
 
 \begin{myfigure}
  \includegraphics[scale=0.7]{figs/fig5.1.eps}
@@ -180,7 +180,7 @@ mappings (including their shadow attributes) must be identical.
 	   {\tt f\_sub2} receives it and initializes {\tt x} with the
 	   storage starting from it (Figure \ref{fig5.2}).
 
-\begin{Fexample}
+\begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
 !$xmp template t(100)
@@ -188,12 +188,13 @@ mappings (including their shadow attributes) must be identical.
       real a(100)
 !$xmp align a(i) with t(i)
 !$xmp shadow a(1:1) 
-      call f_sub2(a)
+      n = 1 + 100/4 + 1
+      call f_sub2(a,n)
       end subroutine
-\end{Fexample}
+\end{XFexample}
 \begin{Fexample}
-      subroutine f_sub2(x)
-      real x(27)
+      subroutine f_sub2(x,n)
+      real x(n)
       ...
 \end{Fexample}
 
@@ -214,22 +215,27 @@ mappings (including their shadow attributes) must be identical.
 
 	   As a result, the storage for {\tt x} in {\tt f\_sub2} may be
 	   unavailable on the nodes {\tt p(2)}, {\tt p(3)} and {\tt
-	   p(4)} (Figure \ref{fig5.25}).
+	   p(4)}. Hence, {\tt f\_sub2} is invoked only by {\tt
+	   p(1)} (Figure \ref{fig5.25}).
 
-\begin{Fexample}
-      subroutine xmp_sub3
+\begin{XFexample}
+      subroutine xmp_sub1
 !$xmp nodes p(4)
 !$xmp template t(100,100)
 !$xmp distribute t(*,block) onto p
       real a(100,100)
 !$xmp align a(i,j) with t(i,j)
 !$xmp shadow a(0,1:1)
-      call f_sub3(a(:,1))
+      n = 100
+!$xmp task on p(1)
+      call f_sub2(a(:,1),n)
+!$xmp end task
       end subroutine
-\end{Fexample}
+\end{XFexample}
+%
 \begin{Fexample}
-      subroutine f_sub3(x)
-      real x(100)
+      subroutine f_sub2(x,n)
+      real x(n)
       ...
 \end{Fexample}
 
@@ -253,9 +259,10 @@ mappings (including their shadow attributes) must be identical.
 
 	   As a result, the storage for {\tt x} in {\tt f\_sub2} may be
 	   unavailable on the nodes {\tt p(2)}, {\tt p(3)} and {\tt
-	   p(4)} (Figure \ref{fig5.3}).
+	   p(4)}. Hence, {\tt f\_sub2} is invoked only by {\tt
+	   p(1)}(Figure \ref{fig5.3}).
 
-\begin{Fexample}
+\begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
 !$xmp template t(100)
@@ -263,12 +270,16 @@ mappings (including their shadow attributes) must be identical.
       real a(100)
 !$xmp align a(i) with t(i)
 !$xmp shadow a(1:1)
-      call f_sub2(a(1))
+      n = 100/4
+!$xmp task on p(1)
+      call f_sub2(a(1),n)
+!$xmp end task
       end subroutine
-\end{Fexample}
+\end{XFexample}
+%
 \begin{Fexample}
-      subroutine f_sub2(x)
-      real x(25)
+      subroutine f_sub2(x,n)
+      real x(n)
       ...
 \end{Fexample}
 
@@ -349,7 +360,7 @@ detect and report the error.
 	   information extracted from the descriptor received (Figure
 	   \ref{fig5.5}).
 
-\begin{Fexample}
+\begin{XFexample}
       subroutine xmp_sub1
 
 !$xmp nodes p(4)
@@ -382,7 +393,7 @@ detect and report the error.
 !$xmp align x(i) with t(i)
 !$xmp shadow a(1:1)
       ...
-\end{Fexample}
+\end{XFexample}
 
 \begin{myfigure}
  \includegraphics[scale=0.7]{figs/fig5.5.eps}
@@ -393,7 +404,7 @@ detect and report the error.
 \item[Example 2]
 
 	   There is the explicit interface of the subroutine
-	   {\tt f\_sub2}, which is written in the Fortran base language,
+	   {\tt f\_sub2}, which is written in {\XMPF},
 	   specified by an interface block in the subroutine {\tt
 	   xmp\_sub1}, and the dummy argument {\tt x} is a local
 	   (i.e. non-mapped) assumed-shape array. Therefore the global
@@ -406,7 +417,7 @@ detect and report the error.
 	   backend Fortran compiler in the same manner as usual data 
 	   (Figure \ref{fig5.6}).
 
-\begin{Fexample}
+\begin{XFexample}
       subroutine xmp_sub1
 
 !$xmp nodes p(4)
@@ -425,7 +436,7 @@ detect and report the error.
       call f_sub2(a)
 
       end subroutine
-\end{Fexample}
+\end{XFexample}
 \begin{Fexample}
       subroutine f_sub2(x)
       real x(:)
@@ -490,7 +501,7 @@ identical.
 	   of its local section starts from the address held by the
 	   received pointer (Figure \ref{fig5.7}).
 
-\begin{Cexample}
+\begin{XCexample}
 void xmp_func1()
 {
 #pragma xmp nodes p(4)
@@ -511,7 +522,7 @@ void xmp_func2(float x[100])
 #pragma xmp align x[i] with t(i)
 #pragma xmp shadow a[1:1]
   ...
-\end{Cexample}
+\end{XCexample}
 
 \begin{myfigure}
  \includegraphics[scale=0.7]{figs/fig5.7.eps}
@@ -528,7 +539,7 @@ void xmp_func2(float x[100])
 	   The local dummy argument {\tt x} on each node starts from the 
 	   address held by the received pointer (Figure \ref{fig5.8}).
 
-\begin{Cexample}
+\begin{XCexample}
 void xmp_func1()
 {
 #pragma xmp nodes p(4)
@@ -540,7 +551,7 @@ void xmp_func1()
 
   c_func2(a);
 }
-\end{Cexample}
+\end{XCexample}
 \begin{Cexample}
 void c_func2(float x[27])
 {
@@ -564,10 +575,11 @@ void c_func2(float x[27])
 	   actual argument {\tt a[0]}.
 
 	   As a result, {\tt x} in {\tt c\_func2} has an unspecified
-	   value on the nodes {\tt p(2)}, {\tt p(3)} and {\tt p(4)}
+	   value on the nodes {\tt p(2)}, {\tt p(3)} and {\tt
+	   p(4)}. Hence, {\tt c\_func2} is invoked only by {\tt p(1)} 
 	   (Figure \ref{fig5.9}).
 
-\begin{Cexample}
+\begin{XCexample}
 void xmp_func1()
 {
 #pragma xmp nodes p(4)
@@ -579,7 +591,7 @@ void xmp_func1()
 
   c_func2(a[0]);
 }
-\end{Cexample}
+\end{XCexample}
 \begin{Cexample}
 void c_func2(float x)
 {
