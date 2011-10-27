@@ -54,7 +54,9 @@ Syntax{directive}
 %::}'' punctuation can also be used.
 
 Directives are classified as declarative directives and executable
-directives. The declarative directive is a directive that may only be
+directives.
+
+The declarative directive is a directive that may only be
 placed in a declarative context. A declarative directive has no
 associated executable user code. The scope rule of declarative
 directives obeys that of the declaration statements in the base
@@ -67,7 +69,19 @@ placed outside any functions,
 %
 and, in {\XMPF}, a node array declared by a {\tt nodes} directive is
 visible within either the program unit, the derived-type declaration
-or the interface body that immediately encloses the directives.
+or the interface body that immediately surrounds the directives unless
+it is use or host associated.
+
+The following directives are the declarative directives.
+
+\begin{itemize}
+ \item {\tt nodes}
+ \item {\tt template}
+ \item {\tt distribute}
+ \item {\tt align}
+ \item {\tt shadow}
+ \item {\tt coarray}
+\end{itemize}
 
 The executable directives are placed in an executable context. A
 stand-alone directive is an executable directive that has no associated
@@ -104,6 +118,22 @@ in {\XMPC}, the associated statement can be a compound-statement.
 % & \hspace{0.5cm} ... \\
 % & \verb|!$xmp| {\tt end tasks}\\
 %\end{tabular}
+
+The following directives are the executable directives.
+
+\begin{itemize}
+ \item {\tt template\_fix}
+ \item {\tt task}
+ \item {\tt tasks}
+ \item {\tt loop}
+ \item {\tt array}
+ \item {\tt reflect}
+ \item {\tt gmove}
+ \item {\tt barrier}
+ \item {\tt reduction}
+ \item {\tt bcast}
+ \item {\tt wait\_async}
+\end{itemize}
 
 
 \subsection{Combined Directive}

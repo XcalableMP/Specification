@@ -689,13 +689,13 @@ as shadow objects (Figure \ref{fig3.1}). Among them, {\tt a(16,16)},
 ``obliquely-neigboring'' elements of {\tt p(2,2)}.
 
 
-\subsection{{\tt template\_fix} Directive}
+\subsection{{\tt template\_fix} Construct}
 \label{subsec:template_fix directive}
 
 \subsubsection*{Synopsis}
 
-This directive is an executable directive that fixes the shape and/or
-the distribution of an undefined template. 
+This construct fixes the shape and/or the distribution of an undefined
+template.
 
 \subsubsection*{Syntax}
 \Syntax{template\_fix}
@@ -736,18 +736,18 @@ and {\it dist-format} is one of:
 
 \subsubsection*{Description}
 
-The {\tt template\_fix} directive is an executable directive to fix the
-shape and/or the distribution of the template that is initially
-undefined, by specifying the sizes and/or the distribution format of
+The {\tt template\_fix} construct fixes the shape and/or the
+distribution of the template that is initially undefined, by specifying
+the sizes and/or the distribution format of 
 each dimension at runtime. The array aligned with an initially undefined
 template must be an allocatable array, in {\XMPF}, or a pointer (see
 Section \ref{sec:Dynamic Allocation of Global Data in C}), in
 {\XMPC}, which cannot be allocated until the template is fixed by the
-{\tt template\_fix} directive. Any executable directives that have such a
+{\tt template\_fix} construct. Any constructs that have such a
 template in their {\tt on} clause must not be encountered until the
-template is fixed by the
-{\tt template\_fix} directive. Any undefined template can be fixed only
-once by the {\tt template\_fix} directive in its scoping unit.
+template is fixed by the {\tt template\_fix} construct. Any undefined
+template can be fixed only once by the {\tt template\_fix} construct in
+its scoping unit.
 
 The meaning of the sequence of {\it dist-format}'s is the same
 as that in the {\tt distribute} directive.
@@ -755,17 +755,17 @@ as that in the {\tt distribute} directive.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item When a node encounters a {\tt template\_fix} directive at runtime,
+\item When a node encounters a {\tt template\_fix} construct at runtime,
       the template specified by {\it template-name} must be undefined.
 \item If the sequence of {\it dist-format}'s exists in a {\tt
-      template\_fix} directive, it must be identical with the 
+      template\_fix} construct, it must be identical with the 
       sequence of {\it dist-format}'s in the {\tt distribute} directive
       for the template specified by {\it template-name}, except for {\it
       int-array}, not an asterisk (``{\tt *}''), specified in the
       parenthesis following {\tt gblock}.
 \item Either the sequence of {\it dist-format}'s or the sequence of {\it
       template-spec}'s must be given. 
-\item The {\tt template\_fix} directive must appear in executable
+\item The {\tt template\_fix} construct must appear in executable
       context.
 \end{itemize}
 
@@ -794,7 +794,7 @@ gblock(*)},
 the template {\tt t} is initially undefined. The allocatable array
 {\tt a} is aligned to {\tt t}. After the size {\tt N} of {\tt t} and the
 mapping array {\tt M} is defined, {\tt t} is fixed by the {\tt
-  template\_fix} directive and {\tt a} is allocated.
+  template\_fix} construct and {\tt a} is allocated.
 
 
 %\subsection{Local Section of Mapped Data}

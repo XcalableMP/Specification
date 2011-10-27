@@ -55,8 +55,7 @@ one at the exit.
 
 \begin{itemize}
 \item The node set specified by {\it nodes-ref} or {\it template-ref}
-      in the {\tt on} clause must be a subset of the parent executing
-      node set.
+      in the {\tt on} clause must be a subset of the parent node set.
 \end{itemize}
 
 \subsubsection*{Example}
@@ -626,8 +625,7 @@ set after executing the {\tt loop} construct as follows:
 %       a node must not be included in more than one node set. 
 
  \item The node set specified by {\it nodes-ref} or {\it template-ref}
-       in the {\tt on} clause must be a subset of the parent executing
-       node set.
+       in the {\tt on} clause must be a subset of the parent node set.
 
  \item The template specified by {\it template-ref} must be fixed 
        before the {\tt loop} construct is executed.
@@ -984,14 +982,16 @@ assignment statements in C}).
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item The template section specified by {\it template-ref} must have the
-      same shape with the associated array assignment.
-%\item If the range in {\it template-ref} is omitted, all of the ranges
-%      are assumed to be specified.
-\item The {\tt \Directive{array}} construct is global and must be
+ \item The node set specified by {\it template-ref} in the {\tt on}
+       clause must be a subset of the parent node set.
+ \item The template section specified by {\it template-ref} must have
+       the same shape with the associated array assignment.
+ %\item If the range in {\it template-ref} is omitted, all of the ranges
+ %      are assumed to be specified.
+ \item The {\tt \Directive{array}} construct is global and must be
        executed by all of the executing nodes, and each variable
-      appearing in the construct must have the same value among all of
-      them.
+       appearing in the construct must have the same value among all of
+       them.
 \end{itemize}
 % inserted by Sakagami,H. 09/11/13 --- end ---
 

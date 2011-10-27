@@ -24,9 +24,8 @@ or with the {\tt coarray} directive for {\XMPC}.
 %\verb![F]! & {\it type-declaration-stmt} {\openb}{\tt on} {\it
 % nodes-ref}{\closeb}\\
 %\verb![F]! & {\it codimension-stmt} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
-\verb![F]! & {\openb} \verb|!$xmp coarray| {\it variable-name}
-     {\openb}{\tt ,} {\it variable-name} {\closeb}{\tt ...} {\tt on}
-     {\it nodes-ref} {\closeb}\\
+\verb![F]! & \verb|!$xmp coarray| {\it variable-name} {\openb}{\tt ,}
+     {\it variable-name} {\closeb}{\tt ...} {\tt on} {\it nodes-ref} \\
 \verb![C]! & \verb|#pragma xmp coarray| {\it variable-name} {\openb}{\tt
      ,} {\it variable-name} {\closeb}{\tt ...} {\tt :} 
 {\it codimensions} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
@@ -107,13 +106,15 @@ declared on the same node set (see chapter \ref{chap:procedure}).
       subroutine task1 ( aa )
 !$xmp nodes w(50)
 !$xmp nodes p(50) = *
-      real aa(100)[*] on w
+      real aa(100)[*]
+!$xmp coarray aa on w
       real b(100)[*] 
       ...
       subroutine task2 ( aa )
 !$xmp nodes w(50)
 !$xmp nodes p(20) = *
-      real aa(100)[*] on w
+      real aa(100)[*]
+!$xmp coarray aa on w
       real c(100)[*] 
       ...
 \end{XFexample}
@@ -173,10 +174,12 @@ declared on the same node set (see chapter \ref{chap:procedure}).
 \begin{XFexample}
 !$xmp nodes w1(200)
 !$xmp nodes w2(20,10)
-      real one(100)[*] on w1
-      real two(50)[20,*] on w1
-      real ichi(100)[*] on w2
-      real ni(50)[20,*] on w2
+      real one(100)[*]
+      real two(50)[20,*]
+!$xmp coarray one, two on w1
+      real ichi(100)[*]
+      real ni(50)[20,*]
+!$xmp coarray ichi, ni on w2
 \end{XFexample}
 
 %In many application programs, neighbor communication
@@ -263,7 +266,7 @@ node set) and copies it into the local storage for {\tt A}.
 \begin{center}
 \begin{XCexampleR}
 int A[10], B[10];
-#pragma xmp coarray A:[*], B:[*]
+#pragma xmp coarray A, B : [*]
 
 A[:] = B[:]:[10];
 \end{XCexampleR}

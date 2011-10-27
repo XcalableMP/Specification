@@ -8,8 +8,9 @@ procedures are invoked and arguments are passed, in {\XMP}.
 In order to achieve high composability of {\XMP} programs, it is one of
 the most important requirement that {\XMP} procedures can invoke
 procedures written in the base language with as a few restrictions as
-possible. The procedure interfaces in {\XMP} is designed so as to
-satisfy the requirement.
+possible.
+%The procedure interfaces in {\XMP} is designed so as to
+%satisfy the requirement.
 
 
 \section{General Rule}
@@ -23,11 +24,11 @@ There is no restriction on the characteristics of procedures invoked by
 an {\XMP} procedure, except for a few ones on its argument, which is
 explained below.
 
-A local data or part of it (i.e. an array element or a Fortran's array
-section) in the actual or dummy argument list (referred to as a {\it
-local actual argument} and a {\it local dummy argument}, respectively)
-are treated by the {\XMP} compiler in the same manner as by the compiler
-of the base language.
+A local data (i.e. an array element or a Fortran's array section) in the
+actual or dummy argument list (referred to as a {\it local actual
+argument} and a {\it local dummy argument}, respectively) are treated by
+the {\XMP} compiler in the same manner as by the compiler of the base
+language.
 %
 This rule makes it possible that a local actual argument in a procedure
 written in {\XMP} can be associated with a dummy argument of a procedure
@@ -46,10 +47,10 @@ them in its usual way.
 \vspace{1.5zw}
 
 \hspace{-1.2\parindent}
-The rest of this chapter specifies how global data (or part of it)
-appearing as an actual and a dummy argument list (referred to as a {\it
-global actual argument} and a {\it global dummy argument}, respectively)
-are processed by the {\XMP} compiler.
+The rest of this chapter specifies how global data appearing as an
+actual and a dummy argument list (referred to as a {\it global actual
+argument} and a {\it global dummy argument}, respectively) are processed
+by the {\XMP} compiler.
 
 
 \section{Argument Passing Mechanism in {\XMP} Fortran}
@@ -84,9 +85,10 @@ that is an explicit-shape or assumed-size array, and the other is
 The concept of sequence association in {\Fort} is extended for global
 actual and dummy arguments in {\XMP} as follows.
 
-If the actual argument is an array name or an array section,
-it represents an element sequence consisting of the elements of its
-local section in Fortran's array element order on each node.
+If the actual argument is an array name or an array section that
+satisfies the above conditions, it represents an element sequence
+consisting of the elements of its local section in Fortran's array
+element order on each node.
 %
 Also, if the actual argument is an element of a global data, it
 represents an element sequence consisting of the corresponding element
@@ -98,7 +100,7 @@ corresponds to a global dummy argument is sequence associated with
 the the dummy argument if the dummy argument is an explicit-shape or
 assumed-size array.
 %
-According to the (extended) sequence association rule, each element of
+According to this (extended) sequence association rule, each element of
 the element sequence represented by the global actual argument is
 associated with the element of the local section of the global dummy
 argument that has the same position in array element order.
@@ -321,15 +323,16 @@ argument inherits its shape and storage from the actual argument.
 \paragraph{Implementation.}
 
 In order to implement the descriptor association, a global actual
-argument is treated by the {\XMP} compiler as:
+argument is treated by the {\XMP} compiler:
 
 \begin{itemize}
- \item its {\it global-data descriptor}, which is an internal data
-       structure managed by the {\XMP} runtime system to hold
-       information on a global data, if the dummy is a global data; or
- \item the array representing its local section, which is to be processed
-       by the backend Fortran compiler in the same manner as usual data,
-       if the dummy is a local data.
+ \item as if it were the {\it global-data descriptor} of the actual array, 
+       which is an internal data structure managed by the {\XMP} runtime
+       system to hold information on a global data, if the dummy is a
+       global data; or
+ \item as it is an array representing the local section of the actual
+       array, which is to be processed by the backend Fortran compiler
+       in the same manner as usual data, if the dummy is a local data.
 \end{itemize}
 
 For the first case, a global dummy is initialized at runtime with a copy
