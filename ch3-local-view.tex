@@ -68,7 +68,7 @@ An array specified by {\it local-array-name} may be a coarray.
 !$xmp align (i) with t(i) :: a
 !$xmp shadow (1) :: a
 
-      real :: b
+      real :: b(:)
 !$xmp local_alias b => a
 \end{XFexample}
 
@@ -77,7 +77,7 @@ The node {\tt n(2)} has its local section of twenty-five elements ({\tt
 a(25:50)}) with shadow areas of size one on both of the upper and lower 
 bounds. The local alias {\tt b} is an array of 27 elements
 ({\tt b(1:27)}) on {\tt n(2)}. The table below shows the correspondence
-of each element of {\tt a} to that of {\tt b}.
+of each element of {\tt a} to that of {\tt b} on {\tt n(2)}.
 
 \begin{center}
 \begin{tabular}{|c|c|}\hline
@@ -114,7 +114,7 @@ a(2:100:4)}).
 The lower bound of local alias {\tt b} is declared to
 be zero. As a result, {\tt b} is an array of size 25 whose lower
 bound is zero ({\tt b(0:24)}) on {\tt n(2)}. The table below shows the
-correspondence of each element of a to that of {\tt b}.
+correspondence of each element of a to that of {\tt b} on {\tt n(2)}.
 
 \begin{center}
 \begin{tabular}{|c|c|}\hline
@@ -153,40 +153,40 @@ Since the global array {\tt a} is an allocatable array, its local alias
 {\tt b} is not defined when the subroutine starts execution. {\tt b} is
 defined when {\tt a} is allocated at the {\tt allocate}
 statement. Note that {\tt b} is declared as a coarray and therefore can be
-accessed in the same manner as a normal coarray in the last line.
+accessed in the same manner as a normal coarray.
 
 \end{description}
 
 
-\subsection{{\tt async} Construct}
-
-\subsubsection*{Synopsis}
-
-The {\tt \Directive{async}} construct allows coarrays to be referenced
-asynchronously.
-
-\subsubsection*{Syntax}
-\Syntax{async}
-
-\begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt async ( {\it async-id} )} \\
-\verb![C]! & \verb|#pragma xmp| {\tt async ( {\it async-id} )} \\
-\end{tabular}
-
-\subsubsection*{Description}
-
-An {\tt async} directive and the following statement
-including coarray references constitute an {\tt async} construct.
-
-Coarrays appeared in an {\tt async} construct are referenced
-asynchronously and therefore statements following it may be executed
-before the operation is complete.
-
-\subsubsection*{Restriction}
-
-\begin{itemize}
- \item {\it async-id} must be an integer expression.
-\end{itemize}
+%\subsection{{\tt async} Construct}
+%
+%\subsubsection*{Synopsis}
+%
+%The {\tt \Directive{async}} construct allows coarrays to be referenced
+%asynchronously.
+%
+%\subsubsection*{Syntax}
+%\Syntax{async}
+%
+%\begin{tabular}{ll}
+%\verb![F]! & \verb|!$xmp| {\tt async ( {\it async-id} )} \\
+%\verb![C]! & \verb|#pragma xmp| {\tt async ( {\it async-id} )} \\
+%\end{tabular}
+%
+%\subsubsection*{Description}
+%
+%An {\tt async} directive and the following statement
+%including coarray references constitute an {\tt async} construct.
+%
+%Coarrays appeared in an {\tt async} construct are referenced
+%asynchronously and therefore statements following it may be executed
+%before the operation is complete.
+%
+%\subsubsection*{Restriction}
+%
+%\begin{itemize}
+% \item {\it async-id} must be an integer expression.
+%\end{itemize}
 
 
 \subsection{{\tt post} Construct}
@@ -214,7 +214,7 @@ synchronization.
 
 This construct ensures that the execution of statements that precede
 it is completed before statements that follow the matching
-\Directive{post} construct start to be executed.
+\Directive{wait} construct start to be executed.
 
 A {\tt \Directive{post}} construct issued with the arguments of {\it
 nodes-ref} and {\it tag} on a node (called a {\it
@@ -227,7 +227,8 @@ by {\it nodes-ref}.
 
 \begin{itemize}
  \item {\it nodes-ref} must represent one node.
- \item {\it tag} must be an integer expression.
+ \item {\it tag} must be an expression of type default integer, in
+       {\XMPF}, or type {\tt int}, in {\XMPC}.
 \end{itemize}
 
 \subsubsection*{Example}
@@ -312,7 +313,7 @@ by {\it node-ref}.
 A {\tt \Directive{wait}} construct issued with the arguments of {\it
 nodes-ref} and {\it tag} on a node (called a {\it waiting node})
 dynamically matches a {\tt \Directive{post}} construct issued with the
-arguments of the waiting node and the same value as {\it tag} the
+arguments of the waiting node and the same value as {\it tag} by the
 node specified by {\it nodes-ref}.
 
 If {\it tag} is omitted, then the {\tt \Directive{wait}} construct can
@@ -328,7 +329,8 @@ any node.
 
 \begin{itemize}
  \item {\it nodes-ref} must represent one node.
- \item {\it tag} must be an integer expression.
+ \item {\it tag} must be an expression of type default integer, in
+       {\XMPF}, or type {\tt int}, in {\XMPC}.
 \end{itemize}
 
 
@@ -371,6 +373,10 @@ any node.
 
 \chapter{Base Language Extensions in {\XMPC}}
 
+This chapter describes base language extensions in {\XMPC} that is other
+than coarrays described in Chapter \ref{chap:Support for the Local-view
+Programming}.
+
 \section{Array Section Notation}
 
 \subsubsection*{Synopsis}
@@ -387,12 +393,15 @@ which is adapted in Fortran.
 
 \vspace{0.5cm}
 
-where {\it triplet} is:
+where {\it triplet} must be one of:
 
 \vspace{0.3cm}
 
-\hspace{0.5cm} {\openb}{\it base}{\closeb} {\tt :} {\openb}{\it
-length}{\closeb} {\openb}{\tt :} {\it step}{\closeb}
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it base} {\tt :} {\it length} {\tt :} {\it step} \\
+ \hspace{0.5cm} & {\it base} {\tt :} {\it length}\\
+ \hspace{0.5cm} & {\tt :} \\
+\end{tabular}
 
 \subsubsection*{Description}
 
@@ -425,13 +434,11 @@ step} down to the smallest.
 %section of size 4 containing every third element of {\tt B} with indices
 %between 1 and 10 (i.e., indices 1, 4, 7, 10).
 
-When {\it base} is omitted, it is assumed that ``0'' is specified.
+When {\it step} is omitted, it is assumed to be ``1''.
 %
-When {\it length} is omitted, it is assumed that an integer obtained by
-subtracting the value of {\it base} from the size of the dimension of
-the array is specified.
-%
-When {\it step} is omitted, it is assumed that ``1'' is specified.
+When all of {\it base}, {\it length} and {\it step} is omitted, it is
+assumed that {\it base} is one, {\it length} is the size of the
+dimension of the array, and {\it step} is ``1''.
 
 An array section can be considered as a virtual array containing the set
 of elements from the original array determined by all possible subscript
@@ -527,9 +534,9 @@ appear as an expression in any other statements.
 
 \subsubsection*{Examples}
 
-The array assignment statement in the fourth line copies the elements
-from {\tt B[0]} to {\tt B[4]} into the elements from {\tt A[5]} to {\tt
-A[9]}, respectively.
+An array assignment statement in the fourth line copies the elements
+{\tt B[0]} through {\tt B[4]} into the elements {\tt A[5]} through {\tt
+A[9]}.
 
 \hspace{\hsize}
 \begin{XCexample}
@@ -617,10 +624,13 @@ pa = (float *)xmp_malloc(xmp_desc_of(pa), N);
 %operator {\tt xmp\_desc\_of} as argument can return some descriptor
 %information. 
 
-The result of the descriptor-of operator (``{\tt xmp\_desc\_of}'')
-applied to {\XMP} entities such as node arrays, templates and global
-arrays is their {\it descriptor}, which can be used, for example, as an
-argument of query functions.
+The descriptor-of operator (``{\tt xmp\_desc\_of}'') is introduced in
+{\XMPC}.
+
+The result of the descriptor-of operator applied to {\XMP} entities such
+as node arrays, templates and global arrays is their {\it
+\Term{descriptor}}, which can be used, for example, as an argument of
+query functions.
 
 For the {\tt xmp\_desc\_of} intrinsic function in {\XMPF}, refer to
 Chapter \ref{chap:Intrinsic and library procedures}.

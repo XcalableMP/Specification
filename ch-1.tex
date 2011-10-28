@@ -32,14 +32,15 @@ The features of {\XMP} are summarized as follows:
        programming model, and enables parallelizing the original
        sequential code using minimal modification with simple
        directives, like {\OMP}. Many ideas on ``global-view''
-       programming are inherited from High Performance Fortran ({\HPF}).
+       programming are inherited from High Performance Fortran ({\HPF})
+       \cite{hpf}.
 
  \item The important design principle of {\XMP} is
        ``performance-awareness.'' All actions of communication and
-       synchronization are taken by directives and coarray features,
+       synchronization are taken by directives (and coarray features),
        which is different from automatic parallelizing compilers. The
-       user should be aware of what happens by {\XMP} directives in the
-       execution model on the distributed memory architecture.
+       user should be aware of what happens by the {\XMP} directives in
+       the execution model on the distributed memory architecture.
 
  \item {\XMP} also includes features from Partitioned Global Address
        Space (PGAS) languages, such as coarray of the {\Fort} 2008
@@ -51,8 +52,9 @@ The features of {\XMP} are summarized as follows:
        language.
 
  \item For flexibility and extensibility, the execution model allows to
-       combine with explicit {\MPI} coding for more complicated and
-       tuned parallel codes and libraries.
+       combine with explicit Message Passing Interface ({\MPI})
+       \cite{mpi} coding for more complicated and tuned parallel codes
+       and libraries.
 
  \item For multi-core and SMP clusters, {\OMP} directives can be
        combined into {\XMP} for thread programming inside each node as a
@@ -86,7 +88,7 @@ The features of {\XMP} are summarized as follows:
 \end{itemize}
 
 {\XMP} is being designed based on experiences obtained in the
-development of HPF \cite{hpf}, HPF/JA \cite{hpfja}, Fujitsu XPF (VPP
+development of HPF, HPF/JA \cite{hpfja}, Fujitsu XPF (VPP
 FORTRAN) \cite{XPF,VPPFORTRAN}, and OpenMPD \cite{OpenMPD}.
 
 \section{Scope}
@@ -156,7 +158,7 @@ execution}}, until it encounters an {\XMP} construct.
 %this specification, we define actions only when {\XMP} directives are
 %executed one thread at a time.
 
-A set of the nodes that are executing a procedure, a statement, a loop,
+A set of nodes that are executing a procedure, a statement, a loop,
 a block, etc. is referred to as its {\it executing node set} and
 determined by the innermost {\tt task} or {\tt loop} directive
 surrounding it dynamically, or at runtime.
@@ -232,15 +234,16 @@ To access data in remote memory, explicit communication must be
 specified in such ways as the global communication constructs and
 the coarray assignments.
 
-The ways how the storage sequence of a common block is defined and how
-the storage association of common blocks is resolved are
-implementation-dependent.
-
 %\underline{Description on memory layout to be added.}
+
+Particularly in {\XMPF}, for common blocks that include any global
+variables, the ways how the storage sequence of them is defined and how
+the storage association of them is resolved are
+implementation-dependent.
 
 \section{Global-view Programming Model}
 
-The global-view programming model is useful when, starting from
+The global-view programming model is useful when, starting from a
 sequential version of a program, the programmer parallelizes it in
 data-parallel style by adding directives with minimum modification.
 %

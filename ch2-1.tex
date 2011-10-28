@@ -42,7 +42,7 @@ case-sensitive.
 
 \vspace{0.5cm}
 
-Syntax{directive}
+\Syntax{directive}
 \begin{tabular}{ll}
 \verb![C]! & \verb|#pragma xmp| {\it directive-name clause} \\
 \end{tabular}
@@ -62,17 +62,19 @@ associated executable user code. The scope rule of declarative
 directives obeys that of the declaration statements in the base
 language.
 %
-For example, in {\XMPC}, a node array declared by a {\tt nodes}
-directive is visible in the range from the declaring point to the end of
+For example, in {\XMPF}, a node array declared by a {\tt nodes}
+directive is visible only within either the program unit, the
+derived-type declaration or the interface body that immediately
+surrounds the directives unless it is use or host associated,
+%
+and, in {\XMPC}, a node array declared by a {\tt nodes} directive is
+visible only in the range from the declaring point to the end of 
 the function when placed within a function, or of the file when
 placed outside any functions,
 %
-and, in {\XMPF}, a node array declared by a {\tt nodes} directive is
-visible within either the program unit, the derived-type declaration
-or the interface body that immediately surrounds the directives unless
-it is use or host associated.
 
-The following directives are the declarative directives.
+
+The following directives are declarative directives.
 
 \begin{itemize}
  \item {\tt nodes}
@@ -108,7 +110,7 @@ An executable directive and its associated user code make up an
 
 Note that, in {\XMPF}, a corresponding {\tt end} directive is required
 for some executable directives such as {\tt task} and {\tt tasks} and,
-in {\XMPC}, the associated statement can be a compound-statement.
+in {\XMPC}, the associated statement can be compound.
 
 %\vspace{0.5cm}
 %
@@ -119,7 +121,7 @@ in {\XMPC}, the associated statement can be a compound-statement.
 % & \verb|!$xmp| {\tt end tasks}\\
 %\end{tabular}
 
-The following directives are the executable directives.
+The following directives are executable directives.
 
 \begin{itemize}
  \item {\tt template\_fix}
@@ -172,6 +174,7 @@ declaration statements in Fortran using the ``{\tt ::}'' punctuation.
      align-subscript}{\closeb}... \verb|)| \\
  & {\tt shadow} \verb|(| {\it shadow-width} {\openb},
      {\it shadow-width}{\closeb}... \verb|)| \\
+% & {\tt coarray} {\tt on} {\it nodes-ref} \\
  & {\tt dimension} \verb|(| {\it explicit-shape-spec} {\openb},
      {\it explicit-shape-spec}{\closeb}... \verb|)|
 \end{tabular}
@@ -200,6 +203,15 @@ in addition to the following ones, are applied.
 \begin{itemize}
  \item The same kind of {\it combined-attribute} must not appear more
        than once in a given {\it combined-directive}.
+ \item If the {\tt nodes} attribute appears in a {\it
+       combined-directive}, each {\it combined-decl} must be a {\it
+       nodes-decl}.
+ \item If the {\tt template} or {\tt distribute} attribute appears in a
+       {\it combined-directive}, each {\it combined-decl} must be a {\it
+       template-decl}.
+ \item If the {\tt align} or {\tt shadow} attribute appears in a
+       {\it combined-directive}, each {\it combined-decl} must be an
+       {\it array-name}.
  \item If the {\tt dimension} attribute appears in a {\it
        combined-directive}, any object to which it applies must be
        declared with either the {\tt template} or the {\tt nodes}

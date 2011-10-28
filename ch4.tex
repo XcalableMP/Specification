@@ -24,11 +24,10 @@ There is no restriction on the characteristics of procedures invoked by
 an {\XMP} procedure, except for a few ones on its argument, which is
 explained below.
 
-A local data (i.e. an array element or a Fortran's array section) in the
-actual or dummy argument list (referred to as a {\it local actual
-argument} and a {\it local dummy argument}, respectively) are treated by
-the {\XMP} compiler in the same manner as by the compiler of the base
-language.
+A local data in the actual or dummy argument list (referred to as a {\it
+local actual argument} and a {\it local dummy argument}, respectively)
+are treated by the {\XMP} compiler in the same manner as by the compiler
+of the base language.
 %
 This rule makes it possible that a local actual argument in a procedure
 written in {\XMP} can be associated with a dummy argument of a procedure
@@ -211,14 +210,9 @@ mappings (including their shadow attributes) must be identical.
 	   The actual argument {\tt a(:,1)} is a contiguous section of
 	   the global data, and the dummy argument {\tt x} is a local
 	   explicit-shape array. Sequence association is applied 
-	   in this case, but the value to be passed is unspecified on 
-	   the nodes {\tt p(2)}, {\tt p(3)} and {\tt p(4)} because they
-	   do not own any part of the actual argument {\tt a(:,1)}.
-
-	   As a result, the storage for {\tt x} in {\tt f\_sub2} may be
-	   unavailable on the nodes {\tt p(2)}, {\tt p(3)} and {\tt
-	   p(4)}. Hence, {\tt f\_sub2} is invoked only by {\tt
-	   p(1)} (Figure \ref{fig5.25}).
+	   in this case, but only the node {\tt p(1)} owns the section.
+	   Hence, {\tt f\_sub2} is invoked only by {\tt p(1)} (Figure
+	   \ref{fig5.25}).
 
 \begin{XFexample}
       subroutine xmp_sub1
@@ -255,14 +249,9 @@ mappings (including their shadow attributes) must be identical.
 	   The actual argument {\tt a(1)} is an element of the global
 	   data, and the dummy argument {\tt x} is a local
 	   explicit-shape array. Sequence association is applied 
-	   in this case, but the value to be passed is unspecified on 
-	   the nodes {\tt p(2)}, {\tt p(3)} and {\tt p(4)} because they
-	   do not own the actual argument {\tt a(1)}.
-
-	   As a result, the storage for {\tt x} in {\tt f\_sub2} may be
-	   unavailable on the nodes {\tt p(2)}, {\tt p(3)} and {\tt
-	   p(4)}. Hence, {\tt f\_sub2} is invoked only by {\tt
-	   p(1)}(Figure \ref{fig5.3}).
+	   in this case, but only the node {\tt p(1)} owns the element.
+	   Hence, {\tt f\_sub2} is invoked only by {\tt p(1)}(Figure
+	   \ref{fig5.3}).
 
 \begin{XFexample}
       subroutine xmp_sub1
@@ -304,7 +293,7 @@ mappings (including their shadow attributes) must be identical.
 \begin{myfigure}
  \includegraphics[scale=0.7]{figs/fig5.4.eps}
  \caption{Sequence Association with a Global Dummy Argument that Has
- Full Shadow)}
+ Full Shadow}
  \label{fig5.4}
 \end{myfigure}
 
@@ -407,7 +396,7 @@ detect and report the error.
 \item[Example 2]
 
 	   There is the explicit interface of the subroutine
-	   {\tt f\_sub2}, which is written in {\XMPF},
+	   {\tt f\_sub2}, which is written in {\Fort},
 	   specified by an interface block in the subroutine {\tt
 	   xmp\_sub1}, and the dummy argument {\tt x} is a local
 	   (i.e. non-mapped) assumed-shape array. Therefore the global
@@ -457,10 +446,10 @@ detect and report the error.
 
 \section{Argument Passing Mechanism in {\XMP} C}
 
-When the actual argument is a global data, it is passed by the address
+When an actual argument is a global data, it is passed by the address
 of its local section.
 %
-When the dummy argument is a global data, an address is received and
+When a dummy argument is a global data, an address is received and
 used as the base address of each of its local section.
 
 
@@ -481,8 +470,8 @@ The name of a global data appearing as a dummy argument is
 treated by the {\XMP} compiler as the pointer to the first element of
 its local section on each node.
 %
-As a result, the global data is initialized at runtime so as to be
-composed of the local sections on nodes in the executing node set.
+As a result, it is initialized at runtime so as to be
+composed of the local sections on the executing nodes.
 
 Such implementation implies that in many cases, in order to pass
 properly a global actual argument to the corresponding global dummy 
@@ -573,14 +562,9 @@ void c_func2(float x[27])
 	   data and the dummy argument {\tt x} is a scalar, in which
 	   case the normal argument-passing rule of {\C} for variables
 	   of a basic type (i.e. ``pass-by-value'') is applied. However,
-	   the value to be passed is unspecified on the nodes {\tt
-	   p(2)}, {\tt p(3)} and {\tt p(4)} because they do not own the
-	   actual argument {\tt a[0]}.
-
-	   As a result, {\tt x} in {\tt c\_func2} has an unspecified
-	   value on the nodes {\tt p(2)}, {\tt p(3)} and {\tt
-	   p(4)}. Hence, {\tt c\_func2} is invoked only by {\tt p(1)} 
-	   (Figure \ref{fig5.9}).
+	   only the node {\tt p(1)} owns the element.
+	   Hence, {\tt c\_func2} is invoked only by {\tt p(1)} (Figure
+	   \ref{fig5.9}).
 
 \begin{XCexample}
 void xmp_func1()
@@ -592,6 +576,7 @@ void xmp_func1()
 #pragma xmp align a[i] with t(i)
 #pragma xmp shadow a[1:1]
 
+#pragma xmp task on p(1)
   c_func2(a[0]);
 }
 \end{XCexample}

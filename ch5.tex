@@ -13,7 +13,7 @@ intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
  \item {\tt xmp\_all\_num\_nodes}
  \item {\tt xmp\_node\_num}
  \item {\tt xmp\_num\_nodes}
- \item {\tt xmp\_mpi\_comm}
+% \item {\tt xmp\_mpi\_comm}
  \item {\tt xmp\_wtime}
  \item {\tt xmp\_test\_async}
  \item {\tt xmp\_gtol}
@@ -150,28 +150,28 @@ $\vert$ {\it nodes-name});}
 
 \vspace{0.3cm}
 
-\subsection{\tt xmp\_mpi\_comm}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&  {\tt integer function}& {\tt xmp\_mpi\_comm({\it nodes-name})}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_mpi\_comm({\it nodes-name});}
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-     The {\tt xmp\_mpi\_comm} routine returns the integer value with associated communicator
-     to which {\it nodes-name} belongs. If non {\it nodes-name}, {\tt xmp\_mpi\_comm} returns 
-     the value of MPI\_Comm\_World.
-
-\subsubsection*{Arguments}
-    The argument of {\tt xmp\_mpi\_comm} is a {\it nodes-name} of the executing node set.
-
-
-\vspace{0.3cm}
+%\subsection{\tt xmp\_mpi\_comm}
+%
+%\subsubsection*{Format}
+%
+%\begin{tabular}{lll}
+%
+%\verb![F]!&  {\tt integer function}& {\tt xmp\_mpi\_comm({\it nodes-name})}\\
+%
+%\verb![C]!&  {\tt int}& {\tt xmp\_mpi\_comm({\it nodes-name});}
+%
+%\end{tabular}
+%
+%\subsubsection*{Synopsis}
+%     The {\tt xmp\_mpi\_comm} routine returns the integer value with associated communicator
+%     to which {\it nodes-name} belongs. If non {\it nodes-name}, {\tt xmp\_mpi\_comm} returns 
+%     the value of MPI\_Comm\_World.
+%
+%\subsubsection*{Arguments}
+%    The argument of {\tt xmp\_mpi\_comm} is a {\it nodes-name} of the executing node set.
+%
+%
+%\vspace{0.3cm}
 
 \subsection{\tt xmp\_wtime}
 
@@ -187,9 +187,9 @@ $\vert$ {\it nodes-name});}
 
 \subsubsection*{Synopsis}
     The {\tt xmp\_wtime} routine returns elapsed wall clock time in seconds 
-    since some time in the past. The "time in the past" is guaranteed not to change
-    during the life of the process.
-    There is no requirement that different nodes return "the same time".
+    since some time in the past. The ``time in the past'' is guaranteed
+    not to change during the life of the process.
+    There is no requirement that different nodes return ``the same time.''
 
 \subsubsection*{Arguments}
     none.
@@ -210,7 +210,8 @@ $\vert$ {\it nodes-name});}
 \end{tabular}
 
 \subsubsection*{Synopsis}
-    The {\tt xmp\_wtick} routine returns the resolution of the timer used by {\tt xmp\_wtime}.
+    The {\tt xmp\_wtick} routine returns the resolution of the timer
+    used by {\tt xmp\_wtime}. 
     It returns a double precision value equal to the number of seconds 
     between successive clock ticks.
 
@@ -220,35 +221,35 @@ $\vert$ {\it nodes-name});}
 
 \vspace{0.3cm}
 
-\subsection{\tt xmp\_barrier}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&  & {\tt xmp\_barrier({\it nodes-name})}\\
-
-\verb![C]!&  {\tt void}& {\tt  xmp\_barrier({\it nodes-name})}
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-    The {\tt xmp\_barrier} routine blocks the caller until all nodes in the executing node set 
-    indicated by {\it nodes-name} have called it.
-    The call returns at any process only after all {\it nodes-name} member's nodes
-    have entered the call.
-
-\subsubsection*{Arguments}
-    The argument of {\tt xmp\_barrier} is a {\it nodes-name} of the executing node set.
-
-\vspace{0.3cm}
+%\subsection{\tt xmp\_barrier}
+%
+%\subsubsection*{Format}
+%
+%\begin{tabular}{lll}
+%
+%\verb![F]!&  & {\tt xmp\_barrier({\it nodes-name})}\\
+%
+%\verb![C]!&  {\tt void}& {\tt  xmp\_barrier({\it nodes-name})}
+%
+%\end{tabular}
+%
+%\subsubsection*{Synopsis}
+%    The {\tt xmp\_barrier} routine blocks the caller until all nodes in the executing node set 
+%    indicated by {\it nodes-name} have called it.
+%    The call returns at any process only after all {\it nodes-name} member's nodes
+%    have entered the call.
+%
+%\subsubsection*{Arguments}
+%    The argument of {\tt xmp\_barrier} is a {\it nodes-name} of the executing node set.
+%
+%\vspace{0.3cm}
 
 \subsection{\tt xmp\_test\_async}
 
 \begin{tabular}{lll}
 
 \verb![F]!& {\tt logical function} & {\tt xmp\_test\_async(async\_id)}\\
-\verb![F]!& {\tt integer} & {\tt async\_id}\\
+          & {\tt integer} & {\tt async\_id}\\
           & & \\
 \verb![C]!&  {\tt int} & {\tt  xmp\_test\_async(int async\_id)}
 
@@ -265,8 +266,7 @@ or {\tt 0}.
 
 The argument {\tt async\_id} is an integer expression that specifies an
 asynchronous communication initiated by a global communication construct
-with the {\tt async} clause or a coarray reference preceded by the {\tt
-async} directive.
+with the {\tt async} clause.
 
 \vspace{0.3cm}
 
@@ -275,9 +275,9 @@ async} directive.
 \begin{tabular}{lll}
 
 \verb![F]!& {\tt subroutine} & {\tt xmp\_gtol(d, g\_idx, l\_idx)} \\
-\verb![F]!& {\tt xmp\_desc\_t} & {\tt d}\\
-\verb![F]!& {\tt integer} & {\tt g\_idx(NDIMS)}\\
-\verb![F]!& {\tt integer} & {\tt l\_idx(NDIMS)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
+          & {\tt integer} & {\tt g\_idx(NDIMS)}\\
+          & {\tt integer} & {\tt l\_idx(NDIMS)}\\
           & & \\
 \verb![C]!&  {\tt void} & {\tt xmp\_gtol(xmp\_desc\_t d, int g\_idx[], int l\_idx[])}
 

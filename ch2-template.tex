@@ -52,10 +52,10 @@ and {\it template-spec} must be one of:
 The {\tt template} directive declares a template with the shape specified by
 the sequence of {\it template-spec}'s. If every {\it template-spec} is
 ``:'', then the shape of the template is initially undefined. This
-template must not be referenced until the shape is defined by {\tt
-template\_fix} directives (see section \ref{subsec:template_fix
+template must not be referenced until the shape is defined by a {\tt
+template\_fix} directive (see section \ref{subsec:template_fix
 directive}) at runtime. If {\it int-expr} is specified as {\it
-template-spec}, then the default lower bound is 1.
+template-spec}, then the default lower bound is one.
 
 \subsubsection*{Restrictions}
 
@@ -114,8 +114,9 @@ where the specified subset of the template resides.
 Specifically, the ``{\tt *}'' symbol appeared as {\it
 template-subscript} in a dimension of {\it template-ref} is interpreted
 by each node at runtime as the indices of the elements in the dimension
-that reside in the node. ``{\tt *}'' in the template reference is
-equivalent to ``{\tt *}'' in the node reference.
+that reside in the node. ``{\tt *}'' in a template reference is
+similar to ``{\tt *}'' in a node reference.
+
 %the position (coordinate) of each node in the dimension of the
 %referenced node array.
 %
@@ -184,7 +185,7 @@ Assume that {\tt t} is a template.
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{distribute}} directive specifies the distribution of
+The {\tt \Directive{distribute}} directive specifies distribution of
 a template.
 
 \subsubsection*{Syntax}
@@ -278,7 +279,7 @@ is defined by {\tt template\_fix} directives at runtime.
       equal to the size of the corresponding dimension of the node array
       specified by {\it nodes-name}.
 \item Every element of the array {\it int-array} in parentheses
-      following {\tt gblock} must be a non-negative integer.
+      following {\tt gblock} must have a value of non-negative integer.
 \item The sum of the elements of the array {\it int-array} in 
       parentheses following {\tt gblock} must be equal to or greater
       than the size of the corresponding dimension of the template
@@ -294,13 +295,12 @@ is defined by {\tt template\_fix} directives at runtime.
 \item[Example 1]
 \hspace{\hsize}
 \begin{XFexample}
-      program main
 !$xmp nodes p(4)
 !$xmp template t(64)
 !$xmp distribute t(block) onto p
 \end{XFexample}
 
-The template {\tt t} is distributed in block format, as shown in the
+The template {\tt t} is distributed in {\tt block} format, as shown in the
 following table.
 
 \begin{center}
@@ -320,14 +320,13 @@ following table.
 \item[Example 2]
 \hspace{\hsize}
 \begin{XFexample}
-      program main
 !$xmp nodes p(4)
 !$xmp template t(64)
 !$xmp distribute t(cyclic(8)) onto p
 \end{XFexample}
 
-The template {\tt t} is distributed in cyclic format of size eight, as
-shown in the following table.
+The template {\tt t} is distributed in {\tt cyclic} format of size
+eight, as shown in the following table.
 
 \begin{center}
 \begin{tabular}{|c|c|}
@@ -346,7 +345,6 @@ shown in the following table.
 \item[Example 3]
 \hspace{\hsize}
 \begin{XFexample}
-      program main
 !$xmp nodes p(8,5)
 !$xmp template t(64,64,64)
 !$xmp distribute t(*,cyclic,block) onto p
@@ -354,8 +352,8 @@ shown in the following table.
 
 The first dimension of the template {\tt t} is not distributed. The
 second dimension is distributed onto the first dimension of the node array
-{\tt p} in cyclic format. The third dimension is distributed onto the
-second dimension of {\tt p} in block format. The results are as follows:
+{\tt p} in {\tt cyclic} format. The third dimension is distributed onto the
+second dimension of {\tt p} in {\tt block} format. The results are as follows:
 
 \begin{center}
 \begin{tabular}{|c|c|}
@@ -371,8 +369,8 @@ second dimension of {\tt p} in block format. The results are as follows:
 \end{tabular}
 \end{center}
 
-Note that the size of the third dimension of {\tt t} is 64 and is not
-divisible by the size of the second dimension of {\tt p}. Thus, sizes of
+Note that the size of the third dimension of {\tt t}, 64, is not
+divisible by the size of the second dimension of {\tt p}, 5. Thus, sizes of
 the blocks in the third dimension are different among nodes.
 
 \end{description}
@@ -439,25 +437,24 @@ align-subscript}'s, where {\it align-source}'s and {\it
 align-subscript}'s are interpreted as follows:
 
 \begin{enumerate}
-\item The first form of an {\it align-source} and an {\it
-      align-subscript} represents an align dummy variable and an
-      expression of it, respectively. The align dummy variable ranges
-      over all valid index values in the corresponding dimension of the
-      array.
-\item The second form ``{\tt *}'' of an {\it align-source} and an {\it
+\item The first form of {\it align-source} and {\it align-subscript}
+      represents an align dummy variable and an expression of it,
+      respectively. The align dummy variable ranges over all valid index
+      values in the corresponding dimension of the array.
+\item The second form ``{\tt *}'' of {\it align-source} and {\it
       align-subscript} represents a dummy variable (not an align dummy
       variable) that does not appear anywhere in the directive.
       \begin{itemize} 
-       \item The second form of the {\it align-source} is said to
+       \item The second form of {\it align-source} is said to
 	     ``collapse'' the corresponding dimension of the array. As a
 	     result, the index along the corresponding dimension makes
 	     no difference in determining the alignment.
-       \item The second form of the {\it align-subscript} is said to
+       \item The second form of {\it align-subscript} is said to
 	     ``replicate'' the array. Each element of the array is
 	     replicated, and aligned to all index values in the
 	     corresponding dimension of the template.
       \end{itemize}
-\item The third form of an {\it align-source} and the matching {\it
+\item The third form of {\it align-source} and the matching {\it
       align-subscript} represents a same align dummy variable that
       ranges over all valid index values in the corresponding dimension
       of the array. The matching of colons (``{\tt :}'') in the sequence
@@ -494,7 +491,8 @@ align-subscript}'s are interpreted as follows:
       occurrence of an align dummy variable.
 \item The sequence of {\it align-sources}'s must contain exactly as many
       colons as the sequence of {\it align-subscript}'s contains.
-
+\item \verb![F]! The array specified by {\it array-name} must not appear
+      as an {\it equivalence-object} in an {\tt equivalence} statement.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -533,7 +531,7 @@ t(j)}. Note that the first dimension of {\tt a} is collapsed.
 \end{XFexample}
 %$
 
-The array element {\tt a(j)} is replicated, and aligned with each
+The array element {\tt a(j)} is replicated and aligned with each
 template element of {\tt t(:,j)}.
 
 \item[Example 4]
@@ -570,7 +568,7 @@ $${a(i,j) \rightarrow t(k,j) \mid (i,j,k) \in (1:n1,\,1:n2,\,1:m1)}$$
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{shadow}} directive declares and allocates a shadow
+The {\tt \Directive{shadow}} directive allocates the shadow
 area for a distributed array.
 
 \subsubsection*{Syntax}
@@ -624,14 +622,14 @@ shadow area can be allocated also at the global lower and upper bound of
 an array.
 
 The data stored in the storage area declared by the {\tt shadow}
-directive is referred to as a ``\Term{shadow object}.''
+directive is referred to as a {\it \Term{shadow object}}.
 %The shadow object can be
 %explicitly defined and referenced only by the below-described method.
 %
 A shadow object represents an element of a distributed array and 
 corresponds to the data object that represents the same
 element as it. The corresponding data object is referred to as the
-reflection source of the shadow object.
+{\it \Term{reflection source}} of the shadow object.
 
 %Of the data allocated to a storage area other than a shadow area, data
 %representing the same array element as that of a shadow object is called
@@ -648,6 +646,8 @@ reflection source of the shadow object.
 \begin{itemize}
 \item The value specified by {\it shadow-width} must be a non-negative
       integer.
+\item The number of {\it shadow-width} must be equal to the number of
+      dimensions (or rank) of the array specified by {\it array-name}.
 \end{itemize}
 
 \subsubsection*{Example}
@@ -739,7 +739,7 @@ and {\it dist-format} is one of:
 The {\tt template\_fix} construct fixes the shape and/or the
 distribution of the template that is initially undefined, by specifying
 the sizes and/or the distribution format of 
-each dimension at runtime. The array aligned with an initially undefined
+each dimension at runtime. Arrays aligned with an initially undefined
 template must be an allocatable array, in {\XMPF}, or a pointer (see
 Section \ref{sec:Dynamic Allocation of Global Data in C}), in
 {\XMPC}, which cannot be allocated until the template is fixed by the
@@ -761,12 +761,11 @@ as that in the {\tt distribute} directive.
       template\_fix} construct, it must be identical with the 
       sequence of {\it dist-format}'s in the {\tt distribute} directive
       for the template specified by {\it template-name}, except for {\it
-      int-array}, not an asterisk (``{\tt *}''), specified in the
-      parenthesis following {\tt gblock}.
+      int-array} specified in the parenthesis following {\tt gblock}.
 \item Either the sequence of {\it dist-format}'s or the sequence of {\it
       template-spec}'s must be given. 
-\item The {\tt template\_fix} construct must appear in executable
-      context.
+%\item The {\tt template\_fix} construct must appear in executable
+%      context.
 \end{itemize}
 
 \subsubsection*{Example}
@@ -792,7 +791,7 @@ as that in the {\tt distribute} directive.
 Since the shape is {\tt (:)} and the distribution format is {\tt
 gblock(*)}, 
 the template {\tt t} is initially undefined. The allocatable array
-{\tt a} is aligned to {\tt t}. After the size {\tt N} of {\tt t} and the
+{\tt a} is aligned with {\tt t}. After the size {\tt N} and the
 mapping array {\tt M} is defined, {\tt t} is fixed by the {\tt
   template\_fix} construct and {\tt a} is allocated.
 

@@ -1,4 +1,5 @@
 \chapter{Support for the Local-view Programming}
+\label{chap:Support for the Local-view Programming}
 
 {\XMP} adopts coarray notations for the local-view
 programming. Particularly in {\XMP} {\Fort}, the notations are
@@ -40,10 +41,11 @@ where {\it codimensions} is:
 
 \subsubsection*{Description}
 
-For {\XMPF}, coarrays are declared in the same manner
-as in Fortran 2008. For {\XMPC}, coarrays are declared with
-the {\tt coarray} directive where {\it codimensions} specify the coshape
-of a variable.
+For {\XMPF}, coarrays are declared in the same manner as in Fortran
+2008, which is not described in this document.
+%
+For {\XMPC}, coarrays are declared with the {\tt coarray} directive
+where {\it codimensions} specify the coshape of a variable.
 %
 Terms related to coarrays in {\XMP} (e.g. coshape, coindex,
 cobound, cosubscript, image, image index, etc.) are derived from that in
@@ -59,7 +61,7 @@ Fortran's array element order.
 If the {\tt coarray} directive is not specified in {\XMPF} or the {\tt
 on} clause of the {\tt coarray} directive is not specified in {\XMPC},
 then it is assumed that an implicit node array corresponding to the
-executing node set of the procedure is specified.
+executing node set is specified.
 
 Note that an actual coarray and its associating dummy coarray must be
 declared on the same node set (see chapter \ref{chap:procedure}).
@@ -237,6 +239,9 @@ manner as in Fortran 2008 in {\XMPF} or using an extended notation in
 A sequence of {\it int-expr}'s in a square bracket in {\XMPF} and a
 sequence of {\tt [}{\it int-expr}{\tt ]}'s preceded by a colon in
 {\XMPC} determine the image index for a coarray to be accessed.
+
+An reference of coarrays can appear in the same place as an reference of
+normal variables in the base languages.
 
 Note that a coarray cannot be directly accessed by a node outside the
 node set on which it is declared, unlike in Fortran 2008.

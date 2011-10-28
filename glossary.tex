@@ -28,11 +28,11 @@
 
 \gitem{\XMPF}
 
- The {\XMP} language specification for a base language {\Fort}.
+ The {\XMP} specification for a base language {\Fort}.
 
 \gitem{\XMPC}
 
- The {\XMP} language specification for a base language {\C}.
+ The {\XMP} specification for a base language {\C}.
 
 \gitem{structured block}
 
@@ -80,7 +80,7 @@
  such as {\tt gmove}, {\tt barrier}, etc., which specify communication
  or synchronization, and {\it work mapping constructs}, such as {\tt
  loop}, {\tt array} and {\tt tasks}, which specify parallelization of
- loops, array assignments or a set of tasks.
+ loops, array assignments or tasks.
 
 \gitem{template}
 
@@ -89,8 +89,8 @@
  {\XMP} and can be considered to abstract, for example, a set of grid
  points in the grid method or particles in the particle method.
 %
- A template is used in an {\XMP} program to specify the data and the
- work mapping.
+ A template is used in an {\XMP} program to specify the data and work
+ mapping.
 
 %A dummy array used to express an index space associated
 %with an array. Template is also used to describe the iteration space of
@@ -110,7 +110,7 @@
  Assigning each of the iterations of a loop, the elements of an array
  assignment, or the tasks to nodes in a node set. Such work mapping is
  specified by aligning it with a template or distributing it onto a
- node array.
+ node set.
 
 %\subsection*{\Term{data mapping}}
 %The combination of the alignment and
@@ -130,7 +130,7 @@
 \gitem{local}
 
  A data or a work is {\it local} if and only if there is a replicated
- instance of it in each node in the executing node set.
+ instance of it on each node in the executing node set.
 
 \gitem{global-view model}
 
@@ -199,8 +199,11 @@
  execution of a procedure, a statement, a construct, etc. of an
  XcalableMP program is called its executing node set.
 %
- The term is used in this document to represent the {\it current
+ This term is used in this document to represent the {\it current
  executing node set} unless it is ambiguous.
+%
+ Note that the executing node set of the main routine is the entire node
+ set.
 
 \gitem{current executing node set}
 
@@ -208,8 +211,7 @@
  {\XMP} runtimes system.
 %
  The current executing node set can be modified by the {\tt task}, {\tt
- array}, or {\tt loop} direcitives. Note that the executing node set of
- the main routine is the entire node set.
+ array}, or {\tt loop} constructs. 
 
 \gitem{node array}
 
@@ -226,8 +228,9 @@
 
 \gitem{node number}
 
- A unique number assigned to each node, which corresponds to its
- position within the linearly-ordered entire node set.
+ A unique number assigned to each node, which starts from one and
+ corresponds to its position within the linearly-ordered entire node
+ set.
 
 %\gitem{node number}
 %
@@ -277,7 +280,7 @@
 
  An array that is aligned with a template. Elements of a global data are
  distributed onto nodes according to the distribution of the
- template. As a result, each node owns a part of a global data (called
+ template. As a result, each node owns a part of a global data (called a
  {\it local section}), and can access directly it but cannot those on
  the other nodes.
 
@@ -330,7 +333,7 @@
 \gitem{shadow}
 
  An additional area of the local section of a distributed array, which
- is used to keep the elements that have to be moved in from neighboring
+ is used to keep elements to be moved in from neighboring
  nodes.
 
 % A data area used to keep neighbor elements temporarily in a
@@ -423,7 +426,7 @@
  reference syntax.
 %
  Every coarray is associated explicitly or implicitly with a node
- set and allocated on each node of the node set.
+ array and allocated on each node of the node array.
 
  The coarray feature of {\XMP} is based on that of the Fortran 2008
  standard.
@@ -435,7 +438,7 @@
  A special identifier, in the style of an integer sequence, which is
  used in a coarray reference to specify a target node. An image index in
  the square brackets of a coarray reference refers to a corresponding
- node in the node set with which the coarray is associated. The
+ node in the node array with which the coarray is associated. The
  correspondence is determined according to Fortran's array element order
  (i.e. row-major).
 

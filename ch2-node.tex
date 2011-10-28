@@ -188,7 +188,7 @@ int main() {
 
 The following is an example of a node declaration in a procedure.
 Since {\tt p} is declared in the second form to be of size 16 and
-correspond to the executing node set, the invocation of the {\tt foo}
+corresponds to the executing node set, the invocation of the {\tt foo}
 function must be executed by 16 nodes.
 %
 The node array {\tt q} is declared in the first form and corresponds to
@@ -258,9 +258,8 @@ where {\it nodes-subscript} must be one of:
 
 \subsubsection*{Description}
 
-Node reference by node number represents one node specified by the node 
-number, or a node set specified by a triplet that represents a set of
-node numbers.
+Node reference by node number represents a node set specified by a
+node number or a triplet describing a set of node numbers.
 
 Node reference by name represents a node set specified by the name of a
 node array or its subarray.
@@ -312,7 +311,7 @@ Assume that {\tt p} is the name of a node array and that {\tt m} is an
 integer variable.
 
 \begin{itemize}
-\item As a target node array in the {\tt distribute} directive
+\item As a target node array in the {\tt distribute} directive,
 
 \Example{distribute}
 \begin{tabular}{l}
@@ -320,7 +319,7 @@ integer variable.
 \end{tabular}%$
 
 \item To specify a node set to which the declared node array corresponds
-      in the second form of the {\tt nodes} directive
+      in the second form of the {\tt nodes} directive,
 
 \Example{nodes}
 \begin{tabular}{l}
@@ -329,7 +328,7 @@ integer variable.
 \end{tabular}
 
 \item To specify a node array that corresponds to the executing node set
-      of a task in the {\tt task} directive
+      of a task in the {\tt task} directive,
 
 \Example{task}
 \begin{tabular}{l}
@@ -339,8 +338,8 @@ integer variable.
 \verb|!$xmp task on (m)| \\
 \end{tabular}
 
-\item To specify a node array with which the iterations of the loop are
-      aligned in the {\tt loop} directive
+\item To specify a node array with which iterations of a loop are
+      aligned in the {\tt loop} directive,
 
 %In the {\tt loop} directive, sets of executing nodes are specified
 %      for the iterations.
@@ -351,7 +350,7 @@ integer variable.
 \end{tabular}%$
 
 \item To specify a node array that corresponds to the executing node set
-      in the {\tt barrier} and the {\tt reduction} directive
+      in the {\tt barrier} and the {\tt reduction} directive,
 
 %In {\tt barrier} directive and the {\tt reduction} directive,
 %executing nodes are specified. 
@@ -364,13 +363,13 @@ integer variable.
 \end{tabular}
 
 \item To specify the source node and the node array that corresponds to
-      the executing node set in the {\tt bcast} directive 
+      the executing node set in the {\tt bcast} directive,
 
 %In the {\tt bcast} directive, a source node and executing nodes are specified.
 
 \Example{bcast}
 \begin{tabular}{l}
-\verb|!$xmp bcast b from p(k) on p(:)| \\
+\verb|!$xmp bcast (b) from p(k) on p(:)| \\
 \end{tabular}
 \end{itemize}
 
@@ -422,7 +421,7 @@ integer variable.
 \subsection{Correspondence between Node Arrays}
 
 If one node array and the other have the same shape and correspond to
-the same node set, an element of the one node array and the element of
-the other are assigned to the same node;
+the same node set, an element of the one and an element of the other are
+assigned to the same node;
 %
 otherwise, correspondence between any two node arrays is not specified.

@@ -110,8 +110,8 @@ construct may be executed before the operation is complete.
 \label{fig3.2}
 \end{myfigure}
 
-The {\tt shadow} directive instructs to allocate ``periodic'' shadow
-areas of the array {\tt a}.
+The {\tt shadow} directive allocates ``periodic'' shadow areas of the
+array {\tt a}.
 The {\tt reflect} construct updates ``periodically'' the shadow area of
 {\tt a} (Figure \ref{fig3.2}). A periodic shadow at the lower
 bound on the node {\tt p(1)} is updated with the value of {\tt a(100)}
@@ -145,9 +145,9 @@ the executing nodes.
 
 This construct copies the value of the right-hand side (rhs) variable
 into the left-hand side (lhs) of the associated assignment statement,
-which may require communication between nodes in the executing node
-set. Such communication is detected, scheduled, and performed by the
-XcalableMP runtime system.
+which may require communication between the executing nodes. Such
+communication is detected, scheduled, and performed by the XcalableMP
+runtime system.
 
 %This construct executes a copy operation of the global data array object
 %distributed into nodes.
@@ -194,7 +194,17 @@ There are three operating modes of the {\tt gmove} construct:
 
        When neither the {\tt in} nor the {\tt out} clause is specified,
        the copy operation is performed collectively and cause an
-       implicit synchronization after it among the executing node set.
+       implicit synchronization after it among the executing nodes.
+
+       If the {\tt async} clause is not specified, then the construct is
+       ``synchronous'' and it is guaranteed that the lhs data can be
+       read and overwritten, the rhs data can be overwritten, and all of
+       the operations of the construct on the executing nodes are
+       completed when returning from the construct;
+       otherwise, the construct is ``asynchronous'' and it is not
+       guaranteed that until returning from the associating {\tt
+       wait\_async} construct (Section \ref{subsec:wait_async
+       Construct}).
 
 %In this case, all elements in both the source array and the target array
 %must be distributed onto the executing node set.
@@ -218,7 +228,7 @@ There are three operating modes of the {\tt gmove} construct:
        If the {\tt async} clause is not specified, then the construct is
        ``synchronous'' and it is guaranteed that the lhs data
        can be read and overwritten and all of the operations of the
-       construct on the owner nodes and the executing node
+       construct on the owner nodes of the rhs and the executing nodes
        are completed when returning from the construct;
        otherwise, the construct is ``asynchronous'' and it is not
        guaranteed that until returning from the associating {\tt
@@ -235,7 +245,7 @@ There are three operating modes of the {\tt gmove} construct:
        If the {\tt async} clause is not specified, then the construct is
        ``synchronous'' and it is guaranteed that the rhs data
        can be overwritten and all of the operations of the construct on
-       the owner nodes and the executing node are
+       the owner nodes of the lhs and the executing nodes are
        completed when returning from the construct; otherwise, the
        construct is ``asynchronous'' and it is not guaranteed that until
        returning from the associating {\tt wait\_async} construct
@@ -514,9 +524,8 @@ not defined in it.
 %
 The variable specified by {\it variable}, which is the target of the
 reduction operation, is referred to as the ``\Term{reduction
-variable}.'' After the reduction operation, the value of the
-reduction variable becomes the same in every node that performs the
-operation.
+variable}.'' After the reduction operation, the value of a reduction
+variable becomes the same in every node that performs the operation.
 
 The reduction result is computed by combining the reduction variables on
 all of the nodes using the reduction operator. The ordering of this
@@ -538,12 +547,12 @@ referenced template must be fixed.
 %When {\it template-subscript} in the {\it template-ref} is {\it
 %triplet}, nodes for all template elements in the corresponding dimension
 %perform the reduction operation.
-
+%
 When {\it nodes-ref} is specified in the {\tt on} clause, the operation
 is performed in the specified node set.
 %Therefore, before the {\tt \Directive{reduction}} construct is executed,
 %the referenced node set must be fixed.
-
+%
 When the {\tt on} clause is omitted, the operation is performed in the
 executing node set.
 
@@ -695,7 +704,7 @@ which may result in faster operation.
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{bcast}} construct performs broadcast communication
-from one specified node.
+from a specified node.
 
 \subsubsection*{Syntax}
 \Syntax{bcast}
@@ -750,8 +759,8 @@ construct may be executed before the operation is complete.
        the executing nodes.
  \item {\it async-id} must be an expression of type default integer, in
        {\XMPF}, or type {\tt int}, in {\XMPC}.
- \item The node set specified by the {\tt on} clause must be a subset of the
-       current executing node set.
+ \item The node set specified by the {\tt on} clause must be a subset of
+       the executing node set.
  \item The source node specified by the {\tt from} clause must belong to
        the node set specified by the {\tt on} clause.
  \item The source node specified by the {\tt from} clause must be one node.
@@ -764,7 +773,7 @@ construct may be executed before the operation is complete.
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{wait\_async}} construct guarantees asynchronous
-communications specified by {\it async-id}.
+communications specified by {\it async-id} are complete.
 
 \subsubsection*{Syntax}
 \Syntax{wait\_async}
@@ -789,13 +798,13 @@ communications specified by each of {\it async-id} are complete.
        {\XMPF}, or type {\tt int}, in {\XMPC}.
 \item {\it async-id} must be associated with an asynchronous
       communication by the {\tt async} clause of a communication
-      construct or an {\tt async} construct.
+      construct.
 \item The {\tt wait\_async} construct is global, which means that it must
       be executed by all of the executing nodes, and each local variable
       referenced in the construct must have the same value among all of
       the executing nodes.
 \item The executing node set of the {\tt wait\_async} construct must be
-      the same as that of the global constructs that initiate the
+      the same as those of the global constructs that initiate the
       asynchronous communications specified by {\it async-id}.
 %\item Every communication specified by each {\it async-id} must be
 %      executed on the same executing node set.
@@ -807,7 +816,7 @@ communications specified by each of {\it async-id} are complete.
 \subsubsection*{Synopsis}
 
 The {\tt async} clause of the {\tt reflect}, {\tt gmove}, {\tt
-reduction} and {\tt bcast} construct allows the corresponding
+reduction} and {\tt bcast} constructs allows the corresponding
 communication to be performed asynchronously.
 
 \subsubsection*{Description}
