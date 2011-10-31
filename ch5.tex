@@ -24,41 +24,46 @@ intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
 
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of({\it array-name} $\vert$ {\it template-name} 
-$\vert$ {\it nodes-name})}\\
+\verb![F]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of(xmp\_entity)}\\
 
-\verb![C]!&  {\tt xmp\_desc\_t*}& {\tt xmp\_desc\_of({\it array-name} $\vert$ {\it template-name} 
-$\vert$ {\it nodes-name})}
+\verb![C]!&  {\tt xmp\_desc\_t*}& {\tt xmp\_desc\_of(xmp\_entity)}
 
 \end{tabular}
 
 \vspace{0.3cm}
 
-Note that {\tt xmp\_desc\_of} is, in {\XMPF}, an intrinsic function and,
-in {\XMPC}, a built-in operator.
+Note that {\tt xmp\_desc\_of} is an intrinsic function in {\XMPF} or
+a built-in operator in {\XMPC}.
 
 \subsubsection*{Synopsis}
 
-    A {\tt xmp\_desc\_of} is an input argument of query functions.
-    When Query functions get descriptor information of array
-    from XMP compiler, they must set a {\tt xmp\_desc\_of} as an
-    input argument.
+%    A {\tt xmp\_desc\_of} is an input argument of query functions.
+%    When Query functions get descriptor information of array
+%    from XMP compiler, they must set a {\tt xmp\_desc\_of} as an
+%    input argument.
 
-\subsubsection*{Type}
+{\tt xmp\_desc\_of} returns the descriptor or is evaluated to the
+pointer to the descriptor of a global array, a template, or a node
+array. The resulting descriptor can be used as an input argument of some
+inquiry procedures.
 
-    Formally, a name of type of {\tt xmp\_desc\_of} is {\tt xmp\_desc\_t}.
-    Specification of {\tt xmp\_desc\_t} depends on the XMP compiler implementation.
+The type of the descriptor, {\tt xmp\_desc\_t}, is
+implementation-dependent, and defined in the {\tt XMP} standard module in
+{\XMPF} or the {\tt xmp.h} heder file in {\XMPC}.
 
 \subsubsection*{Arguments}
 
-   The argument of {\tt xmp\_desc\_of} is an {\it array-name}, a {\it template-name}, or a {\it nodes-name}.
-   In the case of {\it array-name}, return value d is a pointer to
-   be able to access array descriptor information.
-   In the case of {\it template-name}, return value d is a pointer to
-   be able to access template descriptor information.
-   In the case of {\it nodes-name}, return value d is a pointer to
-   be able to access node descriptor information.
-   If the argument of {\tt xmp\_desc\_of} is a local data, it is unchanged.
+The argument or operand {\tt xmp\_entity} is the name of either a golbal
+array, a template or a node array.
+
+%   The argument of {\tt xmp\_desc\_of} is an {\it array-name}, a {\it template-name}, or a {\it nodes-name}.
+%   In the case of {\it array-name}, return value d is a pointer to
+%   be able to access array descriptor information.
+%   In the case of {\it template-name}, return value d is a pointer to
+%   be able to access template descriptor information.
+%   In the case of {\it nodes-name}, return value d is a pointer to
+%   be able to access node descriptor information.
+%   If the argument of {\tt xmp\_desc\_of} is a local data, it is unchanged.
 
 
 \subsection{\tt xmp\_all\_node\_num}
@@ -143,8 +148,8 @@ none.
 
 \subsubsection*{Synopsis}
 
-     The {\tt xmp\_num\_nodes} routine returns the number of nodes 
-     in the executing node set.
+     The {\tt xmp\_num\_nodes} routine returns the number of the
+     executing nodes.
 
 \subsubsection*{Arguments}
 

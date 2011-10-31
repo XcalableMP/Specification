@@ -196,8 +196,9 @@ a template.
 \verb|(|{\it dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)| {\tt onto} {\it nodes-name} \\
 & \\
 \verb![C]! & \verb|#pragma xmp| {\tt distribute} {\it template-name} 
-\verb|(|{\it dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)| \\
-& \hspace{3cm}{\tt onto} {\it nodes-name} \\
+\verb|(|{\it dist-format} {\openb}, {\it
+     dist-format}{\closeb}... \verb|)| {\bsquare} \\
+& \hspace{3cm}{\bsquare} {\tt onto} {\it nodes-name} \\
 \end{tabular}
 \vspace{0.3cm}
 
@@ -387,15 +388,16 @@ mapped in the same way as a specified template.
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt align} {\it array-name} \verb|(| {\it
- align-source} {\openb}, {\it align-source}{\closeb}... \verb|)| \\
- & \hspace{3cm}{\tt with} {\it template-name}
+ align-source} {\openb}, {\it align-source}{\closeb}... \verb|)|
+ {\bsquare} \\
+ & \hspace{3cm}{\bsquare} {\tt with} {\it template-name}
 \verb|(|{\it align-subscript} {\openb}, {\it
      align-subscript}{\closeb}... \verb|)| \\ 
  & \\
 \verb![C]! & \verb|#pragma xmp| {\tt align} {\it array-name} 
 {\tt [}{\it align-source}{\tt ]} {\openb}{\tt [}{\it align-source}{\tt
-     ]}{\closeb}... \\
- & \hspace{3cm}{\tt with} {\it template-name}
+     ]}{\closeb}... {\bsquare} \\
+ & \hspace{3cm}{\bsquare} {\tt with} {\it template-name}
 \verb|(|{\it align-subscript} {\openb}, {\it
      align-subscript}{\closeb}... \verb|)| \\
 \end{tabular}
@@ -702,15 +704,18 @@ template.
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt template\_fix} {\openb}\verb|(| {\it
- dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)|{\closeb}\\
- & \hspace{3cm}{\it template-name} {\openb}\verb|(|{\it template-spec}
- {\openb}, {\it template-spec}{\closeb}... \verb|)|{\closeb} \\
+ dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)|{\closeb}
+ {\bsquare} \\
+ & \hspace{3cm}{\bsquare} {\it template-name} {\openb}\verb|(|{\it
+     template-spec} {\openb}, {\it
+     template-spec}{\closeb}... \verb|)|{\closeb} \\
 & \\
 \verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} {\openb}\verb|(|
      {\it dist-format} {\openb}, {\it
-     dist-format}{\closeb}...\verb|)|{\closeb}\\
- & \hspace{3cm}{\it template-name} {\openb}\verb|(|{\it template-spec}
-     {\openb}, {\it template-spec}{\closeb}... \verb|)|{\closeb} \\
+     dist-format}{\closeb}...\verb|)|{\closeb} {\bsquare} \\
+ & \hspace{3cm}{\bsquare} {\it template-name} {\openb}\verb|(|{\it
+     template-spec} {\openb}, {\it
+     template-spec}{\closeb}... \verb|)|{\closeb} \\
 \end{tabular}
 \vspace{0.3cm}
 

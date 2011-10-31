@@ -12,14 +12,14 @@ reflection source to the corresponding shadow object.
 
 \begin{tabular}{ll}
  \verb![F]! & \verb|!$xmp| {\tt reflect} \verb|(| {\it array-name}
- {\openb}, {\it array-name}{\closeb}... \verb|)|\\
- &\hspace{3cm} {\openb}{\tt width (} {\it reflect-width} {\openb}, {\it
-     reflect-width}{\closeb}... {\tt )}{\closeb}
+ {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
+ &\hspace{3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+     {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
      {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 \verb![C]! & \verb|#pragma xmp| {\tt reflect} \verb|(| {\it array-name}
-     {\openb}, {\it array-name}{\closeb}... \verb|)|\\
- &\hspace{3cm} {\openb}{\tt width (} {\it reflect-width} {\openb}, {\it
-     reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
+ &\hspace{3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+     {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
      {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 \end{tabular}
 
@@ -454,8 +454,9 @@ operation among nodes.
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt reduction (} {\it reduction-kind} {\it
-  :} {\it variable} {\openb}, {\it variable} {\closeb}... {\tt )}\\
- & \hspace{6cm} {\openb}{\tt on} {\it node-ref} $\vert$ {\it
+  :} {\it variable} {\openb}, {\it variable} {\closeb}... {\tt )}
+ {\bsquare} \\
+ & \hspace{6cm} {\bsquare} {\openb}{\tt on} {\it node-ref} $\vert$ {\it
      template-ref}{\closeb} {\openb}{\tt async (} {\it async-id} {\tt
      )}{\closeb} \\
 \end{tabular}
@@ -484,8 +485,9 @@ where {\it reduction-kind} is one of:
 \begin{tabular}{ll}
  \hspace{-\parindent}
  \verb![C]! & \verb|#pragma xmp| {\tt reduction (} {\it reduction-kind} {\it
-  :} {\it variable} {\openb}, {\it variable} {\closeb}... {\tt )}\\
- & \hspace{6cm} {\openb}{\tt on} {\it node-ref} $\vert$ {\it
+  :} {\it variable} {\openb}, {\it variable} {\closeb}... {\tt )}
+ {\bsquare} \\
+ & \hspace{6cm} {\bsquare} {\openb}{\tt on} {\it node-ref} $\vert$ {\it
      template-ref}{\closeb} {\openb}{\tt async (} {\it async-id} {\tt
      )}{\closeb} \\
 \end{tabular}
@@ -712,15 +714,17 @@ from a specified node.
 \begin{tabular}{ll}
  \verb![F]! & \verb|!$xmp| {\tt bcast} \verb|(| {\it variable} 
  {\openb}, {\it variable}{\closeb}... \verb|)|
- {\openb}{\tt from} {\it nodes-ref} $\vert$ {\it template-ref}{\closeb}\\
- & \hspace{6cm} {\openb}{\tt on} {\it nodes-ref}{\closeb} $\vert$ {\it
-     template-ref}{\closeb}
- {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
+ {\openb}{\tt from} {\it nodes-ref} $\vert$ {\it template-ref}{\closeb}
+ {\bsquare} \\
+ & \hspace{5cm} {\bsquare} {\openb}{\tt on} {\it nodes-ref}{\closeb}
+     $\vert$ {\it template-ref}{\closeb}
+     {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 
  \verb![C]! & \verb|#pragma xmp| {\tt bcast} \verb|(| {\it variable} 
  {\openb}, {\it variable}{\closeb}... \verb|)|
- {\openb}{\tt from} {\it nodes-ref}  $\vert$ {\it template-ref}{\closeb}\\
- & \hspace{6cm} {\openb}{\tt on} {\it nodes-ref} $\vert$ {\it
+ {\openb}{\tt from} {\it nodes-ref}  $\vert$ {\it
+     template-ref}{\closeb} {\bsquare} \\
+ & \hspace{5cm} {\bsquare} {\openb}{\tt on} {\it nodes-ref} $\vert$ {\it
      template-ref}{\closeb}
  {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 

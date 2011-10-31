@@ -11,6 +11,7 @@ directives.
 {\it xxx...} & If the line is followed by ``...'', then xxx can be
 repeated. \\
 {\it [xxx]} & {\it xxx} is optional. \\
+{\bsquare} & The syntax rule continues. \\
 \verb![F]! & The following lines are effective only in {\XMPF}. \\
 \verb![C]! & The following lines are effective only in {\XMPC}. \\
 \end{tabular}
@@ -65,12 +66,13 @@ language.
 For example, in {\XMPF}, a node array declared by a {\tt nodes}
 directive is visible only within either the program unit, the
 derived-type declaration or the interface body that immediately
-surrounds the directives unless it is use or host associated,
+surrounds the directives, unless overridden in the inner blocks or use
+or host associated,
 %
 and, in {\XMPC}, a node array declared by a {\tt nodes} directive is
 visible only in the range from the declaring point to the end of 
-the block when placed within a function, or of the file when
-placed outside any functions,
+the block when placed within a block, or of the file when
+placed outside any blocks, unless overridden in the inner blocks.
 %
 
 
@@ -168,8 +170,8 @@ declaration statements in Fortran using the ``{\tt ::}'' punctuation.
  & {\tt distribute} \verb|(|{\it dist-format} {\openb}, {\it
      dist-format}{\closeb}... \verb|)| {\tt onto} {\it nodes-name} \\
  & {\tt align} \verb|(| {\it align-source} {\openb}, {\it
-     align-source}{\closeb}... \verb|)| \\
- & \hspace{4cm}{\tt with} {\it template-name} \verb|(|{\it
+     align-source}{\closeb}... \verb|)| {\bsquare} \\
+ & \hspace{4cm}{\bsquare} {\tt with} {\it template-name} \verb|(|{\it
      align-subscript} {\openb}, {\it
      align-subscript}{\closeb}... \verb|)| \\
  & {\tt shadow} \verb|(| {\it shadow-width} {\openb},

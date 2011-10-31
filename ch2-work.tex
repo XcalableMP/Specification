@@ -170,9 +170,8 @@ one at the exit.
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{tasks}} construct is used to instruct nodes in
-the executing node set to execute the multiple tasks it surrounds in
-arbitrary order.
+The {\tt \Directive{tasks}} construct is used to instruct the executing
+nodes to execute the multiple tasks it surrounds in arbitrary order.
 
 \subsubsection*{Syntax}
 \Syntax{tasks}
@@ -335,16 +334,16 @@ in parallel.
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt loop} {\openb} \verb|(| {\it loop-index}
- {\openb}, {\it loop-index}{\closeb}... \verb|)| {\closeb} \\
- & \hspace{6cm}{\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\}
-     {\openb} {\it reduction-clause} {\closeb}... \\
+ {\openb}, {\it loop-index}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
+ & \hspace{5cm}{\bsquare} {\tt on} \{{\it nodes-ref} $\vert$ {\it
+     template-ref}\} {\openb} {\it reduction-clause} {\closeb}... \\
  & {\it do-loops} \\
  & \\
 \verb![C]! & \verb|#pragma xmp| {\tt loop} {\openb} \verb|(| {\it
      loop-index} {\openb}, {\it loop-index}{\closeb}... \verb|)|
-     {\closeb} \\
- & \hspace{6cm}{\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\}
-     {\openb} {\it reduction-clause} {\closeb}... \\
+     {\closeb} {\bsquare} \\
+ & \hspace{5cm}{\bsquare} {\tt on} \{{\it nodes-ref} $\vert$ {\it
+     template-ref}\} {\openb} {\it reduction-clause} {\closeb}... \\
  & {\it for-loops} \\
 \end{tabular}
 
