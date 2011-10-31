@@ -5,7 +5,7 @@ This specification defines various procedures for system inquiry,
 synchronization, computations, etc. The procedures are provided as
 intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
 
-\section{Miscellaneous Intrinsic Procedures}
+\section{System Inquiry Procedures}
 
 \begin{itemize}
  \item {\tt xmp\_desc\_of}
@@ -15,14 +15,10 @@ intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
  \item {\tt xmp\_num\_nodes}
 % \item {\tt xmp\_mpi\_comm}
  \item {\tt xmp\_wtime}
- \item {\tt xmp\_test\_async}
- \item {\tt xmp\_gtol}
- \item \verb![C]! {\tt xmp\_malloc}
+ \item {\tt xmp\_wtick}
 \end{itemize}
 
-\vspace{0.3cm}
-
-\subsection{\tt xmp\_desc\_of(XMP object)}
+\subsection{\tt xmp\_desc\_of}
 
 \subsubsection*{Format}
 
@@ -31,13 +27,15 @@ intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
 \verb![F]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of({\it array-name} $\vert$ {\it template-name} 
 $\vert$ {\it nodes-name})}\\
 
-\verb![C]!&  {\tt xmp\_desc\_t}& {\tt *d = xmp\_desc\_of({\it array-name} $\vert$ {\it template-name} 
-$\vert$ {\it nodes-name});}
+\verb![C]!&  {\tt xmp\_desc\_t*}& {\tt xmp\_desc\_of({\it array-name} $\vert$ {\it template-name} 
+$\vert$ {\it nodes-name})}
 
 \end{tabular}
 
-             Note that, in {\XMPF}, {\tt xmp\_desc\_of} is a built-in function,
-             in {\XMPC}, {\tt xmp\_desc\_of} is an operator.
+\vspace{0.3cm}
+
+Note that {\tt xmp\_desc\_of} is, in {\XMPF}, an intrinsic function and,
+in {\XMPC}, a built-in operator.
 
 \subsubsection*{Synopsis}
 
@@ -62,7 +60,6 @@ $\vert$ {\it nodes-name});}
    be able to access node descriptor information.
    If the argument of {\tt xmp\_desc\_of} is a local data, it is unchanged.
 
-\vspace{0.3cm}
 
 \subsection{\tt xmp\_all\_node\_num}
 
@@ -72,18 +69,20 @@ $\vert$ {\it nodes-name});}
 
 \verb![F]!&  {\tt integer function}& {\tt xmp\_all\_num\_nodes()}\\
 
-\verb![C]!&  {\tt int}& {\tt xmp\_all\_num\_nodes(void);}
+\verb![C]!&  {\tt int}& {\tt xmp\_all\_num\_nodes(void)}
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
-     The {\tt xmp\_all\_node\_num} routine returns the current node number in all available nodes.
 
+     The {\tt xmp\_node\_num} routine returns the node number,
+     within the entire node set, of the node that calls {\tt
+     xmp\_all\_node\_num}.
 
 \subsubsection*{Arguments}
+
     none.
 
-\vspace{0.3cm}
 
 \subsection{\tt xmp\_all\_num\_nodes}
 
@@ -93,18 +92,19 @@ $\vert$ {\it nodes-name});}
 
 \verb![F]!&  {\tt integer function}& {\tt xmp\_all\_num\_nodes()}\\
 
-\verb![C]!&  {\tt int}& {\tt xmp\_all\_num\_nodes(void);}
+\verb![C]!&  {\tt int}& {\tt xmp\_all\_num\_nodes(void)}
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
-     The {\tt xmp\_all\_num\_nodes} routine returns the number of all available nodes.
+
+     The {\tt xmp\_all\_num\_nodes} routine returns the number of nodes
+     in the entire node set.
 
 \subsubsection*{Arguments}
+
     none.
 
-
-\vspace{0.3cm}
 
 \subsection{\tt xmp\_node\_num}
 
@@ -112,21 +112,22 @@ $\vert$ {\it nodes-name});}
 
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt integer function}& {\tt xmp\_all\_num\_nodes({\it nodes-name})}\\
+\verb![F]!&  {\tt integer function}& {\tt xmp\_all\_num\_nodes()}\\
 
-\verb![C]!&  {\tt int}& {\tt xmp\_node\_num({\it nodes-name});}
+\verb![C]!&  {\tt int}& {\tt xmp\_node\_num(void)}
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
-     The {\tt xmp\_node\_num} routine returns the current node number 
-     in the executing node set indicated by {\it nodes-name}.
+
+     The {\tt xmp\_node\_num} routine returns the node number,
+     within the current executing node set, of the node that calls {\tt
+     xmp\_node\_num}.
 
 \subsubsection*{Arguments}
-     The argument of {\tt xmp\_node\_num} is a {\it nodes-name} of the executing node set.
 
+none.
 
-\vspace{0.3cm}
 
 \subsection{\tt xmp\_num\_nodes}
 
@@ -134,21 +135,20 @@ $\vert$ {\it nodes-name});}
 
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt integer function}& {\tt xmp\_num\_nodes({\it nodes-name})}\\
+\verb![F]!&  {\tt integer function}& {\tt xmp\_num\_nodes()}\\
 
-\verb![C]!&  {\tt int}& {\tt xmp\_num\_nodes({\it nodes-name});}
+\verb![C]!&  {\tt int}& {\tt xmp\_num\_nodes(void)}
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
+
      The {\tt xmp\_num\_nodes} routine returns the number of nodes 
-     in the executing node set indicated by {\it nodes-name}.
+     in the executing node set.
 
 \subsubsection*{Arguments}
-    The argument of {\tt xmp\_num\_nodes} is a {\it nodes-name} of the executing node set.
 
-
-\vspace{0.3cm}
+none.
 
 %\subsection{\tt xmp\_mpi\_comm}
 %
@@ -158,7 +158,7 @@ $\vert$ {\it nodes-name});}
 %
 %\verb![F]!&  {\tt integer function}& {\tt xmp\_mpi\_comm({\it nodes-name})}\\
 %
-%\verb![C]!&  {\tt int}& {\tt xmp\_mpi\_comm({\it nodes-name});}
+%\verb![C]!&  {\tt int}& {\tt xmp\_mpi\_comm({\it nodes-name})}
 %
 %\end{tabular}
 %
@@ -171,7 +171,6 @@ $\vert$ {\it nodes-name});}
 %    The argument of {\tt xmp\_mpi\_comm} is a {\it nodes-name} of the executing node set.
 %
 %
-%\vspace{0.3cm}
 
 \subsection{\tt xmp\_wtime}
 
@@ -181,7 +180,7 @@ $\vert$ {\it nodes-name});}
 
 \verb![F]!&  {\tt double precision function}& {\tt xmp\_wtime()}\\
 
-\verb![C]!&  {\tt double}& {\tt xmp\_wtime(void);}
+\verb![C]!&  {\tt double}& {\tt xmp\_wtime(void)}
 
 \end{tabular}
 
@@ -195,8 +194,6 @@ $\vert$ {\it nodes-name});}
     none.
 
 
-\vspace{0.3cm}
-
 \subsection{\tt xmp\_wtick}
 
 \subsubsection*{Format}
@@ -205,7 +202,7 @@ $\vert$ {\it nodes-name});}
 
 \verb![F]!&  {\tt double precision function}& {\tt xmp\_wtick()}\\
 
-\verb![C]!&  {\tt double}& {\tt xmp\_wtick(void);}
+\verb![C]!&  {\tt double}& {\tt xmp\_wtick(void)}
 
 \end{tabular}
 
@@ -218,8 +215,6 @@ $\vert$ {\it nodes-name});}
 \subsubsection*{Arguments}
     none.
 
-
-\vspace{0.3cm}
 
 %\subsection{\tt xmp\_barrier}
 %
@@ -242,7 +237,45 @@ $\vert$ {\it nodes-name});}
 %\subsubsection*{Arguments}
 %    The argument of {\tt xmp\_barrier} is a {\it nodes-name} of the executing node set.
 %
-%\vspace{0.3cm}
+
+%\section{Computational Intrinsic Procedures}
+%
+%\subsection{Fortran}
+%
+%\begin{itemize}
+% \item {\tt x = xmp\_scatter(a, idx1, idx2, ...)}
+% \item {\tt x = xmp\_gather(a, idx1, idx2, ...)}
+% \item {\tt v = xmp\_pack(a, mask)}
+% \item {\tt a = xmp\_unpack(v, mask)}
+% \item {\tt x = xmp\_sort\_up(a)}
+% \item {\tt x = xmp\_sort\_down(a)}
+% \item {\tt x = xmp\_cshift(a, shift, dim)}
+% \item {\tt x = xmp\_eoshift(a, shift, b, dim)}
+% \item {\tt m = xmp\_transpose(m)}
+%\end{itemize}
+%
+%
+%\subsection{C}
+%
+%
+%\begin{itemize}
+% \item {\tt x = xmp\_scatter(desc\_a, idx1, idx2, ...)}
+% \item {\tt x = xmp\_gather(desc\_a, idx1, idx2, ...)}
+% \item {\tt v = xmp\_pack(desc\_a, mask)}
+% \item {\tt a = xmp\_unpack(desc\_v, mask)}
+% \item {\tt x = xmp\_sort\_up(desc\_a)}
+% \item {\tt x = xmp\_sort\_down(desc\_a)}
+% \item {\tt x = xmp\_cshift(desc\_a, shift, dim)}
+% \item {\tt x = xmp\_eoshift(desc\_a, shift, b, dim)}
+% \item {\tt m = xmp\_transpose(desc\_m)}
+%\end{itemize}
+
+
+\section{Synchronization Procedures}
+
+\begin{itemize}
+ \item {\tt xmp\_test\_async}
+\end{itemize}
 
 \subsection{\tt xmp\_test\_async}
 
@@ -268,7 +301,13 @@ The argument {\tt async\_id} is an integer expression that specifies an
 asynchronous communication initiated by a global communication construct
 with the {\tt async} clause.
 
-\vspace{0.3cm}
+
+\section{Miscellaneous Procedures}
+
+\begin{itemize}
+ \item {\tt xmp\_gtol}
+ \item \verb![C]! {\tt xmp\_malloc}
+\end{itemize}
 
 \subsection{\tt xmp\_gtol}
 
@@ -331,36 +370,3 @@ each node.
        one-dimensional global array to be allocated.
  \item {\tt size} is the size of the global array to be allocated.
 \end{itemize}
-
-
-%\section{Computational Intrinsic Procedures}
-%
-%\subsection{Fortran}
-%
-%\begin{itemize}
-% \item {\tt x = xmp\_scatter(a, idx1, idx2, ...)}
-% \item {\tt x = xmp\_gather(a, idx1, idx2, ...)}
-% \item {\tt v = xmp\_pack(a, mask)}
-% \item {\tt a = xmp\_unpack(v, mask)}
-% \item {\tt x = xmp\_sort\_up(a)}
-% \item {\tt x = xmp\_sort\_down(a)}
-% \item {\tt x = xmp\_cshift(a, shift, dim)}
-% \item {\tt x = xmp\_eoshift(a, shift, b, dim)}
-% \item {\tt m = xmp\_transpose(m)}
-%\end{itemize}
-%
-%
-%\subsection{C}
-%
-%
-%\begin{itemize}
-% \item {\tt x = xmp\_scatter(desc\_a, idx1, idx2, ...)}
-% \item {\tt x = xmp\_gather(desc\_a, idx1, idx2, ...)}
-% \item {\tt v = xmp\_pack(desc\_a, mask)}
-% \item {\tt a = xmp\_unpack(desc\_v, mask)}
-% \item {\tt x = xmp\_sort\_up(desc\_a)}
-% \item {\tt x = xmp\_sort\_down(desc\_a)}
-% \item {\tt x = xmp\_cshift(desc\_a, shift, dim)}
-% \item {\tt x = xmp\_eoshift(desc\_a, shift, b, dim)}
-% \item {\tt m = xmp\_transpose(desc\_m)}
-%\end{itemize}
