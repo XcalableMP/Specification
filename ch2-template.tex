@@ -282,9 +282,11 @@ is defined by {\tt template\_fix} directives at runtime.
 \item Every element of the array {\it int-array} in parentheses
       following {\tt gblock} must have a value of non-negative integer.
 \item The sum of the elements of the array {\it int-array} in 
-      parentheses following {\tt gblock} must be equal to or greater
-      than the size of the corresponding dimension of the template
-      specified by {\it template-name}.
+      parentheses following {\tt gblock} must be equal to the size of
+      the corresponding dimension of the template specified by {\it
+      template-name}.
+\item \verb![C]! A {\tt distribute} directive for a template must
+      precede any its reference in the executable code in the block.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -495,6 +497,8 @@ align-subscript}'s are interpreted as follows:
       colons as the sequence of {\it align-subscript}'s contains.
 \item \verb![F]! The array specified by {\it array-name} must not appear
       as an {\it equivalence-object} in an {\tt equivalence} statement.
+\item \verb![C]! An {\tt align} directive for an array must
+      precede any its appearance in the executable code in the block.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -650,6 +654,8 @@ element as it. The corresponding data object is referred to as the
       integer.
 \item The number of {\it shadow-width} must be equal to the number of
       dimensions (or rank) of the array specified by {\it array-name}.
+\item \verb![C]! A {\tt shadow} directive for an array must
+      precede any its appearance in the executable code in the block.
 \end{itemize}
 
 \subsubsection*{Example}

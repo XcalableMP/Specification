@@ -784,32 +784,35 @@ communications specified by {\it async-id} are complete.
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt wait\_async ( {\it async-id} {\openb},
- {\it async-id} {\closeb}... )} \\
+ {\it async-id} {\closeb}... )} {\openb}{\tt on} {\it nodes-ref} $\vert$
+ {\it template-ref}{\closeb} \\
 \verb![C]! & \verb|#pragma xmp| {\tt wait\_async ( {\it async-id} {\openb},
- {\it async-id} {\closeb}... )} \\
+ {\it async-id} {\closeb}... )} {\openb}{\tt on} {\it nodes-ref} $\vert$
+ {\it template-ref}{\closeb}\\
 \end{tabular}
 
 \subsubsection*{Description}
 
 The {\tt \Directive{wait\_async}} construct blocks and therefore
-statements after it are not executed until all of the asynchronous
-communications specified by each of {\it async-id} are complete. 
+statements following it are not executed until all of the asynchronous
+communications that are specified by {\it async-id}'s and issued on the
+node set specified by the {\tt on} clause are complete. 
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
  \item {\it async-id} must be an expression of type default integer, in
        {\XMPF}, or type {\tt int}, in {\XMPC}.
-\item {\it async-id} must be associated with an asynchronous
-      communication by the {\tt async} clause of a communication
-      construct.
-\item The {\tt wait\_async} construct is global, which means that it must
-      be executed by all of the executing nodes, and each local variable
-      referenced in the construct must have the same value among all of
-      the executing nodes.
-\item The executing node set of the {\tt wait\_async} construct must be
-      the same as those of the global constructs that initiate the
-      asynchronous communications specified by {\it async-id}.
+ \item {\it async-id} must be associated with an asynchronous
+       communication by the {\tt async} clause of a communication
+       construct.
+ \item The {\tt wait\_async} construct is global, which means that it must
+       be executed by all of the executing nodes, and each local variable
+       referenced in the construct must have the same value among all of
+       the executing nodes.
+ \item The node set specified by the {\tt on} clause must be the same as
+       those of the global constructs that initiate the asynchronous
+       communications specified by {\it async-id}.
 %\item Every communication specified by each {\it async-id} must be
 %      executed on the same executing node set.
 \end{itemize}
@@ -830,7 +833,16 @@ is performed asynchronously, that is, initiated but not completed,
 and therefore statements following it may be executed before the
 communication is complete.
 
+%\subsubsection*{Restrictions}
+%
+%\begin{itemize}
+% \item A node must not issue at runtime an asynchronous communication
+%       with an {\tt async-id} until every other one with the same {\tt
+%       async-id} is complete.
+%\end{itemize}
+
 \subsubsection*{Example}
+\Example{async}
 \Example{wait\_async}
 
 \begin{XFexample}
@@ -840,9 +852,9 @@ communication is complete.
       S2
 \end{XFexample}
 
-The {\tt reflect} construct on the first line matches
-the {\tt wait} construct on the third line because both of their {\it
-async\_id} evaluate to 1.
+The {\tt reflect} construct on the first line matches the {\tt wait}
+construct on the third line because both of their {\it async\_id}
+evaluate to 1.
 %
 These constructs ensure that statements in {\tt S1} can be executed
 before the {\tt reflect} communication is complete and no statement in

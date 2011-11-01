@@ -317,8 +317,8 @@ argument is treated by the {\XMP} compiler:
 \begin{itemize}
  \item as if it were the {\it global-data descriptor} of the actual array, 
        which is an internal data structure managed by the {\XMP} runtime
-       system to hold information on a global data, if the dummy is a
-       global data; or
+       system to hold information on a global data (see \ref{subsec:
+       xmp_desc_of}), if the dummy is a global data; or
  \item as it is an array representing the local section of the actual
        array, which is to be processed by the backend Fortran compiler
        in the same manner as usual data, if the dummy is a local data.

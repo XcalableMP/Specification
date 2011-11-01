@@ -4,8 +4,9 @@
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{local\_alias}} directive declares a local data
-object as an alias to the local section of a distributed array.
+In {\XMPF}, the {\tt \Directive{local\_alias}} directive declares a
+local data object as an alias to the local section of a distributed
+array.
 
 \subsubsection*{Syntax}
 \Syntax{local\_alias}
@@ -13,8 +14,8 @@ object as an alias to the local section of a distributed array.
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt local\_alias} {\it local-array-name}
 \verb|=>| {\it global-array-name} \\
-\verb![C]! & \verb|#pragma xmp| {\tt local\_alias} {\it local-array-name}
-\verb|=>| {\it global-array-name} \\
+%\verb![C]! & \verb|#pragma xmp| {\tt local\_alias} {\it local-array-name}
+%\verb|=>| {\it global-array-name} \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -45,12 +46,12 @@ An array specified by {\it local-array-name} may be a coarray.
  \item The data type and rank of the array specified by {\it
        local-array-name} must be the same as those of the array
        specified by {\it global-array-name}.
- \item \verb![F]! The array specified by {\it local-array-name} must be
-       a deferred-shape array, which means that it must be declared with
+ \item The array specified by {\it local-array-name} must be a
+       deferred-shape array, which means that it must be declared with 
        a {\it deferred-shape-spec-list} in a type declaration statement
        or a {\tt DIMENSION} statement.
- \item \verb![C]! The array specified by {\it local-array-name} must be
-       a pointer.
+% \item \verb![C]! The array specified by {\it local-array-name} must be
+%       a pointer.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -589,8 +590,8 @@ Such allocation is done through the following steps.
        pointer on each node.
 \end{enumerate}
 %
-The specification of {\tt xmp\_malloc} is described in Chapter
-\ref{chap:Intrinsic and library procedures}.
+The specification of {\tt xmp\_malloc} is described in section
+\ref{subsec: xmp_malloc}.
 
 \subsection*{Example}
 
@@ -599,8 +600,7 @@ template {\tt t} in line 6. {\tt t} is initially undefined and fixed by
 the {\tt template\_fix} directive in line 10. The storage for a global
 data, that is, each of its local section is allocated with {\tt
 xmp\_malloc} and {\tt pa} is set to point it on each node in line 12. For
-details of the {\tt xmp\_desc\_of} library procedure, refer to
-Chapter \ref{chap:Intrinsic and library procedures}.
+details of the operator {\tt xmp\_desc\_of}, refer to the next section.
 
 \begin{XCexample}
 #pragma nodes p(NP)
@@ -633,7 +633,7 @@ as node arrays, templates and global arrays is their {\it
 some inquiry procedures.
 
 For the {\tt xmp\_desc\_of} intrinsic function in {\XMPF}, refer to
-Chapter \ref{chap:Intrinsic and library procedures}.
+section \ref{subsec: xmp_desc_of}.
 
 %For details of the {\tt xmp\_desc\_of} library procedure, refer to
 %Chapter \ref{chap:Intrinsic and library procedures}.
