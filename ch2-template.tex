@@ -130,6 +130,7 @@ similar to ``{\tt *}'' in a node reference.
 %the subscript is the same as that in {\Fort}. 
 
 \subsubsection*{Examples}
+\Example{template}
 
 Assume that {\tt t} is a template.
 
@@ -172,6 +173,7 @@ Assume that {\tt t} is a template.
 
 \Example{barrier}
 \Example{reduction}
+\Example{bcast}
 \begin{tabular}{l}
 \verb|!$xmp barrier on t(1:n)| \\
 \verb|!$xmp reduction (+:a) on t(*,:)| \\
@@ -663,6 +665,11 @@ element as it. The corresponding data object is referred to as the
 
 \begin{minipage}{0.5\hsize}
 \begin{center}
+
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
 \begin{XFexample}
 !$xmp nodes p(4,4)
 !$xmp template t(64,64)

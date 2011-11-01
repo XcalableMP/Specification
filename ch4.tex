@@ -128,7 +128,7 @@ mappings (including their shadow attributes) must be identical.
 
 
 \subsubsection*{Examples}
-\Example{procedure}
+\index{Example!{procedure interface}}
 
 \begin{description}
 
@@ -143,6 +143,11 @@ mappings (including their shadow attributes) must be identical.
 	   section of {\tt x} starts from the received address (Figure
 	   \ref{fig5.1}).
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{shadow}
 \begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
@@ -181,6 +186,11 @@ mappings (including their shadow attributes) must be identical.
 	   {\tt f\_sub2} receives it and initializes {\tt x} with the
 	   storage starting from it (Figure \ref{fig5.2}).
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{shadow}
 \begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
@@ -214,6 +224,13 @@ mappings (including their shadow attributes) must be identical.
 	   Hence, {\tt f\_sub2} is invoked only by {\tt p(1)} (Figure
 	   \ref{fig5.25}).
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{shadow}
+\Example{task}
+\Example{end task}
 \begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
@@ -253,6 +270,13 @@ mappings (including their shadow attributes) must be identical.
 	   Hence, {\tt f\_sub2} is invoked only by {\tt p(1)}(Figure
 	   \ref{fig5.3}).
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{shadow}
+\Example{task}
+\Example{end task}
 \begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
@@ -332,7 +356,7 @@ and their mappings are not identical, the {\XMP} runtime system may
 detect and report the error.
 
 \subsubsection*{Examples}
-\Example{procedure}
+\index{Example!{procedure interface}}
 
 \begin{description}
 
@@ -352,6 +376,11 @@ detect and report the error.
 	   information extracted from the descriptor received (Figure
 	   \ref{fig5.5}).
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{shadow}
 \begin{XFexample}
       subroutine xmp_sub1
 
@@ -409,6 +438,11 @@ detect and report the error.
 	   backend Fortran compiler in the same manner as usual data 
 	   (Figure \ref{fig5.6}).
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{shadow}
 \begin{XFexample}
       subroutine xmp_sub1
 
@@ -479,7 +513,7 @@ argument, their mappings (including their shadow attributes) must be
 identical.
 
 \subsubsection*{Examples}
-\Example{procedure}
+%\index{Example!{procedure interface}}
 
 \begin{description}
 
@@ -493,6 +527,11 @@ identical.
 	   of its local section starts from the address held by the
 	   received pointer (Figure \ref{fig5.7}).
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{shadow}
 \begin{XCexample}
 void xmp_func1()
 {
@@ -531,6 +570,11 @@ void xmp_func2(float x[100])
 	   The local dummy argument {\tt x} on each node starts from the 
 	   address held by the received pointer (Figure \ref{fig5.8}).
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{shadow}
 \begin{XCexample}
 void xmp_func1()
 {
@@ -566,6 +610,12 @@ void c_func2(float x[27])
 	   Hence, {\tt c\_func2} is invoked only by {\tt p(1)} (Figure
 	   \ref{fig5.9}).
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{shadow}
+\Example{task}
 \begin{XCexample}
 void xmp_func1()
 {

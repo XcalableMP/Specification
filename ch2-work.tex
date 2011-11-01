@@ -75,6 +75,9 @@ one at the exit.
 
 \hspace{\hsize}
 
+\Example{nodes}
+\Example{teamplate}
+\Example{distribute}
 \begin{minipage}{0.44\hsize}
 \begin{center}
 \begin{XFexample}
@@ -121,6 +124,10 @@ one at the exit.
 
 \hspace{\hsize}
 
+\Example{nodes}
+\Example{teamplate}
+\Example{distribute}
+\Example{align}
 \begin{minipage}{0.44\hsize}
 \begin{center}
 \begin{XFexample}
@@ -230,6 +237,10 @@ No implicit synchronization is performed at the entry and exit of the
 
 \hspace{\hsize}
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
 \begin{minipage}{0.45\hsize}
 \begin{center}
 \begin{XFexample}
@@ -285,6 +296,10 @@ No implicit synchronization is performed at the entry and exit of the
 
 \hspace{\hsize}
 
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
 \begin{XFexample}
 !$xmp nodes p(8)
 !$xmp template t(100)
@@ -429,7 +444,7 @@ and \it reduction-spec} is:
 
 \subsubsection*{Description}
 
-A {\tt \Directive{loop}} directive is associated with a loop nest
+A {\tt loop} directive is associated with a loop nest
 consisting of one or more tightly-nested loops that follow the directive
 and distribute the execution of their iterations onto the node set
 specified by the {\tt on} clause.
@@ -507,6 +522,7 @@ Therefore, for example, the two codes below are equivalent.
 
 \vspace{1zw}
 
+\Example{loop}
 \begin{minipage}{0.45\hsize}
 \begin{center}
 \begin{XFexample}
@@ -682,6 +698,7 @@ the execution. This example is syntactically equivalent to the one
 shown below, but will be faster because iterations to be executed by
 each node can be determined before executing the loop.
 
+\Example{task}
 \begin{XFexample}
 !$xmp distribute t(block) onto p
 !$xmp align (i) with t(i) :: a, b
@@ -715,6 +732,7 @@ each node can be determined before executing the loop.
 	   syntactically equivalent to the {\tt task} construct shown
 	   below.
 
+\Example{task}
 \begin{XFexample}
 !$xmp distribute t(*,block) onto p
 !$xmp align (*,j) with t(*,j) :: a, b
@@ -769,6 +787,8 @@ clause is a subset of that specified by the outer one.
 
 \item[Example 4]
 \hspace{\hsize}
+
+\Example{nodes}
 \begin{XFexample}
 !$xmp nodes p(10,3)
       ...
@@ -790,6 +810,7 @@ constructs (below right).
 
 \vspace{0.5cm}
 
+\Example{nodes}
 \begin{minipage}{0.45\hsize}
 \begin{center}
 \begin{XFexample}
@@ -843,7 +864,7 @@ constructs (below right).
 The executing node sets of different sizes are created by
 {\tt p(lb(i):iub(i))} with different values of i for unbalanced workloads. This example is equivalent to the loop containing 
 % modified by Sakagami,H. 09/11/13
-{\tt \Directive{task}} constructs (below left) or static {\tt
+{\tt task} constructs (below left) or static {\tt
 	   tasks/task} constructs (below right).
 
 \vspace{1cm}
@@ -995,11 +1016,14 @@ assignment statements in C}).
 
 \subsubsection*{Examples}
 \Example{array}
+\Example{distribute}
+\Example{align}
 
 \begin{description}
 
 \item[Example 1]
 \hspace{\hsize}
+
 \begin{XFexample}
 !$xmp distribute t(block) onto p
 !$xmp align (i) with t(i) :: a

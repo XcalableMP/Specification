@@ -613,7 +613,7 @@ section specified by {\tt t(*,:)} is distributed.
 % modified by Sakagami,H. 09/11/13                
 In the third line, the minimum value of the variable {\tt bb} in the node 
 set specified by {\tt p(10:30)} is calculated. This example is
-equivalent to the following code using the {\tt \Directive{task}} construct.
+equivalent to the following code using the {\tt task} construct.
 
 \begin{XFexample}
 !$xmp task on p(10:30)
@@ -674,7 +674,7 @@ from its {\tt on} clause (see \ref{sub:loop_construct}) and
 the {\tt on} clause of the outer {\tt loop} construct is different from
 that of the inner one. 
 %
-However, this code can be modified with the {\tt \Directive{reduction}}
+However, this code can be modified with the {\tt reduction}
 construct as follows: 
 
 \begin{XFexample}
@@ -819,6 +819,8 @@ node set specified by the {\tt on} clause are complete.
 
 
 \subsection{{\tt async} Clause}
+\index{{\tt async} clause}
+\index{Directive!{{\tt async} clause}}
 
 \subsubsection*{Synopsis}
 

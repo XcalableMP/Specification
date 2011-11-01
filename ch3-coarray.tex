@@ -19,8 +19,8 @@ Coarrays are declared in the same manner as in Fortran 2008 for {\XMPF},
 or with the {\tt coarray} directive for {\XMPC}.
 
 \subsubsection*{Syntax}
-
 \Syntax{coarray}
+
 \begin{tabular}{ll}
 %\verb![F]! & {\it type-declaration-stmt} {\openb}{\tt on} {\it
 % nodes-ref}{\closeb}\\
@@ -84,6 +84,7 @@ declared on the same node set (see chapter \ref{chap:procedure}).
 \end{itemize}
 
 \subsubsection*{Examples}
+\Example{coarray}
 \Example{nodes}
 \Example{task}
 \Example{tasks}
@@ -226,8 +227,9 @@ manner as in Fortran 2008 in {\XMPF} or using an extended notation in
 {\XMPC}.
 
 \subsubsection*{Syntax}
+\index{coarray reference}
+\index{Syntax!{coarray reference}}
 
-\Syntax{coarray}
 \begin{tabular}{ll}
 \verb![F]! & {\it variable} {\tt [} {\it int-expr} 
 {\openb}, {\it int-expr} {\closeb}... {\tt ]}\\
@@ -256,6 +258,8 @@ node set) and copies it into the local storage for {\tt A}.
 
 \vspace{0.5cm}
 
+\Example{coarray}
+\index{Example!{coarray reference}}
 \begin{minipage}{0.45\hsize}
 \begin{center}
 \begin{Fexample}

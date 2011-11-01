@@ -55,11 +55,18 @@ An array specified by {\it local-array-name} may be a coarray.
 \end{itemize}
 
 \subsubsection*{Examples}
+\Example{local\_alias}
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{shadow}
 
 \begin{description}
 
 \item[Example 1]
 \hspace{\hsize}
+
 \begin{XFexample}
 !$xmp nodes n(4)
 !$xmp template :: t(100)
@@ -130,6 +137,7 @@ correspondence of each element of a to that of {\tt b} on {\tt n(2)}.
 
 \item[Example 3]
 \hspace{\hsize}
+\Example{template\_fix}
 \begin{XFexample}
 !$xmp nodes n(4)
 !$xmp template :: t(:)
@@ -233,7 +241,8 @@ by {\it nodes-ref}.
 \end{itemize}
 
 \subsubsection*{Example}
-\Example{post-wait}
+\Example{post}
+\Example{wait}
 
 \begin{description}
 
@@ -386,6 +395,8 @@ The array section notation is a notation to describe a part of an array,
 which is adapted in Fortran.
 
 \subsubsection*{Syntax}
+\index{array section in XMP/C}
+\index{Syntax!{array section in XMP/C}}
 
 \begin{tabular}{llll}
 \verb![C]! & {\it array-section} & {\bf is} & {\it array-name}{\tt [} \{
@@ -464,6 +475,7 @@ in square brackets.
 \end{itemize}
 
 \subsubsection*{Example}
+\index{Example!{array section in XMP/C}}
 
 Assuming that an array {\tt A} is declared by the following statement,
 
@@ -502,6 +514,8 @@ an array section.
 %Array-valued expressions can be used by array section in assignments.
 
 \subsubsection*{Syntax}
+\index{array assignment in XMP/C}
+\index{Syntax!{array assignment in XMP/C}}
 
 \begin{tabular}{ll}
 \verb![C]! & {\it array-section} {\openb}{\tt :}{\tt [}{\it int-expr}{\tt
@@ -534,6 +548,7 @@ appear as an expression in any other statements.
 \end{itemize}
 
 \subsubsection*{Examples}
+\index{Example!{array assignment in XMP/C}}
 
 An array assignment statement in the fourth line copies the elements
 {\tt B[0]} through {\tt B[4]} into the elements {\tt A[5]} through {\tt
@@ -602,6 +617,15 @@ data, that is, each of its local section is allocated with {\tt
 xmp\_malloc} and {\tt pa} is set to point it on each node in line 12. For
 details of the operator {\tt xmp\_desc\_of}, refer to the next section.
 
+\index{Example!{dynamic allocation in XMP/C}}
+\Intrinsic{xmp\_malloc}
+\Example{nodes}
+\Example{template}
+\Example{distribute}
+\Example{align}
+\Example{template\_fix}
+\Example{xmp\_malloc}
+\Example{xmp\_desc\_of}
 \begin{XCexample}
 #pragma nodes p(NP)
 #pragma xmp template t(:)
@@ -619,6 +643,8 @@ pa = (float *)xmp_malloc(xmp_desc_of(pa), N);
 
 \section{The Descriptor-of Operator}
 \label{sec:Descriptor of Global Data in C}
+\Term{descriptor-of operator}
+\index{{\tt xmp\_desc\_of}}
 
 %When distribution of Global data is defined, query function which have 
 %operator {\tt xmp\_desc\_of} as argument can return some descriptor
