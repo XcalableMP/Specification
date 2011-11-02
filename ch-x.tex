@@ -211,14 +211,19 @@ int main(void) {
    
 \section{ScaLAPACK}
 
-   This section shows a way how ScaLAPACK library routines are used in
+   ScaLAPACK is a linear algebra library for distributed-memory.
+   Communication processes of ScaLAPACK routines depend on BLACS
+   (Basic Linear Algebraic Communication Subprograms).
+   ScaLAPACK library routines processes in XcalableMP program also depend on 
+   BLACS. This section shows a way how ScaLAPACK library routines are used in
    {\XMP} programs.
 
 \begin{itemize}
+\item Execution flow of XcalableMP program using XcalableMP interface is the following:\\
+      XMP directive decraration $\to$ BLACS initialization $\to$ 
+      XMP interface ($\to$ native ScaLAPACK library routines)  $\to$ BLACS finalization
 \item The name of XcalableMP interface prefixes "{\tt XMP\_}" or "{\tt xmp\_}" 
       to ScaLAPACK library routine name.
-\item Execution flow is the following:\\
-      XMP programs $\to$ XMP interface $\to$ native ScaLAPACK library routines
 \item If arguments of subroutines have array descriptor,
       we replace the argument with "{\tt xmp\_desc\_of}".
       Then we don't need array descriptor. 
@@ -232,6 +237,169 @@ int main(void) {
 \end{itemize}
 
 \subsection*{Example}
+\begin{description}
+
+\item[Example 1]
+   A {\XMPF} interface to ScaLAPACK library is implemented 
+   using some query subroutines provided by {\XMPF}.
+   For ScaLAPACK driver routine "pdgesv", we show implementation of {\XMPF} interface.
+
+\begin{XFexample}
+      subroutine xmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
+                      b,ib,jb,xmp_desc_of(b),ictxt,info)
+      integer n,nrhs,ia,ja,ib,jb,ictxt,info
+      double precision a,b
+      xmp_desc_t xmp_desc_of(a),xmp_desc_of(b)
+      integer size_a(2),unitsize_a(2),rank_a(2),lead_dim_a,desca(9)
+      integer size_b(2),unitsize_b(2),rank_b(2),lead_dim_b,descb(9)
+      
+      call xmp_ga_size(xmp_desc_of(a),size_a)
+      call xmp_ga_template_unitsize(xmp_desc_of(a),unitsize_a)
+      call xmp_ga_first_idx_nodes_rank(xmp_desc_of(a),rank_a)
+      call xmp_la_lead_dim(xmp_desc_of(a),lead_dim_a)
+      
+      call xmp_ga_size(xmp_desc_of(b),size_b)
+      call xmp_ga_template_unitsize(xmp_desc_of(b),unitsize_b)
+      call xmp_ga_first_idx_nodes_rank(xmp_desc_of(b),rank_b)
+      call xmp_la_lead_dim(xmp_desc_of(b),lead_dim_b)
+      
+      desca(1)=1
+      desca(2)=ictxt
+      desca(3)=size_a(1)
+      desca(4)=size_a(2)
+      desca(5)=unitsize_a(1)
+      desca(6)=unitsize_b(2)
+      desca(7)=rank_a(1)
+      desca(8)=rank_a(2)
+      desca(9)=lead_dim_a
+      
+      descb(1)=1
+      descb(2)=ictxt
+      descb(3)=size_b(1)
+      descb(4)=size_b(2)
+      descb(5)=unitsize_b(1)
+      descb(6)=unitsize_b(2)
+      descb(7)=rank_b(1)
+      descb(8)=rank_b(2)
+      descb(9)=lead_dim_b
+      
+      call pdgesv(n,nhrs,a,ia,ja,desca,ipiv,b,ib,jb,descb,info)
+      
+      return
+      end
+
+\end{XFexample}
+
+Query subroutines of Example1 are the following.
+
+\subsection{\tt xmp\_ga\_size}
+
+\begin{tabular}{lll}
+
+\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_size(xmp\_desc\_of({\it array-name}), size)}\\
+          & {\tt xmp\_desc\_t} & {\tt xmp\_desc\_of({\it array-name})}\\
+          & {\tt integer} & {\tt size(dim)}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_ga\_size}\\
+          & & {\tt (xmp\_desc\_t* xmp\_desc\_of({\it array-name}), int size[])}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_ga\_size} routine returns the length of each dimension of the array.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item The argument of {\tt xmp\_desc\_of} is the name of global array.
+ \item {\tt size} is one-dimensional integer array. {\tt dim} is a number of array dimension.
+\end{itemize}
+
+
+\subsection{\tt xmp\_ga\_template\_unitsize}
+
+\begin{tabular}{lll}
+
+\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_template\_unitsize(xmp\_desc\_of
+({\it array-name}), unitsize)}\\
+          & {\tt xmp\_desc\_t} & {\tt xmp\_desc\_of({\it array-name})}\\
+          & {\tt integer} & {\tt unitsize(dim)}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_ga\_template\_unitsize}\\
+          & & {\tt (xmp\_desc\_t* xmp\_desc\_of({\it array-name}), int unitsize[])}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_ga\_template\_unitsize} routine returns the length of each dimension of 
+the template blocking factor.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item The argument of {\tt xmp\_desc\_of} is the name of global array.
+ \item {\tt unitsize} is one-dimensional integer array. {\tt dim} is a number of dimension 
+ of the template blocking factor.
+\end{itemize}
+
+
+\subsection{\tt xmp\_ga\_first\_idx\_nodes\_rank}
+
+\begin{tabular}{lll}
+
+\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_first\_idx\_nodes\_rank(xmp\_desc\_of
+({\it array-name}), rank)}\\
+          & {\tt xmp\_desc\_t} & {\tt xmp\_desc\_of({\it array-name})}\\
+          & {\tt integer} & {\tt rank(dim)}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_ga\_first\_idx\_nodes\_rank}\\
+          & & {\tt (xmp\_desc\_t* xmp\_desc\_of({\it array-name}), int rank[])}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_ga\_first\_idx\_nodes\_rank} routine returns node index over which 
+the first row and column of global array a is distributed.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item The argument of {\tt xmp\_desc\_of} is the name of global array.
+ \item {\tt rank} is one-dimensional integer array. {\tt dim} is dimension of 
+ node array associeted with the global array of {\it array-name}.
+\end{itemize}
+
+
+\subsection{\tt xmp\_la\_lead\_dim}
+
+\begin{tabular}{lll}
+
+\verb![F]!&  {\tt subroutine}& {\tt xmp\_la\_lead\_dim(xmp\_desc\_of
+({\it array-name}), lead\_dim)}\\
+          & {\tt xmp\_desc\_t} & {\tt xmp\_desc\_of({\it array-name})}\\
+          & {\tt integer} & {\tt lead\_dim}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_la\_lead\_dim}\\
+          & & {\tt (xmp\_desc\_t* xmp\_desc\_of({\it array-name}), int lead\_dim)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_la\_lead\_dim} routine returns leading dimension of local array.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item The argument of {\tt xmp\_desc\_of} is the name of global array.
+ \item {\tt lead\_dim} is integer value.
+\end{itemize}
+
+\item[Example 2]
+     This example shows a XcalableMP program using the interface of Example1. 
 
 \Example{nodes}
 \Example{template}
@@ -289,7 +457,7 @@ int main(void) {
       end do
 
       call xmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
-                      b,ib,jb,xmp_desc_of(b),ictxt,info);
+                      b,ib,jb,xmp_desc_of(b),ictxt,info)
 
       ...
 
@@ -298,3 +466,4 @@ int main(void) {
       stop
       end
 \end{XFexample}
+\end{description}
