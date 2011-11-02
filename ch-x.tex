@@ -211,6 +211,24 @@ int main(void) {
    parallel libraries, which is effective to achieve high productivity
    and performance ot {\XMP} programs.
    
+\section{General rule}
+
+   This section shows a way how existing MPI library routines are used in
+   {\XMP} programs.
+
+
+\begin{itemize}
+\item Execution flow of XcalableMP program using XcalableMP interface is the following:\\
+      XMP directive decraration $\to$ XMP interface ($\to$ native MPI library routines)
+\item The name of XcalableMP interface prefixes "{\tt XMP\_}" or "{\tt xmp\_}" 
+      to MPI library routine name.
+\item In case that native MPI library routine needs descriptor information,
+      XcalableMP interface to that MPI library routine have an argument of 
+      {\tt xmp\_desc\_t} type.
+\item A design of XMP interface to existing MPI library do not affect 
+      original communication process of that MPI library.
+\end{itemize}
+
 \section{ScaLAPACK}
 
    ScaLAPACK is a linear algebra library for distributed-memory.
@@ -221,14 +239,6 @@ int main(void) {
    {\XMP} programs.
 
 \begin{itemize}
-\item Execution flow of XcalableMP program using XcalableMP interface is the following:\\
-      XMP directive decraration $\to$ BLACS initialization $\to$ 
-      XMP interface ($\to$ native ScaLAPACK library routines)  $\to$ BLACS finalization
-\item The name of XcalableMP interface prefixes "{\tt XMP\_}" or "{\tt xmp\_}" 
-      to ScaLAPACK library routine name.
-\item If arguments of subroutines have array descriptor,
-      we replace the argument with "{\tt xmp\_desc\_of}".
-      Then we don't need array descriptor. 
 \item For ScaLAPACK library routine having descriptor array as argument,
       the XcalableMP interface routine have BLACS context handle including 
       the descriptor array as new argument.
@@ -296,14 +306,15 @@ Query subroutines of Example1 are the following.
 
 \subsection{\tt xmp\_ga\_size}
 
+\subsubsection*{Format}
+
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_size(xmp\_desc\_of({\it array-name}), size)}\\
-          & {\tt xmp\_desc\_t} & {\tt xmp\_desc\_of({\it array-name})}\\
+\verb![F]!& {\tt subroutine}& {\tt xmp\_ga\_size(d, size)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer} & {\tt size(dim)}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_ga\_size}\\
-          & & {\tt (xmp\_desc\_t* xmp\_desc\_of({\it array-name}), int size[])}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_ga\_size(xmp\_desc\_t* d, int size[])}\\
 
 \end{tabular}
 
@@ -314,22 +325,24 @@ The {\tt xmp\_ga\_size} routine returns the length of each dimension of the arra
 \subsubsection*{Arguments}
 
 \begin{itemize}
- \item The argument of {\tt xmp\_desc\_of} is the name of global array.
- \item {\tt size} is one-dimensional integer array. {\tt dim} is a number of array dimension.
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target global array.
+ \item {\tt size} is one-dimensional integer array. {\tt dim} is the dimension 
+       of the global array.
 \end{itemize}
 
 
 \subsection{\tt xmp\_ga\_template\_unitsize}
 
+\subsubsection*{Format}
+
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_template\_unitsize(xmp\_desc\_of
-({\it array-name}), unitsize)}\\
-          & {\tt xmp\_desc\_t} & {\tt xmp\_desc\_of({\it array-name})}\\
+\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_template\_unitsize(d, unitsize)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer} & {\tt unitsize(dim)}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_ga\_template\_unitsize}\\
-          & & {\tt (xmp\_desc\_t* xmp\_desc\_of({\it array-name}), int unitsize[])}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_ga\_template\_unitsize(xmp\_desc\_t* d, int unitsize[])}\\
 
 \end{tabular}
 
@@ -341,23 +354,24 @@ the template blocking factor.
 \subsubsection*{Arguments}
 
 \begin{itemize}
- \item The argument of {\tt xmp\_desc\_of} is the name of global array.
- \item {\tt unitsize} is one-dimensional integer array. {\tt dim} is a number of dimension 
- of the template blocking factor.
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target global array.
+ \item {\tt unitsize} is one-dimensional integer array. {\tt dim} is the dimension 
+ of the template blocking factor associated with the target global array.
 \end{itemize}
 
 
 \subsection{\tt xmp\_ga\_first\_idx\_nodes\_rank}
 
+\subsubsection*{Format}
+
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_first\_idx\_nodes\_rank(xmp\_desc\_of
-({\it array-name}), rank)}\\
-          & {\tt xmp\_desc\_t} & {\tt xmp\_desc\_of({\it array-name})}\\
+\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_first\_idx\_nodes\_rank(d, rank)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer} & {\tt rank(dim)}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_ga\_first\_idx\_nodes\_rank}\\
-          & & {\tt (xmp\_desc\_t* xmp\_desc\_of({\it array-name}), int rank[])}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_ga\_first\_idx\_nodes\_rank(xmp\_desc\_t* d, int rank[])}\\
 
 \end{tabular}
 
@@ -369,23 +383,24 @@ the first row and column of global array a is distributed.
 \subsubsection*{Arguments}
 
 \begin{itemize}
- \item The argument of {\tt xmp\_desc\_of} is the name of global array.
- \item {\tt rank} is one-dimensional integer array. {\tt dim} is dimension of 
- node array associeted with the global array of {\it array-name}.
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target global array.
+ \item {\tt rank} is one-dimensional integer array. {\tt dim} is the dimension of 
+ node array associeted with the target global array.
 \end{itemize}
 
 
 \subsection{\tt xmp\_la\_lead\_dim}
 
+\subsubsection*{Format}
+
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt subroutine}& {\tt xmp\_la\_lead\_dim(xmp\_desc\_of
-({\it array-name}), lead\_dim)}\\
-          & {\tt xmp\_desc\_t} & {\tt xmp\_desc\_of({\it array-name})}\\
+\verb![F]!&  {\tt subroutine}& {\tt xmp\_la\_lead\_dim(d, lead\_dim)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer} & {\tt lead\_dim}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_la\_lead\_dim}\\
-          & & {\tt (xmp\_desc\_t* xmp\_desc\_of({\it array-name}), int lead\_dim)}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_la\_lead\_dim(xmp\_desc\_t* d, int lead\_dim)}\\
 
 \end{tabular}
 
@@ -396,7 +411,8 @@ The {\tt xmp\_la\_lead\_dim} routine returns leading dimension of local array.
 \subsubsection*{Arguments}
 
 \begin{itemize}
- \item The argument of {\tt xmp\_desc\_of} is the name of global array.
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target global array.
  \item {\tt lead\_dim} is integer value.
 \end{itemize}
 
