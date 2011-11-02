@@ -10,6 +10,9 @@
 
 \usepackage{vruler}  %% if vertical ruler (line number) is needed
 
+\usepackage[dvipdfm,bookmarkstype=toc,colorlinks=true,urlcolor=black,%
+    linkcolor=black,citecolor=black,linktocpage=true,bookmarks=false]{hyperref}
+
 \hoffset=0cm
 \oddsidemargin=0cm
 \evensidemargin=0cm
@@ -47,13 +50,17 @@
 \def\XMPF{XcalableMP Fortran}
 \def\XMPC{XcalableMP C}
 
-\def\Directive#1{{\tt #1}\index{{\tt #1}}\index{Directive!{\tt #1}}}
+\def\Directive#1{{\tt #1}\index{#1@{\tt #1}}\index{Directive!#1@{\tt #1}}}
+
 %\def\Syntax#1{\index{{\tt #1}}\index{Syntax!{\tt #1}}}
-\def\Syntax#1{\index{Syntax!{\tt #1}}}
+\def\Syntax#1{\index{Syntax!#1@{\tt #1}}}
+
 \def\Term#1{{#1}\index{#1}}
+
 %\def\Example#1{\index{#1}\index{Example!{\tt #1}}}
-\def\Example#1{\index{Example!{\tt #1}}}
-\def\Intrinsic#1{\index{{\tt #1}}\index{Intrinsic and Library Procedures!{\tt #1}}}
+\def\Example#1{\index{Example!#1@{\tt #1}}}
+
+\def\Intrinsic#1{\index{#1@{\tt #1}}\index{Intrinsic and Library Procedures!#1@{\tt #1}}}
 
 \def\NULL{{\tt NULL}}
 
@@ -200,11 +207,15 @@ Japan.
 
 \begin{thebibliography}{99}
 \addcontentsline{toc}{chapter}{\bibname}
+ \bibitem{omp} OpenMP Architecture Review Board,
+	 ``OpenMP Application Program Interface Version 3.1'',
+	 \url{http://www.openmp.org/mp-documents/OpenMP3.1.pdf}
+	 (2011).
  \bibitem{hpf} High Performance Fortran Forum,
 	 ``High Performance Fortran Language Specification Version 2.0'',
 	 \url{http://hpff.rice.edu/versions/hpf2/hpf-v20.pdf}
 	 (1997).
-\bibitem{mpi} Message Passing Interface Forum,
+ \bibitem{mpi} Message Passing Interface Forum,
 	``MPI: A Message-Passing Interface Standard Version 2.2'',
 	\url{http://www.mpi-forum.org/docs/mpi-2.2/mpi22-report.pdf}
 	(2009).

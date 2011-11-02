@@ -45,18 +45,18 @@ For {\XMPF}, coarrays are declared in the same manner as in Fortran
 2008, which is not described in this document.
 %
 For {\XMPC}, coarrays are declared with the {\tt coarray} directive
-where {\it codimensions} specify the coshape of a variable.
+where {\it codimensions} specify the \Term{coshape} of a variable.
 %
 Terms related to coarrays in {\XMP} (e.g. coshape, coindex,
-cobound, cosubscript, image, image index, etc.) are derived from that in
-Fortran 2008.
+cobound, \Term{cosubscript}, image, image index, etc.) are derived from
+that in Fortran 2008.
 
 In addition, the {\tt on} clause of the {\tt coarray} directive
 specifies a node array on each element of which the coarray object is
-allocated, and associates each {\it image} of the coarray with a node of
-the node array so that an image having an {\it image index} is
-associated with a node that have the same index of the node array in the
-Fortran's array element order.
+allocated, and associates each {\it \Term{image}} of the coarray with a
+node of the node array so that an image having an {\it \Term{image
+index}} is associated with a node that have the same index of the node
+array in the Fortran's array element order.
 %
 If the {\tt coarray} directive is not specified in {\XMPF} or the {\tt
 on} clause of the {\tt coarray} directive is not specified in {\XMPC},
@@ -85,11 +85,6 @@ declared on the same node set (see chapter \ref{chap:procedure}).
 
 \subsubsection*{Examples}
 \Example{coarray}
-\Example{nodes}
-\Example{task}
-\Example{tasks}
-\Example{end task}
-\Example{end tasks}
 
 \begin{description}
 \item[Example 1]
@@ -258,7 +253,6 @@ node set) and copies it into the local storage for {\tt A}.
 
 \vspace{0.5cm}
 
-\Example{coarray}
 \index{Example!{coarray reference}}
 \begin{minipage}{0.45\hsize}
 \begin{center}

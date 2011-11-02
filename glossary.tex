@@ -78,11 +78,11 @@
 
  A construct that is executed collectively and synchronously by every
  executing nodes. Global constructs are further 
- classified into two groups of {\it global communication constructs},
- such as {\tt gmove}, {\tt barrier}, etc., which specify communication
- or synchronization, and {\it work mapping constructs}, such as {\tt
- loop}, {\tt array} and {\tt tasks}, which specify parallelization of
- loops, array assignments or tasks.
+ classified into two groups of {\it \Term{global communication
+ constructs}}, such as {\tt gmove}, {\tt barrier}, etc., which specify
+ communication or synchronization, and {\it \Term{work mapping
+ constructs}}, such as {\tt loop}, {\tt array} and {\tt tasks}, which
+ specify parallelization of loops, array assignments or tasks.
 
 \gitem{template}
 
@@ -395,6 +395,15 @@
  A data movement among nodes. Communication in {\XMP} occurs only when
  the programmer instruct it explicitly with a global communication
  construct or a coarray reference.
+
+\gitem{reduction}
+
+ A procedure of combining variables from each node in a specified manner
+ and returning the result value. A reduction always involves
+ communication.
+%
+ A reduction is specified by either the {\tt on} clause of the {\tt
+ loop} construct or the {\tt reduction} construct.
 
 \gitem{synchronization}
 

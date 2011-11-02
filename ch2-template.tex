@@ -229,10 +229,11 @@ arithmetic operators be that of Fortran.
 The interpretation of {\it dist-format} is as follows:
 
 \begin{description}
-\item[``{\tt *}'']
+\item[``{\tt *}'']\index{distribution format!{\tt *}}
 	   The dimension is not distributed.
 
 \item[{\tt block}]
+\index{distribution format!{\tt block}}\index{block@{\tt block}}
 	   Equivalent to {\tt block(ceiling(d/p))}.
 
 \item[{\tt block(n)}]
@@ -252,6 +253,7 @@ The interpretation of {\it dist-format} is as follows:
 
 
 \item[{\tt cyclic}]
+\index{distribution format!{\tt cyclic}}\index{cyclic@{\tt cyclic}}
 	   Equivalent to {\tt cyclic(1)}.
 
 \item[{\tt cyclic(n)}]
@@ -261,6 +263,7 @@ The interpretation of {\it dist-format} is as follows:
 	   array in a round-robin manner.
 
 \item[{\tt gblock(m)}]
+\index{distribution format!{\tt gblock}}\index{gblock@{\tt gblock}}
 	   {\tt m} is referred to as a mapping array. The dimension of
 	   the template is divided into contiguous blocks so that the
 	   i'th block is of size {\tt m(i)}, and these blocks are
@@ -452,11 +455,11 @@ align-subscript}'s are interpreted as follows:
       variable) that does not appear anywhere in the directive.
       \begin{itemize} 
        \item The second form of {\it align-source} is said to
-	     ``collapse'' the corresponding dimension of the array. As a
+	     ``\Term{collapse}'' the corresponding dimension of the array. As a
 	     result, the index along the corresponding dimension makes
 	     no difference in determining the alignment.
        \item The second form of {\it align-subscript} is said to
-	     ``replicate'' the array. Each element of the array is
+	     ``\Term{replicate}'' the array. Each element of the array is
 	     replicated, and aligned to all index values in the
 	     corresponding dimension of the template.
       \end{itemize}
@@ -621,7 +624,7 @@ When {\it shadow-width} is of the form ``\verb|*|'', the entire area of
 the array is allocated on each node, and all of the area that it does not
 own is regarded as shadow.
 %
-This type of shadow is sometimes referred to as a ``full shadow.''
+This type of shadow is sometimes referred to as a ``\Term{full shadow}.''
 
 Note that the shadow area of a multi-dimensional array include
 ``obliquely-neighboring'' elements, which are the ones owned by the node 
@@ -666,10 +669,6 @@ element as it. The corresponding data object is referred to as the
 \begin{minipage}{0.5\hsize}
 \begin{center}
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
 \begin{XFexample}
 !$xmp nodes p(4,4)
 !$xmp template t(64,64)
@@ -787,9 +786,6 @@ as that in the {\tt distribute} directive.
 \end{itemize}
 
 \subsubsection*{Example}
-\Example{template}
-\Example{distribute}
-\Example{align}
 \Example{template\_fix}
 
 \begin{XFexample}

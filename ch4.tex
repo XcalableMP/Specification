@@ -1,6 +1,7 @@
 %\chapter{Procedure call and data mapping for procedure argument}
 \chapter{Procedure Interfaces}
 \label{chap:procedure}
+\index{procedure interface}
 
 This chapter describes the procedure interfaces, that is, how
 procedures are invoked and arguments are passed, in {\XMP}.
@@ -25,9 +26,9 @@ an {\XMP} procedure, except for a few ones on its argument, which is
 explained below.
 
 A local data in the actual or dummy argument list (referred to as a {\it
-local actual argument} and a {\it local dummy argument}, respectively)
-are treated by the {\XMP} compiler in the same manner as by the compiler
-of the base language.
+\Term{local actual argument}} and a {\it \Term{local dummy argument}},
+respectively) are treated by the {\XMP} compiler in the same manner as
+by the compiler of the base language.
 %
 This rule makes it possible that a local actual argument in a procedure
 written in {\XMP} can be associated with a dummy argument of a procedure
@@ -47,9 +48,9 @@ them in its usual way.
 
 \hspace{-1.2\parindent}
 The rest of this chapter specifies how global data appearing as an
-actual and a dummy argument list (referred to as a {\it global actual
-argument} and a {\it global dummy argument}, respectively) are processed
-by the {\XMP} compiler.
+actual and a dummy argument list (referred to as a {\it \Term{global actual
+argument}} and a {\it \Term{global dummy argument}}, respectively) are
+processed by the {\XMP} compiler.
 
 
 \section{Argument Passing Mechanism in {\XMP} Fortran}
@@ -74,12 +75,13 @@ Either of the following global data can be put in the actual argument list:
 \end{itemize}
 
 There are two kinds of argument association for global data in {\XMP}
-Fortran: one is {\it sequence association}, which is for a global dummy
-that is an explicit-shape or assumed-size array, and the other is
-{\it descriptor association}, which is for all other global dummy.
+Fortran: one is {\it \Term{sequence association}}, which is for a global
+dummy that is an explicit-shape or assumed-size array, and the other is
+{\it \Term{descriptor association}}, which is for all other global dummy.
 
 
 \subsection{Sequence Association of Global Data}
+\index{sequence association}
 
 The concept of sequence association in {\Fort} is extended for global
 actual and dummy arguments in {\XMP} as follows.
@@ -143,11 +145,6 @@ mappings (including their shadow attributes) must be identical.
 	   section of {\tt x} starts from the received address (Figure
 	   \ref{fig5.1}).
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
-\Example{shadow}
 \begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
@@ -186,11 +183,6 @@ mappings (including their shadow attributes) must be identical.
 	   {\tt f\_sub2} receives it and initializes {\tt x} with the
 	   storage starting from it (Figure \ref{fig5.2}).
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
-\Example{shadow}
 \begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
@@ -224,13 +216,6 @@ mappings (including their shadow attributes) must be identical.
 	   Hence, {\tt f\_sub2} is invoked only by {\tt p(1)} (Figure
 	   \ref{fig5.25}).
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
-\Example{shadow}
-\Example{task}
-\Example{end task}
 \begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
@@ -270,13 +255,6 @@ mappings (including their shadow attributes) must be identical.
 	   Hence, {\tt f\_sub2} is invoked only by {\tt p(1)}(Figure
 	   \ref{fig5.3}).
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
-\Example{shadow}
-\Example{task}
-\Example{end task}
 \begin{XFexample}
       subroutine xmp_sub1
 !$xmp nodes p(4)
@@ -325,6 +303,7 @@ mappings (including their shadow attributes) must be identical.
 
 
 \subsection{Descriptor Association of Global Data}
+\index{descriptor association}
 
 When the actual argument is a global data and it is obvious from the
 interface of the invoked procedure that the corresponding dummy argument
@@ -376,11 +355,6 @@ detect and report the error.
 	   information extracted from the descriptor received (Figure
 	   \ref{fig5.5}).
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
-\Example{shadow}
 \begin{XFexample}
       subroutine xmp_sub1
 
@@ -438,11 +412,6 @@ detect and report the error.
 	   backend Fortran compiler in the same manner as usual data 
 	   (Figure \ref{fig5.6}).
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
-\Example{shadow}
 \begin{XFexample}
       subroutine xmp_sub1
 
@@ -527,11 +496,6 @@ identical.
 	   of its local section starts from the address held by the
 	   received pointer (Figure \ref{fig5.7}).
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
-\Example{shadow}
 \begin{XCexample}
 void xmp_func1()
 {
@@ -570,11 +534,6 @@ void xmp_func2(float x[100])
 	   The local dummy argument {\tt x} on each node starts from the 
 	   address held by the received pointer (Figure \ref{fig5.8}).
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
-\Example{shadow}
 \begin{XCexample}
 void xmp_func1()
 {
@@ -610,12 +569,6 @@ void c_func2(float x[27])
 	   Hence, {\tt c\_func2} is invoked only by {\tt p(1)} (Figure
 	   \ref{fig5.9}).
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
-\Example{shadow}
-\Example{task}
 \begin{XCexample}
 void xmp_func1()
 {

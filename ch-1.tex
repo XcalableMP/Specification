@@ -31,7 +31,7 @@ The features of {\XMP} are summarized as follows:
        data-parallel paradigm and work mapping under ``global-view''
        programming model, and enables parallelizing the original
        sequential code using minimal modification with simple
-       directives, like {\OMP}. Many ideas on ``global-view''
+       directives, like {\OMP} \cite{omp}. Many ideas on ``global-view''
        programming are inherited from High Performance Fortran ({\HPF})
        \cite{hpf}.
 
@@ -159,11 +159,11 @@ execution}}, until it encounters an {\XMP} construct.
 %executed one thread at a time.
 
 A set of nodes that are executing a procedure, a statement, a loop,
-a block, etc. is referred to as its {\it executing node set} and
+a block, etc. is referred to as its {\it \Term{executing node set}} and
 determined by the innermost {\tt task} or {\tt loop} directive
 surrounding it dynamically, or at runtime.
 %
-The initial executing node set (or the {\it entire node set}) at the
+The initial executing node set (or the {\it \Term{entire node set}}) at the
 beginning of the program execution is the set of all available nodes,
 which can be specified in an implementation-dependent way (e.g. through
 a command-line option).
@@ -184,8 +184,8 @@ where a specified data element resides.
 When a node encounters a synchronization or a communication directive,
 synchronization or communication occurs between it and other nodes.
 %
-That is, such {\it global constructs} are performed collectively by the
-executing nodes.
+That is, such {\it \Term{global constructs}} are performed collectively
+by the executing nodes.
 %
 Note that neither synchronizations nor communications occur without these
 constructs specified.
@@ -197,7 +197,7 @@ constructs specified.
 %are referenced locally by threads executed in the node. 
 
 There are two classes of data in {\XMP}: {\it \Term{global data}} and
-{\it local data}. Data declared in an {\XMP} program are local by
+{\it \Term{local data}}. Data declared in an {\XMP} program are local by
 default.
 
 Global data are ones that are distributed onto the executing node set by
@@ -288,8 +288,8 @@ inherited from HPF).
 
 Assigns a work to a node set. The {\tt loop} construct maps each
 iteration of a loop to nodes owning a specified data elements. The {\tt
-task} construct defines an amount of work as a {\it task} and assigns it
-to a specified node set.
+task} construct defines an amount of work as a {\it \Term{task}} and
+assigns it to a specified node set.
 
 \subsubsection*{Communication and Synchronization}
 

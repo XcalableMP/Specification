@@ -60,8 +60,8 @@ and lower bounds in the dimension are updated.
 When the {\tt width} clause is omitted, whole shadow area of the array
 is updated.
 
-Particularly when the {\tt /periodic/} modifier is specified in {\it
-reflect-width}, the update of the shadow object in the dimension is
+Particularly when the \Term{{\tt /periodic/} modifier} is specified in
+{\it reflect-width}, the update of the shadow object in the dimension is
 ``periodic,'' which means that the shadow object at the global lower
 (upper) bound is treated as if corresponding to the data object of the
 global upper (lower) bound and updated with that value by the {\tt
@@ -190,7 +190,7 @@ runtime system.
 There are three operating modes of the {\tt gmove} construct:
 
 \begin{itemize}
- \item {\bf collective mode}
+ \item {\bf collective mode}\index{collective mode (of {\tt gmove})}
 
        When neither the {\tt in} nor the {\tt out} clause is specified,
        the copy operation is performed collectively and cause an
@@ -218,7 +218,7 @@ There are three operating modes of the {\tt gmove} construct:
 %and the object on the right-hand side is global, then this operation
 %performs broadcast operation.
 
- \item {\bf in mode}
+ \item {\bf in mode}\index{in mode (of {\tt gmove})}
 
        When the {\tt in} clause is specified, the rhs data of the
        assignment, whole or parts of which may reside outside the
@@ -235,7 +235,7 @@ There are three operating modes of the {\tt gmove} construct:
        wait\_async} construct (Section \ref{subsec:wait_async
        Construct}).
 
- \item {\bf out mode}
+ \item {\bf out mode}\index{out mode (of {\tt gmove})}
 
        When the {\tt out} clause is specified, the lhs data of the
        assignment, whole or parts of which may reside outside the 
@@ -819,8 +819,8 @@ node set specified by the {\tt on} clause are complete.
 
 
 \subsection{{\tt async} Clause}
-\index{{\tt async} clause}
-\index{Directive!{{\tt async} clause}}
+\index{async clause@{\tt async} clause}
+\index{Directive!async clause@{{\tt async} clause}}
 
 \subsubsection*{Synopsis}
 

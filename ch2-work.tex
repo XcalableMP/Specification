@@ -75,9 +75,6 @@ one at the exit.
 
 \hspace{\hsize}
 
-\Example{nodes}
-\Example{teamplate}
-\Example{distribute}
 \begin{minipage}{0.44\hsize}
 \begin{center}
 \begin{XFexample}
@@ -124,10 +121,6 @@ one at the exit.
 
 \hspace{\hsize}
 
-\Example{nodes}
-\Example{teamplate}
-\Example{distribute}
-\Example{align}
 \begin{minipage}{0.44\hsize}
 \begin{center}
 \begin{XFexample}
@@ -237,10 +230,6 @@ No implicit synchronization is performed at the entry and exit of the
 
 \hspace{\hsize}
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
 \begin{minipage}{0.45\hsize}
 \begin{center}
 \begin{XFexample}
@@ -296,10 +285,6 @@ No implicit synchronization is performed at the entry and exit of the
 
 \hspace{\hsize}
 
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
 \begin{XFexample}
 !$xmp nodes p(8)
 !$xmp template t(100)
@@ -567,8 +552,9 @@ Therefore, for example, the two codes below are equivalent.
 
 Particularly for the reduction kinds of {\tt FIRSTMAX}, {\tt FIRSTMIN},
 {\tt LASTMAX} and {\tt LASTMIN}, in addition to a corresponding {\tt
-MAX} or {\tt MIN} reduction operation, the {\it location-variable}'s are
-set after executing the {\tt loop} construct as follows:
+MAX} or {\tt MIN} reduction operation, the {\it
+\Term{location-variable}}'s are set after executing the {\tt loop}
+construct as follows:
 %
 \begin{itemize}
  \item For {\tt FIRSTMAX} and {\tt FIRSTMIN}, they are set to their
@@ -673,8 +659,6 @@ set after executing the {\tt loop} construct as follows:
 \end{itemize}
 
 \subsubsection*{Examples}
-\Example{distribute}
-\Example{align}
 \Example{loop}
 
 \begin{description}
@@ -788,7 +772,6 @@ clause is a subset of that specified by the outer one.
 \item[Example 4]
 \hspace{\hsize}
 
-\Example{nodes}
 \begin{XFexample}
 !$xmp nodes p(10,3)
       ...
@@ -810,7 +793,6 @@ constructs (below right).
 
 \vspace{0.5cm}
 
-\Example{nodes}
 \begin{minipage}{0.45\hsize}
 \begin{center}
 \begin{XFexample}
@@ -1016,8 +998,6 @@ assignment statements in C}).
 
 \subsubsection*{Examples}
 \Example{array}
-\Example{distribute}
-\Example{align}
 
 \begin{description}
 

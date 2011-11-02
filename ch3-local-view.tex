@@ -21,7 +21,7 @@ array.
 \subsubsection*{Description}
 
 This directive declares that a local array specified by
-{\it local-array-name} is a ``local alias'' to the global array
+{\it local-array-name} is a ``\Term{local alias}'' to the global array
 specified by {\it global-array-name}.
 
 The shape of a local alias is the same as that of the local section of
@@ -35,6 +35,10 @@ if not, the local alias is not defined until the corresponding global
 array is allocated.
 
 An array specified by {\it local-array-name} may be a coarray.
+
+Note that, in {\XMPC}, the address-of operator applied to global data
+substitutes for the {\tt local\_alias} directive (see \ref{sec:pointer
+to global data}).
 
 \subsubsection*{Restriction}
 
@@ -56,11 +60,6 @@ An array specified by {\it local-array-name} may be a coarray.
 
 \subsubsection*{Examples}
 \Example{local\_alias}
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
-\Example{shadow}
 
 \begin{description}
 
@@ -226,9 +225,9 @@ it is completed before statements that follow the matching
 \Directive{wait} construct start to be executed.
 
 A {\tt \Directive{post}} construct issued with the arguments of {\it
-nodes-ref} and {\it tag} on a node (called a {\it
-posting node}) dynamically matches at most one {\tt \Directive{wait}}
-construct issued with the arguments of the posting node (unless omitted)
+nodes-ref} and {\it tag} on a node (called a {\it \Term{posting node}})
+dynamically matches at most one {\tt \Directive{wait}} construct issued
+with the arguments of the posting node (unless omitted) 
 and the same value as {\it tag} (unless omitted) by the node specified
 by {\it nodes-ref}.
 
@@ -321,7 +320,7 @@ matching \Directive{post} construct is completed on the node specified
 by {\it node-ref}.
 
 A {\tt \Directive{wait}} construct issued with the arguments of {\it
-nodes-ref} and {\it tag} on a node (called a {\it waiting node})
+nodes-ref} and {\it tag} on a node (called a {\it \Term{waiting node}})
 dynamically matches a {\tt \Directive{post}} construct issued with the
 arguments of the waiting node and the same value as {\it tag} by the
 node specified by {\it nodes-ref}.
@@ -564,6 +563,7 @@ A[5:5] = B[0:5];
 
 
 \section{Pointer to Global Data}
+\label{sec:pointer to global data}
 
 \subsection{Name of Global Array}
 
@@ -577,6 +577,7 @@ each node. The pointer, as a normal (local) pointer, can be operated on
 each node.
 
 \subsection{The Address-of Operator}
+\index{address-of operator}
 
 The result of the address-of operator (``{\tt \&}'') applied to an
 element of a global array is the pointer to the corresponding element of
@@ -619,10 +620,6 @@ details of the operator {\tt xmp\_desc\_of}, refer to the next section.
 
 \index{Example!{dynamic allocation in XMP/C}}
 \Intrinsic{xmp\_malloc}
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-\Example{align}
 \Example{template\_fix}
 \Example{xmp\_malloc}
 \Example{xmp\_desc\_of}
@@ -643,20 +640,21 @@ pa = (float *)xmp_malloc(xmp_desc_of(pa), N);
 
 \section{The Descriptor-of Operator}
 \label{sec:Descriptor of Global Data in C}
-\Term{descriptor-of operator}
-\index{{\tt xmp\_desc\_of}}
+\index{xmp\_desc\_of@{\tt xmp\_desc\_of}}
 
 %When distribution of Global data is defined, query function which have 
 %operator {\tt xmp\_desc\_of} as argument can return some descriptor
 %information. 
 
-The descriptor-of operator (``{\tt xmp\_desc\_of}'') is introduced as a
-built-in operator in {\XMPC}.
+The \Term{descriptor-of operator} (``{\tt xmp\_desc\_of}'') is
+introduced as a built-in operator in {\XMPC}.
 
 The result of the descriptor-of operator applied to {\XMP} entities such
 as node arrays, templates and global arrays is their {\it
 \Term{descriptor}}, which can be used, for example, as an argument of
-some inquiry procedures.
+some inquiry procedures. The type of the result, {\tt xmp\_desc\_t}, is
+implementation-dependent, and defined in the {\tt xmp.h} heder file in
+{\XMPC}.
 
 For the {\tt xmp\_desc\_of} intrinsic function in {\XMPF}, refer to
 section \ref{subsec: xmp_desc_of}.
