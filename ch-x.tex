@@ -214,96 +214,30 @@ int main(void) {
    
 \section{General rule}
 
-   This section shows a way how existing MPI library routines are used in
+   This section shows a way how existing numerical library routines are used in
    {\XMP} programs.
 
 
 \begin{itemize}
 \item Execution flow of XcalableMP program using XcalableMP interface is the following:\\
-      XMP directive decraration $\to$ XMP interface ($\to$ native MPI library routines)
+      XMP directive decraration $\to$ XMP interface ($\to$ native numerical library routines)
 \item The name of XcalableMP interface prefixes "{\tt XMP\_}" or "{\tt xmp\_}" 
-      to MPI library routine name.
-\item In case that native MPI library routine needs descriptor information,
-      XcalableMP interface to that MPI library routine have an argument of 
-      {\tt xmp\_desc\_t} type.
-\item A design of XMP interface to existing MPI library do not affect 
-      original communication process of that MPI library.
+      to numerical library routine name.
+\item In case that native numerical library routine needs descriptor information,
+      XcalableMP interface to that numericalI library routine have an argument of 
+      {\tt xmp\_desc\_t} type. A {\XMP} interface is implemented using some 
+      query subroutines provided by {\XMP}.
+\item A design of XMP interface to existing numerical library do not affect 
+      original communication process of that numerical library.
 \end{itemize}
 
-\section{ScaLAPACK}
+\begin{myfigure}
+ \rotatebox{-90}{\includegraphics[scale=0.6]{figs/figb.1.eps}}
+ \caption{Execution flow of XcalableMP program using XcalableMP interface}
+ \label{figb.1}
+\end{myfigure}
 
-   ScaLAPACK is a linear algebra library for distributed-memory.
-   Communication processes of ScaLAPACK routines depend on BLACS
-   (Basic Linear Algebraic Communication Subprograms).
-   ScaLAPACK library routines processes in XcalableMP program also depend on 
-   BLACS. This section shows a way how ScaLAPACK library routines are used in
-   {\XMP} programs.
-
-\begin{itemize}
-\item For ScaLAPACK library routine having descriptor array as argument,
-      the XcalableMP interface routine have BLACS context handle including 
-      the descriptor array as new argument.
-\item The blacs\_exit routine is unnecessary, because XcalableMP program executes process 
-      corresponding to MPI\_Finalize routines.
-\item A valid value of the argument "order" of BLACS routine "{\tt blacs\_gridinit}" is 
-      only column-major. 
-\end{itemize}
-
-\subsection*{Example}
-\begin{description}
-
-\item[Example 1]
-   A {\XMPF} interface to ScaLAPACK library is implemented 
-   using some query subroutines provided by {\XMPF}.
-   For ScaLAPACK driver routine "pdgesv", we show implementation of {\XMPF} interface.
-
-\begin{XFexample}
-      subroutine xmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
-                      b,ib,jb,xmp_desc_of(b),ictxt,info)
-      integer n,nrhs,ia,ja,ib,jb,ictxt,info
-      double precision a,b
-      xmp_desc_t xmp_desc_of(a),xmp_desc_of(b)
-      integer size_a(2),unitsize_a(2),rank_a(2),lead_dim_a,desca(9)
-      integer size_b(2),unitsize_b(2),rank_b(2),lead_dim_b,descb(9)
-      
-      call xmp_ga_size(xmp_desc_of(a),size_a)
-      call xmp_ga_template_unitsize(xmp_desc_of(a),unitsize_a)
-      call xmp_ga_first_idx_nodes_rank(xmp_desc_of(a),rank_a)
-      call xmp_la_lead_dim(xmp_desc_of(a),lead_dim_a)
-      
-      call xmp_ga_size(xmp_desc_of(b),size_b)
-      call xmp_ga_template_unitsize(xmp_desc_of(b),unitsize_b)
-      call xmp_ga_first_idx_nodes_rank(xmp_desc_of(b),rank_b)
-      call xmp_la_lead_dim(xmp_desc_of(b),lead_dim_b)
-      
-      desca(1)=1
-      desca(2)=ictxt
-      desca(3)=size_a(1)
-      desca(4)=size_a(2)
-      desca(5)=unitsize_a(1)
-      desca(6)=unitsize_b(2)
-      desca(7)=rank_a(1)
-      desca(8)=rank_a(2)
-      desca(9)=lead_dim_a
-      
-      descb(1)=1
-      descb(2)=ictxt
-      descb(3)=size_b(1)
-      descb(4)=size_b(2)
-      descb(5)=unitsize_b(1)
-      descb(6)=unitsize_b(2)
-      descb(7)=rank_b(1)
-      descb(8)=rank_b(2)
-      descb(9)=lead_dim_b
-      
-      call pdgesv(n,nhrs,a,ia,ja,desca,ipiv,b,ib,jb,descb,info)
-      
-      return
-      end
-
-\end{XFexample}
-
-Query subroutines of Example1 are the following.
+Examples of query subroutine specifications are the following.
 
 \subsection{\tt xmp\_ga\_size}
 
@@ -321,7 +255,7 @@ Query subroutines of Example1 are the following.
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_ga\_size} routine returns the length of each dimension of the array.
+The {\tt xmp\_ga\_size} routine returns the length of each dimension of the global array.
 
 \subsubsection*{Arguments}
 
@@ -332,6 +266,33 @@ The {\tt xmp\_ga\_size} routine returns the length of each dimension of the arra
        of the global array.
 \end{itemize}
 
+\subsection{\tt xmp\_la\_size}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt subroutine}& {\tt xmp\_la\_size(d, size)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
+          & {\tt integer} & {\tt size(dim)}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_la\_size(xmp\_desc\_t* d, int size[])}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_la\_size} routine returns the length of each dimension of
+ the distributed local array.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target global array.
+ \item {\tt size} is one-dimensional integer array. {\tt dim} is the dimension 
+       of the distributed local array.
+\end{itemize}
 
 \subsection{\tt xmp\_ga\_template\_unitsize}
 
@@ -390,7 +351,6 @@ the first row and column of global array a is distributed.
  node array associeted with the target global array.
 \end{itemize}
 
-
 \subsection{\tt xmp\_la\_lead\_dim}
 
 \subsubsection*{Format}
@@ -417,6 +377,105 @@ The {\tt xmp\_la\_lead\_dim} routine returns leading dimension of local array.
  \item {\tt lead\_dim} is integer value.
 \end{itemize}
 
+
+\subsection{\tt xmp\_la\_addr}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!&  {\tt subroutine}& {\tt xmp\_la\_addr(d, addr)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
+          & {\tt integer,allocatable} & {\tt addr}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_la\_addr(xmp\_desc\_t* d, int* addr)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_la\_addr} routine returns top address of distributed local array.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target global array.
+ \item {\tt addr} is address of the start of the local array.
+\end{itemize}
+
+\section{ScaLAPACK}
+
+   ScaLAPACK is a linear algebra library for distributed-memory.
+   Communication processes of ScaLAPACK routines depend on BLACS
+   (Basic Linear Algebraic Communication Subprograms).
+   ScaLAPACK library routines processes in XcalableMP program also depend on 
+   BLACS. This section shows a way how ScaLAPACK library routines are used in
+   {\XMP} programs.
+
+\begin{itemize}
+\item For ScaLAPACK library routine having descriptor array as argument,
+      the XcalableMP interface routine have BLACS context handle including 
+      the descriptor array as new argument.
+\item The blacs\_exit routine is unnecessary, because XcalableMP program executes process 
+      corresponding to MPI\_Finalize routines.
+\item A valid value of the argument "order" of BLACS routine "{\tt blacs\_gridinit}" is 
+      only column-major. 
+\end{itemize}
+
+\subsection*{Example}
+\begin{description}
+
+\item[Example 1]
+   This example shows implementation of {\XMPF} interface for ScaLAPACK driver routine "pdgesv".
+
+\begin{XFexample}
+      subroutine xmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
+     *                b,ib,jb,xmp_desc_of(b),ictxt,info)
+      integer n,nrhs,ia,ja,ib,jb,ictxt(2),info
+      double precision a,b
+      xmp_desc_t xmp_desc_of(a),xmp_desc_of(b)
+      integer size_a(2),unitsize_a(2),rank_a(2),lead_dim_a,desca(9)
+      integer size_b(2),unitsize_b(2),rank_b(2),lead_dim_b,descb(9)
+      
+      call xmp_ga_size(xmp_desc_of(a),size_a)
+      call xmp_ga_template_unitsize(xmp_desc_of(a),unitsize_a)
+      call xmp_ga_first_idx_nodes_rank(xmp_desc_of(a),rank_a)
+      call xmp_la_lead_dim(xmp_desc_of(a),lead_dim_a)
+      
+      call xmp_ga_size(xmp_desc_of(b),size_b)
+      call xmp_ga_template_unitsize(xmp_desc_of(b),unitsize_b)
+      call xmp_ga_first_idx_nodes_rank(xmp_desc_of(b),rank_b)
+      call xmp_la_lead_dim(xmp_desc_of(b),lead_dim_b)
+      
+      desca(1)=1
+      desca(2)=ictxt(1)
+      desca(3)=size_a(1)
+      desca(4)=size_a(2)
+      desca(5)=unitsize_a(1)
+      desca(6)=unitsize_b(2)
+      desca(7)=rank_a(1)
+      desca(8)=rank_a(2)
+      desca(9)=lead_dim_a
+      
+      descb(1)=1
+      descb(2)=ictxt(2)
+      descb(3)=size_b(1)
+      descb(4)=size_b(2)
+      descb(5)=unitsize_b(1)
+      descb(6)=unitsize_b(2)
+      descb(7)=rank_b(1)
+      descb(8)=rank_b(2)
+      descb(9)=lead_dim_b
+      
+      call pdgesv(n,nhrs,a,ia,ja,desca,ipiv,b,ib,jb,descb,info)
+      
+      return
+      end
+
+\end{XFexample}
+
+
 \item[Example 2]
      This example shows a XcalableMP program using the interface of Example1. 
 
@@ -442,46 +501,38 @@ The {\tt xmp\_la\_lead\_dim} routine returns leading dimension of local array.
 !$xmp align a(i,j) with t(i,j)
 !$xmp align ipiv(i,j) with t1(i,j)
 !$xmp align b(i) with s(i)
-
-      integer i,j,ictxt,myrow,mycol
+      ...
+      integer i,j,ict,ictxt(2),myrow,mycol
       integer m=1000,n=1000,nprow=2,npcol=2
       integer icontxt=-1,iwhat=0
       integer nrhs=1,ia=1,ja=1,ib=1,jb=1,info
       character*1 order
-
       ...
-      
       order="C"
-
       ...
-
-      call blacs_get(icontxt,iwhat,ictxt)
-      call blacs_gridinit(ictxt,order,nprow,npcol)
-      call blacs_gridinfo(ictxt,nprow,npcol,myrow,mycol)
-
+      call blacs_get(icontxt,iwhat,ict)
+      call blacs_gridinit(ict,order,nprow,npcol)
       ...
-
+      ictxt(1)=ict
+      ictxt(2)=ict
+      ...
 !$xmp loop (i,j) on t(i,j)
       do i=1,m
          do j=1,n
             a(i,j) = ...
          end do
       end do
-
       ...
- 
 !$xmp loop on s(i)
       do i=1,m
          b(i)= ...
       end do
-
-      call xmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
-                      b,ib,jb,xmp_desc_of(b),ictxt,info)
-
       ...
-
-      call blacs_gridexit(ictxt);
-
+      call xmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
+     *                b,ib,jb,xmp_desc_of(b),ictxt,info)
+      ...
+      call blacs_gridexit(ictxt)
+      ...
       stop
       end
 \end{XFexample}
