@@ -30,7 +30,7 @@ intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
 
 \verb![F]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of(xmp\_entity)}\\
 
-\verb![C]!&  {\tt xmp\_desc\_t*}& {\tt xmp\_desc\_of(xmp\_entity)}
+\verb![C]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of(xmp\_entity)}
 
 \end{tabular}
 
@@ -46,14 +46,16 @@ a built-in operator in {\XMPC}.
 %    from XMP compiler, they must set a {\tt xmp\_desc\_of} as an
 %    input argument.
 
-{\tt xmp\_desc\_of} returns the descriptor or is evaluated to the
-pointer to the descriptor of a global array, a template, or a node
-array. The resulting descriptor can be used as an input argument of some
-inquiry procedures.
+{\tt xmp\_desc\_of} returns, in {\XMPF}, or is evaluated to, in {\XMPC},
+a descriptor to retrieve informations of the specified global array,
+template, or node array. The resulting descriptor can be used as an
+input argument of the inquiry procedures which is described in appendix
+\ref{chap:Interface to Numerical Libraries}.
 
 The type of the descriptor, {\tt xmp\_desc\_t}, is
-implementation-dependent, and defined in the {\tt XMP} standard module in
-{\XMPF} or the {\tt xmp.h} heder file in {\XMPC}.
+implementation-dependent, and defined in a Fortran module named {\tt
+xmpf} and a Fortran {\tt include} file named {\tt xmpf.h} in {\XMPF}, or
+a header file named {\tt xmp.h} in {\XMPC}.
 
 \subsubsection*{Arguments}
 

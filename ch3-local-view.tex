@@ -1,6 +1,6 @@
 \section{Directives for the Local-view Programming}
 
-\subsection{{\tt local\_alias} Directive}
+\subsection{{\tt [F] local\_alias} Directive}
 
 \subsubsection*{Synopsis}
 
@@ -36,7 +36,12 @@ array is allocated.
 
 An array specified by {\it local-array-name} may be a coarray.
 
-Note that, in {\XMPC}, the address-of operator applied to global data
+Note that the base language {\Fort} is extended so that a deferred-shape
+array that is not either an allocatable array or an array pointer can be
+declared if it is specified as a ``local alias'' by the {\tt
+local\_alias} directive.
+
+In {\XMPC}, the address-of operator applied to global data
 substitutes for the {\tt local\_alias} directive (see \ref{sec:pointer
 to global data}).
 
@@ -379,12 +384,14 @@ any node.
 %%\end{XFexample}
 
 
-
 \chapter{Base Language Extensions in {\XMPC}}
 
-This chapter describes base language extensions in {\XMPC} that is other
-than coarrays described in Chapter \ref{chap:Support for the Local-view
-Programming}.
+%This chapter describes base language extensions in {\XMPC} that is other
+%than coarrays described in Chapter \ref{chap:Support for the Local-view
+%Programming}.
+
+This chapter describes base language extensions in {\XMPC} that is not
+described in any other chapters.
 
 \section{Array Section Notation}
 

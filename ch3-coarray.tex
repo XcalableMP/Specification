@@ -1,9 +1,9 @@
 \chapter{Support for the Local-view Programming}
 \label{chap:Support for the Local-view Programming}
 
-{\XMP} adopts coarray notations for the local-view
-programming. Particularly in {\XMP} {\Fort}, the notations are
-compatible with that of Fortran 2008.
+{\XMP} adopts coarray features for the local-view
+programming. Particularly in {\XMPF}, the features are compatible with
+that of Fortran 2008.
 
 \section{Coarrays in XcalableMP}
 
@@ -276,6 +276,32 @@ A[:] = B[:]:[10];
 \end{center}
 \end{minipage}
 
+
+\subsection{{\tt [C] sync\_memory} Directive}
+
+\subsubsection*{Synopsis}
+
+In {\XMPC}, the \Directive{sync\_memory} directive is used to complete
+all memory operations on coarrays.
+
+\subsubsection*{Syntax}
+\Syntax{sync\_memory}
+
+\begin{tabular}{ll}
+\verb![C]! & \verb|#pragma xmp sync_memory| \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The {\tt sync\_memory} directive ensures that any change of coarrays
+on the image (or the executing node) is visible to other images (or
+nodes) and any coarrays on the image can be refereced or defined by
+other images.
+
+Note that no other {\XMP} directive ensures that.
+
+\subsubsection*{Examples}
+\Example{sync\_memory}
 
 %\subsubsection*{Restrictions}
 %

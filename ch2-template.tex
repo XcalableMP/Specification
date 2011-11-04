@@ -60,10 +60,10 @@ template-spec}, then the default lower bound is one.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item {\it template-name} must not conflict with any other local name in
-      the same scoping unit.
-\item Every {\it template-spec} must be either {\openb}{\it int-expr}
-      {\tt :}{\closeb} {\it int-expr} or ``:''.
+ \item {\it template-name} must not conflict with any other local name
+       in the same scoping unit.
+ \item Every {\it template-spec} must be either {\openb}{\it int-expr}
+       {\tt :}{\closeb} {\it int-expr} or ``:''.
 \end{itemize}
 
 
@@ -278,20 +278,22 @@ is defined by {\tt template\_fix} directives at runtime.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
-\item The number of {\it dist-format} that is not ``{\tt *}'' must be
-      equal to the rank of the node array specified by {\it nodes-name}.  
-\item The array {\it int-array} in parentheses following {\tt gblock}
-      must be an integer one-dimensional array, and its size must be
-      equal to the size of the corresponding dimension of the node array
-      specified by {\it nodes-name}.
-\item Every element of the array {\it int-array} in parentheses
-      following {\tt gblock} must have a value of non-negative integer.
-\item The sum of the elements of the array {\it int-array} in 
-      parentheses following {\tt gblock} must be equal to the size of
-      the corresponding dimension of the template specified by {\it
-      template-name}.
-\item \verb![C]! A {\tt distribute} directive for a template must
-      precede any its reference in the executable code in the block.
+ \item \verb![C]! {\it template-name} must be declared by a {\tt
+       template} directive that lexically precedes the directive.
+ \item The number of {\it dist-format} that is not ``{\tt *}'' must be
+       equal to the rank of the node array specified by {\it nodes-name}.  
+ \item The array {\it int-array} in parentheses following {\tt gblock}
+       must be an integer one-dimensional array, and its size must be
+       equal to the size of the corresponding dimension of the node array
+       specified by {\it nodes-name}.
+ \item Every element of the array {\it int-array} in parentheses
+       following {\tt gblock} must have a value of non-negative integer.
+ \item The sum of the elements of the array {\it int-array} in 
+       parentheses following {\tt gblock} must be equal to the size of
+       the corresponding dimension of the template specified by {\it
+       template-name}.
+ \item \verb![C]! A {\tt distribute} directive for a template must
+       precede any its reference in the executable code in the block.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -492,6 +494,8 @@ align-subscript}'s are interpreted as follows:
 \subsubsection*{Restrictions}
 
 \begin{itemize}
+ \item \verb![C]! {\it array-name} must be declared by a declaration
+       statement that lexically precedes the directive.
 \item An align dummy variable may appear at most once in the sequence of
       {\it align-subscript}'s.
 \item An {\it align-subscript} may contain at most one occurrence of an
@@ -655,6 +659,8 @@ element as it. The corresponding data object is referred to as the
 \subsubsection*{Restrictions}
 
 \begin{itemize}
+ \item \verb![C]! {\it array-name} must be declared by a declaration
+       statement that lexically precedes the directive.
 \item The value specified by {\it shadow-width} must be a non-negative
       integer.
 \item The number of {\it shadow-width} must be equal to the number of
@@ -772,6 +778,10 @@ as that in the {\tt distribute} directive.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
+% \item \verb![C]! {\it template-name} must be declared by a {\tt
+%       template} directive that lexically precedes the directive.
+% \item \verb![C]! {\it nodes-name} must be declared by a {\tt nodes}
+%       directive that lexically precedes the directive.
 \item When a node encounters a {\tt template\_fix} construct at runtime,
       the template specified by {\it template-name} must be undefined.
 \item If the sequence of {\it dist-format}'s exists in a {\tt
