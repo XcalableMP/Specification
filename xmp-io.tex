@@ -222,8 +222,8 @@
    & \\
    \verb![F]! & \verb|!$xmp| {\tt \verb|master_io|} begin \\
    & \hspace{5mm}{\it io-statement} \\
+   & \hspace{5mm}... \\
    & \verb|!$xmp| {\tt \verb|master_io|} end \\
-   & {\tt \}} \\
   \end{tabular}
 
    where {\it io-statement} is one of:
@@ -262,51 +262,55 @@
     \item Internal file I/O is not allowed as a master I/O.
    \end{itemize}
 	  
-  \subsection{Description}
-   I/O statements specified by master I/O directives access (connect,
-   disconnect, I/O, positioning, inquiry)   to a file having
-   the base language format.
-   Master I/O collectively accesses to a file.
-   When execution nodes access to the file, the operations must be
-   matched across all nodes.
+  \subsection*{Description}
 
-   The Master node is unique and decided by the system.
+   An I/O statement specified with a master I/O directive accesses to a
+   file whose format is the same as the one of the base language.
+   The access, including connection, disconnection, input and output,
+   file positioning, and inquiry, is global (collective) and must be
+   executed on the same node set as the one where the file was
+   connected. 
+
+   Master node, a unique node to a execution node set, is chosen by the
+   language system.
+   Master I/O works as if all file access is executed only on the master
+   node.
 
    The operations for I/O items are summarized in the following table.
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{|l|l|p{40mm}|}
+     \begin{tabular}{|l|p{40mm}|p{80mm}|}
       \hline
       \multicolumn{1}{|c}{ }  & {\bf I/O item} & {\bf operation} \\
       \hline
-      input item & name of distributed array & The value set with a sequence
-	      of global view from a file is set in a distributed
-	      array specified to nodes. A file position increases by
-	      data length. \\
+      input item & name of global array & The data that is read 
+	      from the file in the sequential order of array elements is distributed onto 
+	      the global array on the node set. The file positioning increases by
+	      the size of data. \\
       \cline{2-3}
-      & array element of distributed array & The value set from a file
-	      is set in an element of a distributed array specified to
-	      nodes. A file position increases by data length. \\
+      & array element of global array &  The data that is read from the file
+	      is copied to the element of the global array on the specific node.
+	      The file positioning increases by the size of data. \\
       \cline{2-3}
-      & duplicate variable &  The value set from a file is set in a
-	      duplicate array in all nodes. A file position increases by
-	      data length. \\
+      & local variable & The data that is read from the file is replicated to the
+	      local variables on all nodes of the execution node
+	      set. The file positioning increases by the size of data. \\
       \cline{2-3}
-      & inplied DO-loop & For each input item, repeat the above operation. \\
+      & inplied DO-loop & For each input item, repeats the above operation. \\
       \hline
-      output item & name of distributed array & The value set of the
-	      distributed array is collected, and it is written to the
-	      file in order of the global view of array elements. A file
-	      position increases by data length. \\
+      output item & name of global array & The value of the
+	      global array is collected and is written to the
+	      file in the sequential order of array elements. The file
+	      positioning increases by the size of data. \\
       \cline{2-3}
-      & array element of distributed array &  The value set of the
-	      distributed array is collected, and it is written to the
+      & array element of global array &  The value of the element of the
+	      global array is written to the
 	      file. A file position increases by data length. \\
       \cline{2-3}
-      & duplicate variable, expression & The value of the master node
-	      is written to the file.  A file position increases by data
-	      length. \\
+      & local variable and expression & The value evaluated on the master node
+	      is written to the file. The file positioning increases by
+	      the size of data. \\
       \cline{2-3}
       & inplied DO-loop & For each output item, repeat the above operation. \\
       \hline
@@ -316,56 +320,64 @@
     \label{tb:aaa}
    \end{table}
 
-   Namelist input statements cannot read a distributed array. Namelist
-   output statements can write the value of the variable in the master
-   node. When the value of the valiable is in the file, namelist input
-   copy the value to the variable in all execution nodes. When the value
-   is not in the file, namelist input copy the value held by master node
-   to the variable in all execution nodes.
+   Namelist input and output statements cannot treat global arrays.
+   A namelist output statement writes the value on the master node to
+   the file.
+   In the namelist input, each item of the namelist is read from the
+   file to the master node if it is recorded in the file.
+   And then all items of the namelist are replicated onto all nodes of
+   the execution node set even if any item is not read from the file.
 
-   For IOSTAT specifier, SIZE specifier, and the other specifier
-   returned by an INQUIRE statement, when the value is determined, the
-   same value is determined in all execution nodes.
+   IOSTAT and SIZE specifiers and specifiers of the INQUIRE statement
+   that can return values always return the same value among the
+   execution node set.
 
-   When a specifier is branched by ERR, END, and EOR, all execution
-   nodes are branched to the same statement number.
+   When a condition specified with ERR, END or EOR specifier is
+   satisfied, all nodes of execution node set are branched together to
+   the same statement.
+
+   Advice to the implementer
+
+   It is recommended to provide such a compiler option that local I/O
+   statements (specified without directives) is regarded as master I/O
+   statements (specified with master\_io directives).
 
    \clearpage
    
    \section{Global I/O}
 
-   A master node transfers data between a file and distributed arrays
-   held by execution nodes.
-   Global I/O can READ/WRITE for unformatted files (binary files).
-   The file format is compatible with MPI-IO.
-   Generally, global I/O spend less memory than Master I/O on a large
-   scale system.
+   Global I/O executes data transfer between a file and global arrays
+   distributed on the execution node set.
+   Global I/O is restricted within unformatted (binary) files, but
+   higher performance and lower memory consumption can be expected than
+   master I/O.
+   The file format is compatible with the one in MPI-IO.
 
-   There  are three different ways of Global I/O, such as collective
-   I/O, atomic I/O, and direct I/O.
+   Global I/O consists of three kinds, collective I/O, atomic I/O, and
+   direct I/O. 
 
-   \subsection{Global I/O directive (Fortran)}
-   [Syntax]
-   
-   \begin{verbatim}
-!$xmp global_io [atomic / direct]
-      io-statement
+   \subsection{Global I/O construct [F]}
+   \subsubsection*{Syntax}
 
-or
+   \begin{tabular}{ll}
+   \verb![F]! & \verb|!$xmp| {\tt \verb|global_io|} [atomic / direct] \\
+   & \hspace{5mm} {\it io-statement} \\
+   & \\
+   \verb![F]! & \verb|!$xmp| {\tt \verb|global_io|} [atomic / direct] begin \\
+   & \hspace{5mm}{\it io-statement} \\
+   & \hspace{5mm}... \\
+   & \verb|!$xmp| {\tt \verb|global_io|} end \\
+   \end{tabular}
 
-!$xmp global_io [atomic / direct] begin
-      io-statement-list
-!$xmp end global_io
-   \end{verbatim}
+   The first syntax is just a shorthand of the second syntax.
 
-   The first form is shorthand of the second form.
-
-   [Restriction]
+   \subsubsection*{Restriction}
 
    I/O statements and specifiers available for {\it io-statement} is
    shown in the following table.
+   Definition of each specifier is described in the specification of the base language. 
 
-   When there are not direct sections in directive.
+   Case of global\_io construct without direct clause:
    \begin{table}[h]
    \begin{center}
     \label{tb:globalstatement}
@@ -379,7 +391,7 @@ or
    \end{center}
    \end{table}
 
-   When there are direct sections in directive.
+   Case of global\_io construct with direct clause:
    \begin{table}[h]
    \begin{center}
     \label{tb:globalstatement}
@@ -393,40 +405,46 @@ or
    \end{center}
    \end{table}
 
-   It is possible to set the name of a variable or a distributed array
-   to the input item of READ specified by the global I/O directive.
-   It is impossible to set the name of a array element, array section,
-   structure component, substring, implied DO loop to the input item.
+   Only the name of a variable (including global variable) can be specified 
+   as the input item of READ statement specified with global\_io directive,
+   but array element, array section,
+   structure component, substring, and implied-DO loop are not allowed as input items.
 
-   It is possible to set the name of a distributed array or an
-   expression excluding distributed array reference to the output item
-   of WRITE specified by the global I/O directive. 
-   It is impossible to set an expression including distributed array
-   reference or implied DO loop to the input item.
+   Only the name of a global array and an
+   expression excluding global array reference can be specified as the output item
+   of WRITE statement specified with global\_io directive, 
+   but an expression including global array
+   reference and implied-DO loop are not allowed as input items.
 
-   [Description]
 
-   The I/O statements specified by the Global I/O directive
-   read/write/connect/disconnect for the file compatible with MPI-IO.
-   Global I/O cannot be standerd input/output and standerd error output.
-   Global I/O cannot preconnect to a file. Global I/O must be explicitly
-   connected by the OPEN statement specified by the global I/O
-   directive.
+   \subsubsection*{Description}
 
-   The OPEN statement specified by the Global I/O directive is
-   a collective operation.
-   The file opend by the OPEN statement is shared by execution nodes.
-   Execution nodes cannot be connected to the file that is already
-   connected to other nodes.
+   Global I/O construct connects, disconnects, inputs and outputs the global I/O file,
+   which is compatible with MPI-IO.
 
-   Global I/O files must be disconnected by CLOSE statements specified by
-   the global I/O directive.
-   The CLOSE statement specified by the Global I/O directive is a
-   collective operation.
-   The statement must be executed by all nodes.
+   The standard input, output and error files cannot be a Global I/O file.
+   A Global I/O file cannot preconnect to any unit or any file handler,
+   and must explicitly be connected by the OPEN statement specified with
+   global\_io directive.
 
-   The meaning of specifiers in I/O statements is shown in the following
-   table.
+   The OPEN statement specified with global\_io directive is global
+   (collective) execution, and the file is shared in the execution node
+   set.
+   A file that is already open by the other OPEN statement with
+   global\_io directive cannot be reopen by an OPEN statement with or
+   without global\_io directive.
+
+   A global I/O file must be disconnected explicitly by a CLOSE
+   statement specified with global\_io directive, else the result of I/O
+   is not guaranteed.
+   The CLOSE statement specified with global\_io directive is a global
+   (collective) execution and must be executed by the same execution
+   node set as the one where the OPEN statement is executed.
+
+   Available values of the specifiers in I/O statements are shown in the
+   following table.
+   Definitions of the specifiers are described in the specification of
+   the base language.
 
    \begin{itemize}
     \item OPEN statement
@@ -436,15 +454,16 @@ or
      \label{tb:globalopen}
      \begin{tabular}{c|p{70mm}l}
       specifiers & value & default \\ \hline
-      UNIT & external file unit (scala constant expression)
-	  & These are not omittable. \\
-      FILE & file name (scala CHARACTER expression)
-	  & These are not omittable. \\
+      UNIT & external file unit (scalar constant expression)
+	  & not omissible. \\
+      FILE & file name (scalar CHARACTER expression)
+	  & not omittable. \\
       STATUS & 'OLD', 'NEW', 'REPLACE' or 'UNKNOWN' & 'UNKNOWN' \\
-      POSITION & 'ASIS', 'REWIND' or 'APPEND' & 'ASIS' \\
+      POSITION\footnote{available only if the directive has no directive
+      clause} & 'ASIS', 'REWIND' or 'APPEND' & 'ASIS' \\
       ACTION & 'READ', 'WRITE' or 'READWRITE' & 'READWRITE' \\
-      RECL & the value of the record length (scala constant expression)
-	  & These are not omittable. \\
+      RECL\footnote{available only if the directive has a directive clause} & the value of the record length (scalar constant expression)
+	  & not omittable. \\
      \end{tabular}
     \end{center}
    \end{table}
@@ -456,8 +475,8 @@ or
      \label{tb:globalopen}
      \begin{tabular}{c|p{70mm}l}
       specifiers & value & default \\ \hline
-      UNIT & external file unit (scala constant expression)
-	  & These are not omittable. \\
+      UNIT & external file unit (scalar constant expression)
+	  & omittable. \\
       STATUS & 'KEEP' or 'DELETE'
 	  & 'KEEP' \\
      \end{tabular}
@@ -471,41 +490,41 @@ or
      \label{tb:globalopen}
      \begin{tabular}{c|p{70mm}l}
       specifiers & value & default \\ \hline
-      UNIT & external file unit (scala constant expression)
-	  & These are not omittable. \\
-      REC & the value of the record length (scala constant expression)
-	  & These are not omittable. \\
+      UNIT & external file unit (scalar constant expression)
+	  & not omittable. \\
+      REC\footnote{available only if the directive has a directive clause} & the value of the record length (scala constant expression)
+	  & not omittable. \\
      \end{tabular}
     \end{center}
    \end{table}
 
-    \item When a scala default INTEGER variable is set to IOSTAT, an
+    \item When a scalar default INTEGER variable is set to IOSTAT, an
 	  error code is set to the specifiers.
 	 
    \end{itemize}
 
-   OPEN, CLOSE, READ and WRITE specified by the global I/O directive
-   without atomic and direct are called collective OPEN, collective
-   CLOSE, collective READ and collective WRITE, respectively.
-   These statements are called collective I/O statements.
+   OPEN, CLOSE, READ and WRITE statements specified with global\_io directives
+   without atomic and direct clauses are called respectively collective OPEN, collective
+   CLOSE, collective READ, and collective WRITE statements respectively.
+   These all statements are called collective I/O statements.
 
-   OPEN, CLOSE, READ and WRITE specified by the global I/O directive
-   with atomic are called atomic OPEN, atomic CLOSE, atomic READ and
-   atomic WRITE, respectively.
-   These statements are called atomic I/O statments.
+   OPEN, CLOSE, READ and WRITE statements specified with global\_io directives
+   with atomic clauses are called atomic OPEN, atomic CLOSE, atomic READ, and
+   atomic WRITE statements respectively.
+   These all statements are called atomic I/O statements.
 
-   OPEN, CLOSE, READ and WRITE specified by the global I/O directive
-   with direct are called direct OPEN, direct CLOSE, direct READ and
-   direct WRITE, respectively.
-   These statements are called direct I/O statments.
+   OPEN, CLOSE, READ and WRITE statements specified with global\_io directives
+   with direct clause are called direct OPEN, direct CLOSE, direct READ, and
+   direct WRITE statements respectively.
+   These all statements are called direct I/O statements.
 
-   The file connected by collective , atomic or direct OPEN can
-   read/write by the same type of READ/WRITE statement.
+   The file connected by collective, atomic or direct OPEN statement can
+   be read/be written only by the same type of READ/WRITE statement.
    The file can be disconnected by the same type of CLOSE statement.
-   Different types of global I/O can be mixed for the same file or the
+   Different types of global I/O cannot be executed together for the same file or the
    same unit.
-   For example, atomic I/O statements cannot read/write for the unit
-   connected by the collective OPEN statement.
+   For example, atomic I/O statements cannot be executed for the unit
+   connected by a collective OPEN statement.
 
    \clearpage
    
