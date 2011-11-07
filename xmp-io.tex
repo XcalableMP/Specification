@@ -381,12 +381,13 @@
    \begin{table}[h]
    \begin{center}
     \label{tb:globalstatement}
-    \begin{tabular}{c|l}
-     I/O statement & available specifiers \\ \hline
-     OPEN & UNIT, IOSTAT, FILE, STATUS, POSITION, ACTION \\
-     CLOSE & UNIT, IOSTAT, STATUS \\
-     READ & UNIT, IOSTAT \\
-     WRITE & UNIT, IOSTAT \\
+    \begin{tabular}{|c||l|}
+      \hline
+     I/O statement & available specifiers \\ \hline \hline
+     OPEN & UNIT, IOSTAT, FILE, STATUS, POSITION, ACTION \\ \hline
+     CLOSE & UNIT, IOSTAT, STATUS \\ \hline
+     READ & UNIT, IOSTAT \\ \hline
+     WRITE & UNIT, IOSTAT \\ \hline
     \end{tabular}
    \end{center}
    \end{table}
@@ -395,12 +396,13 @@
    \begin{table}[h]
    \begin{center}
     \label{tb:globalstatement}
-    \begin{tabular}{c|l}
-     I/O statement & available specifiers \\ \hline
-     OPEN & UNIT, IOSTAT, FILE, STATUS, RECL, ACTION \\
-     CLOSE & UNIT, IOSTAT, STATUS \\
-     READ & UNIT, REC, IOSTAT \\
-     WRITE & UNIT, REC, IOSTAT \\
+    \begin{tabular}{|c||l|}
+      \hline
+     I/O statement & available specifiers \\ \hline \hline
+     OPEN & UNIT, IOSTAT, FILE, STATUS, RECL, ACTION \\ \hline
+     CLOSE & UNIT, IOSTAT, STATUS \\ \hline
+     READ & UNIT, REC, IOSTAT \\ \hline
+     WRITE & UNIT, REC, IOSTAT \\ \hline
     \end{tabular}
    \end{center}
    \end{table}
@@ -452,18 +454,19 @@
    \begin{table}[h]
     \begin{center}
      \label{tb:globalopen}
-     \begin{tabular}{c|p{70mm}l}
-      specifiers & value & default \\ \hline
+     \begin{tabular}{|c||p{90mm}|l|}
+       \hline
+      specifiers & value & default \\ \hline \hline
       UNIT & external file unit (scalar constant expression)
-	  & not omissible. \\
+	  & not omissible. \\ \hline
       FILE & file name (scalar CHARACTER expression)
-	  & not omittable. \\
-      STATUS & 'OLD', 'NEW', 'REPLACE' or 'UNKNOWN' & 'UNKNOWN' \\
+	  & not omittable. \\ \hline
+      STATUS & 'OLD', 'NEW', 'REPLACE' or 'UNKNOWN' & 'UNKNOWN' \\ \hline
       POSITION\footnote{available only if the directive has no directive
-      clause} & 'ASIS', 'REWIND' or 'APPEND' & 'ASIS' \\
-      ACTION & 'READ', 'WRITE' or 'READWRITE' & 'READWRITE' \\
+      clause} & 'ASIS', 'REWIND' or 'APPEND' & 'ASIS' \\ \hline
+      ACTION & 'READ', 'WRITE' or 'READWRITE' & 'READWRITE' \\ \hline
       RECL\footnote{available only if the directive has a directive clause} & the value of the record length (scalar constant expression)
-	  & not omittable. \\
+	  & not omittable. \\ \hline
      \end{tabular}
     \end{center}
    \end{table}
@@ -473,12 +476,13 @@
    \begin{table}[h]
     \begin{center}
      \label{tb:globalopen}
-     \begin{tabular}{c|p{70mm}l}
-      specifiers & value & default \\ \hline
+     \begin{tabular}{|c||p{90mm}|l|}
+        \hline
+      specifiers & value & default \\ \hline \hline
       UNIT & external file unit (scalar constant expression)
-	  & omittable. \\
+	  & omittable. \\ \hline
       STATUS & 'KEEP' or 'DELETE'
-	  & 'KEEP' \\
+	  & 'KEEP' \\ \hline
      \end{tabular}
     \end{center}
    \end{table}
@@ -488,12 +492,13 @@
    \begin{table}[h]
     \begin{center}
      \label{tb:globalopen}
-     \begin{tabular}{c|p{70mm}l}
-      specifiers & value & default \\ \hline
+     \begin{tabular}{|c||p{90mm}|l|}
+       \hline
+      specifiers & value & default \\ \hline \hline
       UNIT & external file unit (scalar constant expression)
-	  & not omittable. \\
+	  & not omittable. \\ \hline
       REC\footnote{available only if the directive has a directive clause} & the value of the record length (scalar constant expression)
-	  & not omittable. \\
+	  & not omittable. \\ \hline
      \end{tabular}
     \end{center}
    \end{table}
@@ -541,9 +546,9 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{80mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      \multicolumn{1}{c}{ }  & {\bf I/O item} & {\bf operation} \\ \hline
+      \multicolumn{1}{|c}{ }  & {\bf I/O item} & {\bf operation} \\ \hline
       input item & name of distributed array & The value is read along
 	      the file view set in a template. The value is set to array
 	      elements in each node.
@@ -609,7 +614,7 @@
    specifiers and the value specified in a REC specifier.
 
 
-   \subsection{Global I/O library (C)}
+   \subsection{Global I/O library [C]}
 
    In C, some of data types is defined in an include file.
    A set of library functions with the arguments of the data type is
@@ -705,10 +710,10 @@
    The function opens a global I/O file.
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+      \begin{tabular}{|l|r|p{90mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf xmp\_file\_t
-      $*$xmp\_fopne\_all()} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf xmp\_file\_t
+      $*$xmp\_fopne\_all()}  \\ \hline
       argument & const char $*$fname & file name \\ \cline{2-3}
       & const char $*$amode & equialent to fopen of POSIX. combination
 	      of ``rwa+'' \\ \hline
@@ -723,25 +728,26 @@
    File view is initialized. The value of shared file pointer and intrinsic file
    pointer depend on the value of amode.
 
-      \begin{table}[h]
-   \begin{center}
+   \begin{table}
+     \begin{center}
     \label{tb:xxx}
-    \begin{tabular}{c|p{100mm}}
-     amode & intended purpose \\ \hline
+    \begin{tabular}{|c|p{120mm}|}
+      \hline
+     amode & intended purpose \\ \hline \hline
      r &  Open for reading only. File pointer points the beginning of
-	 the file.\\
+	 the file.\\ \hline
      r+ & Open an existing file for update (reading and writing). File
-	 pointer points the beginning of the file. \\
+	 pointer points the beginning of the file. \\ \hline
      w &  Create for writing. If a file by that name already exists, it
-	 will be overwritten. File pointer points the begininng of th file. \\
+	 will be overwritten. File pointer points the begininng of th file. \\ \hline
      w+ & Create a new file for update (reading and writing). If a file
 	 by that name already exists, it will be overwritten. File
-	 pointer points the beginning of the file. \\
+	 pointer points the beginning of the file. \\ \hline
      a & Append; open for writing at end-of-file or create for writing
-	 if the file does not eist. File pointer points the end of the file. \\
+	 if the file does not eist. File pointer points the end of the file. \\ \hline
      a+ & Open for append; open (or create if the file does not exist)
 	 for update at the end of the file. File pointer points the
-	 beginning of the file. \\
+	 beginning of the file. \\ \hline
     \end{tabular}
    \end{center}
    \end{table}
@@ -754,13 +760,11 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|l|p{70mm}}
+     \begin{tabular}{|l|l|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf xmp\_file\_t
-      $*$xmp\_fclose\_all(fh)} &  \\
-      \hline
-      argument & xmp\_file\_t $*$fh & file structure \\
-      \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf xmp\_file\_t
+      $*$xmp\_fclose\_all(fh)} \\ \hline \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \hline
       return value & int & 0: normal termination \\
       &  & 1: abnormal termination. fh is NULL. \\
       &  & 2: abnormal termination. error in MPI\_File\_close. \\ \hline
@@ -769,16 +773,16 @@
 %    \caption{aaa}
     \label{tb:close}
    \end{table}
-   
+
    [intrinsic file pointer setting]
 
    Change the setting of intrinsic file pointer.
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{70mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf int xmp\_fseek(fh,
-      offset, whence)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf int xmp\_fseek(fh,
+      offset, whence)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & long long offset & displacement of current file view from
 	      position of whence \\ \cline{2-3}
@@ -801,10 +805,10 @@
    Change the setting of shared file pointer.
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf int xmp\_fseek\_shared(fh,
-      offset, whence)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf int xmp\_fseek\_shared(fh,
+      offset, whence)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & long long offset & displacement of current file view from
 	      position of whence \\ \cline{2-3}
@@ -826,10 +830,10 @@
    Refer to position of intrinsic file pointer.
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf long long
-      xmp\_ftell(fh)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf long long
+      xmp\_ftell(fh)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \hline
       return value & long long & Upon successful completion, the
 	      function shall open the file and return a non-negative
@@ -849,10 +853,10 @@
    Refer to position of shared file pointer.
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf long long
-      xmp\_ftell\_shared(fh)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf long long
+      xmp\_ftell\_shared(fh)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \hline
       return value & long long & Upon successful completion, the
 	      function shall open the file and return a non-negative
@@ -874,10 +878,10 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf int
-      xmp\_file\_sync\_all(fh)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf int
+      xmp\_file\_sync\_all(fh)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \hline
       return value & int & 0: normal termination \\
       &  & an integer othe than 0: abnormal termination \\ \hline
@@ -905,10 +909,10 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{70mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf int xmp\_file\_set\_view\_all(fh,
-      disp, ap, rp)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf int xmp\_file\_set\_view\_all(fh,
+      disp, ap, rp)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & long long disp & displacement from the beginning of the file. \\ \cline{2-3}
       & xmp\_array\_t ap & data of distributed array \\ \cline{2-3}
@@ -931,10 +935,10 @@
    
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf int xmp\_file\_clear\_view\_all(fh,
-      disp)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf int xmp\_file\_clear\_view\_all(fh,
+      disp)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & long long disp & displacement from the beginning of the file. \\ \hline
       return value & int & 0: normal termination \\
@@ -953,10 +957,10 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf Size\_t
-      xmp\_fread\_all(fh, buffer, size, count)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf Size\_t
+      xmp\_fread\_all(fh, buffer, size, count)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of loading valiables \\ \cline{2-3}
       & size\_t size & the size of a loading element of data \\ \cline{2-3}
@@ -978,10 +982,10 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
-      xmp\_fwrite\_all(fh, buffer, size, count)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      xmp\_fwrite\_all(fh, buffer, size, count)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of storing valiables \\ \cline{2-3}
       & size\_t size & the size of a storing element of data \\ \cline{2-3}
@@ -1003,10 +1007,10 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
-      xmp\_fread\_darray\_all(fh, ap, rp)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      xmp\_fread\_darray\_all(fh, ap, rp)} \\ \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & xmp\_array\_t ap & data of distributed array \\ \cline{2-3}
       & xmp\_range\_t $*$rp & data of accessible range \\ \hline
@@ -1028,10 +1032,10 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
-      xmp\_fwrite\_darray\_all(fh, ap, rp)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      xmp\_fwrite\_darray\_all(fh, ap, rp)} \\ \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & xmp\_array\_t ap & data of distributed array \\ \cline{2-3}
       & xmp\_range\_t $*$rp & data of accessible range \\ \hline
@@ -1068,10 +1072,10 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{40mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
-      xmp\_fread\_shared(fh, buffer, size, count)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      xmp\_fread\_shared(fh, buffer, size, count)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of loading valiables \\ \cline{2-3}
       & size\_t size & the size of a loading element of data \\ \cline{2-3}
@@ -1093,10 +1097,10 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
-      xmp\_write\_shared(fh, ap, rp)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      xmp\_write\_shared(fh, ap, rp)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & xmp\_array\_t ap & data of distributed array \\ \cline{2-3}
       & xmp\_range\_t $*$rp & data of accessible range \\ \hline
@@ -1124,10 +1128,10 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
-      xmp\_fread(fh, buffer, size, count)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      xmp\_fread(fh, buffer, size, count)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of loading valiables \\ \cline{2-3}
       & size\_t size & the size of a loading element of data \\ \cline{2-3}
@@ -1149,10 +1153,10 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{l|r|p{70mm}}
+     \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
-      xmp\_fwrite(fh, buffer, size, count)} &  \\ \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      xmp\_fwrite(fh, buffer, size, count)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of storing valiables \\ \cline{2-3}
       & size\_t size & the size of a storing element of data \\ \cline{2-3}
