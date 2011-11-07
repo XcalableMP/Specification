@@ -56,26 +56,40 @@
 
   \subsection{Global I/O}
 
-  In Fortran, XcalableMP directives can specify for a part of I/O
-  statements, such as OPEN statement, CLOSE statement, READ statement,
-  and WRITE statement. 
-  In C, service functions and library functions are used for global I/O.
+  Also global I/O is input and output for the file that corresponds to
+  an execution node set.
+  Some executions of global I/O are global and the others are local.
+  In a large system with many nodes, global I/O can be expected higher
+  speed and less memory consumption execution than master I/O.
 
-  Global I/O processing can be performed for a file deal correspinding
-  to an execution node set.
-  Generally, global I/O spend less memory than Master I/O on a large
-  scale system.
+  [Fortran] It is provided in the form of directives for a part of I/O
+  statements, such as OPEN, CLOSE, READ
+  and WRITE statements.
 
-  Accessible files by Global I/O are only unformatted files. In Fortran,
-  implied DO-Loops and a part of specifiers cannot be used.
-  In C, a formatted I/O library cannot be used.
+  [C] It is provided in the form of service functions and include files.
 
-  It is possible for global I/O to access for a file created by
-  MPI-IO. It is impossible for the I/O to access for a file created by
-  Fortran.
+  Global I/O can handle only unformatted (binary) files. In XcalableMP Fortran,
+  implied DO-Loops and some specifiers cannot be used.
+  In XcalableMP C, a formatted I/O library, including fprintf() and fscanf(), is not provided.
 
-  There are three differnt ways of Global I/O. Global I/O is shown in
-  Table \ref{tb:global}. 
+  Global I/O can read a file written in MPI-IO, and vice versa. 
+
+  [Fortran] File formats are not compatible between XcalableMP Fortran
+  and the base language because global I/O does not generate or access
+  the file header and footer particular to the base language.
+
+  There are three kinds of Global I/O, as shown in Table
+  \ref{tb:global}.
+  {\bf Collective} global I/O is global (collective) execution and
+  sequential file access.
+  It handles global data in the sequential order, similar to master
+  I/O.
+  {\bf Atomic} global I/O is local execution and sequential file access.
+  Execution nodes share file positioning of the global I/O file and
+  execute each I/O statement and library call mutually.
+  {\bf Direct} global I/O is local execution and direct file access.
+  Each execution node has its own file positioning and accesses a shared
+  file concurrently.
 
   \begin{table}[tb]
    \begin{center}
@@ -91,22 +105,27 @@
    \end{center}
   \end{table}
   
-  XcalableMP based on Fortran is incompatible with base language,
-  because a file written by Global I/O does not have a header and a
-  footer.
+  Restriction
 
-  There  are three different ways of Global I/O, such as collective
-  I/O, atomic I/O, and direct I/O.
-  Collective global I/O is sequential access.
-  The I/O collectively read/write in the image of a global array.
-  Atomic global I/O is sequential access.
-  The I/O exclusively read/write for a file. The I/O is shared with
-  position of file pointer.
-  Direct global I/O is direct access.
-  The I/O locally read/write for a file by specifying position of file
-  pointer.
+  \begin{itemize}
+   \item  The name of a global array may not be declared in a namelist
+	  group.
+	  That is, NAMELIST I/O is not allowed for global arrays.
+  \end{itemize}
 
-  The name of distributed arrays cannot be set to elements of NAMELIST.
+  Advice for programmers
+
+  Local I/O is useful for debugging focusing on a node since local I/O
+  is executed on each node individually.
+
+  Master I/O is a directive extension, in which the execution result
+  matches the one of the base language ignoring directive lines.
+
+  Global I/O aims for highly-parallel I/O using thousands of nodes.
+  It is limited to binary file.
+  It avoids extreme concentration of computational load and memory
+  consumption to specific nodes using MPI-IO or other parallel I/O
+  techniques.
 
   \section{File Connection}
 
