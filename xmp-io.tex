@@ -129,130 +129,137 @@
 
   \section{File Connection}
 
-  In Fortran, when I/O statements are executed, files must be
-  connected to units. 
-  In C, files must be connected to file handles. These operations are
-  called file connection.
-  Local I/O connects a file for each node, independently.
-  Master I/O and global I/O connects a file across
-  all execution nodes, collectively. 
+  A file is connected to a unit in XcalableMP Fortran and to a file
+  handler in XcalableMP C.
+  This operation is called {\bf file connection}.
+  Local I/O connects a file in each node independently.
+  Master I/O and global I/O connect a file to an execution node set
+  collectively.
   
-  There are two ways of file connections (preconnection and dynamic
-  connection).
-  Preconnection means that the unit is connected to a file at the
-  begininng of execution of the program and therefore it may be specified
-  I/O statements without the prior execution of an OPEN
-  statement.
+  There are two ways of file connections, dynamic connection and
+  preconnection.
+  Dynamic connection connects a file during execution of the program.
+  Preconnection connects a file at the begininng of execution of the
+  program and therefore it can execute I/O statements and functions
+  without the prior execution of an OPEN statement or a function call to
+  open the file.
 
+  \subsection{File connection in local I/O}
 
-  \subsection{Local I/O}
+  The language processor of the base language connects the file in each
+  node.
+  File system visible to each node is implementation dependent.
 
-  Local I/O conects a file by a base language processor in each node.
-  An accessible file system from each node is system dependent.
-  When multi nodes access for a file, the behavior is system dependent.
-
+  It is implementation dependent which nodes can access the standard
+  input, output and error files.
+  It is also implementation dependent how behave the nodes accessing the
+  same file at the same time; e.g., data in the standard input file may
+  be read only one node and may be replicated all nodes.
+  It is implementation dependent how data from the multiple nodes are
+  merged into the standard output/error file.
   
-  \subsection{Master I/O}
-  
-  OPEN statements designated master I/O directeves conect execution
-  nodes to a master I/O file.
+  \subsection{File connection in master I/O [Fortran]}
+
+  An OPEN statement specified with a master I/O directive connects the
+  master I/O file to the execution node set.
   When a master I/O file is connected by a READ statement or a WRITE
-  statement, file name and file attribute are system dependent.
-  Disconnection from a master I/O files is exected by execution of a CLOSE
-  statement or termination of an executable program.
+  statement without encountering any OPEN statement, the name and
+  attribute of the file depend on the language system of the base
+  language.
+  Disconnection from a master I/O file is executed by a CLOSE statement
+  or termination of the program.
 
-  Dynamic connections must be established by all nodes of sharing the
-  file.
-  When a file is connected to a unit, the OPEN statement that connects
-  the file with another unit cannot be executed.
+  Dynamic connection must be executed concurrently by all nodes sharing
+  the file with the same unit number.
+  Two execution node sets may employ the same unit number only if they
+  have no common node.
 
-  For standerd input file, standerd output file, and standerd error
-  output file, these actions of master I/O executed by all nodes are
-  guaranteed.
-  While the action of master I/O executed by a part of nodes is
-  system dependent.
-
-
-  \subsection{Global I/O}
-
-  In global I/O, a file cannot be connected by preconnections.
-
-  [Fortran]
-
-  In global I/O, a file is collectively connected to all nodes executed the
-  OPEN statement.
-  Disconnection from master I/O files is exected by execution of a CLOSE
-  statement or termination of an executable program.
-
-  Dynamic connection must be performed for a same unit from shared all
-  nodes.
-  When a file is connected to a unit, the OPEN statement that connects
-  the file with another unit cannot be executed.
+  The standard input, output and error files are preconnected to the
+  entire node set.
+  Therefore, master I/O executed on the entire node set is always
+  allowed without OPEN and CLOSE statements.
 
 
-  [C]
+  \subsection{File connection in global I/O}
 
-  In global I/O, a file collectively connects to all nodes executed a
-  XcalableMP library function for the OPEN statement.
-  Disconnection from master I/O files is exected by execution of a
-  XcalableMP library function for a CLOSE statement or termination of an
-  executable program.
-  
+  Dynamic connecton of global I/O is global (collective) execution and
+  is valid for the execution node set.
+  Global I/O file cannot be preconnected.
+
+  \subsubsection*{[F]}
+
+  An OPEN statement specified with a global I/O directive connects the
+  global I/O file to the execution node set.
+  Disconnection from a global I/O file is executed by a CLOSE statement
+  or termination of the program.
+
+  Dynamic connection must be executed concurrently by all nodes sharing
+  the file with the same unit number.
+  Two execution node sets may employ the same unit number only if they
+  have no common node.
+
+  \subsubsection*{[C]}
+
+  A library function to open a global I/O file connect the file to the
+  execution node set.
+  Disconnection from a global I/O file is executed by a library function
+  to close the file or termination of the program.
 
   \section{Master I/O}
 
-  \subsection{Summary}
-  A master node transfers data between a file and a set of execution nodes.
-  For a distributed array, I/O data remains the image of global array.
+  \subsection*{Summary}
+  A master I/O construct executes data transfer between a file and an
+  execution node set via master node of the execution node set.
+  For a global array, the virtual sequential order of the array elements
+  is visible.
 
-  \subsection{Syntax}
-  \begin{verbatim}
-!$xmp master_io
-     io-statement
+  \subsection*{Syntax}
+%  \Syntax{tasks}
 
-or
+  \begin{tabular}{ll}
+   \verb![F]! & \verb|!$xmp| {\tt \verb|master_io|} \\
+   & \hspace{5mm} {\it io-statement} \\
+   & \\
+   \verb![F]! & \verb|!$xmp| {\tt \verb|master_io|} begin \\
+   & \hspace{5mm}{\it io-statement} \\
+   & \verb|!$xmp| {\tt \verb|master_io|} end \\
+   & {\tt \}} \\
+  \end{tabular}
 
-!$xmp master_io begin
-     io-statement
-!$xmp end master_io   
-  \end{verbatim}
-   
-   ``io-statement'' is a I/O statement in a base language, one of the
-   following.
+   where {\it io-statement} is one of:
 
    \begin{itemize}
-    \item OPEN
-    \item CLOSE
-    \item READ
-    \item WRITE
-    \item PRINT
-    \item BACKSPACE
-    \item ENDFILE
-    \item REWIND
-    \item INQUIRE
+    \item OPEN statement
+    \item CLOSE statement
+    \item READ statement
+    \item WRITE statement
+    \item PRINT statement
+    \item BACKSPACE statement
+    \item ENDFILE statement
+    \item REWIND statement
+    \item INQUIRE statement
    \end{itemize}
 
-   \subsection{Restriction}
+   \subsection*{Restriction}
    \begin{itemize}
-    \item The following item cannot be specified in the input item list.
+    \item The following items cannot be specified in the input item list.
 
 	  \begin{itemize}
-	   \item Array section of distributed array
-	   \item Substring of distributed array
-	   \item Array element including the distributed array reference
-		 to an index
-	   \item Array section including the distributed array reference
-		 to an index
-	   \item Substring including the distributed array reference to
-		 an index
-	   \item Expressions including the distributed array reference
+	   \item Array section of global array
+	   \item Substring of global array
+	   \item Array element whose subscript contains reference of a
+		 global array
+	   \item Array section whose subscript contains reference of a
+		 global array
+	   \item Substring whose subscript contains reference of a
+		 global array
+	   \item Expressions including the global array reference
 	   \item I/O implied DO
 	  \end{itemize}
 
-    \item I/O statements specified in a master I/O directive are
-	  collectively executed. Specifiers in I/O statements must be
-	  the same value.
-    \item Internal file I/O cannot be performed.
+    \item An I/O statement specified with a master I/O directive must be
+	  executed on the node set that is connected to the file.
+    \item Internal file I/O is not allowed as a master I/O.
    \end{itemize}
 	  
   \subsection{Description}
