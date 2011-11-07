@@ -18,16 +18,16 @@
   Local I/O can read a file written by the base language and, vice
   versa.
 
-  [Fortran] A name of a global array in the I/O list describes the
+  [F] A name of a global array in the I/O list describes the
   entire area of the array located in each node.
 
   An array element of a global array can be referred as an I/O item only
   in the node where it is located.
 
-  [Fortran] Any array section of a global array cannot be referred as an
+  [F] Any array section of a global array cannot be referred as an
   I/O item.
 
-  \subsection{Master I/O[Fortran]}
+  \subsection{Master I/O[F]}
 
   Master I/O is input and output for the file that corresponds to an
   execution node set.
@@ -62,7 +62,7 @@
   In a large system with many nodes, global I/O can be expected higher
   speed and less memory consumption execution than master I/O.
 
-  [Fortran] It is provided in the form of directives for a part of I/O
+  [F] It is provided in the form of directives for a part of I/O
   statements, such as OPEN, CLOSE, READ
   and WRITE statements.
 
@@ -74,7 +74,7 @@
 
   Global I/O can read a file written in MPI-IO, and vice versa. 
 
-  [Fortran] File formats are not compatible between XcalableMP Fortran
+  [F] File formats are not compatible between XcalableMP Fortran
   and the base language because global I/O does not generate or access
   the file header and footer particular to the base language.
 
@@ -158,7 +158,7 @@
   It is implementation dependent how data from the multiple nodes are
   merged into the standard output/error file.
   
-  \subsection{File connection in master I/O [Fortran]}
+  \subsection{File connection in master I/O [F]}
 
   An OPEN statement specified with a master I/O directive connects the
   master I/O file to the execution node set.
@@ -492,7 +492,7 @@
       specifiers & value & default \\ \hline
       UNIT & external file unit (scalar constant expression)
 	  & not omittable. \\
-      REC\footnote{available only if the directive has a directive clause} & the value of the record length (scala constant expression)
+      REC\footnote{available only if the directive has a directive clause} & the value of the record length (scalar constant expression)
 	  & not omittable. \\
      \end{tabular}
     \end{center}
