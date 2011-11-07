@@ -1,0 +1,1117 @@
+
+ \section{XcalableMP-IO}
+
+ There are the following three ways of I/O in XcalableMP.
+
+  \subsection{Local I/O}
+
+  Local I/O is a way to use I/O statements and I/O service functions in
+  base languages. 
+  % I/O statements and I/O service functions without a XcalableMP directive are Local I/O.
+  I/O statements without a XcalableMP directive are Local I/O.
+
+  I/O statements are executed in each execution node. Available functions
+  depend on the system.
+
+  By using Local I/O, a file created by base languages can be accessed.
+  And a file created by Local I/O can be accessed by base languages.
+
+  When an item in the I/O list is a distributed array, each
+  node I/O for the elements of the distributed array.
+
+  Distributed array elements as I/O items can be referred to nodes that are
+  not distributed.
+  The array section in a distributed array can be referred to I/O item.
+
+
+  \subsection{Master I/O}
+
+  Master I/O is supported on XcalableMP based on Fortran, but is not
+  supported on XcalableMP based on C.
+
+  Master I/O read/write for a file mapped to a set of execution
+  nodes.
+  Master I/O is matched across all nodes.
+  Master I/O for distributed array operate by any one node (Master
+  node).
+  A master node is selected from any one node in each machine.
+  The Master node is unique, when a program is running on the same node
+  set. 
+
+  A distributed array can read/write in the image of a global array.
+  When a local variable is read for a file, a loading value is copied
+  for all nodes. When a local variable or an expression is written for a
+  file, the value in master node is written for a file.
+
+  By using Local I/O, it is possible to access for a file created by
+  base languages.
+
+
+  \subsection{Global I/O}
+
+  In Fortran, XcalableMP directives can specify for a part of I/O
+  statements, such as OPEN statement, CLOSE statement, READ statement,
+  and WRITE statement. 
+  In C, service functions and library functions are used for global I/O.
+
+  Global I/O processing can be performed for a file deal correspinding
+  to an execution node set.
+  Generally, global I/O spend less memory than Master I/O on a large
+  scale system.
+
+  Accessible files by Global I/O are only unformatted files. In Fortran,
+  implied DO-Loops and a part of specifiers cannot be used.
+  In C, a formatted I/O library cannot be used.
+
+  It is possible for global I/O to access for a file created by
+  MPI-IO. It is impossible for the I/O to access for a file created by
+  Fortran.
+
+  There are three differnt ways of Global I/O. Global I/O is shown in
+  Table \ref{tb:global}. 
+
+  \begin{table}[tb]
+   \begin{center}
+    \caption{Global I/O}
+    \label{tb:global}
+    \begin{tabular}{|c||l|l|}
+     \hline 
+     & independent/collective & access method  \\ \hline \hline
+     Collectibe I/O & collective & sequential access \\ \hline
+     Atomic I/O & independent & sequential access \\ \hline
+     Direct I/O & independent & direct access \\ \hline
+    \end{tabular}
+   \end{center}
+  \end{table}
+  
+  XcalableMP based on Fortran is incompatible with base language,
+  because a file written by Global I/O does not have a header and a
+  footer.
+
+  There  are three different ways of Global I/O, such as collective
+  I/O, atomic I/O, and direct I/O.
+  Collective global I/O is sequential access.
+  The I/O collectively read/write in the image of a global array.
+  Atomic global I/O is sequential access.
+  The I/O exclusively read/write for a file. The I/O is shared with
+  position of file pointer.
+  Direct global I/O is direct access.
+  The I/O locally read/write for a file by specifying position of file
+  pointer.
+
+  The name of distributed arrays cannot be set to elements of NAMELIST.
+
+  \section{File Connection}
+
+  In Fortran, when I/O statements are executed, files must be
+  connected to units. 
+  In C, files must be connected to file handles. These operations are
+  called file connection.
+  Local I/O connects a file for each node, independently.
+  Master I/O and global I/O connects a file across
+  all execution nodes, collectively. 
+  
+  There are two ways of file connections (preconnection and dynamic
+  connection).
+  Preconnection means that the unit is connected to a file at the
+  begininng of execution of the program and therefore it may be specified
+  I/O statements without the prior execution of an OPEN
+  statement.
+
+
+  \subsection{Local I/O}
+
+  Local I/O conects a file by a base language processor in each node.
+  An accessible file system from each node is system dependent.
+  When multi nodes access for a file, the behavior is system dependent.
+
+  
+  \subsection{Master I/O}
+  
+  OPEN statements designated master I/O directeves conect execution
+  nodes to a master I/O file.
+  When a master I/O file is connected by a READ statement or a WRITE
+  statement, file name and file attribute are system dependent.
+  Disconnection from a master I/O files is exected by execution of a CLOSE
+  statement or termination of an executable program.
+
+  Dynamic connections must be established by all nodes of sharing the
+  file.
+  When a file is connected to a unit, the OPEN statement that connects
+  the file with another unit cannot be executed.
+
+  For standerd input file, standerd output file, and standerd error
+  output file, these actions of master I/O executed by all nodes are
+  guaranteed.
+  While the action of master I/O executed by a part of nodes is
+  system dependent.
+
+
+  \subsection{Global I/O}
+
+  In global I/O, a file cannot be connected by preconnections.
+
+  [Fortran]
+
+  In global I/O, a file is collectively connected to all nodes executed the
+  OPEN statement.
+  Disconnection from master I/O files is exected by execution of a CLOSE
+  statement or termination of an executable program.
+
+  Dynamic connection must be performed for a same unit from shared all
+  nodes.
+  When a file is connected to a unit, the OPEN statement that connects
+  the file with another unit cannot be executed.
+
+
+  [C]
+
+  In global I/O, a file collectively connects to all nodes executed a
+  XcalableMP library function for the OPEN statement.
+  Disconnection from master I/O files is exected by execution of a
+  XcalableMP library function for a CLOSE statement or termination of an
+  executable program.
+  
+
+  \section{Master I/O}
+
+  \subsection{Summary}
+  A master node transfers data between a file and a set of execution nodes.
+  For a distributed array, I/O data remains the image of global array.
+
+  \subsection{Syntax}
+  \begin{verbatim}
+!$xmp master_io
+     io-statement
+
+or
+
+!$xmp master_io begin
+     io-statement
+!$xmp end master_io   
+  \end{verbatim}
+   
+   ``io-statement'' is a I/O statement in a base language, one of the
+   following.
+
+   \begin{itemize}
+    \item OPEN
+    \item CLOSE
+    \item READ
+    \item WRITE
+    \item PRINT
+    \item BACKSPACE
+    \item ENDFILE
+    \item REWIND
+    \item INQUIRE
+   \end{itemize}
+
+   \subsection{Restriction}
+   \begin{itemize}
+    \item The following item cannot be specified in the input item list.
+
+	  \begin{itemize}
+	   \item Array section of distributed array
+	   \item Substring of distributed array
+	   \item Array element including the distributed array reference
+		 to an index
+	   \item Array section including the distributed array reference
+		 to an index
+	   \item Substring including the distributed array reference to
+		 an index
+	   \item Expressions including the distributed array reference
+	   \item I/O implied DO
+	  \end{itemize}
+
+    \item I/O statements specified in a master I/O directive are
+	  collectively executed. Specifiers in I/O statements must be
+	  the same value.
+    \item Internal file I/O cannot be performed.
+   \end{itemize}
+	  
+  \subsection{Description}
+   I/O statements specified by master I/O directives access (connect,
+   disconnect, I/O, positioning, inquiry)   to a file having
+   the base language format.
+   Master I/O collectively accesses to a file.
+   When execution nodes access to the file, the operations must be
+   matched across all nodes.
+
+   The Master node is unique and decided by the system.
+
+   The operations for I/O items are summarized in the following table.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{|l|l|p{40mm}|}
+      \hline
+      \multicolumn{1}{|c}{ }  & {\bf I/O item} & {\bf operation} \\
+      \hline
+      input item & name of distributed array & The value set with a sequence
+	      of global view from a file is set in a distributed
+	      array specified to nodes. A file position increases by
+	      data length. \\
+      \cline{2-3}
+      & array element of distributed array & The value set from a file
+	      is set in an element of a distributed array specified to
+	      nodes. A file position increases by data length. \\
+      \cline{2-3}
+      & duplicate variable &  The value set from a file is set in a
+	      duplicate array in all nodes. A file position increases by
+	      data length. \\
+      \cline{2-3}
+      & inplied DO-loop & For each input item, repeat the above operation. \\
+      \hline
+      output item & name of distributed array & The value set of the
+	      distributed array is collected, and it is written to the
+	      file in order of the global view of array elements. A file
+	      position increases by data length. \\
+      \cline{2-3}
+      & array element of distributed array &  The value set of the
+	      distributed array is collected, and it is written to the
+	      file. A file position increases by data length. \\
+      \cline{2-3}
+      & duplicate variable, expression & The value of the master node
+	      is written to the file.  A file position increases by data
+	      length. \\
+      \cline{2-3}
+      & inplied DO-loop & For each output item, repeat the above operation. \\
+      \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   Namelist input statements cannot read a distributed array. Namelist
+   output statements can write the value of the variable in the master
+   node. When the value of the valiable is in the file, namelist input
+   copy the value to the variable in all execution nodes. When the value
+   is not in the file, namelist input copy the value held by master node
+   to the variable in all execution nodes.
+
+   For IOSTAT specifier, SIZE specifier, and the other specifier
+   returned by an INQUIRE statement, when the value is determined, the
+   same value is determined in all execution nodes.
+
+   When a specifier is branched by ERR, END, and EOR, all execution
+   nodes are branched to the same statement number.
+
+   \clearpage
+   
+   \section{Global I/O}
+
+   A master node transfers data between a file and distributed arrays
+   held by execution nodes.
+   Global I/O can READ/WRITE for unformatted files (binary files).
+   The file format is compatible with MPI-IO.
+   Generally, global I/O spend less memory than Master I/O on a large
+   scale system.
+
+   There  are three different ways of Global I/O, such as collective
+   I/O, atomic I/O, and direct I/O.
+
+   \subsection{Global I/O directive (Fortran)}
+   [Syntax]
+   
+   \begin{verbatim}
+!$xmp global_io [atomic / direct]
+      io-statement
+
+or
+
+!$xmp global_io [atomic / direct] begin
+      io-statement-list
+!$xmp end global_io
+   \end{verbatim}
+
+   The first form is shorthand of the second form.
+
+   [Restriction]
+
+   I/O statements and specifiers available for {\it io-statement} is
+   shown in the following table.
+
+   When there are not direct sections in directive.
+   \begin{table}[h]
+   \begin{center}
+    \label{tb:globalstatement}
+    \begin{tabular}{c|l}
+     I/O statement & available specifiers \\ \hline
+     OPEN & UNIT, IOSTAT, FILE, STATUS, POSITION, ACTION \\
+     CLOSE & UNIT, IOSTAT, STATUS \\
+     READ & UNIT, IOSTAT \\
+     WRITE & UNIT, IOSTAT \\
+    \end{tabular}
+   \end{center}
+   \end{table}
+
+   When there are direct sections in directive.
+   \begin{table}[h]
+   \begin{center}
+    \label{tb:globalstatement}
+    \begin{tabular}{c|l}
+     I/O statement & available specifiers \\ \hline
+     OPEN & UNIT, IOSTAT, FILE, STATUS, RECL, ACTION \\
+     CLOSE & UNIT, IOSTAT, STATUS \\
+     READ & UNIT, REC, IOSTAT \\
+     WRITE & UNIT, REC, IOSTAT \\
+    \end{tabular}
+   \end{center}
+   \end{table}
+
+   It is possible to set the name of a variable or a distributed array
+   to the input item of READ specified by the global I/O directive.
+   It is impossible to set the name of a array element, array section,
+   structure component, substring, implied DO loop to the input item.
+
+   It is possible to set the name of a distributed array or an
+   expression excluding distributed array reference to the output item
+   of WRITE specified by the global I/O directive. 
+   It is impossible to set an expression including distributed array
+   reference or implied DO loop to the input item.
+
+   [Description]
+
+   The I/O statements specified by the Global I/O directive
+   read/write/connect/disconnect for the file compatible with MPI-IO.
+   Global I/O cannot be standerd input/output and standerd error output.
+   Global I/O cannot preconnect to a file. Global I/O must be explicitly
+   connected by the OPEN statement specified by the global I/O
+   directive.
+
+   The OPEN statement specified by the Global I/O directive is
+   a collective operation.
+   The file opend by the OPEN statement is shared by execution nodes.
+   Execution nodes cannot be connected to the file that is already
+   connected to other nodes.
+
+   Global I/O files must be disconnected by CLOSE statements specified by
+   the global I/O directive.
+   The CLOSE statement specified by the Global I/O directive is a
+   collective operation.
+   The statement must be executed by all nodes.
+
+   The meaning of specifiers in I/O statements is shown in the following
+   table.
+
+   \begin{itemize}
+    \item OPEN statement
+   
+   \begin{table}[h]
+    \begin{center}
+     \label{tb:globalopen}
+     \begin{tabular}{c|p{70mm}l}
+      specifiers & value & default \\ \hline
+      UNIT & external file unit (scala constant expression)
+	  & These are not omittable. \\
+      FILE & file name (scala CHARACTER expression)
+	  & These are not omittable. \\
+      STATUS & 'OLD', 'NEW', 'REPLACE' or 'UNKNOWN' & 'UNKNOWN' \\
+      POSITION & 'ASIS', 'REWIND' or 'APPEND' & 'ASIS' \\
+      ACTION & 'READ', 'WRITE' or 'READWRITE' & 'READWRITE' \\
+      RECL & the value of the record length (scala constant expression)
+	  & These are not omittable. \\
+     \end{tabular}
+    \end{center}
+   \end{table}
+
+    \item CLOSE statement
+	  
+   \begin{table}[h]
+    \begin{center}
+     \label{tb:globalopen}
+     \begin{tabular}{c|p{70mm}l}
+      specifiers & value & default \\ \hline
+      UNIT & external file unit (scala constant expression)
+	  & These are not omittable. \\
+      STATUS & 'KEEP' or 'DELETE'
+	  & 'KEEP' \\
+     \end{tabular}
+    \end{center}
+   \end{table}
+
+    \item READ/WRITE statement
+	  
+   \begin{table}[h]
+    \begin{center}
+     \label{tb:globalopen}
+     \begin{tabular}{c|p{70mm}l}
+      specifiers & value & default \\ \hline
+      UNIT & external file unit (scala constant expression)
+	  & These are not omittable. \\
+      REC & the value of the record length (scala constant expression)
+	  & These are not omittable. \\
+     \end{tabular}
+    \end{center}
+   \end{table}
+
+    \item When a scala default INTEGER variable is set to IOSTAT, an
+	  error code is set to the specifiers.
+	 
+   \end{itemize}
+
+   OPEN, CLOSE, READ and WRITE specified by the global I/O directive
+   without atomic and direct are called collective OPEN, collective
+   CLOSE, collective READ and collective WRITE, respectively.
+   These statements are called collective I/O statements.
+
+   OPEN, CLOSE, READ and WRITE specified by the global I/O directive
+   with atomic are called atomic OPEN, atomic CLOSE, atomic READ and
+   atomic WRITE, respectively.
+   These statements are called atomic I/O statments.
+
+   OPEN, CLOSE, READ and WRITE specified by the global I/O directive
+   with direct are called direct OPEN, direct CLOSE, direct READ and
+   direct WRITE, respectively.
+   These statements are called direct I/O statments.
+
+   The file connected by collective , atomic or direct OPEN can
+   read/write by the same type of READ/WRITE statement.
+   The file can be disconnected by the same type of CLOSE statement.
+   Different types of global I/O can be mixed for the same file or the
+   same unit.
+   For example, atomic I/O statements cannot read/write for the unit
+   connected by the collective OPEN statement.
+
+   \clearpage
+   
+   \subsubsection{collective I/O statement}
+
+   Collective I/O statements read/write for a file shared between nodes.
+   I/O data remains the image of global array.
+
+   Collective I/O statements are matched across all nodes.
+   In collective I/O, I/O operations, such as connection, disconnection,
+   read and write, for a file must be executed in the same nodes. 
+   
+   The operations for I/O items are summarized in the following table.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{80mm}}
+      \hline
+      \multicolumn{1}{c}{ }  & {\bf I/O item} & {\bf operation} \\ \hline
+      input item & name of distributed array & The value is read along
+	      the file view set in a template. The value is set to array
+	      elements in each node.
+	      File position seeks by data size.\\
+      \cline{2-3}
+      & duplicate variable &  The value set from a file is set in a
+	      duplicate array in all nodes. File position seeks by
+	      data length. \\ \hline
+      output item & name of distributed array & The value is written
+	      along the file view set in a template. The value is
+	      written for a file.
+	      File position seeks by data size.\\
+      \cline{2-3}
+      & duplicate variable, expression & The value in any one node is
+	      written to the file.  File position seeks by data
+	      length. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   \subsubsection{atomic I/O statement}
+
+   Atomic I/O statements exclusively read/write for a file shared
+   between nodes in no particular order.
+   As nondeterministic parallel execution, if the program is the same,
+   the results can differ.
+
+   Atomic OPEN and CLOSE statements are executed collectively. Atomic
+   READ and WRITE statements are executed locally.
+   The file connected by atomic OPEN statements is disconnected by using
+   atomic CLOSE statements in all execution nodes.
+   Atomic READ and WRITE statements can be executed from any node in a
+   set of execution nodes.
+
+   Atomic READ and WRITE statements are exclusively excuted.
+   A unit of atomic I/O statements is a READ statement or a WRITE
+   statement.
+
+   At first, the file position is determined by the POSITION specifier in
+   atomic I/O statement.
+   After that, file position seeks by the length of the input/output
+   variables.
+
+
+   \subsubsection{direct I/O statement}
+
+   Direct I/O statements read/write for a file shared between nodes.
+   File position is specified on each node.
+
+   Direct OPEN and CLOSE statements are executed collectively. Direct
+   READ and WRITE statements are executed locally.
+   The file connected by direct OPEN statements is disconnected by using
+   atomic CLOSE statements in all execution nodes.
+   Direct READ and WRITE statements can be executed from any node in a
+   set of execution nodes.
+   
+   Direct READ and WRITE statements read/write to file position
+   specified by a REC specifier.
+   Direct READ and WRITE statements are executed independently.
+   File position is the value multiplied by the value specified in a RECL
+   specifiers and the value specified in a REC specifier.
+
+
+   \subsection{Global I/O library (C)}
+
+   In C, some of data types is defined in an include file.
+   A set of library functions with the arguments of the data type is
+   provided.
+   Built-in function gotten these type from the name of a distributed
+   array is provided.
+   The following types are provided.
+
+   \begin{itemize}
+    \item xmp\_file\_t : file handle
+    \item xmp\_array\_t : distributed data for a distributed
+	  array
+    \item xmp\_rang\_t : expression of array section
+   \end{itemize}
+
+   The following library functions are provided.
+   Collective function names end with \_all.
+
+   \begin{itemize}
+    \item global I/O file operation
+    \begin{itemize}
+     \item xmp\_fopen\_all
+     \item xmp\_fclose\_all
+     \item xmp\_fseek
+     \item xmp\_fseek\_shared\_all
+     \item xmp\_ftell
+     \item xmp\_ftell\_shared
+     \item xmp\_file\_sync\_all
+    \end{itemize}
+    \item collective I/O
+    \begin{itemize}
+     \item xmp\_file\_set\_view\_all
+     \item xmp\_file\_clear\_view\_all
+     \item xmp\_fread\_all
+     \item xmp\_fwrite\_all
+     \item xmp\_fread\_darray\_all
+     \item xmp\_fwrite\_darray\_all
+    \end{itemize}
+    \item atomic I/O
+    \begin{itemize}
+     \item xmp\_fread\_shared
+     \item xmp\_fwrite\_shared
+    \end{itemize}
+    \item direct I/O
+    \begin{itemize}
+     \item xmp\_fread
+     \item xmp\_fwrite
+    \end{itemize}
+   \end{itemize}
+
+   \clearpage
+   
+   \subsubsection{Data type}
+
+   The following data types are defined in include file ``xmp\_io.h''.
+   \begin{description}
+    \item[xmp\_file\_t] The valiable of xmp\_file\_t type is a file
+	       handle.
+	       The file handle is generated when a file is opened.
+	       There are shared file pointer and intrinsic file pointer
+	       to identify file position.
+
+	       Shared file pointer share with shared nodes.
+	       The file pointer is seeked by atomic I/O.
+	       Identify file pointer is seeked by collective I/O and
+	       direct I/O.
+	       
+	       These file pointers are managed by the member of
+	       xmp\_file\_t type structures.
+	       These file pointers are controled and referenced through
+	       the library function.
+	       
+    \item[xmp\_array\_t] The valiable of xmp\_array\_t is distributed data
+	       for a distributed array.
+	       Distribution, alignment and node array shape, etc are the
+	       member of xmp\_array\_t.
+
+	       Distributed data of Distributed array ``A'' is gotten by
+	       the following built-in function.
+	       
+	       xmp\_array\_t xmp\_array\_of(A);
+	       
+    \item[xmp\_range\_t] The valiable of xmp\_range\_t is an expression
+	       of array section.
+	       Lower bound, upper bound and stride are included in the
+	       member of an array.
+   \end{description}
+
+   \subsubsection{Global I/O file operation}
+
+   [OPEN]
+   
+   The function opens a global I/O file.
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf xmp\_file\_t
+      $*$xmp\_fopne\_all()} &  \\ \hline
+      argument & const char $*$fname & file name \\ \cline{2-3}
+      & const char $*$amode & equialent to fopen of POSIX. combination
+	      of ``rwa+'' \\ \hline
+      return value & xmp\_file\_t$*$ & file structure. NULL is returned
+	      when a program abend. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   File view is initialized. The value of shared file pointer and intrinsic file
+   pointer depend on the value of amode.
+
+      \begin{table}[h]
+   \begin{center}
+    \label{tb:xxx}
+    \begin{tabular}{c|p{100mm}}
+     amode & intended purpose \\ \hline
+     r &  Open for reading only. File pointer points the beginning of
+	 the file.\\
+     r+ & Open an existing file for update (reading and writing). File
+	 pointer points the beginning of the file. \\
+     w &  Create for writing. If a file by that name already exists, it
+	 will be overwritten. File pointer points the begininng of th file. \\
+     w+ & Create a new file for update (reading and writing). If a file
+	 by that name already exists, it will be overwritten. File
+	 pointer points the beginning of the file. \\
+     a & Append; open for writing at end-of-file or create for writing
+	 if the file does not eist. File pointer points the end of the file. \\
+     a+ & Open for append; open (or create if the file does not exist)
+	 for update at the end of the file. File pointer points the
+	 beginning of the file. \\
+    \end{tabular}
+   \end{center}
+   \end{table}
+
+
+   \clearpage
+   [CLOSE]
+
+   The function closes a global I/O file.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|l|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf xmp\_file\_t
+      $*$xmp\_fclose\_all(fh)} &  \\
+      \hline
+      argument & xmp\_file\_t $*$fh & file structure \\
+      \hline
+      return value & int & 0: normal termination \\
+      &  & 1: abnormal termination. fh is NULL. \\
+      &  & 2: abnormal termination. error in MPI\_File\_close. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:close}
+   \end{table}
+   
+   [intrinsic file pointer setting]
+
+   Change the setting of intrinsic file pointer.
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf int xmp\_fseek(fh,
+      offset, whence)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & long long offset & displacement of current file view from
+	      position of whence \\ \cline{2-3}
+      & int whence & choose file position \\
+      &  & SEEK\_SET: the beginning of the file \\ 
+      &  & SEEK\_CUR: current position \\ 
+      &  & SEEK\_END: the end of the file \\ \hline
+      return value & int & 0: normal termination \\
+      &  & an integer othe than 0: abnormal termination \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   \clearpage
+
+   [shared file pointer setting]
+
+   Change the setting of shared file pointer.
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf int xmp\_fseek\_shared(fh,
+      offset, whence)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & long long offset & displacement of current file view from
+	      position of whence \\ \cline{2-3}
+      & int whence & choose file position \\
+      &  & SEEK\_SET: the beginning of the file \\ 
+      &  & SEEK\_CUR: current position \\ 
+      &  & SEEK\_END: the end of the file \\ \hline
+      return value & int & 0: normal termination \\
+      &  & an integer othe than 0: abnormal termination \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+
+   [referece to position of intrinsic file pointer]
+
+   Refer to position of intrinsic file pointer.
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf long long
+      xmp\_ftell(fh)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \hline
+      return value & long long & Upon successful completion, the
+	      function shall open the file and return a non-negative
+	      integer representing the lowest numbered unused file
+	      descriptor. Otherwise, negative number shall be
+	      returned. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+   
+
+   
+   [referece for position of shared file pointer]
+
+   Refer to position of shared file pointer.
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf long long
+      xmp\_ftell\_shared(fh)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \hline
+      return value & long long & Upon successful completion, the
+	      function shall open the file and return a non-negative
+	      integer representing the lowest numbered unused file
+	      descriptor. Otherwise, negative number shall be
+	      returned. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+   
+   
+
+   [file synchronization]
+
+   File synchronizing.
+   Completion of writing for a file from shared nodes is guaranteed.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf int
+      xmp\_file\_sync\_all(fh)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \hline
+      return value & int & 0: normal termination \\
+      &  & an integer othe than 0: abnormal termination \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   \clearpage
+
+   \subsubsection{collective I/O}
+
+   Collective I/O is collectively executed.
+   Collective I/O read/write from position of intrinsic file pointer.
+   Assume that file view is previously set, where file view mechanism
+   describes relationship between how nodes will access their data
+   and how data laid out on disk.
+   A detailed the definition of file view mechanism can be found in MPI
+   2.0 specificaation.
+
+   [file view setting]
+
+   The function sets file view.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf int xmp\_file\_set\_view\_all(fh,
+      disp, ap, rp)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & long long disp & displacement from the beginning of the file. \\ \cline{2-3}
+      & xmp\_array\_t ap & data of distributed array \\ \cline{2-3}
+      & xmp\_range\_t $*$rp & data of accessible range \\ \hline
+      return value & int & 0: normal termination \\
+      &  & an integer othe than 0: abnormal termination \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   
+   [file view initialization]
+
+   The function clears file view.
+   Position of shared file pointer and intrinsic file pointer is set to
+   disp.
+   Element data type and file type is set to MPI\_BYTE.
+   
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf int xmp\_file\_clear\_view\_all(fh,
+      disp)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & long long disp & displacement from the beginning of the file. \\ \hline
+      return value & int & 0: normal termination \\
+      &  & an integer othe than 0: abnormal termination \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+
+   [collective READ for duplicate variable]
+
+   The function collectively reads data from position of shared file
+   pointer.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf Size\_t
+      xmp\_fread\_all(fh, buffer, size, count)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & void $*$buffer & beginning address of loading valiables \\ \cline{2-3}
+      & size\_t size & the size of a loading element of data \\ \cline{2-3}
+      & size\_t count & the number of loading data element \\ \hline
+      return value & int & Upon successful completion, return the size
+	      of loading data. Otherwise, negative number shall be
+	      returned. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+
+   [collective WRITE for duplicate variable]
+
+   The function collectively writes data from position of shared file
+   pointer.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
+      xmp\_fwrite\_all(fh, buffer, size, count)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & void $*$buffer & beginning address of storing valiables \\ \cline{2-3}
+      & size\_t size & the size of a storing element of data \\ \cline{2-3}
+      & size\_t count & the number of storing data element \\ \hline
+      return value & int & Upon successful completion, return the size
+	      of storing data. Otherwise, negative number shall be
+	      returned. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   \clearpage
+   [collective READ for distributed array]
+
+   The function collectively reads data to distributed array from
+   position of shared file pointer.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
+      xmp\_fread\_darray\_all(fh, ap, rp)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & xmp\_array\_t ap & data of distributed array \\ \cline{2-3}
+      & xmp\_range\_t $*$rp & data of accessible range \\ \hline
+      return value & int & Upon successful completion, return the size
+	      of loading data. Otherwise, negative number shall be
+	      returned. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   The function reads data in the range $rp$ for distributed array $ap$.
+
+   [collective WRITE for distributed array]
+
+   The function collectively writes data to distributed array from
+   position of shared file pointer.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
+      xmp\_fwrite\_darray\_all(fh, ap, rp)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & xmp\_array\_t ap & data of distributed array \\ \cline{2-3}
+      & xmp\_range\_t $*$rp & data of accessible range \\ \hline
+      return value & int & Upon successful completion, return the size
+	      of loading data. Otherwise, negative number shall be
+	      returned. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   The function writes data in the range $rp$ for distributed array $ap$.
+
+   \clearpage
+
+   \subsubsection{atomic I/O}
+
+   Atomic I/O is locally executed. But the I/O exclusively read/write
+   from position fo shared file pointer. Before atomic I/O is executed,
+   file view must be cleared.
+   
+   [Rationale]
+
+   In MPI, when all proceses use shared file pointer, these processes
+   must specify the same file view. But xmp\_file\_set\_view\_all
+   function set different file view for each node.
+   Thus, before atomic I/O is executed, file view must be cleared.
+
+   [atomic read]
+
+   The function exclusively reads data form position of shared file
+   pointer.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{40mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
+      xmp\_fread\_shared(fh, buffer, size, count)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & void $*$buffer & beginning address of loading valiables \\ \cline{2-3}
+      & size\_t size & the size of a loading element of data \\ \cline{2-3}
+      & size\_t count & the number of loading data element \\ \hline
+      return value & int & Upon successful completion, return the size
+	      of loading data. Otherwise, negative number shall be
+	      returned. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+
+   [atomic read]
+
+   The function exclusively writes data to distributed array from
+   position of shared file pointer.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
+      xmp\_write\_shared(fh, ap, rp)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & xmp\_array\_t ap & data of distributed array \\ \cline{2-3}
+      & xmp\_range\_t $*$rp & data of accessible range \\ \hline
+      return value & int & Upon successful completion, return the size
+	      of storing data. Otherwise, negative number shall be
+	      returned. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+
+   \subsubsection{direct I/O}
+
+   Direct I/O is locally exectuted. The I/O exclusively read/write data
+   from position of intrinsic file pointer in each node.
+   The setting file view is enable.
+
+   [direct read]
+
+   The function reads data from position of instrinsic file
+   pointer.
+   The function is locally executed.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
+      xmp\_fread(fh, buffer, size, count)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & void $*$buffer & beginning address of loading valiables \\ \cline{2-3}
+      & size\_t size & the size of a loading element of data \\ \cline{2-3}
+      & size\_t count & the number of loading data element \\ \hline
+      return value & int & Upon successful completion, return the size
+	      of loading data. Otherwise, negative number shall be
+	      returned. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   [direct write]
+
+   The function write data from position of instrinsic file
+   pointer.
+   The function is locally executed.
+
+   \begin{table}[h]
+    \begin{center}
+     \begin{tabular}{l|r|p{70mm}}
+      \hline
+      {\bf function name}  & \multicolumn{1}{c}{\bf size\_t
+      xmp\_fwrite(fh, buffer, size, count)} &  \\ \hline
+      argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
+      & void $*$buffer & beginning address of storing valiables \\ \cline{2-3}
+      & size\_t size & the size of a storing element of data \\ \cline{2-3}
+      & size\_t count & the number of storing data element \\ \hline
+      return value & int & Upon successful completion, return the size
+	      of storing data. Otherwise, negative number shall be
+	      returned. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+
+   
