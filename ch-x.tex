@@ -231,6 +231,117 @@ int main(void) {
 
 Examples of query subroutine specifications are the following.
 
+\subsection{\tt xmp\_node\_index}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt subroutine}& {\tt xmp\_node\_index(d, idx)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
+          & {\tt integer} & {\tt idx(dim)}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_node\_index(xmp\_desc\_t d, int idx[])}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_node\_index} routine returns the index of each dimension of target node set.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target node set.
+ \item {\tt idx} is a one-dimensional integer array. {\tt dim} is the dimension 
+       of the node set.
+\end{itemize}
+
+
+\subsection{\tt xmp\_node\_size}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt subroutine}& {\tt xmp\_node\_size(d, size)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
+          & {\tt integer} & {\tt size(dim)}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_node\_size(xmp\_desc\_t d, int size[])}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_node\_size} routine returns the size of each dimension of target node set.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target node set.
+ \item {\tt size} is a one-dimensional integer array. {\tt dim} is the dimension 
+       of the node set.
+\end{itemize}
+
+\subsection{\tt xmp\_gt\_size}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt subroutine}& {\tt xmp\_gt\_size(d, size)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
+          & {\tt integer} & {\tt size(dim)}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_gt\_size(xmp\_desc\_t d, int size[])}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_gt\_size} routine returns the length of each dimension of global template.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target global template.
+ \item {\tt size} is a one-dimensional integer array. {\tt dim} is the dimension 
+       of the global template.
+\end{itemize}
+
+\subsection{\tt xmp\_lt\_size}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt subroutine}& {\tt xmp\_lt\_size(d, size)}\\
+          & {\tt xmp\_desc\_t} & {\tt d}\\
+          & {\tt integer} & {\tt size(dim)}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_lt\_size(xmp\_desc\_t* d, int size[])}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_lt\_size} routine returns the length of each dimension of
+ distributed local template.
+
+\subsubsection*{Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type {\tt
+       xmp\_desc\_t} that is associated with the target global template.
+ \item {\tt size} is a one-dimensional integer array. {\tt dim} is the dimension 
+       of the distributed local template.
+\end{itemize}
+
+
 \subsection{\tt xmp\_ga\_size}
 
 \subsubsection*{Format}
@@ -315,23 +426,23 @@ the template blocking factor.
 \end{itemize}
 
 
-\subsection{\tt xmp\_ga\_first\_idx\_nodes\_rank}
+\subsection{\tt xmp\_ga\_first\_idx\_nodes\_index}
 
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_first\_idx\_nodes\_rank(d, rank)}\\
+\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_first\_idx\_nodes\_index(d, idx)}\\
           & {\tt xmp\_desc\_t} & {\tt d}\\
-          & {\tt integer} & {\tt rank(dim)}\\
+          & {\tt integer} & {\tt idx(dim)}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_ga\_first\_idx\_nodes\_rank(xmp\_desc\_t d, int rank[])}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_ga\_first\_idx\_nodes\_index(xmp\_desc\_t d, int index[])}\\
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_ga\_first\_idx\_nodes\_rank} routine returns node index over which 
+The {\tt xmp\_ga\_first\_idx\_nodes\_index} routine returns node index over which 
 the first row and column of global array a is distributed.
 
 \subsubsection*{Arguments}
@@ -339,7 +450,7 @@ the first row and column of global array a is distributed.
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
        xmp\_desc\_t} that is associated with the target global array.
- \item {\tt rank} is a one-dimensional integer array. {\tt dim} is the dimension of 
+ \item {\tt idx} is a one-dimensional integer array. {\tt dim} is the dimension of 
  node array associeted with the target global array.
 \end{itemize}
 
