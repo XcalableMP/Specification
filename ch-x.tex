@@ -210,21 +210,13 @@ int main(void) {
 
    This chapter describes the XcalableMP interfaces to existing MPI
    parallel libraries, which is effective to achieve high productivity
-   and performance ot {\XMP} programs.
+   and performance of {\XMP} programs.
    
 \section{General rule}
 
-   This section shows a way how existing numerical library routines are used in
-   {\XMP} programs.
-
-
 \begin{itemize}
-\item Execution flow of XcalableMP program using XcalableMP interface is the following:\\
-      XMP directive decraration $\to$ XMP interface ($\to$ native numerical library routines)
-\item The name of XcalableMP interface prefixes "{\tt XMP\_}" or "{\tt xmp\_}" 
-      to numerical library routine name.
 \item In case that native numerical library routine needs descriptor information,
-      XcalableMP interface to that numericalI library routine have an argument of 
+      XcalableMP interface to that numerical library routine have an argument of 
       {\tt xmp\_desc\_t} type. A {\XMP} interface is implemented using some 
       query subroutines provided by {\XMP}.
 \item A design of XMP interface to existing numerical library do not affect 
@@ -249,20 +241,20 @@ Examples of query subroutine specifications are the following.
           & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer} & {\tt size(dim)}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_ga\_size(xmp\_desc\_t* d, int size[])}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_ga\_size(xmp\_desc\_t d, int size[])}\\
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_ga\_size} routine returns the length of each dimension of the global array.
+The {\tt xmp\_ga\_size} routine returns the length of each dimension of global array.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
        xmp\_desc\_t} that is associated with the target global array.
- \item {\tt size} is one-dimensional integer array. {\tt dim} is the dimension 
+ \item {\tt size} is a one-dimensional integer array. {\tt dim} is the dimension 
        of the global array.
 \end{itemize}
 
@@ -283,14 +275,14 @@ The {\tt xmp\_ga\_size} routine returns the length of each dimension of the glob
 \subsubsection*{Synopsis}
 
 The {\tt xmp\_la\_size} routine returns the length of each dimension of
- the distributed local array.
+ distributed local array.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
        xmp\_desc\_t} that is associated with the target global array.
- \item {\tt size} is one-dimensional integer array. {\tt dim} is the dimension 
+ \item {\tt size} is a one-dimensional integer array. {\tt dim} is the dimension 
        of the distributed local array.
 \end{itemize}
 
@@ -304,7 +296,7 @@ The {\tt xmp\_la\_size} routine returns the length of each dimension of
           & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer} & {\tt unitsize(dim)}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_ga\_template\_unitsize(xmp\_desc\_t* d, int unitsize[])}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_ga\_template\_unitsize(xmp\_desc\_t d, int unitsize[])}\\
 
 \end{tabular}
 
@@ -318,7 +310,7 @@ the template blocking factor.
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
        xmp\_desc\_t} that is associated with the target global array.
- \item {\tt unitsize} is one-dimensional integer array. {\tt dim} is the dimension 
+ \item {\tt unitsize} is a one-dimensional integer array. {\tt dim} is the dimension 
  of the template blocking factor associated with the target global array.
 \end{itemize}
 
@@ -333,7 +325,7 @@ the template blocking factor.
           & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer} & {\tt rank(dim)}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_ga\_first\_idx\_nodes\_rank(xmp\_desc\_t* d, int rank[])}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_ga\_first\_idx\_nodes\_rank(xmp\_desc\_t d, int rank[])}\\
 
 \end{tabular}
 
@@ -347,7 +339,7 @@ the first row and column of global array a is distributed.
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
        xmp\_desc\_t} that is associated with the target global array.
- \item {\tt rank} is one-dimensional integer array. {\tt dim} is the dimension of 
+ \item {\tt rank} is a one-dimensional integer array. {\tt dim} is the dimension of 
  node array associeted with the target global array.
 \end{itemize}
 
@@ -361,7 +353,7 @@ the first row and column of global array a is distributed.
           & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer} & {\tt lead\_dim}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_la\_lead\_dim(xmp\_desc\_t* d, int lead\_dim)}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_la\_lead\_dim(xmp\_desc\_t d, int lead\_dim)}\\
 
 \end{tabular}
 
@@ -374,7 +366,7 @@ The {\tt xmp\_la\_lead\_dim} routine returns leading dimension of local array.
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
        xmp\_desc\_t} that is associated with the target global array.
- \item {\tt lead\_dim} is integer value.
+ \item {\tt lead\_dim} is an integer value.
 \end{itemize}
 
 
@@ -388,7 +380,7 @@ The {\tt xmp\_la\_lead\_dim} routine returns leading dimension of local array.
           & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer,allocatable} & {\tt addr}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_la\_addr(xmp\_desc\_t* d, int* addr)}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_la\_addr(xmp\_desc\_t d, int* addr)}\\
 
 \end{tabular}
 
@@ -401,23 +393,26 @@ The {\tt xmp\_la\_addr} routine returns top address of distributed local array.
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
        xmp\_desc\_t} that is associated with the target global array.
- \item {\tt addr} is address of the start of the local array.
+ \item {\tt addr} is an address of the start of the local array.
 \end{itemize}
 
-\section{ScaLAPACK}
+\section{Example}
 
+   This section shows a example of implementation of {\XMP} interface to
+   numerical library.
+   
    ScaLAPACK is a linear algebra library for distributed-memory.
    Communication processes of ScaLAPACK routines depend on BLACS
    (Basic Linear Algebraic Communication Subprograms).
-   ScaLAPACK library routines processes in XcalableMP program also depend on 
-   BLACS. This section shows a way how ScaLAPACK library routines are used in
-   {\XMP} programs.
+   ScaLAPACK library routines processes in {\XMP} program also depend on 
+   BLACS. Remarks of design of {\XMP} interface to ScaLAPACK library are 
+   the following.
 
 \begin{itemize}
 \item For ScaLAPACK library routine having descriptor array as argument,
       the XcalableMP interface routine have BLACS context handle including 
       the descriptor array as new argument.
-\item The blacs\_exit routine is unnecessary, because XcalableMP program executes process 
+\item The blacs\_exit routine is unnecessary, because {\XMP} program executes process 
       corresponding to MPI\_Finalize routines.
 \item A valid value of the argument "order" of BLACS routine "{\tt blacs\_gridinit}" is 
       only column-major. 
@@ -430,23 +425,22 @@ The {\tt xmp\_la\_addr} routine returns top address of distributed local array.
    This example shows implementation of {\XMPF} interface for ScaLAPACK driver routine "pdgesv".
 
 \begin{XFexample}
-      subroutine xmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
-     *                b,ib,jb,xmp_desc_of(b),ictxt,info)
+      subroutine xmp_pdgesv(n,nrhs,a,ia,ja,da,ipiv,b,ib,jb,db,ictxt,info)
       integer n,nrhs,ia,ja,ib,jb,ictxt(2),info
       double precision a,b
-      xmp_desc_t xmp_desc_of(a),xmp_desc_of(b)
+      xmp_desc_t da,db
       integer size_a(2),unitsize_a(2),rank_a(2),lead_dim_a,desca(9)
       integer size_b(2),unitsize_b(2),rank_b(2),lead_dim_b,descb(9)
       
-      call xmp_ga_size(xmp_desc_of(a),size_a)
-      call xmp_ga_template_unitsize(xmp_desc_of(a),unitsize_a)
-      call xmp_ga_first_idx_nodes_rank(xmp_desc_of(a),rank_a)
-      call xmp_la_lead_dim(xmp_desc_of(a),lead_dim_a)
+      call xmp_ga_size(da,size_a)
+      call xmp_ga_template_unitsize(da,unitsize_a)
+      call xmp_ga_first_idx_nodes_rank(da,rank_a)
+      call xmp_la_lead_dim(da,lead_dim_a)
       
-      call xmp_ga_size(xmp_desc_of(b),size_b)
-      call xmp_ga_template_unitsize(xmp_desc_of(b),unitsize_b)
-      call xmp_ga_first_idx_nodes_rank(xmp_desc_of(b),rank_b)
-      call xmp_la_lead_dim(xmp_desc_of(b),lead_dim_b)
+      call xmp_ga_size(db,size_b)
+      call xmp_ga_template_unitsize(db,unitsize_b)
+      call xmp_ga_first_idx_nodes_rank(db,rank_b)
+      call xmp_la_lead_dim(db,lead_dim_b)
       
       desca(1)=1
       desca(2)=ictxt(1)
@@ -477,7 +471,7 @@ The {\tt xmp\_la\_addr} routine returns top address of distributed local array.
 
 
 \item[Example 2]
-     This example shows a XcalableMP program using the interface of Example1. 
+     This example shows a {\XMP} program using the interface of Example1. 
 
 \Example{nodes}
 \Example{template}
