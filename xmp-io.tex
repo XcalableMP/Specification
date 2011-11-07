@@ -1,51 +1,58 @@
 
- \section{XcalableMP-IO}
+ \chapter{XcalableMP I/O(Proposal)}
 
- There are the following three ways of I/O in XcalableMP.
+ \section{Categorization of I/O}
+ XcalableMP has three kinds of I/O.
 
   \subsection{Local I/O}
 
-  Local I/O is a way to use I/O statements and I/O service functions in
-  base languages. 
-  % I/O statements and I/O service functions without a XcalableMP directive are Local I/O.
-  I/O statements without a XcalableMP directive are Local I/O.
+  Local I/O is the way to use I/O statements and I/O service functions in
+  base languages, in which I/O statements and functions are used without
+  any directives.
 
-  I/O statements are executed in each execution node. Available functions
-  depend on the system.
+  I/O statements (in {\XMP} {\Fort}) and I/O functions (in {\XMP} {\C})
+  are executed in local similar to the other execution statements.
+  It depends on the system which nodes can handle the I/O statements and
+  functions.
 
-  By using Local I/O, a file created by base languages can be accessed.
-  And a file created by Local I/O can be accessed by base languages.
+  Local I/O can read a file written by the base language and, vice
+  versa.
 
-  When an item in the I/O list is a distributed array, each
-  node I/O for the elements of the distributed array.
+  [Fortran] A name of a global array in the I/O list describes the
+  entire area of the array located in each node.
 
-  Distributed array elements as I/O items can be referred to nodes that are
-  not distributed.
-  The array section in a distributed array can be referred to I/O item.
+  An array element of a global array can be referred as an I/O item only
+  in the node where it is located.
 
+  [Fortran] Any array section of a global array cannot be referred as an
+  I/O item.
 
-  \subsection{Master I/O}
+  \subsection{Master I/O[Fortran]}
 
-  Master I/O is supported on XcalableMP based on Fortran, but is not
-  supported on XcalableMP based on C.
+  Master I/O is input and output for the file that corresponds to an
+  execution node set.
+  Master I/O is global execution.
 
-  Master I/O read/write for a file mapped to a set of execution
-  nodes.
-  Master I/O is matched across all nodes.
-  Master I/O for distributed array operate by any one node (Master
-  node).
-  A master node is selected from any one node in each machine.
-  The Master node is unique, when a program is running on the same node
-  set. 
+  In master I/O, a global data is input and output as if it is executed
+  only by master node, which represents the execution node set, through
+  its local copy of the data.
 
-  A distributed array can read/write in the image of a global array.
-  When a local variable is read for a file, a loading value is copied
-  for all nodes. When a local variable or an expression is written for a
-  file, the value in master node is written for a file.
+  Master node is chosen among the execution node set arbitrarily by the
+  system, and is unique to the execution node set during execution of
+  the program.
 
-  By using Local I/O, it is possible to access for a file created by
-  base languages.
+  Master I/O is provided in the form of directives of {\XMP} {\Fort}.
 
+  A global array as an I/O item is accessed in the sequential order of
+  array elements.
+  When a local variable is read from a file, the value is copied to all
+  nodes of the execution node set.
+  When a local variable or an expression is written to a file, only the
+  value of the data on master node is written.
+  
+  Master I/O can read a file written by the base language, and vice
+  versa.
+  
 
   \subsection{Global I/O}
 
