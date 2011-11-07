@@ -293,15 +293,51 @@ all memory operations on coarrays.
 
 \subsubsection*{Description}
 
-The {\tt sync\_memory} directive ensures that any change of coarrays
-on the image (or the executing node) is visible to other images (or
-nodes) and any coarrays on the image can be refereced or defined by
-other images.
+%The {\tt sync\_memory} directive ensures that any change of coarrays
+%on the image (or the executing node) is visible to other images (or
+%nodes) and any coarrays on the image can be referenced or defined by
+%other images.
 
+The {\tt sync\_memory} directive ensures that any changes of coarrays
+on the image (or the executing node) are visible to any images (or
+nodes) and any coarrays on the image can be referenced or defined by
+any images.
+%
 Note that no other {\XMP} directive ensures that.
+
+The {\tt sync\_memory} directive in {\XMPC} has a function equivalent
+to that of the {\tt sync memory} statement in {\XMPF}.
 
 \subsubsection*{Examples}
 \Example{sync\_memory}
+
+\begin{XCexample}
+#pragma xmp coarray a, b, c, d : [*]
+
+a = ...;
+... = b;
+c:[p] = ...;
+... = d:[q];
+
+#pragma xmp sync_memory
+\end{XCexample}
+
+\vspace{0.5cm}
+
+When a node finishes executing the {\tt sync\_memory} directive in this
+code snippet at runtime, the following are ensured:
+
+\begin{itemize}
+ \item the local definition of a coarray {\tt a} is complete
+       and it can be referenced and defined by any other nodes;
+ \item the local reference of a coarray {\tt b} is complete
+       and it can be defined by any other nodes;
+ \item the remote definition of a coarray {\tt c} from any other nodes,
+       if any, is complete and it can be referenced and defined by
+       any other nodes; and 
+ \item the remote reference of a coarray {\tt d} from any other nodes,
+       if any, is complete and it can be defined by any other nodes.
+\end{itemize}
 
 %\subsubsection*{Restrictions}
 %
