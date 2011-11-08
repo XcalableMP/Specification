@@ -6,7 +6,7 @@
 
   \subsection{Local I/O}
 
-  Local I/O is the way to use I/O statements and standerd I/O functions in
+  Local I/O is the way to use I/O statements and standard I/O functions in
   base languages, in which I/O statements and functions are used without
   any directives.
 
@@ -89,7 +89,7 @@
   execute each I/O statement and library call mutually.
   {\bf Direct} global I/O is local execution and direct file access.
   Each executing node has its own file positioning and accesses a shared
-  file concurrently.
+  file collectively.
 
   \begin{table}[tb]
    \begin{center}
@@ -169,7 +169,7 @@
   Disconnection from a master I/O file is executed by a CLOSE statement
   or termination of the program.
 
-  Dynamic connection must be executed concurrently by all nodes sharing
+  Dynamic connection must be executed collectively by all nodes sharing
   the file with the same unit number.
   Two executing node sets may employ the same unit number only if they
   have no common node.
@@ -193,7 +193,7 @@
   Disconnection from a global I/O file is executed by a CLOSE statement
   or termination of the program.
 
-  Dynamic connection must be executed concurrently by all nodes sharing
+  Dynamic connection must be executed collectively by all nodes sharing
   the file with the same unit number.
   Two executing node sets may employ the same unit number only if they
   have no common node.
@@ -299,7 +299,7 @@
 	      local variables on all nodes of the executing node
 	      set. The file positioning increases by the size of data. \\
       \cline{2-3}
-      & inplied DO-loop & For each input item, repeats the above operation. \\
+      & implied DO-loop & For each input item, repeats the above operation. \\
       \hline
       output item & name of global array & The value of the
 	      global array is collected and is written to the
@@ -314,7 +314,7 @@
 	      is written to the file. The file positioning increases by
 	      the size of data. \\
       \cline{2-3}
-      & inplied DO-loop & For each output item, repeat the above operation. \\
+      & implied DO-loop & For each output item, repeat the above operation. \\
       \hline
       \end{tabular}
      \end{center}
