@@ -207,6 +207,7 @@ int main(void) {
 
 \chapter{Interface to Numerical Libraries (Recommended Feature)}
 \label{chap:Interface to Numerical Libraries}
+\index{library interface}
 
    This chapter describes the XcalableMP interfaces to existing MPI
    parallel libraries, which is effective to achieve high productivity
@@ -233,7 +234,8 @@ A recommended design of the interface is as follows:
        numerical library routine as arguments.
 %
  \item The interface does not affect the behavior of numerical library
-       routines except for restrictions concerning {\XMP} specification.
+       routines except for restrictions concerning the {\XMP}
+       specification.
 \end{itemize}
 
 
@@ -242,6 +244,7 @@ A recommended design of the interface is as follows:
 Specifications of some query routines are shown below.
 
 \subsection{\tt xmp\_node\_index}
+\index{xmp\_node\_index@{\tt xmp\_node\_index}}
 
 \subsubsection*{Format}
 
@@ -271,6 +274,7 @@ executing node in the target node array.
 
 
 \subsection{\tt xmp\_node\_size}
+\index{xmp\_node\_size@{\tt xmp\_node\_size}}
 
 \subsubsection*{Format}
 
@@ -299,6 +303,7 @@ the target node array.
 \end{itemize}
 
 \subsection{\tt xmp\_gt\_size}
+\index{xmp\_gt\_size@{\tt xmp\_gt\_size}}
 
 \subsubsection*{Format}
 
@@ -327,6 +332,7 @@ dimension of the target template.
 \end{itemize}
 
 \subsection{\tt xmp\_lt\_size}
+\index{xmp\_lt\_size@{\tt xmp\_lt\_size}}
 
 \subsubsection*{Format}
 
@@ -356,6 +362,7 @@ of the target template.
 
 
 \subsection{\tt xmp\_ga\_size}
+\index{xmp\_ga\_size@{\tt xmp\_ga\_size}}
 
 \subsubsection*{Format}
 
@@ -384,6 +391,7 @@ dimension of the target global array.
 \end{itemize}
 
 \subsection{\tt xmp\_la\_size}
+\index{xmp\_la\_size@{\tt xmp\_la\_size}}
 
 \subsubsection*{Format}
 
@@ -412,6 +420,7 @@ dimension of the global array.
 \end{itemize}
 
 \subsection{\tt xmp\_ga\_template\_unitsize}
+\index{xmp\_ga\_template\_unitsize@{\tt xmp\_ga\_template\_unitsize}}
 
 \subsubsection*{Format}
 
@@ -441,6 +450,8 @@ factor of each dimension of the target template.
 
 
 \subsection{\tt xmp\_ga\_first\_idx\_nodes\_index}
+\index{xmp\_ga\_first\_idx\_nodes\_index@{\tt
+xmp\_ga\_first\_idx\_nodes\_index}}
 
 \subsubsection*{Format}
 
@@ -471,6 +482,7 @@ distributed.
 
 
 \subsection{\tt xmp\_la\_lead\_dim}
+\index{xmp\_la\_lead\_dim@{\tt xmp\_la\_lead\_dim}}
 
 \subsubsection*{Format}
 
@@ -527,6 +539,7 @@ each local section of the target global array.
 
 
 \section{Example}
+\index{Example!library interface}
 
    This section shows the interface to ScaLAPACK as an example of the
    {\XMP} interface to numerical libraries.
@@ -601,7 +614,7 @@ each local section of the target global array.
 
 \item[Example 2]
 	   This example shows an {\XMP} procedure using the interface of
-	   Example1.
+	   Example 1.
 
 \Example{nodes}
 \Example{template}
