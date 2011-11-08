@@ -449,7 +449,7 @@
    the base language.
 
    \begin{itemize}
-    \item OPEN statement
+   \item OPEN statement
    
    \begin{table}[h]
     \begin{center}
@@ -462,16 +462,18 @@
       FILE & file name (scalar CHARACTER expression)
 	  & not omittable. \\ \hline
       STATUS & 'OLD', 'NEW', 'REPLACE' or 'UNKNOWN' & 'UNKNOWN' \\ \hline
-      POSITION\footnote{available only if the directive has no directive
-      clause} & 'ASIS', 'REWIND' or 'APPEND' & 'ASIS' \\ \hline
+      POSITION & 'ASIS', 'REWIND' or 'APPEND' & 'ASIS' \\ \hline
       ACTION & 'READ', 'WRITE' or 'READWRITE' & 'READWRITE' \\ \hline
-      RECL\footnote{available only if the directive has a directive clause} & the value of the record length (scalar constant expression)
+      RECL & the value of the record length (scalar constant expression)
 	  & not omittable. \\ \hline
      \end{tabular}
     \end{center}
    \end{table}
 
-    \item CLOSE statement
+   POSITION is available only if the directive has no directive clause.
+   RECL is available only if the directive has a directive clause.
+
+   \item CLOSE statement
 	  
    \begin{table}[h]
     \begin{center}
@@ -497,14 +499,16 @@
       specifiers & value & default \\ \hline \hline
       UNIT & external file unit (scalar constant expression)
 	  & not omittable. \\ \hline
-      REC\footnote{available only if the directive has a directive clause} & the value of the record length (scalar constant expression)
+      REC & the value of the record length (scalar constant expression)
 	  & not omittable. \\ \hline
      \end{tabular}
     \end{center}
    \end{table}
 
-    \item When a scalar default INTEGER variable is set to IOSTAT, an
-	  error code is set to the specifiers.
+   REC is available only if the directive has a directive clause.
+   
+   \item When a scalar default INTEGER variable is set to IOSTAT, an
+     error code is set to the specifiers.
 	 
    \end{itemize}
 
@@ -682,7 +686,7 @@
 	       These two file pointers are managed in the structure xmp\_file\_t, .
 	       and can be controlled and referenced only through
 	       the provided library functions.
-	       
+\if 0	       
     \item[xmp\_array\_t] Mapping descriptor for a global array variable,
 	       which includes distribution, alignment, and the shape of nodes array.
 
@@ -690,22 +694,21 @@
 	       the following built-in operator:
 	       
 	       xmp\_array\_t xmp\_array\_of(A);
-	       
+\fi	       
     \item[xmp\_range\_t] Descriptor of array section, including
 	       lower bound, upper bound and stride for each dimension.
    \end{description}
 
    \subsubsection{Global I/O file operation}
 
-   \paragraph{xmp\_fopen\_all}   
-   opens a global I/O file. Collective (global) execution.
+   \paragraph{xmp\_fopen\_all} opens a global I/O file. Collective (global) execution.
    
    \begin{table}[h]
     \begin{center}
       \begin{tabular}{|l|r|p{90mm}|}
       \hline
       {\bf function name}  & \multicolumn{2}{c|}{\bf xmp\_file\_t
-      $*$xmp\_fopen\_all()}  \\ \hline
+      $*$xmp\_fopen\_all(fname, amode)}  \\ \hline
       argument & const char $*$fname & file name \\ \cline{2-3}
       & const char $*$amode & equialent to fopen of POSIX. combination
 	      of ``rwa+'' \\ \hline
@@ -746,8 +749,7 @@
 
 
    \clearpage
-   \paragraph{xmp\_fclose\_all} 
-   closes a global I/O file. Collective (global) execution.
+   \paragraph{xmp\_fclose\_all} closes a global I/O file. Collective (global) execution.
 
    \begin{table}[h]
     \begin{center}
@@ -765,8 +767,7 @@
     \label{tb:close}
    \end{table}
 
-   \paragraph{xmp\_fseek}
-   sets the individual file pointer in the file structure. Local execution.
+   \paragraph{xmp\_fseek} sets the individual file pointer in the file structure. Local execution.
 
    \begin{table}[h]
     \begin{center}
@@ -791,8 +792,7 @@
 
    \clearpage
 
-   \paragraph{xmp\_fseek\_shared}
-   sets the shared file pointer in the file structure. Local execution.
+   \paragraph{xmp\_fseek\_shared} sets the shared file pointer in the file structure. Local execution.
 
    \begin{table}[h]
     \begin{center}
@@ -815,8 +815,7 @@
     \label{tb:aaa}
    \end{table}
 
-   \paragraph{xmp\_ftell}
-   inquires the position of the individual file pointer in the file structure. Local execution.
+   \paragraph{xmp\_ftell} inquires the position of the individual file pointer in the file structure. Local execution.
 
    \begin{table}[h]
     \begin{center}
@@ -836,8 +835,7 @@
     \label{tb:aaa}
    \end{table}
    
-   \paragraph{xmp\_ftell\_shared}
-   inquires the position of shared file pointer in the file structure. Local execution.
+   \paragraph{xmp\_ftell\_shared} inquires the position of shared file pointer in the file structure. Local execution.
 
    \begin{table}[h]
     \begin{center}
@@ -857,8 +855,7 @@
     \label{tb:aaa}
    \end{table}
    
-   \paragraph{xmp\_file\_sync\_all}
-   guarantees completion of access to the file from nodes sharing the file.
+   \paragraph{xmp\_file\_sync\_all} guarantees completion of access to the file from nodes sharing the file.
    Collective (global) execution.
 
    \begin{table}[h]
@@ -888,18 +885,17 @@
    spans the positions corresponding to the array elements that each node owns. 
    For more details of file view, refer to the MPI 2.0 specification.
 
-   \paragraph{ xmp\_file\_set\_view }
-   sets a file view to the file. Collective (global) execution.
+   \paragraph{ xmp\_file\_set\_view} sets a file view to the file. Collective (global) execution.
 
    \begin{table}[h]
     \begin{center}
      \begin{tabular}{|l|r|p{70mm}|}
       \hline
       {\bf function name}  & \multicolumn{2}{c|}{\bf int xmp\_file\_set\_view\_all(fh,
-      disp, ap, rp)} \\ \hline \hline
+      disp, desc, rp)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & long long disp & displacement from the beginning of the file. \\ \cline{2-3}
-      & xmp\_array\_t ap & array descriptor \\ \cline{2-3}
+      & xmp\_desc\_t desc & descriptor \\ \cline{2-3}
       & xmp\_range\_t $*$rp & range descriptor \\ \hline
       return value & int & 0: normal termination \\
       &  & an integer other than 0: abnormal termination \\ \hline
@@ -909,10 +905,9 @@
     \label{tb:aaa}
    \end{table}
 
-  The file view of distributed array $ap$ limited to range $rp$ is set into file structure $fh$.
+  The file view of distributed $desc$ limited to range $rp$ is set into file structure $fh$.
    
-   \paragraph{ xmp\_file\_clear\_view }
-   clears the file view. Collective (global) execution.
+   \paragraph{ xmp\_file\_clear\_view} clears the file view. Collective (global) execution.
 
    The positions of the shared and individual file pointers are set to
    disp and 
@@ -934,8 +929,7 @@
     \label{tb:aaa}
    \end{table}
 
-   \paragraph{ xmp\_fread\_all }
-   reads the same data from the position of the shared file
+   \paragraph{ xmp\_fread\_all} reads the same data from the position of the shared file
    pointer onto the all execution nodes. Collective (global) execution.
 
    \begin{table}[h]
@@ -957,8 +951,7 @@
     \label{tb:aaa}
    \end{table}
 
-   \paragraph{ xmp\_fwrite\_all }
-   writes individual data on the all execution nodes to the position of the shared file
+   \paragraph{ xmp\_fwrite\_all} writes individual data on the all execution nodes to the position of the shared file
    pointer. Collective (global) execution.
 
    It is assumed that the file view is set previously. Each node writes its data into its own file view.
@@ -984,8 +977,7 @@
 
    \clearpage
 
-   \paragraph{ xmp\_fread\_darray\_all }
-   reads data cooperatively to the global array from the
+   \paragraph{ xmp\_fread\_darray\_all} reads data cooperatively to the global array from the
    position of the shared file pointer.
 
    \begin{table}[h]
@@ -993,9 +985,9 @@
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
       {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
-      xmp\_fread\_darray\_all(fh, ap, rp)} \\ \hline
+      xmp\_fread\_darray\_all(fh, desc, rp)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
-      & xmp\_array\_t ap & array descriptor \\ \cline{2-3}
+      & xmp\_desc\_t desc & descriptor \\ \cline{2-3}
       & xmp\_range\_t $*$rp & range descriptor \\ \hline
       return value & int & Upon successful completion, return the size
 	      of loading data. Otherwise, negative number shall be
@@ -1006,10 +998,9 @@
     \label{tb:aaa}
    \end{table}
 
-   Data is read from the file to distributed array $ap$ limited to range $rp$.
+   Data is read from the file to distributed $desc$ limited to range $rp$.
 
-   \paragraph{ xmp\_fwrite\_darray\_all }
-   writes data cooperatively from the global array to the
+   \paragraph{ xmp\_fwrite\_darray\_all} writes data cooperatively from the global array to the
    position of the shared file pointer.
 
    \begin{table}[h]
@@ -1017,9 +1008,9 @@
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
       {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
-      xmp\_fwrite\_darray\_all(fh, ap, rp)} \\ \hline
+      xmp\_fwrite\_darray\_all(fh, desc, rp)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
-      & xmp\_array\_t ap & array descriptor \\ \cline{2-3}
+      & xmp\_array\_t desc & descriptor \\ \cline{2-3}
       & xmp\_range\_t $*$rp & range descriptor \\ \hline
       return value & int & Upon successful completion, return the size
 	      of loading data. Otherwise, negative number shall be
@@ -1030,7 +1021,7 @@
     \label{tb:aaa}
    \end{table}
 
-   Data is written from distributed array $ap$ limited to range $rp$ to the file.
+   Data is written from distributed $desc$ limited to range $rp$ to the file.
 
    \clearpage
 
@@ -1050,8 +1041,7 @@
    Thus, before atomic I/O is used, the file view must be cleared.
 
 
-   \paragraph{ xmp\_fread\_shared }
-   exclusively reads local data form the position of the shared file
+   \paragraph{ xmp\_fread\_shared} exclusively reads local data form the position of the shared file
    pointer and moves the position by the langth of the data.
    Local execution.
 
@@ -1074,8 +1064,7 @@
     \label{tb:aaa}
    \end{table}
 
-   \paragraph{ xmp\_fread\_shared }
-   exclusively writes local data to the
+   \paragraph{ xmp\_fread\_shared} exclusively writes local data to the
    position of the shared file pointer and moves the position by the langth of the data.
    Local execution.
 
@@ -1084,9 +1073,9 @@
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
       {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
-      xmp\_write\_shared(fh, ap, rp)} \\ \hline \hline
+      xmp\_write\_shared(fh, desc, rp)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
-      & xmp\_array\_t ap & array descriptor \\ \cline{2-3}
+      & xmp\_desc\_t desc & descriptor \\ \cline{2-3}
       & xmp\_range\_t $*$rp & range descriptor \\ \hline
       return value & int & Upon successful completion, return the size
 	      of storing data. Otherwise, negative number shall be
@@ -1110,8 +1099,7 @@
    Function xmp\_fseek is useful to set the individual file pointer.
    It is not recommended using the file view together because of complexity.
 
-   \paragraph{ xmp\_fread }
-   reads data from the position of the individual file
+   \paragraph{ xmp\_fread} reads data from the position of the individual file
    pointer and moves the position by the length of the data.
    Local execution.
 
@@ -1134,8 +1122,7 @@
     \label{tb:aaa}
    \end{table}
 
-   \paragraph{ xmp\_fread }
-   writes data to the position of the individual file
+   \paragraph{ xmp\_fread} writes data to the position of the individual file
    pointer and moves the position by the length of tha data.
    Local execution.
 
