@@ -233,7 +233,7 @@ A recommended design of the interface is as follows:
        numerical library routine as arguments.
 %
  \item The interface does not affect the behavior of numerical library
-       routines.
+       routines except for restrictions concerning {\XMP} specification.
 \end{itemize}
 
 
@@ -535,17 +535,17 @@ each local section of the target global array.
    Communication processes in the ScaLAPACK routines depends on BLACS
    (Basic Linear Algebraic Communication Subprograms).
    ScaLAPACK library routines invoked from {\XMP} procedures also depend
-   on BLACS. Remarks of the design of the interface are as follows.
+   on BLACS. %Remarks of the design of the interface are as follows.
 
-\begin{itemize}
-\item For a ScaLAPACK library routine having a descriptor array as an
-      argument, the interface procedure has the BLACS context handle
-      including the descriptor array as an additional argument.
-\item The {\tt blacs\_exit} routine is unnecessary because an {\XMP}
-      program executes {\tt MPI\_Finalize}.
-\item Only ``column-major'' is effective as the argument ``order'' of a
-      BLACS routine {\tt blacs\_gridinit}.
-\end{itemize}
+%\begin{itemize}
+%\item For a ScaLAPACK library routine having a descriptor array as an
+%      argument, the interface procedure has the BLACS context handle
+%      including the descriptor array as an additional argument.
+%\item The {\tt blacs\_exit} routine is unnecessary because an {\XMP}
+%      program executes {\tt MPI\_Finalize}.
+%\item Only ``column-major'' is effective as the argument ``order'' of a
+%      BLACS routine {\tt blacs\_gridinit}.
+%\end{itemize}
 
 \begin{description}
 
@@ -554,7 +554,7 @@ each local section of the target global array.
 	    the ScaLAPACK driver routine {\tt pdgesv}.
 
 \begin{XFexample}
-      subroutine xmp_pdgesv(n,nrhs,a,ia,ja,da,ipiv,b,ib,jb,db,ictxt,info)
+      subroutine ixmp_pdgesv(n,nrhs,a,ia,ja,da,ipiv,b,ib,jb,db,ictxt,info)
       integer n,nrhs,ia,ja,ib,jb,ictxt(2),info
       double precision a,b
       xmp_desc_t da,db
@@ -652,7 +652,7 @@ each local section of the target global array.
          b(i)= ...
       end do
       ...
-      call xmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
+      call ixmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
      *                b,ib,jb,xmp_desc_of(b),ictxt,info)
       ...
       call blacs_gridexit(ictxt)
