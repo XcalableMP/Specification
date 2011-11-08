@@ -553,11 +553,7 @@
       \hline
       \multicolumn{1}{|c}{ }  & {\bf I/O item} & {\bf operation} \\ \hline
       input item & name of global array & The value is read from the file in the sequential order of the array elements and is set to the array elements of the global array.
-      The file positioning seeks by the size of the data.\footnote{If an axis of the global array is aligned to an axis of the template and they are not equal in length, the length of the axis of the global array is regarded as the length of the axis of the template. In the example below, array a is read/written in the collective I/O file as if it is declared as a(10,100).\\
-	!$xmp template t(100)\\
-	      dimension a(10, 2:99)\\
-	!$xmp align a(*,i) with t(i)
-}
+      The file positioning seeks by the size of the data.
       \\
       \cline{2-3}
       & local variable &  The value read from the file is replicated into the
@@ -565,7 +561,7 @@
 	      the length of the data. \\ \hline
       output item & name of global array & The value referred from the global data 
 	      is written to the file in the sequential order of the array elements.
-	      The file positioning seeks by the size of the data.\footnote{xxx}\\
+	      The file positioning seeks by the size of the data. \\
       \cline{2-3}
       & local variable, expression & The value evaluated on a node of the execution nodes is written to the file.
       The file positioning seeks by the size of the data. \\ \hline
@@ -574,6 +570,13 @@
 %    \caption{aaa}
     \label{tb:aaa}
    \end{table}
+
+   If an axis of the global array is aligned to an axis of the template and they are not equal in length, the length of the axis of the global array is regarded as the length of the axis of the template. In the example below, array a is read/written in the collective I/O file as if it is declared as a(10,100).\\
+   \begin{tabular}{ll}
+     \verb|!$xmp| & \verb|template t(100)| \\
+     & dimension a(10, 2:99) \\
+     \verb|!$xmp| & \verb|align a(*,i) with t(i)| \\
+   \end{tabular}
 
    \subsubsection{Atomic I/O statement}
 
