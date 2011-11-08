@@ -533,14 +533,13 @@
 
    \clearpage
    
-   \subsubsection{collective I/O statement}
+   \subsubsection{Collective I/O statement}
 
-   Collective I/O statements read/write for a file shared between nodes.
-   I/O data remains the image of global array.
+   Collective I/O statements read/write shared files and can handle global arrays.
 
-   Collective I/O statements are matched across all nodes.
-   In collective I/O, I/O operations, such as connection, disconnection,
-   read and write, for a file must be executed in the same nodes. 
+   All collective I/O statements execute in global (collective).
+   In collective I/O, all access for a file, such as connection, disconnection,
+   input and output, must be executed on the same execution node set. 
    
    The operations for I/O items are summarized in the following table.
 
@@ -549,85 +548,84 @@
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
       \multicolumn{1}{|c}{ }  & {\bf I/O item} & {\bf operation} \\ \hline
-      input item & name of distributed array & The value is read along
-	      the file view set in a template. The value is set to array
-	      elements in each node.
-	      File position seeks by data size.\\
+      input item & name of global array & The value is read from the file in the sequential order of the array elements and is set to the array elements of the global array.
+      The file positioning seeks by the size of the data.\footnote{If an axis of the global array is aligned to an axis of the template and they are not equal in length, the length of the axis of the global array is regarded as the length of the axis of the template. In the example below, array a is read/written in the collective I/O file as if it is declared as a(10,100).\\
+	!$xmp template t(100)\\
+	      dimension a(10, 2:99)\\
+	!$xmp align a(*,i) with t(i)
+}
+      \\
       \cline{2-3}
-      & duplicate variable &  The value set from a file is set in a
-	      duplicate array in all nodes. File position seeks by
-	      data length. \\ \hline
-      output item & name of distributed array & The value is written
-	      along the file view set in a template. The value is
-	      written for a file.
-	      File position seeks by data size.\\
+      & local variable &  The value read from the file is replicated into the
+	      local array on all execution nodes. The file positioning seeks by
+	      the length of the data. \\ \hline
+      output item & name of global array & The value referred from the global data 
+	      is written to the file in the sequential order of the array elements.
+	      The file positioning seeks by the size of the data.\footnote{xxx}\\
       \cline{2-3}
-      & duplicate variable, expression & The value in any one node is
-	      written to the file.  File position seeks by data
-	      length. \\ \hline
+      & local variable, expression & The value evaluated on a node of the execution nodes is written to the file.
+      The file positioning seeks by the size of the data. \\ \hline
       \end{tabular}
      \end{center}
 %    \caption{aaa}
     \label{tb:aaa}
    \end{table}
 
-   \subsubsection{atomic I/O statement}
+   \subsubsection{Atomic I/O statement}
 
-   Atomic I/O statements exclusively read/write for a file shared
-   between nodes in no particular order.
-   As nondeterministic parallel execution, if the program is the same,
-   the results can differ.
+   Atomic I/O statements read/write shared files exclusively among execution nodes
+   in no particular order.
+   Because it is a nondeterministic parallel execution,
+   the results can differ every execution time even for the same program.
 
-   Atomic OPEN and CLOSE statements are executed collectively. Atomic
-   READ and WRITE statements are executed locally.
-   The file connected by atomic OPEN statements is disconnected by using
-   atomic CLOSE statements in all execution nodes.
-   Atomic READ and WRITE statements can be executed from any node in a
-   set of execution nodes.
+   Atomic OPEN and CLOSE statements are executed collectively (in global), while atomic
+   READ and WRITE statements are executed in local.
+   A file connected by an atomic OPEN statement can be disconnected only by an
+   atomic CLOSE statement executed on the same execution node set.
+   Atomic READ and WRITE statements can be executed on any single node of the
+   same execution node set.
 
-   Atomic READ and WRITE statements are exclusively excuted.
-   A unit of atomic I/O statements is a READ statement or a WRITE
+   Atomic READ and WRITE statements are exclusively executed.
+   The unit of exclusive operation is a single READ statement and a single WRITE
    statement.
 
-   At first, the file position is determined by the POSITION specifier in
-   atomic I/O statement.
-   After that, file position seeks by the length of the input/output
-   variables.
+   The initial file positioning is determined by the POSITION specifier of
+   the atomic OPEN statement.
+   And then, the file positioning seeks every READ and WRITE statement 
+   by the length of the input/output data.
 
 
-   \subsubsection{direct I/O statement}
+   \subsubsection{Direct I/O statement}
 
-   Direct I/O statements read/write for a file shared between nodes.
-   File position is specified on each node.
+   Direct I/O statements read/write shared files with specification of the
+   file positioning for each node.
 
-   Direct OPEN and CLOSE statements are executed collectively. Direct
-   READ and WRITE statements are executed locally.
-   The file connected by direct OPEN statements is disconnected by using
-   atomic CLOSE statements in all execution nodes.
-   Direct READ and WRITE statements can be executed from any node in a
-   set of execution nodes.
+   Direct OPEN and CLOSE statements are executed collectively (in global), while direct
+   READ and WRITE statements are executed in local.
+   A file connected by a direct OPEN statement can be disconnected only by a
+   direct CLOSE statement executed on the same execution node set.
+   Direct READ and WRITE statements can be executed on any single node of the
+   same execution node set.
    
-   Direct READ and WRITE statements read/write to file position
-   specified by a REC specifier.
-   Direct READ and WRITE statements are executed independently.
-   File position is the value multiplied by the value specified in a RECL
-   specifiers and the value specified in a REC specifier.
+   Direct READ and WRITE statements read/write local data at the file positioning
+   specified by the REC specifier independently in local.
+   The file positioning is shifted from the top of the file by the product 
+   of the specifiers RECL (of OPEN statement) and
+   REC (of READ and WRITE statement). 
 
 
    \subsection{Global I/O library [C]}
 
-   In C, some of data types is defined in an include file.
-   A set of library functions with the arguments of the data type is
-   provided.
-   Built-in function gotten these type from the name of a distributed
-   array is provided.
+   XcalableMP C provides some data types defined in an include file, 
+   a set of library functions with arguments of the data types, and
+   built-in operators to get values of the data types from names of a variable, a template, etc..
+
    The following types are provided.
 
    \begin{itemize}
     \item xmp\_file\_t : file handle
-    \item xmp\_array\_t : distributed data for a distributed
-	  array
-    \item xmp\_rang\_t : expression of array section
+    \item xmp\_array\_t : mapping descriptor for a global array variable
+    \item xmp\_rang\_t : descriptor of array section
    \end{itemize}
 
    The following library functions are provided.
@@ -636,32 +634,32 @@
    \begin{itemize}
     \item global I/O file operation
     \begin{itemize}
-     \item xmp\_fopen\_all
-     \item xmp\_fclose\_all
-     \item xmp\_fseek
-     \item xmp\_fseek\_shared\_all
-     \item xmp\_ftell
-     \item xmp\_ftell\_shared
-     \item xmp\_file\_sync\_all
+     \item xmp\_fopen\_all : file open
+     \item xmp\_fclose\_all : file close
+     \item xmp\_fseek : setting (individual) file pointer
+     \item xmp\_fseek\_shared\_all : setting shared file pointer
+     \item xmp\_ftell : displacement of (individual) file pointer
+     \item xmp\_ftell\_shared : displacement of shared file pointer
+     \item xmp\_file\_sync\_all : file synchronization
     \end{itemize}
     \item collective I/O
     \begin{itemize}
-     \item xmp\_file\_set\_view\_all
-     \item xmp\_file\_clear\_view\_all
-     \item xmp\_fread\_all
-     \item xmp\_fwrite\_all
-     \item xmp\_fread\_darray\_all
-     \item xmp\_fwrite\_darray\_all
+     \item xmp\_file\_set\_view\_all : setting file view
+     \item xmp\_file\_clear\_view\_all : initializing file view
+     \item xmp\_fread\_all : collective read of local data
+     \item xmp\_fwrite\_all : collective write of local data
+     \item xmp\_fread\_darray\_all : collective read of global data
+     \item xmp\_fwrite\_darray\_all : collective write of global data
     \end{itemize}
     \item atomic I/O
     \begin{itemize}
-     \item xmp\_fread\_shared
-     \item xmp\_fwrite\_shared
+     \item xmp\_fread\_shared : atomic read
+     \item xmp\_fwrite\_shared : atomic write
     \end{itemize}
     \item direct I/O
     \begin{itemize}
-     \item xmp\_fread
-     \item xmp\_fwrite
+     \item xmp\_fread : direct read
+     \item xmp\_fwrite : direct write
     \end{itemize}
    \end{itemize}
 
@@ -669,38 +667,32 @@
    
    \subsubsection{Data type}
 
-   The following data types are defined in include file ``xmp\_io.h''.
+   The following data types are defined in include file xmp\_io.h.
    \begin{description}
-    \item[xmp\_file\_t] The valiable of xmp\_file\_t type is a file
-	       handle.
-	       The file handle is generated when a file is opened.
-	       There are shared file pointer and intrinsic file pointer
-	       to identify file position.
+    \item[xmp\_file\_t] A file handler.
+	       It is connected to a file when the file is opened.
+	       It has a shared file pointer and an individual file pointer
+	       to point where to read/write data in the file.
 
-	       Shared file pointer share with shared nodes.
-	       The file pointer is seeked by atomic I/O.
-	       Identify file pointer is seeked by collective I/O and
-	       direct I/O.
+	       A shared file pointer is a shared resource among all nodes of the node set
+             that has opened the file. Atomic I/O uses a shared file pointer.
+	       An (individual) file pointer is an individual resource on each node. 
+	       Collective I/O and direct I/O use individual file pointers.
 	       
-	       These file pointers are managed by the member of
-	       xmp\_file\_t type structures.
-	       These file pointers are controled and referenced through
-	       the library function.
+	       These two file pointers are managed in the structure xmp\_file\_t, .
+	       and can be controlled and referenced only through
+	       the provided library functions.
 	       
-    \item[xmp\_array\_t] The valiable of xmp\_array\_t is distributed data
-	       for a distributed array.
-	       Distribution, alignment and node array shape, etc are the
-	       member of xmp\_array\_t.
+    \item[xmp\_array\_t] Mapping descriptor for a global array variable,
+	       which includes distribution, alignment, and the shape of nodes array.
 
-	       Distributed data of Distributed array ``A'' is gotten by
-	       the following built-in function.
+	       Mapping descriptor of global array A is gotten with
+	       the following built-in operator:
 	       
 	       xmp\_array\_t xmp\_array\_of(A);
 	       
-    \item[xmp\_range\_t] The valiable of xmp\_range\_t is an expression
-	       of array section.
-	       Lower bound, upper bound and stride are included in the
-	       member of an array.
+    \item[xmp\_range\_t] Descriptor of array section, including
+	       lower bound, upper bound and stride for each dimension.
    \end{description}
 
    \subsubsection{Global I/O file operation}
