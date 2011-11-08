@@ -205,31 +205,41 @@ int main(void) {
 \end{XCexample}
 
 
-\chapter{Interface to Numerical Libraries}
+\chapter{Interface to Numerical Libraries (Recommended Feature)}
 \label{chap:Interface to Numerical Libraries}
 
    This chapter describes the XcalableMP interfaces to existing MPI
    parallel libraries, which is effective to achieve high productivity
    and performance of {\XMP} programs.
    
-\section{General rule}
+\section{Design of the Interface}
+
+A recommended design of the interface is as follows:
 
 \begin{itemize}
-\item In case that native numerical library routine needs descriptor information,
-      XcalableMP interface to that numerical library routine have an argument of 
-      {\tt xmp\_desc\_t} type. A {\XMP} interface is implemented using some 
-      query subroutines provided by {\XMP}.
-\item A design of XMP interface to existing numerical library do not affect 
-      original communication process of that numerical library.
+
+ \item Numerical library routines can be invoked by an {\XMP} procedure
+       through an interface procedure (Figure \ref{figb.1}).
+
+ \begin{myfigure}
+  \rotatebox{-90}{\includegraphics[scale=0.6]{figs/figb.1.eps}}
+  \caption{Invocation of an MPI Library Routine through an Interface}
+  \label{figb.1}
+ \end{myfigure}
+
+ \item When the numerical library routine needs information on an global
+       array, the interface extracts it from the descriptor using some
+       query routines provided by {\XMP} and passes it to the
+       numerical library routine as arguments.
+%
+ \item The interface does not affect the behavior of numerical library
+       routines.
 \end{itemize}
 
-\begin{myfigure}
- \rotatebox{-90}{\includegraphics[scale=0.6]{figs/figb.1.eps}}
- \caption{Execution flow of XcalableMP program using XcalableMP interface}
- \label{figb.1}
-\end{myfigure}
 
-Examples of query subroutine specifications are the following.
+\section{Query routines}
+
+Specifications of some query routines are shown below.
 
 \subsection{\tt xmp\_node\_index}
 
@@ -247,15 +257,16 @@ Examples of query subroutine specifications are the following.
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_node\_index} routine returns the index of each dimension of target node set.
+The {\tt xmp\_node\_index} routine provides the indices of the
+executing node in the target node array.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target node set.
- \item {\tt idx} is a one-dimensional integer array. {\tt dim} is the dimension 
-       of the node set.
+       xmp\_desc\_t} that is associated with the node array.
+ \item {\tt idx} is a one-dimensional integer array. {\tt
+       dim} is the rank of the node array.
 \end{itemize}
 
 
@@ -275,15 +286,16 @@ The {\tt xmp\_node\_index} routine returns the index of each dimension of target
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_node\_size} routine returns the size of each dimension of target node set.
+The {\tt xmp\_node\_size} routine provides the size of each dimension of
+the target node array.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target node set.
- \item {\tt size} is a one-dimensional integer array. {\tt dim} is the dimension 
-       of the node set.
+       xmp\_desc\_t} that is associated with the node array.
+ \item {\tt size} is a one-dimensional integer array. {\tt
+       dim} is the rank of the node array.
 \end{itemize}
 
 \subsection{\tt xmp\_gt\_size}
@@ -302,15 +314,16 @@ The {\tt xmp\_node\_size} routine returns the size of each dimension of target n
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_gt\_size} routine returns the length of each dimension of global template.
+The {\tt xmp\_gt\_size} routine provides the global size of each
+dimension of the target template.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target global template.
- \item {\tt size} is a one-dimensional integer array. {\tt dim} is the dimension 
-       of the global template.
+       xmp\_desc\_t} that is associated with the target template.
+ \item {\tt size} is a one-dimensional integer array. {\tt
+       dim} is the rank of the template.
 \end{itemize}
 
 \subsection{\tt xmp\_lt\_size}
@@ -323,22 +336,22 @@ The {\tt xmp\_gt\_size} routine returns the length of each dimension of global t
           & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer} & {\tt size(dim)}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_lt\_size(xmp\_desc\_t* d, int size[])}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_lt\_size(xmp\_desc\_t d, int size[])}\\
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_lt\_size} routine returns the length of each dimension of
- distributed local template.
+The {\tt xmp\_lt\_size} routine provides the local size of each dimension
+of the target template.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target global template.
- \item {\tt size} is a one-dimensional integer array. {\tt dim} is the dimension 
-       of the distributed local template.
+       xmp\_desc\_t} that is associated with the template.
+ \item {\tt size} is a one-dimensional integer array. {\tt
+       dim} is the rank of the template.
 \end{itemize}
 
 
@@ -358,15 +371,16 @@ The {\tt xmp\_lt\_size} routine returns the length of each dimension of
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_ga\_size} routine returns the length of each dimension of global array.
+The {\tt xmp\_ga\_size} routine provides the global size of each
+dimension of the target global array.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target global array.
- \item {\tt size} is a one-dimensional integer array. {\tt dim} is the dimension 
-       of the global array.
+       xmp\_desc\_t} that is associated with the global array.
+ \item {\tt size} is to be set to a one-dimensional integer array. {\tt
+       dim} is the rank of the global array.
 \end{itemize}
 
 \subsection{\tt xmp\_la\_size}
@@ -379,22 +393,22 @@ The {\tt xmp\_ga\_size} routine returns the length of each dimension of global a
           & {\tt xmp\_desc\_t} & {\tt d}\\
           & {\tt integer} & {\tt size(dim)}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_la\_size(xmp\_desc\_t* d, int size[])}\\
+\verb![C]!&  {\tt void}& {\tt xmp\_la\_size(xmp\_desc\_t d, int size[])}\\
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_la\_size} routine returns the length of each dimension of
- distributed local array.
+The {\tt xmp\_la\_size} routine provides the local size of each
+dimension of the global array.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target global array.
- \item {\tt size} is a one-dimensional integer array. {\tt dim} is the dimension 
-       of the distributed local array.
+       xmp\_desc\_t} that is associated with the global array.
+ \item {\tt size} is a one-dimensional integer array. {\tt
+       dim} is the rank of the global array.
 \end{itemize}
 
 \subsection{\tt xmp\_ga\_template\_unitsize}
@@ -413,16 +427,16 @@ The {\tt xmp\_la\_size} routine returns the length of each dimension of
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_ga\_template\_unitsize} routine returns the length of each dimension of 
-the template blocking factor.
+The {\tt xmp\_ga\_template\_unitsize} routine provides the blocking
+factor of each dimension of the target template.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target global array.
- \item {\tt unitsize} is a one-dimensional integer array. {\tt dim} is the dimension 
- of the template blocking factor associated with the target global array.
+       xmp\_desc\_t} that is associated with the template.
+ \item {\tt unitsize} is a one-dimensional integer array. {\tt dim} is
+       the rank of the template.
 \end{itemize}
 
 
@@ -442,17 +456,19 @@ the template blocking factor.
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_ga\_first\_idx\_nodes\_index} routine returns node index over which 
-the first row and column of global array a is distributed.
+The {\tt xmp\_ga\_first\_idx\_nodes\_index} routine provides the indices
+of the node onto which the {\it first} element of the global array is
+distributed.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target global array.
- \item {\tt idx} is a one-dimensional integer array. {\tt dim} is the dimension of 
- node array associeted with the target global array.
+       xmp\_desc\_t} that is associated with the global array.
+ \item {\tt idx} is a one-dimensional integer array. {\tt dim} is the
+       rank of node array associeted with the global array.
 \end{itemize}
+
 
 \subsection{\tt xmp\_la\_lead\_dim}
 
@@ -470,70 +486,72 @@ the first row and column of global array a is distributed.
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_la\_lead\_dim} routine returns leading dimension of local array.
+The {\tt xmp\_la\_lead\_dim} routine provides the leading dimension of
+each local section of the target global array.
 
 \subsubsection*{Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target global array.
- \item {\tt lead\_dim} is an integer value.
+       xmp\_desc\_t} that is associated with the global array.
+ \item {\tt lead\_dim} is an integer scalar.
 \end{itemize}
 
 
-\subsection{\tt xmp\_la\_addr}
+%\subsection{\tt xmp\_la\_addr}
+%
+%\subsubsection*{Format}
+%
+%\begin{tabular}{lll}
+%
+%\verb![F]!&  {\tt subroutine}& {\tt xmp\_la\_addr(d, addr)}\\
+%          & {\tt xmp\_desc\_t} & {\tt d}\\
+%          & {\tt integer, allocatable} & {\tt addr}\\
+%
+%\verb![C]!&  {\tt void}& {\tt xmp\_la\_addr(xmp\_desc\_t d, int* addr)}\\
+%
+%\end{tabular}
+%
+%\subsubsection*{Synopsis}
+%
+%The {\tt xmp\_la\_addr} routine provides the base address of each local
+%section of the target global array.
+%
+%\subsubsection*{Arguments}
+%
+%\begin{itemize}
+% \item {\tt d} is a descriptor, that is, an object of type {\tt
+%       xmp\_desc\_t} that is associated with the global array.
+% \item {\tt addr} is the base address of the local array.
+%\end{itemize}
 
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&  {\tt subroutine}& {\tt xmp\_la\_addr(d, addr)}\\
-          & {\tt xmp\_desc\_t} & {\tt d}\\
-          & {\tt integer,allocatable} & {\tt addr}\\
-
-\verb![C]!&  {\tt void}& {\tt xmp\_la\_addr(xmp\_desc\_t d, int* addr)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_la\_addr} routine returns top address of distributed local array.
-
-\subsubsection*{Arguments}
-
-\begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target global array.
- \item {\tt addr} is an address of the start of the local array.
-\end{itemize}
 
 \section{Example}
 
-   This section shows a example of implementation of {\XMP} interface to
-   numerical library.
+   This section shows the interface to ScaLAPACK as an example of the
+   {\XMP} interface to numerical libraries.
    
    ScaLAPACK is a linear algebra library for distributed-memory.
-   Communication processes of ScaLAPACK routines depend on BLACS
+   Communication processes in the ScaLAPACK routines depends on BLACS
    (Basic Linear Algebraic Communication Subprograms).
-   ScaLAPACK library routines processes in {\XMP} program also depend on 
-   BLACS. Remarks of design of {\XMP} interface to ScaLAPACK library are 
-   the following.
+   ScaLAPACK library routines invoked from {\XMP} procedures also depend
+   on BLACS. Remarks of the design of the interface are as follows.
 
 \begin{itemize}
-\item For ScaLAPACK library routine having descriptor array as argument,
-      the XcalableMP interface routine have BLACS context handle including 
-      the descriptor array as new argument.
-\item The blacs\_exit routine is unnecessary, because {\XMP} program executes process 
-      corresponding to MPI\_Finalize routines.
-\item A valid value of the argument "order" of BLACS routine "{\tt blacs\_gridinit}" is 
-      only column-major. 
+\item For a ScaLAPACK library routine having a descriptor array as an
+      argument, the interface procedure has the BLACS context handle
+      including the descriptor array as an additional argument.
+\item The {\tt blacs\_exit} routine is unnecessary because an {\XMP}
+      program executes {\tt MPI\_Finalize}.
+\item Only ``column-major'' is effective as the argument ``order'' of a
+      BLACS routine {\tt blacs\_gridinit}.
 \end{itemize}
 
-\subsection*{Example}
 \begin{description}
 
-\item[Example 1]
-   This example shows implementation of {\XMPF} interface for ScaLAPACK driver routine "pdgesv".
+ \item[Example 1]
+	    This example shows an implementation of the interface for
+	    the ScaLAPACK driver routine {\tt pdgesv}.
 
 \begin{XFexample}
       subroutine xmp_pdgesv(n,nrhs,a,ia,ja,da,ipiv,b,ib,jb,db,ictxt,info)
@@ -582,7 +600,8 @@ The {\tt xmp\_la\_addr} routine returns top address of distributed local array.
 
 
 \item[Example 2]
-     This example shows a {\XMP} program using the interface of Example1. 
+	   This example shows an {\XMP} procedure using the interface of
+	   Example1.
 
 \Example{nodes}
 \Example{template}
