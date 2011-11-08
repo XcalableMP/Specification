@@ -276,10 +276,12 @@
    Master I/O works as if all file access is executed only on the master
    node.
 
-   The operations for I/O items are summarized in the following table.
+   The operations for I/O items are summarized in Table \ref{tb:opforio}.
 
    \begin{table}[h]
     \begin{center}
+    \caption{Operations for I/O}
+    \label{tb:opforio}
      \begin{tabular}{|l|p{40mm}|p{80mm}|}
       \hline
       \multicolumn{1}{|c}{ }  & {\bf I/O item} & {\bf operation} \\
@@ -437,13 +439,13 @@
    without \gio directive.
 
    A global I/O file must be disconnected explicitly by a CLOSE
-   statement specified with \gio directive, else the result of I/O
+   statement specified with \gio directive, otherwise the result of I/O
    is not guaranteed.
    The CLOSE statement specified with \gio directive is a global
    (collective) execution and must be executed by the same executing
    node set as the one where the OPEN statement is executed.
 
-   Available values of the specifiers in I/O statements are shown in the
+   Utilizable values of the specifiers in I/O statements are shown in the
    following table.
    Definitions of the specifiers are described in the specification of
    the base language.
@@ -460,12 +462,12 @@
       UNIT & external file unit (scalar constant expression)
 	  & not omissible. \\ \hline
       FILE & file name (scalar CHARACTER expression)
-	  & not omittable. \\ \hline
+	  & not omissible. \\ \hline
       STATUS & 'OLD', 'NEW', 'REPLACE' or 'UNKNOWN' & 'UNKNOWN' \\ \hline
       POSITION & 'ASIS', 'REWIND' or 'APPEND' & 'ASIS' \\ \hline
       ACTION & 'READ', 'WRITE' or 'READWRITE' & 'READWRITE' \\ \hline
       RECL & the value of the record length (scalar constant expression)
-	  & not omittable. \\ \hline
+	  & not omissible. \\ \hline
      \end{tabular}
     \end{center}
    \end{table}
@@ -482,7 +484,7 @@
         \hline
       specifiers & value & default \\ \hline \hline
       UNIT & external file unit (scalar constant expression)
-	  & omittable. \\ \hline
+	  & omissible. \\ \hline
       STATUS & 'KEEP' or 'DELETE'
 	  & 'KEEP' \\ \hline
      \end{tabular}
@@ -498,22 +500,22 @@
        \hline
       specifiers & value & default \\ \hline \hline
       UNIT & external file unit (scalar constant expression)
-	  & not omittable. \\ \hline
+	  & not omissible. \\ \hline
       REC & the value of the record length (scalar constant expression)
-	  & not omittable. \\ \hline
+	  & not omissible. \\ \hline
      \end{tabular}
     \end{center}
    \end{table}
 
    REC is available only if the directive has a directive clause.
    
-   \item When a scalar default INTEGER variable is set to IOSTAT, an
+   \item When a scalar variable of default INTEGER is set to IOSTAT, an
      error code is set to the specifiers.
 	 
    \end{itemize}
 
    OPEN, CLOSE, READ and WRITE statements specified with \gio directives
-   without atomic and direct clauses are called respectively collective OPEN, collective
+   without atomic and direct clauses are called collective OPEN, collective
    CLOSE, collective READ, and collective WRITE statements respectively.
    These all statements are called collective I/O statements.
 
@@ -535,8 +537,7 @@
    For example, atomic I/O statements cannot be executed for the unit
    connected by a collective OPEN statement.
 
-   \clearpage
-   
+
    \subsubsection{Collective I/O statement}
 
    Collective I/O statements read/write shared files and can handle global arrays.
@@ -581,7 +582,7 @@
    \subsubsection{Atomic I/O statement}
 
    Atomic I/O statements read/write shared files exclusively among executing nodes
-   in no particular order.
+   in arbitrary order.
    Because it is a nondeterministic parallel execution,
    the results can differ every execution time even for the same program.
 
@@ -631,7 +632,7 @@
 
    \begin{itemize}
     \item xmp\_file\_t : file handle
-    \item xmp\_array\_t : mapping descriptor for a global array variable
+%    \item xmp\_array\_t : mapping descriptor for a global array variable
     \item xmp\_rang\_t : descriptor of array section
    \end{itemize}
 
@@ -693,7 +694,7 @@
     \item[xmp\_array\_t] Mapping descriptor for a global array variable,
 	       which includes distribution, alignment, and the shape of nodes array.
 
-	       Mapping descriptor of global array A is gotten with
+	       Mapping descriptor of global array A is obtained with
 	       the following built-in operator:
 	       
 	       xmp\_array\_t xmp\_array\_of(A);
@@ -723,7 +724,7 @@
     \label{tb:aaa}
    \end{table}
 
-   File view is initialized. The value of shared and individual file pointers 
+   File view is initialized, where file view is based on the MPI-IO vile view mechanism. The value of shared and individual file pointers 
    depend on the value of amode.
 
    \begin{table}
