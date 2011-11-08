@@ -6,7 +6,7 @@
 
   \subsection{Local I/O}
 
-  Local I/O is the way to use I/O statements and I/O service functions in
+  Local I/O is the way to use I/O statements and standerd I/O functions in
   base languages, in which I/O statements and functions are used without
   any directives.
 
@@ -113,7 +113,7 @@
 	  That is, NAMELIST I/O is not allowed for global arrays.
   \end{itemize}
 
-  \subsubsection*{Advice for programmers}
+  \subsubsection*{Advice to the programmer}
 
   Local I/O is useful for debugging focusing on a node since local I/O
   is executed on each node individually.
@@ -338,7 +338,7 @@
    satisfied, all nodes of executing node set are branched together to
    the same statement.
 
-   Advice to the implementer
+   {\bf Advice to the implementer}
 
    It is recommended to provide such a compiler option that local I/O
    statements (specified without directives) is regarded as master I/O
@@ -1014,7 +1014,7 @@
       {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
       xmp\_fwrite\_darray\_all(fh, desc, rp)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
-      & xmp\_array\_t desc & descriptor \\ \cline{2-3}
+      & xmp\_desc\_t desc & descriptor \\ \cline{2-3}
       & xmp\_range\_t $*$rp & range descriptor \\ \hline
       return value & int & Upon successful completion, return the size
 	      of loading data. Otherwise, negative number shall be
@@ -1098,7 +1098,7 @@
    from the position of the individual file pointer and 
    moves the position by the length of the data taking account of the file view.
 
-   [Advice to the programmer]
+   {\bf Advice to the programmer}
 
    Function xmp\_fseek is useful to set the individual file pointer.
    It is not recommended using the file view together because of complexity.
