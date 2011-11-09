@@ -419,7 +419,6 @@
    but an expression including global array
    reference and implied DO loop are not allowed as input items.
 
-
    \subsubsection*{Description}
 
    Global I/O construct connects, disconnects, inputs and outputs the global I/O file,
@@ -491,7 +490,7 @@
    \end{table}
 
     \item READ/WRITE statement
-	  
+
    \begin{table}[h]
     \begin{center}
      \label{tb:globalopen}
@@ -536,6 +535,30 @@
    For example, atomic I/O statements cannot be executed for the unit
    connected by a collective OPEN statement.
 
+
+   Two data accesses conflict if they access the same absolute byte displacements of the same file and at least one is a write access.
+   When two accesses A1 and A2 to the same file conflict in atomic or direct I/O, a barrier directive with in clause to the file must be executed between A1 and A1, otherwise the outcome of the accesses is undefined.
+   The following statement is an extension of BARRIER statement.
+   
+   
+   \begin{itemize}
+     \item BARRIER statement
+
+   \begin{table}[h]
+    \begin{center}
+     \label{tb:globalopen}
+     \begin{tabular}{|c||p{90mm}|l|}
+       \hline
+       specifiers & value & default \\ \hline \hline
+       UNIT & external file unit (scalar constant expression)
+       & not omissible. \\ \hline
+     \end{tabular}
+    \end{center}
+   \end{table}
+
+   \end{itemize}
+
+   
    \subsection{Collective I/O statement}
 
    Collective I/O statements read/write shared files and can handle global arrays.
