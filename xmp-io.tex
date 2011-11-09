@@ -1,5 +1,5 @@
 
- \chapter{XcalableMP I/O}
+ \chapter{XcalableMP I/O(Proposal)}
 
  \section{Categorization of I/O}
  XcalableMP has three kinds of I/O.
@@ -207,12 +207,14 @@
 
   \section{Master I/O}
 
-  \subsection*{Summary}
+%  \subsection*{Summary}
   A master I/O construct executes data transfer between a file and an
   executing node set via master node of the executing node set.
   For a global array, the virtual sequential order of the array elements
   is visible.
 
+  \subsection{\mio Construct}
+  
   \subsection*{Syntax}
 %  \Syntax{tasks}
 
@@ -345,7 +347,7 @@
    statements (specified with \mio directives).
 
    
-   \section{Global I/O}
+   \section{Global I/O [F]}
 
    Global I/O executes data transfer between a file and global arrays
    distributed on the executing node set.
@@ -357,7 +359,7 @@
    Global I/O consists of three kinds, collective I/O, atomic I/O, and
    direct I/O. 
 
-   \subsection{Global I/O construct [F]}
+   \subsection{\gio construct}
    \subsubsection*{Syntax}
 
    \begin{tabular}{ll}
@@ -536,8 +538,7 @@
    For example, atomic I/O statements cannot be executed for the unit
    connected by a collective OPEN statement.
 
-
-   \subsubsection{Collective I/O statement}
+   \subsection{Collective I/O statement}
 
    Collective I/O statements read/write shared files and can handle global arrays.
 
@@ -580,7 +581,7 @@
    \end{tabular}
 \fi
    
-   \subsubsection{Atomic I/O statement}
+   \subsection{Atomic I/O statement}
 
    Atomic I/O statements read/write shared files exclusively among executing nodes
    in arbitrary order.
@@ -604,7 +605,7 @@
    by the length of the input/output data.
 
 
-   \subsubsection{Direct I/O statement}
+   \subsection{Direct I/O statement}
 
    Direct I/O statements read/write shared files with specification of the
    file positioning for each node.
@@ -623,7 +624,7 @@
    REC (of READ and WRITE statement). 
 
 
-   \subsection{Global I/O library [C]}
+   \section{Global I/O library [C]}
 
    XcalableMP C provides some data types defined in an include file, 
    a set of library functions with arguments of the data types, and
@@ -673,7 +674,7 @@
    \end{itemize}
 
    
-   \subsubsection{Data type}
+   \subsection*{Data type}
 
    The following data types are defined in include file xmp\_io.h.
    \begin{description}
@@ -704,9 +705,10 @@
    \end{description}
 
 
-   \subsubsection{Global I/O file operation}
+   \subsection{Global I/O file operation}
 
-   \paragraph{xmp\_fopen\_all} opens a global I/O file. Collective (global) execution.
+   \subsubsection{xmp\_fopen\_all}
+   xmp\_fopen\_all opens a global I/O file. Collective (global) execution.
    
    \begin{table}[h]
     \begin{center}
@@ -754,7 +756,8 @@
    \end{center}
    \end{table}
 
-   \paragraph{xmp\_fclose\_all} closes a global I/O file. Collective (global) execution.
+   \subsubsection{xmp\_fclose\_all}
+   xmp\_fclose\_all closes a global I/O file. Collective (global) execution.
 
    \begin{table}[h]
     \begin{center}
@@ -772,7 +775,8 @@
     \label{tb:close}
    \end{table}
 
-   \paragraph{xmp\_fseek} sets the individual file pointer in the file structure. Local execution.
+   \subsubsection{xmp\_fseek}
+   xmp\_fseek sets the individual file pointer in the file structure. Local execution.
 
    \begin{table}[h]
     \begin{center}
@@ -797,7 +801,8 @@
 
    \clearpage
 
-   \paragraph{xmp\_fseek\_shared} sets the shared file pointer in the file structure. Local execution.
+   \subsubsection{xmp\_fseek\_shared}
+   xmp\_fseek\_shared sets the shared file pointer in the file structure. Local execution.
 
    \begin{table}[h]
     \begin{center}
@@ -820,8 +825,8 @@
     \label{tb:aaa}
    \end{table}
 
-   
-   \paragraph{xmp\_ftell} inquires the position of the individual file pointer in the file structure. Local execution.
+   \subsubsection{xmp\_ftell}
+   xmp\_ftell inquires the position of the individual file pointer in the file structure. Local execution.
 
    \begin{table}[h]
     \begin{center}
@@ -840,8 +845,9 @@
 %    \caption{aaa}
     \label{tb:aaa}
    \end{table}
-   
-   \paragraph{xmp\_ftell\_shared} inquires the position of shared file pointer in the file structure. Local execution.
+
+   \subsubsection{xmp\_ftell\_shared}
+   xmp\_ftell\_shared inquires the position of shared file pointer in the file structure. Local execution.
 
    \begin{table}[h]
     \begin{center}
@@ -860,8 +866,9 @@
 %    \caption{aaa}
     \label{tb:aaa}
    \end{table}
-   
-   \paragraph{xmp\_file\_sync\_all} guarantees completion of access to the file from nodes sharing the file.
+
+   \subsubsection{xmp\_file\_sync\_all}
+   xmp\_file\_sync\_all guarantees completion of access to the file from nodes sharing the file.
    Collective (global) execution.
 
    \clearpage
@@ -881,7 +888,7 @@
     \label{tb:aaa}
    \end{table}
 
-   \subsubsection{Collective I/O}
+   \subsection{Collective Global I/O Functions}
 
    Collective I/O is executed collectively (in global) but using the individual pointer.
    It reads/writes data from the position of the individual file pointer and moves the position
@@ -891,7 +898,8 @@
    spans the positions corresponding to the array elements that each node owns. 
    For more details of file view, refer to the MPI 2.0 specification.
 
-   \paragraph{ xmp\_file\_set\_view} sets a file view to the file. Collective (global) execution.
+   \subsubsection{xmp\_file\_set\_view}
+   xmp\_file\_set\_view sets a file view to the file. Collective (global) execution.
 
    \begin{table}[h]
     \begin{center}
@@ -911,9 +919,10 @@
     \label{tb:aaa}
    \end{table}
 
-  The file view of distributed $desc$ limited to range $rp$ is set into file structure $fh$.
-   
-   \paragraph{ xmp\_file\_clear\_view} clears the file view. Collective (global) execution.
+   The file view of distributed $desc$ limited to range $rp$ is set into file structure $fh$.
+
+   \subsubsection{xmp\_file\_clear\_view}
+   xmp\_file\_clear\_view clears the file view. Collective (global) execution.
 
    The positions of the shared and individual file pointers are set to
    disp and 
@@ -935,7 +944,8 @@
     \label{tb:aaa}
    \end{table}
 
-   \paragraph{ xmp\_fread\_all} reads the same data from the position of the shared file
+   \subsubsection{xmp\_fread\_all}
+   xmp\_fread\_all reads the same data from the position of the shared file
    pointer onto the all executing nodes. Collective (global) execution.
 
    \clearpage
@@ -959,7 +969,8 @@
     \label{tb:aaa}
    \end{table}
 
-   \paragraph{ xmp\_fwrite\_all} writes individual data on the all executing nodes to the position of the shared file
+   \subsubsection{xmp\_fwrite\_all}
+   xmp\_fwrite\_all writes individual data on the all executing nodes to the position of the shared file
    pointer. Collective (global) execution.
 
    It is assumed that the file view is set previously. Each node writes its data into its own file view.
@@ -983,8 +994,8 @@
     \label{tb:aaa}
    \end{table}
 
-
-   \paragraph{ xmp\_fread\_darray\_all} reads data cooperatively to the global array from the position of the shared file pointer.
+   \subsubsection{xmp\_fread\_darray\_all}
+   xmp\_fread\_darray\_all reads data cooperatively to the global array from the position of the shared file pointer.
 
    \clearpage
 
@@ -1008,7 +1019,8 @@
 
    Data is read from the file to distributed $desc$ limited to range $rp$.
 
-   \paragraph{ xmp\_fwrite\_darray\_all} writes data cooperatively from the global array to the
+   \subsubsection{xmp\_fwrite\_darray\_all}
+   xmp\_fwrite\_darray\_all writes data cooperatively from the global array to the
    position of the shared file pointer.
 
    \begin{table}[h]
@@ -1032,7 +1044,7 @@
    Data is written from distributed $desc$ limited to range $rp$ to the file.
 
 
-   \subsubsection{atomic I/O}
+   \subsection{Atomic Global I/O Functions}
 
    Atomic I/O is executed in local but using the shared pointer. 
    It exclusively reads/writes local data
@@ -1047,8 +1059,8 @@
    function may set different file views for all nodes.
    Thus, before atomic I/O is used, the file view must be cleared.
 
-
-   \paragraph{ xmp\_fread\_shared} exclusively reads local data form the position of the shared file
+   \subsubsection{xmp\_fread\_shared}
+   xmp\_fread\_shared exclusively reads local data form the position of the shared file
    pointer and moves the position by the langth of the data.
    Local execution.
 
@@ -1071,7 +1083,8 @@
     \label{tb:aaa}
    \end{table}
 
-   \paragraph{ xmp\_fread\_shared} exclusively writes local data to the
+   \subsubsection{xmp\_fread\_shared}
+   xmp\_fread\_shared exclusively writes local data to the
    position of the shared file pointer and moves the position by the langth of the data.
    Local execution.
 
@@ -1094,7 +1107,7 @@
    \end{table}
 
 
-   \subsubsection{direct I/O}
+   \subsection{Direct Global I/O Functions}
 
    Direct I/O is exectuted in local and using the individual pointer. 
    It individually reads/writes local data
@@ -1106,7 +1119,8 @@
    Function xmp\_fseek is useful to set the individual file pointer.
    It is not recommended using the file view together because of complexity.
 
-   \paragraph{ xmp\_fread} reads data from the position of the individual file
+   \subsubsection{xmp\_fread}
+   xmp\_fread reads data from the position of the individual file
    pointer and moves the position by the length of the data.
    Local execution.
 
@@ -1129,7 +1143,8 @@
     \label{tb:aaa}
    \end{table}
 
-   \paragraph{ xmp\_fread} writes data to the position of the individual file
+   \subsubsection{xmp\_fread}
+   xmp\_fread writes data to the position of the individual file
    pointer and moves the position by the length of tha data.
    Local execution.
 
