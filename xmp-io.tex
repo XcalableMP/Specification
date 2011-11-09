@@ -774,6 +774,7 @@
    \end{table}
    
 
+   \clearpage
    \subsection{Global I/O file operation}
 
    \subsubsection{xmp\_fopen\_all}
@@ -798,8 +799,6 @@
 
    File view is initialized, where file view is based on the MPI-IO vile view mechanism. The value of shared and individual file pointers 
    depend on the value of amode.
-
-   \clearpage
 
    \begin{table}
      \begin{center}
@@ -993,6 +992,7 @@
 
    The file view of distributed $desc$ limited to range $rp$ is set into file structure $fh$.
 
+   \clearpage
    \subsubsection{xmp\_file\_clear\_view}
    xmp\_file\_clear\_view clears the file view. Collective (global) execution.
 
@@ -1020,8 +1020,6 @@
    xmp\_fread\_all reads the same data from the position of the shared file
    pointer onto the all executing nodes. Collective (global) execution.
 
-   \clearpage
-
    \begin{table}[h]
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
@@ -1040,6 +1038,8 @@
 %    \caption{aaa}
     \label{tb:aaa}
    \end{table}
+
+   \clearpage
 
    \subsubsection{xmp\_fwrite\_all}
    xmp\_fwrite\_all writes individual data on the all executing nodes to the position of the shared file
@@ -1131,6 +1131,8 @@
    function may set different file views for all nodes.
    Thus, before atomic I/O is used, the file view must be cleared.
 
+   \clearpage
+
    \subsubsection{xmp\_fread\_shared}
    xmp\_fread\_shared exclusively reads local data form the position of the shared file
    pointer and moves the position by the langth of the data.
@@ -1191,6 +1193,7 @@
    Function xmp\_fseek is useful to set the individual file pointer.
    It is not recommended using the file view together because of complexity.
 
+   \clearpage
    \subsubsection{xmp\_fread}
    xmp\_fread reads data from the position of the individual file
    pointer and moves the position by the length of the data.
