@@ -28,7 +28,7 @@ for(k = 0; k < NITER; k++){
 	    u[x][y] = (uu[x-1][y] + uu[x+1][y] +
                   uu[x][y-1] + uu[x][y+1])/4.0;
     }
-m */
+
     sum = 0.0;
 #pragma xmp loop on t[x] reduction(+:sum)
     for(x = 1; x <= XSIZE; x++)

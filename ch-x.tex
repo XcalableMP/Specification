@@ -1,10 +1,8 @@
-\chapter{Programming Interface for {\MPI} and {\OMP}}
+\chapter{Programming Interface for {\MPI}}
 
-   This chapter describes the programming interface for {\MPI} and {\OMP},
+   This chapter describes the programming interface for {\MPI},
    which are widely used for parallel programming for cluster computing.
-   Users can introduce {\MPI} and {\OMP} functions to {\XMP} using the interface.   
-
-\section{{\MPI} Interface}
+   Users can introduce {\MPI} functions to {\XMP} using the interface.   
 
    {\XMP} provides the following user API functions to mix {\MPI}
    functions with {\XMP}.
@@ -15,7 +13,7 @@
 \item {\tt xmp\_finalize\_mpi}
 \end{itemize}
 
-\subsection{\tt xmp\_get\_mpi\_comm}
+\section{\tt xmp\_get\_mpi\_comm}
 \index{xmp\_get\_mpi\_comm@{\tt xmp\_get\_mpi\_comm}}
 
 \subsubsection*{Format}
@@ -34,7 +32,7 @@
 
 none.
 
-\subsection{\tt xmp\_init\_mpi}
+\section{\tt xmp\_init\_mpi}
 \index{xmp\_init\_mpi@{\tt xmp\_init\_mpi}}
 
 \subsubsection*{Format}
@@ -55,7 +53,7 @@ none.
    should be given to {\tt xmp\_init\_mpi}.
 
 
-\subsection{\tt xmp\_finalzie\_mpi}
+\section{\tt xmp\_finalzie\_mpi}
 \index{xmp\_finalzie\_mpi@{\tt xmp\_finalzie\_mpi}}
 
 \subsubsection*{Format}
@@ -74,7 +72,7 @@ none.
 
    none.
 
-\subsection*{Example}
+\section*{Example}
 \index{Example!MPI interface}
 
 \begin{XCexample}
@@ -107,15 +105,17 @@ int main(int argc, char *argv[]) {
 \end{XCexample}
 
 
-\section{{\OMP}}
+\chapter{Directive for Thread Parallelism}
 \index{Directive!threads clause@{\tt threads} clause}
-\index{threads clause@{\tt threads} clause}
 
-   Thread-level parallelism is needed to program multi-core cluster system.
-   Users can use some {\OMP} features to parallelize loops in
-   thread level with the {\tt threads} clause of the {\tt loop}
-   directive. No direct use of {\OMP} directives in {\XMP} code is
-   allowed.
+Thread-level parallelism is needed to program multi-core cluster system.
+Users can use some features introduced from {\OMP} to parallelize loops
+in thread level with the {\tt threads} clause of the {\tt loop}
+directive. No direct use of {\OMP} directives in {\XMP} code is
+allowed.
+
+\section{{\tt threads} clause}
+\index{threads clause@{\tt threads} clause}
 
 \subsection*{Syntax}
 \Syntax{loop}
@@ -205,7 +205,7 @@ int main(void) {
 \end{XCexample}
 
 
-\chapter{Interface to Numerical Libraries (Recommended Feature)}
+\chapter{Interface to Numerical Libraries}
 \label{chap:Interface to Numerical Libraries}
 \index{library interface}
 
@@ -223,8 +223,8 @@ A recommended design of the interface is as follows:
        through an interface procedure (Figure \ref{figb.1}).
 
  \begin{myfigure}
-  \includegraphics[scale=0.7]{figs/figb.1.eps}
-  \caption{Invocation of an MPI Library Routine through an Interface}
+  \includegraphics[scale=0.45]{figs/figb.1.eps}
+  \caption{Invocation of a Library Routine through an Interface Procedure}
   \label{figb.1}
  \end{myfigure}
 
@@ -568,6 +568,9 @@ each local section of the target global array.
 
 \begin{XFexample}
       subroutine ixmp_pdgesv(n,nrhs,a,ia,ja,da,ipiv,b,ib,jb,db,ictxt,info)
+
+      use xmp_lib
+
       integer n,nrhs,ia,ja,ib,jb,ictxt(2),info
       double precision a,b
       xmp_desc_t da,db
@@ -623,6 +626,8 @@ each local section of the target global array.
 \Example{loop}
 \begin{XFexample}
       program xmptdgesv
+
+      use xmp_lib
 
       double precision a(1000,1000)
       double precision b(1000)
