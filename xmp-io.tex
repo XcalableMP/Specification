@@ -344,7 +344,6 @@
    statements (specified without directives) is regarded as master I/O
    statements (specified with \mio directives).
 
-   \clearpage
    
    \section{Global I/O}
 
@@ -572,13 +571,15 @@
     \label{tb:aaa}
    \end{table}
 
+\if 0
    If an axis of the global array is aligned to an axis of the template and they are not equal in length, the length of the axis of the global array is regarded as the length of the axis of the template. In the example below, array a is read/written in the collective I/O file as if it is declared as a(10,100).\\
    \begin{tabular}{ll}
      \verb|!$xmp| & \verb|template t(100)| \\
      & dimension a(10, 2:99) \\
      \verb|!$xmp| & \verb|align a(*,i) with t(i)| \\
    \end{tabular}
-
+\fi
+   
    \subsubsection{Atomic I/O statement}
 
    Atomic I/O statements read/write shared files exclusively among executing nodes
@@ -671,7 +672,6 @@
     \end{itemize}
    \end{itemize}
 
-   \clearpage
    
    \subsubsection{Data type}
 
@@ -703,6 +703,7 @@
 	       lower bound, upper bound and stride for each dimension.
    \end{description}
 
+
    \subsubsection{Global I/O file operation}
 
    \paragraph{xmp\_fopen\_all} opens a global I/O file. Collective (global) execution.
@@ -726,6 +727,8 @@
 
    File view is initialized, where file view is based on the MPI-IO vile view mechanism. The value of shared and individual file pointers 
    depend on the value of amode.
+
+   \clearpage
 
    \begin{table}
      \begin{center}
@@ -751,8 +754,6 @@
    \end{center}
    \end{table}
 
-
-   \clearpage
    \paragraph{xmp\_fclose\_all} closes a global I/O file. Collective (global) execution.
 
    \begin{table}[h]
@@ -819,6 +820,7 @@
     \label{tb:aaa}
    \end{table}
 
+   
    \paragraph{xmp\_ftell} inquires the position of the individual file pointer in the file structure. Local execution.
 
    \begin{table}[h]
@@ -862,6 +864,8 @@
    \paragraph{xmp\_file\_sync\_all} guarantees completion of access to the file from nodes sharing the file.
    Collective (global) execution.
 
+   \clearpage
+
    \begin{table}[h]
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
@@ -876,8 +880,6 @@
 %    \caption{aaa}
     \label{tb:aaa}
    \end{table}
-
-   \clearpage
 
    \subsubsection{Collective I/O}
 
@@ -936,6 +938,8 @@
    \paragraph{ xmp\_fread\_all} reads the same data from the position of the shared file
    pointer onto the all executing nodes. Collective (global) execution.
 
+   \clearpage
+
    \begin{table}[h]
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
@@ -979,10 +983,10 @@
     \label{tb:aaa}
    \end{table}
 
-   \clearpage
 
-   \paragraph{ xmp\_fread\_darray\_all} reads data cooperatively to the global array from the
-   position of the shared file pointer.
+   \paragraph{ xmp\_fread\_darray\_all} reads data cooperatively to the global array from the position of the shared file pointer.
+
+   \clearpage
 
    \begin{table}[h]
     \begin{center}
@@ -1027,7 +1031,6 @@
 
    Data is written from distributed $desc$ limited to range $rp$ to the file.
 
-   \clearpage
 
    \subsubsection{atomic I/O}
 
