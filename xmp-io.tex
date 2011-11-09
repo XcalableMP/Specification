@@ -245,9 +245,7 @@
    \subsection*{Restriction}
    \begin{itemize}
     \item The following items cannot be specified in the input item list.
-
 	  \begin{itemize}
-	   \item Array section of global array
 	   \item Substring of global array
 	   \item Array element whose subscript contains reference of a
 		 global array
@@ -700,10 +698,56 @@
 	       
 	       xmp\_array\_t xmp\_array\_of(A);
 \fi
+\clearpage
     \item[xmp\_range\_t] Descriptor of array section, including
-	       lower bound, upper bound and stride for each dimension.
+      lower bound, upper bound and stride for each dimension.
+      Functions for operating the descriptor are shown in following table.
+      The xmp\_allocate\_range() function is used to allocate memory.
+      The xmp\_set\_range() function is used to set ranges of a array section.
+      The xmp\_free\_range() function releases the memory for the descriptor.
    \end{description}
 
+   \begin{table}[h]
+    \begin{center}
+      \begin{tabular}{|l|r|p{90mm}|}
+      \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf xmp\_range\_t $*$xmp\_allocate\_range(n\_dim)}  \\ \hline \hline
+      argument & int n\_dim & the number of dimensions \\ \hline
+      return value & xmp\_range\_t$*$ & descriptor of array section. NULL is returned
+	      when a program abend. \\ \hline
+      \end{tabular}
+     \end{center}
+    \label{tb:aaa}
+   \end{table}
+
+   \begin{table}[h]
+    \begin{center}
+      \begin{tabular}{|l|r|p{90mm}|}
+      \hline
+          {\bf function name}  & \multicolumn{2}{c|}{\bf void xmp\_set\_range(rp, i\_dim, lb, length, step)}  \\ \hline
+          argument & xmp\_range\_t $*$rp  & descriptor \\ \cline{2-3}
+          & int i\_dim & target dimension \\ \cline{2-3}
+          & int lb & lower bound of array section in the dimension i\_dim \\ \cline{2-3}
+          & int length & length of array section in the dimension i\_dim \\ \cline{2-3}
+          & int step & stride of array section in the dimension i\_dim \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+   
+   \begin{table}[h]
+    \begin{center}
+      \begin{tabular}{|l|r|p{90mm}|}
+      \hline
+      {\bf function name}  & \multicolumn{2}{c|}{\bf void xmp\_free\_range(rp)}  \\ \hline
+      argument & xmp\_range\_t $*$rp & descriptor of array section. \\ \hline
+      \end{tabular}
+     \end{center}
+%    \caption{aaa}
+    \label{tb:aaa}
+   \end{table}
+   
 
    \subsection{Global I/O file operation}
 
@@ -867,11 +911,14 @@
     \label{tb:aaa}
    \end{table}
 
+   \clearpage
+   
    \subsubsection{xmp\_file\_sync\_all}
    xmp\_file\_sync\_all guarantees completion of access to the file from nodes sharing the file.
+   Two data accesses conflict if they access the same absolute byte displacements of the same file and at least one is a write access.
+   When two accesses A1 and A2 to the same file conflict in atomic or direct I/O, an xmp\_file\_sync\_all to the file must be invoked between A1 and A2, otherwise the outcome of the accesses is undefined.   
    Collective (global) execution.
 
-   \clearpage
 
    \begin{table}[h]
     \begin{center}
