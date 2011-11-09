@@ -413,8 +413,9 @@
    but array element, array section,
    structure component, substring, and implied DO loop are not allowed as input items.
 
-   Only the name of a global array and an
-   expression excluding global array reference can be specified as the output item
+   Only the name of a global array
+   %and an expression excluding global array reference can be specified
+   as the output item
    of WRITE statement specified with \gio directive, 
    but an expression including global array
    reference and implied DO loop are not allowed as input items.
@@ -537,9 +538,9 @@
 
 
    Two data accesses conflict if they access the same absolute byte displacements of the same file and at least one is a write access.
-   When two accesses A1 and A2 to the same file conflict in atomic or direct I/O, a barrier directive with in clause to the file must be executed between A1 and A1, otherwise the outcome of the accesses is undefined.
-   The following statement is an extension of BARRIER statement.
-   
+   When two accesses A1 and A2 to the same file conflict in atomic or direct I/O,
+   the following BARRIER statement to the file must be invoked between A1 and A1, otherwise the outcome of the accesses is undefined.
+   The statement is an extension of BARRIER statement and a collective execution.
    
    \begin{itemize}
      \item BARRIER statement
@@ -576,17 +577,18 @@
       \multicolumn{1}{|c}{ }  & {\bf I/O item} & {\bf operation} \\ \hline
       input item & name of global array & The value is read from the file in the sequential order of the array elements and is set to the array elements of the global array.
       The file positioning seeks by the size of the data.
-      \\
-      \cline{2-3}
-      & local variable &  The value read from the file is replicated into the
-	      local array on all executing nodes. The file positioning seeks by
-	      the length of the data. \\ \hline
+      %\\ \cline{2-3}
+      %& local variable &  The value read from the file is replicated into the
+%	      local array on all executing nodes. The file positioning seeks by
+%	      the length of the data.
+      \\ \hline
       output item & name of global array & The value referred from the global data 
 	      is written to the file in the sequential order of the array elements.
-	      The file positioning seeks by the size of the data. \\
-      \cline{2-3}
-      & local variable, expression & The value evaluated on a node of the executing nodes is written to the file.
-      The file positioning seeks by the size of the data. \\ \hline
+	      The file positioning seeks by the size of the data.
+%      \\ \cline{2-3}
+%      & local variable, expression & The value evaluated on a node of the executing nodes is written to the file.
+%      The file positioning seeks by the size of the data.
+      \\ \hline
       \end{tabular}
      \end{center}
 %    \caption{aaa}
