@@ -69,7 +69,7 @@
   [C] It is provided in the form of service functions and include files.
 
   Global I/O can handle only unformatted (binary) files. In XcalableMP Fortran,
-  implied-do and some specifiers cannot be used.
+  implied DO loops and some specifiers cannot be used.
   In XcalableMP C, a formatted I/O library, including fprintf() and fscanf(), is not provided.
 
   Global I/O can read a file written in MPI-IO, and vice versa. 
@@ -254,7 +254,7 @@
 	   \item Substring whose subscript contains reference of a
 		 global array
 	   \item Expressions including the global array reference
-	   \item {\it io-impoied-do} including the global array reference
+	   \item {\it io-implied-do} including the global array reference
 	  \end{itemize}
 
     \item An I/O statement specified with a master I/O directive must be
@@ -299,7 +299,7 @@
 	      local variables on all nodes of the executing node
 	      set. The file positioning increases by the size of data. \\
       \cline{2-3}
-      & implied-do & For each input item, repeats the above operation. \\
+      & implied DO loop & For each input item, repeats the above operation. \\
       \hline
       output item & name of global array & The value of the
 	      global array is collected and is written to the
@@ -314,7 +314,7 @@
 	      is written to the file. The file positioning increases by
 	      the size of data. \\
       \cline{2-3}
-      & implied-do & For each output item, repeat the above operation. \\
+      & implied DO loop & For each output item, repeat the above operation. \\
       \hline
       \end{tabular}
      \end{center}
@@ -412,13 +412,13 @@
    Only the name of a variable (including global variable) can be specified 
    as the input item of READ statement specified with \gio directive,
    but array element, array section,
-   structure component, substring, and implied-do are not allowed as input items.
+   structure component, substring, and implied DO loop are not allowed as input items.
 
    Only the name of a global array and an
    expression excluding global array reference can be specified as the output item
    of WRITE statement specified with \gio directive, 
    but an expression including global array
-   reference and implied-do are not allowed as input items.
+   reference and implied DO loop are not allowed as input items.
 
 
    \subsubsection*{Description}
