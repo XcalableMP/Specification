@@ -571,7 +571,7 @@ each local section of the target global array.
 
       use xmp_lib
 
-      integer n,nrhs,ia,ja,ib,jb,ictxt(2),info
+      integer n,nrhs,ia,ja,ib,jb,ictxt,info
       double precision a,b
       xmp_desc_t da,db
       integer size_a(2),unitsize_a(2),rank_a(2),lead_dim_a,desca(9)
@@ -588,7 +588,7 @@ each local section of the target global array.
       call xmp_la_lead_dim(db,lead_dim_b)
       
       desca(1)=1
-      desca(2)=ictxt(1)
+      desca(2)=ictxt
       desca(3)=size_a(1)
       desca(4)=size_a(2)
       desca(5)=unitsize_a(1)
@@ -598,7 +598,7 @@ each local section of the target global array.
       desca(9)=lead_dim_a
       
       descb(1)=1
-      descb(2)=ictxt(2)
+      descb(2)=ictxt
       descb(3)=size_b(1)
       descb(4)=size_b(2)
       descb(5)=unitsize_b(1)
@@ -641,7 +641,7 @@ each local section of the target global array.
 !$xmp align ipiv(i,j) with t1(i,j)
 !$xmp align b(i) with t(i,*)
       ...
-      integer i,j,ict,ictxt(2),myrow,mycol
+      integer i,j,ictxt
       integer m=1000,n=1000,nprow=2,npcol=2
       integer icontxt=-1,iwhat=0
       integer nrhs=1,ia=1,ja=1,ib=1,jb=1,info
@@ -649,15 +649,12 @@ each local section of the target global array.
       ...
       order="C"
       ...
-      call blacs_get(icontxt,iwhat,ict)
-      call blacs_gridinit(ict,order,nprow,npcol)
-      ...
-      ictxt(1)=ict
-      ictxt(2)=ict
+      call blacs_get(icontxt,iwhat,ictxt)
+      call blacs_gridinit(ictxt,order,nprow,npcol)
       ...
 !$xmp loop (i,j) on t(i,j)
-      do i=1,m
-         do j=1,n
+      do j=1,n
+         do i=1,m
             a(i,j) = ...
          end do
       end do
@@ -670,7 +667,7 @@ each local section of the target global array.
       call ixmp_pdgesv(n,nrhs,a,ia,ja,xmp_desc_of(a),ipiv,
      *                b,ib,jb,xmp_desc_of(b),ictxt,info)
       ...
-      call blacs_gridexit(ict)
+      call blacs_gridexit(ictxt)
       ...
       stop
       end
