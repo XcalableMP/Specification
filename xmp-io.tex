@@ -340,8 +340,8 @@
    satisfied, all nodes of executing node set are branched together to
    the same statement.
 
-   {\bf Advice to the implementer}
-
+   \subsubsection*{Advice to the implementer}
+   
    It is recommended to provide such a compiler option that local I/O
    statements (specified without directives) is regarded as master I/O
    statements (specified with \mio directives).
@@ -1114,7 +1114,7 @@
    from the position of the individual file pointer and 
    moves the position by the length of the data taking account of the file view.
 
-   {\bf Advice to the programmer}
+   \subsubsection*{Advice to the programmer}
 
    Function xmp\_fseek is useful to set the individual file pointer.
    It is not recommended using the file view together because of complexity.
