@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{report}
+\documentclass[a4paper,11pt,twoside]{report}
 %%\usepackage{program}
 \usepackage{ascmac}
 \usepackage{graphicx}  % for EPS and PDF 
@@ -6,7 +6,7 @@
 \usepackage{fancyvrb}
 \usepackage{makeidx}
 \usepackage{here}
-\usepackage[sectionbib]{chapterbib}
+%\usepackage[sectionbib]{chapterbib}
 
 \usepackage{vruler}  %% if vertical ruler (line number) is needed
 
@@ -14,13 +14,15 @@
     linkcolor=black,citecolor=black,linktocpage=true,bookmarks=false]{hyperref}
 
 \setcounter{secnumdepth}{4}
+\usepackage{fancyhdr}
 
 
 \hoffset=0cm
 \oddsidemargin=0cm
 \evensidemargin=0cm
 \textwidth=16cm
-\topmargin=-1.5cm
+%\topmargin=-1.5cm
+\topmargin=-1cm
 \voffset=0cm
 \textheight=24cm
 
@@ -197,19 +199,35 @@ Programming Environment for High-performance Computing'' project funded
 by Ministry of Education, Culture, Sports, Science and Technology,
 Japan.
 
+\newpage
+\mbox{}\newpage
+
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\fancyhead[RE]{\leftmark}
+\fancyhead[LO]{\rightmark}
+\fancyhead[LE,RO]{\thepage}
+\fancyfoot{} % clear all footer fields
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
 \input{ch-1.tex}
 \input{glossary.tex}
+\cleardoublepage
 
 \input{ch2-1.tex}
 \input{ch2-node.tex}
 \input{ch2-template.tex}
 \input{ch2-work.tex}
 \input{ch2-gcomm.tex}
+\cleardoublepage
 
 \input{ch3-coarray.tex}
 \input{ch3-local-view.tex}
+\cleardoublepage
 
 \input{ch4.tex}
+\cleardoublepage
 \input{ch5.tex}
 
 \begin{thebibliography}{99}
@@ -256,8 +274,15 @@ Japan.
 \end{thebibliography}
 
 \appendix
+
+\cleardoublepage
+
 \input{ch-x.tex}
+\cleardoublepage
+
 \input{xmp-io}
+\cleardoublepage
+
 \input{ch-example.tex}
 
 \printindex

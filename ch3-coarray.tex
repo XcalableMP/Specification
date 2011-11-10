@@ -71,9 +71,12 @@ declared on the same node set (see chapter \ref{chap:procedure}).
 \begin{itemize}
  \item \verb![F]! All of the variables appeared in a {\tt coarray}
        directive must have the codimension attributes.
- \item The node array specified by the {\tt on} clause of the {\tt
-       coarray} directive for a procedure-local variable must
-       correspond to the executing node set of the procedure.
+ \item If any variable specified by {\it variable-name} is local to the
+       procedure, the node set specified by the {\tt on} clause must be
+       a subset of the executing node set of the procedure.
+% \item The node array specified by the {\tt on} clause of the {\tt
+%       coarray} directive for a procedure-local variable must
+%       correspond to the executing node set of the procedure.
 % \item \verb![F]! All of the variables declared by {\it
 %       type-declaration-stmt} in the first form with the {\tt on} clause
 %       must have the codimension attribute.
@@ -299,9 +302,9 @@ all memory operations on coarrays.
 %other images.
 
 The {\tt sync\_memory} directive ensures that any changes of coarrays
-on the image (or the executing node) are visible to any images (or
-nodes) and any coarrays on the image can be referenced or defined by
-any images.
+on the image (or the executing node) done by itself are visible to any
+images (or nodes) and any coarrays on the image can be referenced or
+defined by any images.
 %
 Note that no other {\XMP} directive ensures that.
 
@@ -332,11 +335,11 @@ code snippet at runtime, the following are ensured that:
        and it can be referenced and defined by any other nodes;
  \item the local reference of a coarray {\tt b} is complete
        and it can be defined by any other nodes;
- \item the remote definition of a coarray {\tt c} from any other nodes,
-       if any, is complete and it can be referenced and defined by
-       any other nodes; and 
- \item the remote reference of a coarray {\tt d} from any other nodes,
-       if any, is complete and it can be defined by any other nodes.
+ \item the remote definition of a coarray {\tt c} from the node is
+       complete and it can be referenced and defined by any nodes;
+       and
+ \item the remote reference of a coarray {\tt d} from the nodes is
+       complete and it can be defined by any nodes.
 \end{itemize}
 
 %\subsubsection*{Restrictions}
