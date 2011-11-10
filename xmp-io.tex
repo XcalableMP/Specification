@@ -11,7 +11,7 @@
   any directives.
 
   I/O statements (in {\XMP} {\Fort}) and I/O functions (in {\XMP} {\C})
-  are executed in local similar to the other execution statements.
+  are executed in local similar to other execution statements.
   It depends on the system which nodes can handle the I/O statements and
   functions.
 
@@ -31,13 +31,13 @@
 
   Master I/O is input and output for the file that corresponds to an
   executing node set.
-  Master I/O is global execution.
+  Master I/O is collective execution.
 
-  In master I/O, a global data is input and output as if it is executed
+  In master I/O, a global data is input and output as if it was executed
   only by master node, which represents the executing node set, through
   its local copy of the data.
 
-  Master node is chosen among the executing node set arbitrarily by the
+  The master node is chosen among the executing node set arbitrarily by the
   system, and is unique to the executing node set during execution of
   the program.
 
@@ -70,7 +70,7 @@
 
   Global I/O can handle only unformatted (binary) files. In XcalableMP Fortran,
   implied DO loops and some specifiers cannot be used.
-  In XcalableMP C, a formatted I/O library, including fprintf() and fscanf(), is not provided.
+  In XcalableMP C, formatted I/O libraries, including fprintf() and fscanf(), are not provided.
 
   Global I/O can read a file written in MPI-IO, and vice versa. 
 
@@ -152,9 +152,9 @@
 
   It is implementation dependent which nodes can access the standard
   input, output and error files.
-  It is also implementation dependent how behave the nodes accessing the
-  same file at the same time; e.g., data in the standard input file may
-  be read only one node and may be replicated all nodes.
+  It is also implementation dependent how the accesses to the same file by multiple nodes behave; e.g.
+  , data in the standard input file may
+  be read only one node or may be replicated all nodes.
   It is implementation dependent how data from the multiple nodes are
   merged into the standard output/error file.
   
@@ -244,9 +244,9 @@
 
    \subsection*{Restriction}
    \begin{itemize}
-    \item The following items cannot be specified in the input item list.
+   \item The following items cannot be specified for a global array or subobject of a global array in the input item list.
 	  \begin{itemize}
-	   \item Substring of global array
+	   \item Substring a of global array
 	   \item Array element whose subscript contains reference of a
 		 global array
 	   \item Array section whose subscript contains reference of a
@@ -254,7 +254,8 @@
 	   \item Substring whose subscript contains reference of a
 		 global array
 	   \item Expressions including the global array reference
-	   \item {\it io-implied-do} including a global array or subobject of a global array
+	   \item {\it io-implied-do-control} including a global array
+             or subobject of a global array
 	  \end{itemize}
 
     \item An I/O statement specified with a master I/O directive must be
@@ -264,7 +265,7 @@
 	  
   \subsection*{Description}
 
-   An I/O statement specified with a master I/O directive accesses to a
+   An I/O statement specified with a master I/O directive accesses a
    file whose format is the same as the one of the base language.
    The access, including connection, disconnection, input and output,
    file positioning, and inquiry, is global (collective) and must be
@@ -273,7 +274,7 @@
 
    Master node, a unique node to a executing node set, is chosen by the
    language system.
-   Master I/O works as if all file access is executed only on the master
+   Master I/O works as if all file accesses were executed only on the master
    node.
 
    The operations for I/O items are summarized in Table \ref{tb:opforio}.
@@ -347,11 +348,8 @@
    
    \section{Global I/O [F]}
 
-   Global I/O executes data transfer between a file and global arrays
-   distributed on the executing node set.
-   Global I/O is restricted within unformatted (binary) files, but
-   higher performance and lower memory consumption can be expected than
-   master I/O.
+   Global I/O performs unformatted data transfer and can be expected to be higher performance and lower memory consumption than master I/O.
+%   Global I/O is restricted within unformatted (binary) files, but higher performance and lower memory consumption can be expected than master I/O.
    The file format is compatible with the one in MPI-IO.
 
    Global I/O consists of three kinds, collective I/O, atomic I/O, and
@@ -408,17 +406,22 @@
    \end{center}
    \end{table}
 
+   An input item and an output item of a data transfer statement with
+   \gio directive must be the name of a variable.
+   
+   \if 0
    Only the name of a variable (including global variable) can be specified 
    as the input item of READ statement specified with \gio directive,
    but array element, array section,
    structure component, substring, and implied DO loop are not allowed as input items.
 
    Only the name of a global array
-   %and an expression excluding global array reference can be specified
+   and an expression excluding global array reference can be specified
    as the output item
    of WRITE statement specified with \gio directive, 
    but an expression including global array
    reference and implied DO loop are not allowed as input items.
+   \fi
 
    \subsubsection*{Description}
 
@@ -471,8 +474,8 @@
     \end{center}
    \end{table}
 
-   POSITION is available only if the directive has no directive clause.
-   RECL is available only if the directive has a directive clause.
+   POSITION is available only if the directive has no direct clause.
+   RECL is available only if the directive has a direct clause.
 
    \item CLOSE statement
 	  
@@ -506,7 +509,7 @@
     \end{center}
    \end{table}
 
-   REC is available only if the directive has a directive clause.
+   REC is available only if the directive has a direct clause.
    
    \item When a scalar variable of default INTEGER is set to IOSTAT, an
      error code is set to the specifiers.
@@ -565,7 +568,7 @@
    Collective I/O statements read/write shared files and can handle global arrays.
 
    All collective I/O statements execute in global (collective).
-   In collective I/O, all access for a file, such as connection, disconnection,
+   In collective I/O, all accesses to a file, such as connection, disconnection,
    input and output, must be executed on the same executing node set. 
    
    The operations for I/O items are summarized in the following table.
@@ -577,17 +580,17 @@
       \multicolumn{1}{|c}{ }  & {\bf I/O item} & {\bf operation} \\ \hline
       input item & name of global array & The value is read from the file in the sequential order of the array elements and is set to the array elements of the global array.
       The file positioning seeks by the size of the data.
-      %\\ \cline{2-3}
-      %& local variable &  The value read from the file is replicated into the
-%	      local array on all executing nodes. The file positioning seeks by
-%	      the length of the data.
+      \\ \cline{2-3}
+      & local variable &  The value read from the file is replicated into the
+	      local array on all executing nodes. The file positioning seeks by
+	      the length of the data.
       \\ \hline
-      output item & name of global array & The value referred from the global data 
+      output item & name of global array & The value referred to the global data 
 	      is written to the file in the sequential order of the array elements.
 	      The file positioning seeks by the size of the data.
-%      \\ \cline{2-3}
-%      & local variable, expression & The value evaluated on a node of the executing nodes is written to the file.
-%      The file positioning seeks by the size of the data.
+      \\ \cline{2-3}
+      & local variable, expression & The value evaluated on a node of the executing nodes is written to the file.
+      The file positioning seeks by the size of the data.
       \\ \hline
       \end{tabular}
      \end{center}
@@ -596,7 +599,7 @@
    \end{table}
 
 \if 0
-   If an axis of the global array is aligned to an axis of the template and they are not equal in length, the length of the axis of the global array is regarded as the length of the axis of the template. In the example below, array a is read/written in the collective I/O file as if it is declared as a(10,100).\\
+   If an axis of the global array is aligned to an axis of the template and they are not equal in length, the length of the axis of the global array is regarded as the length of the axis of the template. In the example below, array a is read/written in the collective I/O file as if it was declared as a(10,100).\\
    \begin{tabular}{ll}
      \verb|!$xmp| & \verb|template t(100)| \\
      & dimension a(10, 2:99) \\
@@ -649,7 +652,7 @@
 
    \section{Global I/O library [C]}
 
-   XcalableMP C provides some data types defined in an include file, 
+   XcalableMP C provides some data types defined in the include file ``xmp.h'',
    a set of library functions with arguments of the data types, and
    built-in operators to get values of the data types from names of a variable, a template, etc..
 
@@ -751,10 +754,10 @@
       \hline
           {\bf function name}  & \multicolumn{2}{c|}{\bf void xmp\_set\_range(rp, i\_dim, lb, length, step)}  \\ \hline
           argument & xmp\_range\_t $*$rp  & descriptor \\ \cline{2-3}
-          & int i\_dim & target dimension \\ \cline{2-3}
-          & int lb & lower bound of array section in the dimension i\_dim \\ \cline{2-3}
-          & int length & length of array section in the dimension i\_dim \\ \cline{2-3}
-          & int step & stride of array section in the dimension i\_dim \\ \hline
+%          & int i\_dim & target dimension \\ \cline{2-3}
+          & int lb[n\_dim] & lower bound of array section in the dimension i\_dim \\ \cline{2-3}
+          & int length[n\_dim] & length of array section in the dimension i\_dim \\ \cline{2-3}
+          & int step[n\_dim] & stride of array section in the dimension i\_dim \\ \hline
       \end{tabular}
      \end{center}
 %    \caption{aaa}
@@ -969,8 +972,8 @@
    spans the positions corresponding to the array elements that each node owns. 
    For more details of file view, refer to the MPI 2.0 specification.
 
-   \subsubsection{xmp\_file\_set\_view}
-   xmp\_file\_set\_view sets a file view to the file. Collective (global) execution.
+   \subsubsection{xmp\_file\_set\_view\_all}
+   xmp\_file\_set\_view\_all sets a file view to the file. Collective (global) execution.
 
    \begin{table}[h]
     \begin{center}
@@ -993,8 +996,8 @@
    The file view of distributed $desc$ limited to range $rp$ is set into file structure $fh$.
 
    \clearpage
-   \subsubsection{xmp\_file\_clear\_view}
-   xmp\_file\_clear\_view clears the file view. Collective (global) execution.
+   \subsubsection{xmp\_file\_clear\_view\_all}
+   xmp\_file\_clear\_view\_all clears the file view. Collective (global) execution.
 
    The positions of the shared and individual file pointers are set to
    disp and 
