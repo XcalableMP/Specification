@@ -627,7 +627,7 @@ equivalent to the following code using the {\tt task} construct.
       dimension a(n,n), p(n), w(n)
 !$xmp align a(i,j) with t(i,j)
 !$xmp align p(i) with t(i,*)
-!$xmp align a(j) with t(*,j)
+!$xmp align w(j) with t(*,j)
       ...
 !$xmp loop (j) on t(:,j)
       do j = 1, n
@@ -681,7 +681,7 @@ construct as follows:
       dimension a(n,n), p(n), w(n)
 !$xmp align a(i,j) with t(i,j)
 !$xmp align p(i) with t(i,*)
-!$xmp align a(j) with t(*,j)
+!$xmp align w(j) with t(*,j)
       ...
 !$xmp loop (j) on t(:,j)
       do j = 1, n

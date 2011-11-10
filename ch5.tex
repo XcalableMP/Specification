@@ -28,7 +28,7 @@ intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
 
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of(xmp\_entity)}\\
+\verb![F]!&  {\tt integer(kind=xmp\_desc\_kind)}& {\tt xmp\_desc\_of(xmp\_entity)}\\
 
 \verb![C]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of(xmp\_entity)}
 
@@ -52,10 +52,19 @@ template, or node array. The resulting descriptor can be used as an
 input argument of the inquiry procedures which is described in appendix
 \ref{chap:Interface to Numerical Libraries}.
 
-The type of the descriptor, {\tt xmp\_desc\_t}, is
-implementation-dependent, and defined in a Fortran module named {\tt
-xmp\_lib} and a Fortran {\tt include} file named {\tt xmp\_lib.h} in
-{\XMPF}, or a header file named {\tt xmp.h} in {\XMPC}.
+The kind type parameter of the type of the descriptor, {\tt
+xmp\_desc\_kind}, in {\XMPF} is implementation-dependent, and defined in
+a Fortran module named {\tt xmp\_lib} or a Fortran {\tt include} file
+named {\tt xmp\_lib.h}.
+
+The type of the descriptor, {\tt xmp\_desc\_t}, in {\XMPC} is
+implementation-dependent, and defined in a header file named {\tt xmp.h}
+in {\XMPC}.
+
+%The type of the descriptor, {\tt xmp\_desc\_t}, is
+%implementation-dependent, and defined in a Fortran module named {\tt
+%xmp\_lib} or a Fortran {\tt include} file named {\tt xmp\_lib.h} in
+%{\XMPF}, or a header file named {\tt xmp.h} in {\XMPC}.
 
 \subsubsection*{Arguments}
 
@@ -333,7 +342,7 @@ with the {\tt async} clause.
 \begin{tabular}{lll}
 
 \verb![F]!& {\tt subroutine} & {\tt xmp\_gtol(d, g\_idx, l\_idx)} \\
-          & {\tt xmp\_desc\_t} & {\tt d}\\
+          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
           & {\tt integer} & {\tt g\_idx(NDIMS)}\\
           & {\tt integer} & {\tt l\_idx(NDIMS)}\\
           & & \\
@@ -354,7 +363,8 @@ unspecified value.
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       xmp\_desc\_t} that is associated with the target global array.
+       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the target global array.
  \item \verb![F]! {\tt g\_idx} is a rank-one integer array of the size
        equal to the rank of the target global array specified by {\tt
        d}.

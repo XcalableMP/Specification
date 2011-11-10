@@ -282,6 +282,11 @@ is defined by {\tt template\_fix} directives at runtime.
        template} directive that lexically precedes the directive.
  \item The number of {\it dist-format} that is not ``{\tt *}'' must be
        equal to the rank of the node array specified by {\it nodes-name}.  
+ \item The size of the dimension of the template specified by {\it
+       template-name} that is distributed by {\tt block(n)} must be
+       equal to or less than the product of the block size {\tt n} and
+       the size of the corresponding dimension of the node array
+       specified by {\it nodes-name}.
  \item The array {\it int-array} in parentheses following {\tt gblock}
        must be an integer one-dimensional array, and its size must be
        equal to the size of the corresponding dimension of the node array

@@ -9,27 +9,32 @@ that of Fortran 2008.
 
 The specification of the coarray features in XcalableMP conforms to that
 of Fortran 2008 unless otherwise provided.
+%
+Each node in the entire node set is considered to correspond to each
+image of a program. Therefore the number of images is always equal to
+the size of the entire node set. The image index of a node is its node
+nunber of the entire node set.
 
+Terms related to coarrays in {\XMP} (e.g. \Term{coshape}, coindex,
+cobound, \Term{cosubscript}, image, image index, etc.) are derived from
+that in Fortran 2008.
 
-\subsection{Declaration of Coarrays}
+Described in the rest of this section is the coarray features for
+{\XMPC}.
+
+\subsection{{\tt [C]} Declaration of Coarrays}
 
 \subsubsection*{Synopsis}
 
-Coarrays are declared in the same manner as in Fortran 2008 for {\XMPF},
-or with the {\tt coarray} directive for {\XMPC}.
+Coarrays are declared with the {\tt coarray} directive in {\XMPC}.
 
 \subsubsection*{Syntax}
 \Syntax{coarray}
 
 \begin{tabular}{ll}
-%\verb![F]! & {\it type-declaration-stmt} {\openb}{\tt on} {\it
-% nodes-ref}{\closeb}\\
-%\verb![F]! & {\it codimension-stmt} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
-\verb![F]! & \verb|!$xmp coarray| {\it variable-name} {\openb}{\tt ,}
-     {\it variable-name} {\closeb}{\tt ...} {\tt on} {\it nodes-ref} \\
 \verb![C]! & \verb|#pragma xmp coarray| {\it variable-name} {\openb}{\tt
      ,} {\it variable-name} {\closeb}{\tt ...} {\tt :} 
-{\it codimensions} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
+{\it codimensions} \\
 \end{tabular}
 
 \vspace{0.5cm}
@@ -41,243 +46,335 @@ where {\it codimensions} is:
 
 \subsubsection*{Description}
 
-For {\XMPF}, coarrays are declared in the same manner as in Fortran
-2008, which is not described in this document.
-%
 For {\XMPC}, coarrays are declared with the {\tt coarray} directive
-where {\it codimensions} specify the \Term{coshape} of a variable.
-%
-Terms related to coarrays in {\XMP} (e.g. coshape, coindex,
-cobound, \Term{cosubscript}, image, image index, etc.) are derived from
-that in Fortran 2008.
-
-In addition, the {\tt on} clause of the {\tt coarray} directive
-specifies a node array on each element of which the coarray object is
-allocated, and associates each {\it \Term{image}} of the coarray with a
-node of the node array so that an image having an {\it \Term{image
-index}} is associated with a node that have the same index of the node
-array in the Fortran's array element order.
-%
-If the {\tt coarray} directive is not specified in {\XMPF} or the {\tt
-on} clause of the {\tt coarray} directive is not specified in {\XMPC},
-then it is assumed that an implicit node array corresponding to the
-executing node set is specified.
-
-Note that an actual coarray and its associating dummy coarray must be
-declared on the same node set (see chapter \ref{chap:procedure}).
+where {\it codimensions} specify the coshape of a variable.
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
- \item \verb![F]! All of the variables appeared in a {\tt coarray}
-       directive must have the codimension attributes.
- \item If the coarray specified by {\it variable-name} is local to the
-       procedure, the node set specified by the {\tt on} clause must be
-       the executing node set of the procedure or its subset.
-% \item The node array specified by the {\tt on} clause of the {\tt
-%       coarray} directive for a procedure-local variable must
-%       correspond to the executing node set of the procedure.
-% \item \verb![F]! All of the variables declared by {\it
-%       type-declaration-stmt} in the first form with the {\tt on} clause
-%       must have the codimension attribute.
-% \item \verb![F]! At most one {\tt on} clause can be specified for a
-%       variable in a scoping unit.
-% \item The cosize of each declared coarray must be less than or equal to
-%       the size of the node set specified by the {\tt on} clause.
+ \item A coarray specified by {\it variable-name} must have a global
+       scope.
 \end{itemize}
 
 \subsubsection*{Examples}
 \Example{coarray}
 
-\begin{description}
-\item[Example 1]
-\hspace{\hsize}
-\begin{XFexample}
-!$xmp nodes w(50)
-      real wa(100)[*]
-      ...
-!$xmp tasks
-!$xmp task on w(1:30)
-      call task1 ( wa )
-!$xmp end task
-!$xmp task on w(32:50)
-      call task2 ( wa )
-!$xmp end task
-      ...
-      subroutine task1 ( aa )
-!$xmp nodes w(50)
-!$xmp nodes p(50) = *
-      real aa(100)[*]
-!$xmp coarray aa on w
-      real b(100)[*] 
-      ...
-      subroutine task2 ( aa )
-!$xmp nodes w(50)
-!$xmp nodes p(20) = *
-      real aa(100)[*]
-!$xmp coarray aa on w
-      real c(100)[*] 
-      ...
-\end{XFexample}
+\begin{XCexample}
+#pragma xmp nodes p(16)
+float x;
+#pragma xmp coarray x :[*]
+\end{XCexample}
 
-	   The coarray {\tt wa} declared on the entire node set {\tt w}
-	   is passed as an actual argument to subroutines {\tt task1}
-	   and {\tt task2}.
-	   In these subroutines, the coarray object is referenced as the
-	   formal argument {\tt aa} and its declaration requires the {\tt
-	   on} clause to specify the entire node set, which is
-	   different from the executing node set.
-%	   By this declaration, the subroutine can
-%	   access {\tt wa}.
-	   Note that the coarrays {\tt b} and {\tt c} are
-	   local variables in the subroutines {\tt task1} and {\tt
-	   task2}, respectively, and therefore they are declared on the
-	   executing node set specified by {\tt p}.
-%	   Since {\tt b} is
-%	   mapped to {\tt w(1:30)} and {\tt c} is mapped onto {\tt
-%	   w(31:51)}, there is no way to access coarray {\tt c} ({\tt
-%	   b}) from {\tt task1} ({\tt task2}) because a subroutine can
-%	   access the entire node set or its subset as well as the
-%	   executing node set.
+A variable {\tt x} that has a global scope is declared as a coarray by the
+{\tt coarray} directive.
 
-\item[Example 2]
-\hspace{\hsize}
-\begin{Fexample}
-!$xmp nodes w1(200)
-      real one(100)[*]
-      real two(50)[20,*]
-\end{Fexample}
-
-%$
-
-	   The entire node set contains 200 nodes, on which coarrays {\tt
-	   one} and {\tt two} are declared. In this case, it is
-	   guaranteed that {\tt one(...)[i+(j-1)*20]} and {\tt
-	   two(...)[i,j]} reside in the same node, which is also the
-	   case for the following codes. Such a rule is compatible with
-	   that of Fortran 2008. The shape of the entire node set has
-	   nothing to do with the image of coarrays.
-
-\begin{Fexample}
-!$xmp nodes w2(20,10)
-      real one(100)[*]
-      real two(50)[20,*]
-\end{Fexample}
-
-\begin{Fexample}
-!$xmp nodes w3(10,5,4)
-      real one(100)[*]
-      real two(50)[20,*]
-\end{Fexample}
-
-\item[Example 2]
-\hspace{\hsize}
-\begin{XFexample}
-!$xmp nodes w1(200)
-!$xmp nodes w2(20,10)
-      real one(100)[*]
-      real two(50)[20,*]
-!$xmp coarray one, two on w1
-      real ichi(100)[*]
-      real ni(50)[20,*]
-!$xmp coarray ichi, ni on w2
-\end{XFexample}
-
-%In many application programs, neighbor communication
-%is an important communication pattern. The optimal mapping from
-%the logical node to the physical node depends on the number of dimensions. For
-%example, the optimal mapping for the communication between
-%{\tt one(...)[i]} and {\tt one(...)[i+1]} is different from the
-%mapping for the communication between {\tt two(...)[i,j]} and {\tt
-%  two(...)[i+1,j]}. 
-
-%In {\XMP}, several mappings can be described. In this example, the
-%mapping may be compatible with Coarray Fortran, and a different mapping
-%can be selected. By switching the runtime option, node sets {\tt w1} and
-%{\tt w2} can be different node sets. 
-
-	   The coarrays {\tt one} and {\tt two} are declared on the node
-	   set {\tt w1}, and thefore {\tt
-	   one(...)[i+(j-1)*20]} and {\tt two(...)[i,j]} reside in the
-	   same node. The coarrays {\tt ichi} and {\tt ni} are declared
-	   on a node set {\tt w2}, and {\tt
-	   ichi(...)[i+(j-1)*20]} and {\tt ni(...)[i,j]} reside in the
-	   same node.
-%
-	   However, it is not guaranteed either that {\tt one(...)[i]}
-	   and {\tt ichi(...)[i]} reside in the same node or that {\tt 
-	   two(...)[i,j]} and {\tt ni(...)[i,j]} reside in the same
-	   node.
-%
-	   Note that this point is {\it not} compatible with Fortran
-	   2008.
-
-\end{description}
-
-
-\subsection{Reference of Coarrays}
+\subsection{{\tt [C]} Reference of Coarrays}
 
 \subsubsection*{Synopsis}
 
-A coarray can be directly referenced or defined by any node in the node
-set on which it is declared. The target node is specified in the same
-manner as in Fortran 2008 in {\XMPF} or using an extended notation in
-{\XMPC}.
+A coarray can be directly referenced or defined by any node. The target
+node is specified using an extended notation in {\XMPC}.
 
 \subsubsection*{Syntax}
 \index{coarray reference}
 \index{Syntax!coarray reference}
 
 \begin{tabular}{ll}
-\verb![F]! & {\it variable} {\tt [} {\it int-expr} 
-{\openb}, {\it int-expr} {\closeb}... {\tt ]}\\
 \verb![C]! & {\it variable} {\tt :} {\tt [}{\it int-expr}{\tt ]}...\\
 \end{tabular}
 
 \subsubsection*{Description}
 
-A sequence of {\it int-expr}'s in a square bracket in {\XMPF} and a
-sequence of {\tt [}{\it int-expr}{\tt ]}'s preceded by a colon in
+A sequence of {\tt [}{\it int-expr}{\tt ]}'s preceded by a colon in
 {\XMPC} determine the image index for a coarray to be accessed.
 
 An reference of coarrays can appear in the same place as an reference of
 normal variables in the base languages.
 
-Note that a coarray cannot be directly accessed by a node outside the
-node set on which it is declared.%, unlike in Fortran 2008.
-
 \subsubsection*{Examples}
 \Example{coarray}
 
-In each of the following two codes, two coarrays {\tt A} and {\tt B} are
-declared on the executing node set, and each executing node gets whole
-of {\tt B} from the image 10 (that is, the tenth node of the executing
-node set) and copies it into the local storage for {\tt A}.
+In the following code, each executing node gets whole of {\tt B} from
+the image 10 (that is, the tenth node of the executing node set) and
+copies it into the local storage for {\tt A}.
 
-\vspace{0.5cm}
+\vspace{0.3cm}
 
 \index{Example!coarray reference}
-\begin{minipage}{0.45\hsize}
-\begin{center}
-\begin{Fexample}
-      integer A(10)[*], B(10)[*]
-
-
-      A(:) = B(:)[10]
-\end{Fexample}
-\end{center}
-\end{minipage}
-%
-\begin{minipage}{0.45\hsize}
-\begin{center}
-\begin{XCexampleR}
+\begin{XCexample}
 int A[10], B[10];
 #pragma xmp coarray A, B : [*]
 
 A[:] = B[:]:[10];
-\end{XCexampleR}
-\end{center}
-\end{minipage}
+\end{XCexample}
+
+%\subsection{Declaration of Coarrays}
+%
+%\subsubsection*{Synopsis}
+%
+%Coarrays are declared in the same manner as in Fortran 2008 for {\XMPF},
+%or with the {\tt coarray} directive for {\XMPC}.
+%
+%\subsubsection*{Syntax}
+%\Syntax{coarray}
+%
+%\begin{tabular}{ll}
+%%\verb![F]! & {\it type-declaration-stmt} {\openb}{\tt on} {\it
+%% nodes-ref}{\closeb}\\
+%%\verb![F]! & {\it codimension-stmt} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
+%\verb![F]! & \verb|!$xmp coarray| {\it variable-name} {\openb}{\tt ,}
+%     {\it variable-name} {\closeb}{\tt ...} {\tt on} {\it nodes-ref} \\
+%\verb![C]! & \verb|#pragma xmp coarray| {\it variable-name} {\openb}{\tt
+%     ,} {\it variable-name} {\closeb}{\tt ...} {\tt :} 
+%{\it codimensions} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
+%\end{tabular}
+%
+%\vspace{0.5cm}
+%
+%where {\it codimensions} is:
+%
+%\vspace{0.3cm}
+%\hspace{0.5cm} {\openb}{\tt [}{\it int-expr}{\tt ]}...{\closeb}{\tt [*]}
+%
+%\subsubsection*{Description}
+%
+%For {\XMPF}, coarrays are declared in the same manner as in Fortran
+%2008, which is not described in this document.
+%%
+%For {\XMPC}, coarrays are declared with the {\tt coarray} directive
+%where {\it codimensions} specify the \Term{coshape} of a variable.
+%%
+%Terms related to coarrays in {\XMP} (e.g. coshape, coindex,
+%cobound, \Term{cosubscript}, image, image index, etc.) are derived from
+%that in Fortran 2008.
+%
+%In addition, the {\tt on} clause of the {\tt coarray} directive
+%specifies a node array on each element of which the coarray object is
+%allocated, and associates each {\it \Term{image}} of the coarray with a
+%node of the node array so that an image having an {\it \Term{image
+%index}} is associated with a node that have the same index of the node
+%array in the Fortran's array element order.
+%%
+%If the {\tt coarray} directive is not specified in {\XMPF} or the {\tt
+%on} clause of the {\tt coarray} directive is not specified in {\XMPC},
+%then it is assumed that an implicit node array corresponding to the
+%executing node set is specified.
+%
+%Note that an actual coarray and its associating dummy coarray must be
+%declared on the same node set (see chapter \ref{chap:procedure}).
+%
+%\subsubsection*{Restrictions}
+%
+%\begin{itemize}
+% \item \verb![F]! All of the variables appeared in a {\tt coarray}
+%       directive must have the codimension attributes.
+% \item If the coarray specified by {\it variable-name} is local to the
+%       procedure, the node set specified by the {\tt on} clause must be
+%       the executing node set of the procedure or its subset.
+%% \item The node array specified by the {\tt on} clause of the {\tt
+%%       coarray} directive for a procedure-local variable must
+%%       correspond to the executing node set of the procedure.
+%% \item \verb![F]! All of the variables declared by {\it
+%%       type-declaration-stmt} in the first form with the {\tt on} clause
+%%       must have the codimension attribute.
+%% \item \verb![F]! At most one {\tt on} clause can be specified for a
+%%       variable in a scoping unit.
+%% \item The cosize of each declared coarray must be less than or equal to
+%%       the size of the node set specified by the {\tt on} clause.
+%\end{itemize}
+%
+%\subsubsection*{Examples}
+%\Example{coarray}
+%
+%\begin{description}
+%\item[Example 1]
+%\hspace{\hsize}
+%\begin{XFexample}
+%!$xmp nodes w(50)
+%      real wa(100)[*]
+%      ...
+%!$xmp tasks
+%!$xmp task on w(1:30)
+%      call task1 ( wa )
+%!$xmp end task
+%!$xmp task on w(32:50)
+%      call task2 ( wa )
+%!$xmp end task
+%      ...
+%      subroutine task1 ( aa )
+%!$xmp nodes w(50)
+%!$xmp nodes p(50) = *
+%      real aa(100)[*]
+%!$xmp coarray aa on w
+%      real b(100)[*] 
+%      ...
+%      subroutine task2 ( aa )
+%!$xmp nodes w(50)
+%!$xmp nodes p(20) = *
+%      real aa(100)[*]
+%!$xmp coarray aa on w
+%      real c(100)[*] 
+%      ...
+%\end{XFexample}
+%
+%	   The coarray {\tt wa} declared on the entire node set {\tt w}
+%	   is passed as an actual argument to subroutines {\tt task1}
+%	   and {\tt task2}.
+%	   In these subroutines, the coarray object is referenced as the
+%	   formal argument {\tt aa} and its declaration requires the {\tt
+%	   on} clause to specify the entire node set, which is
+%	   different from the executing node set.
+%%	   By this declaration, the subroutine can
+%%	   access {\tt wa}.
+%	   Note that the coarrays {\tt b} and {\tt c} are
+%	   local variables in the subroutines {\tt task1} and {\tt
+%	   task2}, respectively, and therefore they are declared on the
+%	   executing node set specified by {\tt p}.
+%%	   Since {\tt b} is
+%%	   mapped to {\tt w(1:30)} and {\tt c} is mapped onto {\tt
+%%	   w(31:51)}, there is no way to access coarray {\tt c} ({\tt
+%%	   b}) from {\tt task1} ({\tt task2}) because a subroutine can
+%%	   access the entire node set or its subset as well as the
+%%	   executing node set.
+%
+%\item[Example 2]
+%\hspace{\hsize}
+%\begin{Fexample}
+%!$xmp nodes w1(200)
+%      real one(100)[*]
+%      real two(50)[20,*]
+%\end{Fexample}
+%
+%%$
+%
+%	   The entire node set contains 200 nodes, on which coarrays {\tt
+%	   one} and {\tt two} are declared. In this case, it is
+%	   guaranteed that {\tt one(...)[i+(j-1)*20]} and {\tt
+%	   two(...)[i,j]} reside in the same node, which is also the
+%	   case for the following codes. Such a rule is compatible with
+%	   that of Fortran 2008. The shape of the entire node set has
+%	   nothing to do with the image of coarrays.
+%
+%\begin{Fexample}
+%!$xmp nodes w2(20,10)
+%      real one(100)[*]
+%      real two(50)[20,*]
+%\end{Fexample}
+%
+%\begin{Fexample}
+%!$xmp nodes w3(10,5,4)
+%      real one(100)[*]
+%      real two(50)[20,*]
+%\end{Fexample}
+%
+%\item[Example 2]
+%\hspace{\hsize}
+%\begin{XFexample}
+%!$xmp nodes w1(200)
+%!$xmp nodes w2(20,10)
+%      real one(100)[*]
+%      real two(50)[20,*]
+%!$xmp coarray one, two on w1
+%      real ichi(100)[*]
+%      real ni(50)[20,*]
+%!$xmp coarray ichi, ni on w2
+%\end{XFexample}
+%
+%%In many application programs, neighbor communication
+%%is an important communication pattern. The optimal mapping from
+%%the logical node to the physical node depends on the number of dimensions. For
+%%example, the optimal mapping for the communication between
+%%{\tt one(...)[i]} and {\tt one(...)[i+1]} is different from the
+%%mapping for the communication between {\tt two(...)[i,j]} and {\tt
+%%  two(...)[i+1,j]}. 
+%
+%%In {\XMP}, several mappings can be described. In this example, the
+%%mapping may be compatible with Coarray Fortran, and a different mapping
+%%can be selected. By switching the runtime option, node sets {\tt w1} and
+%%{\tt w2} can be different node sets. 
+%
+%	   The coarrays {\tt one} and {\tt two} are declared on the node
+%	   set {\tt w1}, and thefore {\tt
+%	   one(...)[i+(j-1)*20]} and {\tt two(...)[i,j]} reside in the
+%	   same node. The coarrays {\tt ichi} and {\tt ni} are declared
+%	   on a node set {\tt w2}, and {\tt
+%	   ichi(...)[i+(j-1)*20]} and {\tt ni(...)[i,j]} reside in the
+%	   same node.
+%%
+%	   However, it is not guaranteed either that {\tt one(...)[i]}
+%	   and {\tt ichi(...)[i]} reside in the same node or that {\tt 
+%	   two(...)[i,j]} and {\tt ni(...)[i,j]} reside in the same
+%	   node.
+%%
+%	   Note that this point is {\it not} compatible with Fortran
+%	   2008.
+%
+%\end{description}
+
+
+%\subsection{Reference of Coarrays}
+%
+%\subsubsection*{Synopsis}
+%
+%A coarray can be directly referenced or defined by any node in the node
+%set on which it is declared. The target node is specified in the same
+%manner as in Fortran 2008 in {\XMPF} or using an extended notation in
+%{\XMPC}.
+%
+%\subsubsection*{Syntax}
+%\index{coarray reference}
+%\index{Syntax!coarray reference}
+%
+%\begin{tabular}{ll}
+%\verb![F]! & {\it variable} {\tt [} {\it int-expr} 
+%{\openb}, {\it int-expr} {\closeb}... {\tt ]}\\
+%\verb![C]! & {\it variable} {\tt :} {\tt [}{\it int-expr}{\tt ]}...\\
+%\end{tabular}
+%
+%\subsubsection*{Description}
+%
+%A sequence of {\it int-expr}'s in a square bracket in {\XMPF} and a
+%sequence of {\tt [}{\it int-expr}{\tt ]}'s preceded by a colon in
+%{\XMPC} determine the image index for a coarray to be accessed.
+%
+%An reference of coarrays can appear in the same place as an reference of
+%normal variables in the base languages.
+%
+%Note that a coarray cannot be directly accessed by a node outside the
+%node set on which it is declared.%, unlike in Fortran 2008.
+%
+%\subsubsection*{Examples}
+%\Example{coarray}
+%
+%In each of the following two codes, two coarrays {\tt A} and {\tt B} are
+%declared on the executing node set, and each executing node gets whole
+%of {\tt B} from the image 10 (that is, the tenth node of the executing
+%node set) and copies it into the local storage for {\tt A}.
+%
+%\vspace{0.5cm}
+%
+%\index{Example!coarray reference}
+%\begin{minipage}{0.45\hsize}
+%\begin{center}
+%\begin{Fexample}
+%      integer A(10)[*], B(10)[*]
+%
+%
+%      A(:) = B(:)[10]
+%\end{Fexample}
+%\end{center}
+%\end{minipage}
+%%
+%\begin{minipage}{0.45\hsize}
+%\begin{center}
+%\begin{XCexampleR}
+%int A[10], B[10];
+%#pragma xmp coarray A, B : [*]
+%
+%A[:] = B[:]:[10];
+%\end{XCexampleR}
+%\end{center}
+%\end{minipage}
 
 
 \subsection{{\tt [C] sync\_memory} Directive}
