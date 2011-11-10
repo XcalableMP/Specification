@@ -71,9 +71,9 @@ declared on the same node set (see chapter \ref{chap:procedure}).
 \begin{itemize}
  \item \verb![F]! All of the variables appeared in a {\tt coarray}
        directive must have the codimension attributes.
- \item If any variable specified by {\it variable-name} is local to the
+ \item If the coarray specified by {\it variable-name} is local to the
        procedure, the node set specified by the {\tt on} clause must be
-       a subset of the executing node set of the procedure.
+       the executing node set of the procedure or its subset.
 % \item The node array specified by the {\tt on} clause of the {\tt
 %       coarray} directive for a procedure-local variable must
 %       correspond to the executing node set of the procedure.
@@ -244,7 +244,7 @@ An reference of coarrays can appear in the same place as an reference of
 normal variables in the base languages.
 
 Note that a coarray cannot be directly accessed by a node outside the
-node set on which it is declared, unlike in Fortran 2008.
+node set on which it is declared.%, unlike in Fortran 2008.
 
 \subsubsection*{Examples}
 \Example{coarray}
