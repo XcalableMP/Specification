@@ -539,12 +539,31 @@
    For example, atomic I/O statements cannot be executed for the unit
    connected by a collective OPEN statement.
 
+   \subsection{file\_sync\_all directive}
 
    Two data accesses conflict if they access the same absolute byte displacements of the same file and at least one is a write access.
-   When two accesses A1 and A2 to the same file conflict in atomic or direct I/O,
-   the following BARRIER statement to the file must be invoked between A1 and A1, otherwise the outcome of the accesses is undefined.
-   The statement is an extension of BARRIER statement and a collective execution.
-   
+   When two accesses to the same file conflict in atomic or direct I/O,
+   the following file\_sync\_all directive to the file must be executed.
+
+   \subsubsection*{Syntax}
+
+   \begin{tabular}{ll}
+     \verb|!$xmp| {\tt file\_sync\_all}([UNIT=]file-unit-number) \\
+      \\
+   \end{tabular}
+
+   The file\_sync\_all directive is an execution directive and
+   collective to the nodes connected to the specified
+   file-unit-number.
+   The execution of a file\_sync\_all directive first synchronizes all
+   the nodes connected the specified file-unit-number, and then causes
+   all previous writes to the file by the nodes to be transferred to
+   the storage device.
+   If some nodes have made updates to the file, then all such updates
+   become visible to subsequent reads of the file by the nodes.
+   The statement is a collective execution.
+
+\if 0   
    \begin{itemize}
      \item BARRIER statement
 
@@ -561,6 +580,7 @@
    \end{table}
 
    \end{itemize}
+\fi
 
    
    \subsection{Collective I/O statement}
@@ -763,7 +783,7 @@
 %    \caption{aaa}
     \label{tb:aaa}
    \end{table}
-   
+
    \begin{table}[h]
     \begin{center}
       \begin{tabular}{|l|r|p{90mm}|}
