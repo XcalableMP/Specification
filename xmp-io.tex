@@ -746,8 +746,8 @@
 	       
 	       xmp\_array\_t xmp\_array\_of(A);
 \fi
-\clearpage
-    \item[xmp\_range\_t] Descriptor of array section, including
+
+\item[xmp\_range\_t] Descriptor of array section, including
       lower bound, upper bound and stride for each dimension.
       Functions for operating the descriptor are shown in following table.
       The xmp\_allocate\_range() function is used to allocate memory.
@@ -755,6 +755,7 @@
       The xmp\_free\_range() function releases the memory for the descriptor.
    \end{description}
 
+   \clearpage
    \begin{table}[h]
     \begin{center}
       \begin{tabular}{|l|r|p{90mm}|}
@@ -772,12 +773,12 @@
     \begin{center}
       \begin{tabular}{|l|r|p{90mm}|}
       \hline
-          {\bf function name}  & \multicolumn{2}{c|}{\bf void xmp\_set\_range(rp, lb[ ], length[ ], step[ ])}  \\ \hline
+          {\bf function name}  & \multicolumn{2}{c|}{\bf void xmp\_set\_range(rp, i\_dim, lb, length, step)}  \\ \hline
           argument & xmp\_range\_t $*$rp  & descriptor \\ \cline{2-3}
-%          & int i\_dim & target dimension \\ \cline{2-3}
-          & int lb[n\_dim] & lower bound of array section in the dimension i\_dim \\ \cline{2-3}
-          & int length[n\_dim] & length of array section in the dimension i\_dim \\ \cline{2-3}
-          & int step[n\_dim] & stride of array section in the dimension i\_dim \\ \hline
+          & int i\_dim & target dimension \\ \cline{2-3}
+          & int lb & lower bound of array section in the dimension i\_dim \\ \cline{2-3}
+          & int length & length of array section in the dimension i\_dim \\ \cline{2-3}
+          & int step & stride of array section in the dimension i\_dim \\ \hline
       \end{tabular}
      \end{center}
 %    \caption{aaa}
@@ -796,8 +797,6 @@
     \label{tb:aaa}
    \end{table}
    
-
-   \clearpage
    \subsection{Global I/O file operation}
 
    \subsubsection{xmp\_fopen\_all}
@@ -820,10 +819,10 @@
     \label{tb:aaa}
    \end{table}
 
-   File view is initialized, where file view is based on the MPI-IO vile view mechanism. The value of shared and individual file pointers 
-   depend on the value of amode.
+   File view is initialized, where file view is based on the MPI-IO vile view mechanism. The value of shared and individual file pointers depend on the value of amode.
 
-   \begin{table}
+   \clearpage
+   \begin{table}[h]
      \begin{center}
     \label{tb:xxx}
     \begin{tabular}{|c|p{120mm}|}
@@ -889,8 +888,6 @@
 %    \caption{aaa}
     \label{tb:aaa}
    \end{table}
-
-   \clearpage
 
    \subsubsection{xmp\_fseek\_shared}
    xmp\_fseek\_shared sets the shared file pointer in the file structure. Local execution.
@@ -958,14 +955,13 @@
     \label{tb:aaa}
    \end{table}
 
-   \clearpage
-   
    \subsubsection{xmp\_file\_sync\_all}
    xmp\_file\_sync\_all guarantees completion of access to the file from nodes sharing the file.
    Two data accesses conflict if they access the same absolute byte displacements of the same file and at least one is a write access.
    When two accesses A1 and A2 to the same file conflict in atomic or direct I/O, an xmp\_file\_sync\_all to the file must be invoked between A1 and A2, otherwise the outcome of the accesses is undefined.   
    Collective (global) execution.
 
+   \clearpage
 
    \begin{table}[h]
     \begin{center}
@@ -1015,7 +1011,6 @@
 
    The file view of distributed $desc$ limited to range $rp$ is set into file structure $fh$.
 
-   \clearpage
    \subsubsection{xmp\_file\_clear\_view\_all}
    xmp\_file\_clear\_view\_all clears the file view. Collective (global) execution.
 
@@ -1062,8 +1057,6 @@
     \label{tb:aaa}
    \end{table}
 
-   \clearpage
-
    \subsubsection{xmp\_fwrite\_all}
    xmp\_fwrite\_all writes individual data on the all executing nodes to the position of the shared file
    pointer. Collective (global) execution.
@@ -1091,8 +1084,6 @@
 
    \subsubsection{xmp\_fread\_darray\_all}
    xmp\_fread\_darray\_all reads data cooperatively to the global array from the position of the shared file pointer.
-
-   \clearpage
 
    \begin{table}[h]
     \begin{center}
@@ -1154,8 +1145,6 @@
    function may set different file views for all nodes.
    Thus, before atomic I/O is used, the file view must be cleared.
 
-   \clearpage
-
    \subsubsection{xmp\_fread\_shared}
    xmp\_fread\_shared exclusively reads local data form the position of the shared file
    pointer and moves the position by the langth of the data.
@@ -1216,7 +1205,6 @@
    Function xmp\_fseek is useful to set the individual file pointer.
    It is not recommended using the file view together because of complexity.
 
-   \clearpage
    \subsubsection{xmp\_fread}
    xmp\_fread reads data from the position of the individual file
    pointer and moves the position by the length of the data.
