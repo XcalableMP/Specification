@@ -40,7 +40,7 @@ none.
 \begin{tabular}{lll}
 \verb![F]!&  {\tt }& {\tt xmp\_init\_mpi()}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_init\_mpi(int *args, char ***argv)}
+\verb![C]!&  {\tt void}& {\tt xmp\_init\_mpi(int *argc, char ***argv)}
 \end{tabular}
 
 \subsubsection*{Synopsis}
@@ -53,8 +53,8 @@ none.
    should be given to {\tt xmp\_init\_mpi}.
 
 
-\section{\tt xmp\_finalzie\_mpi}
-\index{xmp\_finalzie\_mpi@{\tt xmp\_finalzie\_mpi}}
+\section{\tt xmp\_finalize\_mpi}
+\index{xmp\_finalize\_mpi@{\tt xmp\_finalize\_mpi}}
 
 \subsubsection*{Format}
 
@@ -66,7 +66,7 @@ none.
 
 \subsubsection*{Synopsis}
 
-   {\tt xmp\_finalize\_mpi} terminates the MPI execution enviroment.
+   {\tt xmp\_finalize\_mpi} terminates the MPI execution environment.
 
 \subsubsection*{Arguments}
 
@@ -487,7 +487,7 @@ distributed.
        integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
        in {\XMPC}, that is associated with the global array.
  \item {\tt idx} is a one-dimensional integer array. {\tt dim} is the
-       rank of node array associeted with the global array.
+       rank of node array associated with the global array.
 \end{itemize}
 
 

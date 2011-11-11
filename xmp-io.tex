@@ -98,7 +98,7 @@
     \begin{tabular}{|c||l|l|}
      \hline 
      & independent/collective & access method  \\ \hline \hline
-     Collectibe I/O & collective & sequential access \\ \hline
+     Collective I/O & collective & sequential access \\ \hline
      Atomic I/O & independent & sequential access \\ \hline
      Direct I/O & independent & direct access \\ \hline
     \end{tabular}
@@ -139,7 +139,7 @@
   There are two ways of file connections, dynamic connection and
   preconnection.
   Dynamic connection connects a file during execution of the program.
-  Preconnection connects a file at the begininng of execution of the
+  Preconnection connects a file at the beginning of execution of the
   program and therefore it can execute I/O statements and functions
   without the prior execution of an OPEN statement or a function call to
   open the file.
@@ -182,7 +182,7 @@
 
   \subsection{File connection in global I/O}
 
-  Dynamic connecton of global I/O is global (collective) execution and
+  Dynamic connection of global I/O is global (collective) execution and
   is valid for the executing node set.
   Global I/O file cannot be preconnected.
 
@@ -809,7 +809,7 @@
       {\bf function name}  & \multicolumn{2}{c|}{\bf xmp\_file\_t
       $*$xmp\_fopen\_all(fname, amode)}  \\ \hline \hline
       argument & const char $*$fname & file name \\ \cline{2-3}
-      & const char $*$amode & equialent to fopen of POSIX. combination
+      & const char $*$amode & equivalent to fopen of POSIX. combination
 	      of ``rwa+'' \\ \hline
       return value & xmp\_file\_t$*$ & file structure. NULL is returned
 	      when a program abend. \\ \hline
@@ -833,12 +833,12 @@
      r+ & Open an existing file for update (reading and writing). File
 	 pointer points the beginning of the file. \\ \hline
      w &  Create for writing. If a file by that name already exists, it
-	 will be overwritten. File pointer points the begininng of th file. \\ \hline
+	 will be overwritten. File pointer points the beginning of th file. \\ \hline
      w+ & Create a new file for update (reading and writing). If a file
 	 by that name already exists, it will be overwritten. File
 	 pointer points the beginning of the file. \\ \hline
      a & Append; open for writing at end-of-file or create for writing
-	 if the file does not eist. File pointer points the end of the file. \\ \hline
+	 if the file does not exist. File pointer points the end of the file. \\ \hline
      a+ & Open for append; open (or create if the file does not exist)
 	 for update at the end of the file. File pointer points the
 	 beginning of the file. \\ \hline
@@ -1045,7 +1045,7 @@
       {\bf function name}  & \multicolumn{2}{c|}{\bf Size\_t
       xmp\_fread\_all(fh, buffer, size, count)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
-      & void $*$buffer & beginning address of loading valiables \\ \cline{2-3}
+      & void $*$buffer & beginning address of loading variables \\ \cline{2-3}
       & size\_t size & the size of a loading element of data \\ \cline{2-3}
       & size\_t count & the number of loading data element \\ \hline
       return value & int & Upon successful completion, return the size
@@ -1070,7 +1070,7 @@
       {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
       xmp\_fwrite\_all(fh, buffer, size, count)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
-      & void $*$buffer & beginning address of storing valiables \\ \cline{2-3}
+      & void $*$buffer & beginning address of storing variables \\ \cline{2-3}
       & size\_t size & the size of a storing element of data \\ \cline{2-3}
       & size\_t count & the number of storing data element \\ \hline
       return value & int & Upon successful completion, return the size
@@ -1147,7 +1147,7 @@
 
    \subsubsection{xmp\_fread\_shared}
    xmp\_fread\_shared exclusively reads local data form the position of the shared file
-   pointer and moves the position by the langth of the data.
+   pointer and moves the position by the length of the data.
    Local execution.
 
    \begin{table}[h]
@@ -1157,7 +1157,7 @@
       {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
       xmp\_fread\_shared(fh, buffer, size, count)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
-      & void $*$buffer & beginning address of loading valiables \\ \cline{2-3}
+      & void $*$buffer & beginning address of loading variables \\ \cline{2-3}
       & size\_t size & the size of a loading element of data \\ \cline{2-3}
       & size\_t count & the number of loading data element \\ \hline
       return value & int & Upon successful completion, return the size
@@ -1171,7 +1171,7 @@
 
    \subsubsection{xmp\_fread\_shared}
    xmp\_fread\_shared exclusively writes local data to the
-   position of the shared file pointer and moves the position by the langth of the data.
+   position of the shared file pointer and moves the position by the length of the data.
    Local execution.
 
    \begin{table}[h]
@@ -1195,7 +1195,7 @@
 
    \subsection{Direct Global I/O Functions}
 
-   Direct I/O is exectuted in local and using the individual pointer. 
+   Direct I/O is executed in local and using the individual pointer. 
    It individually reads/writes local data
    from the position of the individual file pointer and 
    moves the position by the length of the data taking account of the file view.
@@ -1217,7 +1217,7 @@
       {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
       xmp\_fread(fh, buffer, size, count)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
-      & void $*$buffer & beginning address of loading valiables \\ \cline{2-3}
+      & void $*$buffer & beginning address of loading variables \\ \cline{2-3}
       & size\_t size & the size of a loading element of data \\ \cline{2-3}
       & size\_t count & the number of loading data element \\ \hline
       return value & int & Upon successful completion, return the size
@@ -1231,7 +1231,7 @@
 
    \subsubsection{xmp\_fread}
    xmp\_fread writes data to the position of the individual file
-   pointer and moves the position by the length of tha data.
+   pointer and moves the position by the length of the data.
    Local execution.
 
    \begin{table}[h]
@@ -1241,7 +1241,7 @@
       {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
       xmp\_fwrite(fh, buffer, size, count)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
-      & void $*$buffer & beginning address of storing valiables \\ \cline{2-3}
+      & void $*$buffer & beginning address of storing variables \\ \cline{2-3}
       & size\_t size & the size of a storing element of data \\ \cline{2-3}
       & size\_t count & the number of storing data element \\ \hline
       return value & int & Upon successful completion, return the size

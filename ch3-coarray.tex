@@ -13,10 +13,14 @@ of Fortran 2008 unless otherwise provided.
 Each node in the entire node set is considered to correspond to each
 image of a program. Therefore the number of images is always equal to
 the size of the entire node set. The image index of a node is its node
-nunber of the entire node set.
+number of the entire node set.
 
 Declaring coarrays on an arbitrary node array, which may not correspond
-to the entire node set, is an open problem of {\XMP}.
+to the entire node set, is an open issue of {\XMP} and under
+discussion. Note that even if the coarray features of {\XMP} would be
+extended in the future version so that they could be declared on a
+subset of the entire node set, they are compatible with those of Fortran
+2008 as long as declared on the entire node set.
 
 Terms related to coarrays in {\XMP} (e.g. \Term{coshape}, coindex,
 cobound, \Term{cosubscript}, image, image index, etc.) are derived from
@@ -297,7 +301,7 @@ A[:] = B[:]:[10];
 %%{\tt w2} can be different node sets. 
 %
 %	   The coarrays {\tt one} and {\tt two} are declared on the node
-%	   set {\tt w1}, and thefore {\tt
+%	   set {\tt w1}, and therfore {\tt
 %	   one(...)[i+(j-1)*20]} and {\tt two(...)[i,j]} reside in the
 %	   same node. The coarrays {\tt ichi} and {\tt ni} are declared
 %	   on a node set {\tt w2}, and {\tt
