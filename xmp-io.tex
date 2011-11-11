@@ -244,18 +244,12 @@
 
    \subsection*{Restriction}
    \begin{itemize}
-   \item The following items cannot be specified for a global array or subobject of a global array in the input item list.
+   \item The following items including a global array or subobject of a global array must not appear in an input item or output item.
 	  \begin{itemize}
-	   \item Substring a of global array
-	   \item Array element whose subscript contains reference of a
-		 global array
-	   \item Array section whose subscript contains reference of a
-		 global array
-	   \item Substring whose subscript contains reference of a
-		 global array
-	   \item Expressions including the global array reference
-	   \item {\it io-implied-do-control} including a global array
-             or subobject of a global array
+ 	   \item A substring-range
+           \item A section-subscript
+           \item An expression including operators
+           \item An {\it io-implied-do-control}
 	  \end{itemize}
 
     \item An I/O statement specified with a master I/O directive must be
@@ -595,7 +589,7 @@
 
    \begin{table}[h]
     \begin{center}
-     \begin{tabular}{|l|r|p{80mm}|}
+     \begin{tabular}{|p{10mm}|l|p{100mm}|}
       \hline
       \multicolumn{1}{|c}{ }  & {\bf I/O item} & {\bf operation} \\ \hline
       input item & name of global array & The value is read from the file in the sequential order of the array elements and is set to the array elements of the global array.
@@ -755,7 +749,6 @@
       The xmp\_free\_range() function releases the memory for the descriptor.
    \end{description}
 
-   \clearpage
    \begin{table}[h]
     \begin{center}
       \begin{tabular}{|l|r|p{90mm}|}
@@ -784,7 +777,7 @@
 %    \caption{aaa}
     \label{tb:aaa}
    \end{table}
-
+\clearpage
    \begin{table}[h]
     \begin{center}
       \begin{tabular}{|l|r|p{90mm}|}
@@ -821,7 +814,6 @@
 
    File view is initialized, where file view is based on the MPI-IO vile view mechanism. The value of shared and individual file pointers depend on the value of amode.
 
-   \clearpage
    \begin{table}[h]
      \begin{center}
     \label{tb:xxx}
@@ -937,6 +929,7 @@
    \subsubsection{xmp\_ftell\_shared}
    xmp\_ftell\_shared inquires the position of shared file pointer in the file structure. Local execution.
 
+   \clearpage
    \begin{table}[h]
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
@@ -960,8 +953,6 @@
    Two data accesses conflict if they access the same absolute byte displacements of the same file and at least one is a write access.
    When two accesses A1 and A2 to the same file conflict in atomic or direct I/O, an xmp\_file\_sync\_all to the file must be invoked between A1 and A2, otherwise the outcome of the accesses is undefined.   
    Collective (global) execution.
-
-   \clearpage
 
    \begin{table}[h]
     \begin{center}
