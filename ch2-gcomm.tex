@@ -78,9 +78,9 @@ construct may be executed before the operation is complete.
  \item The reflect width of each dimension specified by {\it
        reflect-width} must not exceed the shadow width of the arrays.
  \item The {\tt reflect} construct is global, which means that it must be
-       executed by all of the executing nodes, and each local variable
-       referenced in the construct must have the same value among all of
-       them.
+       executed by all nodes in the current executing node set, and each local
+       variable referenced in the construct must have the same value
+       among all of them.
  \item {\it async-id} must be an expression of type default integer, in
        {\XMPF}, or type {\tt int}, in {\XMPC}.
 \end{itemize}
@@ -293,9 +293,9 @@ construct may be executed before the operation is complete.
        with) a simple assignment statement that contains neither
        arithmetic operations nor function calls.
  \item The {\tt gmove} construct is global, which means that it must be
-       executed by all of the executing nodes, and each local variable
-       referenced in the construct must have the same value among all of
-       them.
+       executed by all nodes inthe current executing node set, and each local
+       variable referenced in the construct must have the same value
+       among all of them.
  \item If the {\tt gmove} construct is in {\it collective} mode, then
        all elements of the distributed arrays appearing in both the
        lhs and the rhs of the associated assignment
@@ -572,9 +572,9 @@ case, a reduction operation is performed in each node set.
        either not be aligned or be replicated among nodes of the node
        set specified by the {\tt on} clause.
  \item The {\tt reduction} construct is global, which means that it must
-       be executed by all of the executing nodes, and each local variable
-       referenced in the construct must have the same value among all of
-       the executing nodes.
+       be executed by all nodes in the current executing node set, and each local
+       variable referenced in the construct must have the same value
+       among all of them.
  \item {\it async-id} must be an expression of type default integer, in
        {\XMPF}, or type {\tt int}, in {\XMPC}.
  \item The node set specified by the {\tt on} clause must be a subset of the
@@ -758,9 +758,9 @@ construct may be executed before the operation is complete.
        either not be aligned or be replicated among nodes of the node set
        specified by the {\tt on} clause.
  \item The {\tt bcast} construct is global, which means that it must be
-       executed by all of the executing nodes, and each local variable
-       referenced in the construct must have the same value among all of
-       the executing nodes.
+       executed by all nodes in the current executing node set, and each local
+       variable referenced in the construct must have the same value
+       among all of them.
  \item {\it async-id} must be an expression of type default integer, in
        {\XMPF}, or type {\tt int}, in {\XMPC}.
  \item The node set specified by the {\tt on} clause must be a subset of
@@ -807,9 +807,9 @@ node set specified by the {\tt on} clause are complete.
        communication by the {\tt async} clause of a communication
        construct.
  \item The {\tt wait\_async} construct is global, which means that it must
-       be executed by all of the executing nodes, and each local variable
-       referenced in the construct must have the same value among all of
-       the executing nodes.
+       be executed by all nodes in the current executing node set, and
+       each local variable referenced in the construct must have the
+       same value among all of them.
  \item The node set specified by the {\tt on} clause must be the same as
        those of the global constructs that initiate the asynchronous
        communications specified by {\it async-id}.
