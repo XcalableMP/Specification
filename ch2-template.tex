@@ -270,9 +270,10 @@ The interpretation of {\it dist-format} is as follows:
 	   distributed onto the corresponding dimension of the node array.
 \end{description}
 
-If more than one {\tt gblock(*)} is specified in {\it dist-format},
-then the template must not be referenced until the shape of the template
-is defined by {\tt template\_fix} directives at runtime.
+If at least one {\tt gblock(*)} is specified in {\it dist-format},
+then the template is initially undefined and must not be referenced
+until the shape of the template is defined by {\tt template\_fix}
+directives at runtime.
 
 
 \subsubsection*{Restrictions}
