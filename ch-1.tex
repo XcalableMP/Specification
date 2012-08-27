@@ -192,10 +192,19 @@ The {\it \Term{current executing node set}} is an executing node set of
 the current context, which is managed by the {\XMP} runtimes system on
 each node.
 
-The initial ``current executing node set'' (or the {\it \Term{entire
-node set}}) at the beginning of the program execution is the set of all
-available nodes, which can be specified in an implementation-dependent
-way (e.g. through a command-line option).
+%The initial ``current executing node set'' (or the {\it \Term{entire
+%node set}}) at the beginning of the program execution is the set of all
+%available nodes, which can be specified in an implementation-dependent
+%way (e.g. through a command-line option).
+
+The current executing node set at the beginning of the program
+execution, or {\it \Term{primary node set}}, is a node set that
+contains all the available nodes, which can be specified in an 
+implementation-dependent way (e.g. through a command-line option).
+%
+%The primary node array is the node array if specified explicitly by the
+%{\tt nodes} directive or an implicit one-dimensional node array if not.
+%}
 
 When a node encounters at runtime either a {\tt loop}, {\tt array}, or
 {\tt task} construct, and is contained by the node set specified by the

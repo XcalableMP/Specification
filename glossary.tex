@@ -190,25 +190,30 @@
 
 \gitem{node set}
 
- A set of nodes.
+ A totally ordered set of nodes.
 
 \gitem{entire node set}
 
  A node set that contains all of the nodes participating in the
- execution of an XcalbleMP program. Nodes in the entire node set are
- linearly ordered.
+ execution of an {\XMP} program.
+
+\gitem{primary node set}
+
+ An entire node set that is specified explicitly or implicitly, and is
+ the current executing node set at the beginning of the program
+ execution.
 
 \gitem{executing node set}
 
  A node set that contains all of the nodes participating in the
  execution of a procedure, a statement, a construct, etc. of an
- XcalableMP program is called its executing node set.
+ {\XMP} program is called its executing node set.
 %
  This term is used in this document to represent the {\it current
  executing node set} unless it is ambiguous.
 %
- Note that the executing node set of the main routine is the entire node
- set.
+ Note that the executing node set of the main routine is the
+ primary node set.
 
 \gitem{current executing node set}
 
@@ -230,6 +235,16 @@
  declared by the {\tt nodes} directive. Note that the lower bound of
  each dimension of a node array is one in both {\XMPF} and {\XMPC}.
 
+\gitem{primary node array}
+
+ A node array declared with the rhs of a node reference by ``{\tt **}''
+ representing the primary node set.
+
+\gitem{executing node array}
+
+ A node array declared with the rhs of a node reference by ``{\tt *}''
+ representing the executing node set.
+
 \gitem{parent node set}
 
  The parent node set of a node set is the last executing node set, which
@@ -240,7 +255,7 @@
 
  A unique number assigned to each node in a node set, which starts from
  one and corresponds to its position within the node set which is
- linearly-ordered.
+ totally ordered.
 
 %\gitem{node number}
 %
