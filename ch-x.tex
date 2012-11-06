@@ -241,312 +241,152 @@ A recommended design of the interface is as follows:
 \end{itemize}
 
 
-\section{Query routines}
+\section{Mapping Inquiry Procedures}
+In this section, implementation-dependent mapping inquiry procedures are shown.
+Specifications of inquiry procedures below are samples of Omni XcalableMP Compiler.
 
-Specifications of some query routines are shown below.
-
-\subsection{\tt xmp\_node\_index}
-\index{xmp\_node\_index@{\tt xmp\_node\_index}}
-
-\subsubsection*{Format}
+\subsection{\tt xmp\_array\_gtol}
+\Intrinsic{xmp\_array\_gtol}
 
 \begin{tabular}{lll}
 
-\verb![F]!& {\tt subroutine}& {\tt xmp\_node\_index(d, idx)}\\
-          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
-          & {\tt integer} & {\tt idx(dim)}\\
-
-\verb![C]!&  {\tt void}& {\tt xmp\_node\_index(xmp\_desc\_t d, int idx[])}\\
+\verb![F]!& {\tt integer function} & {\tt xmp\_array\_gtol(d, g\_idx, l\_idx)} \\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt g\_idx(NDIMS)}\\
+          & {\tt integer} & {\tt l\_idx(NDIMS)}\\
+          & & \\
+\verb![C]!&  {\tt void} & {\tt xmp\_array\_gtol(xmp\_desc\_t d, int g\_idx[], int l\_idx[])}
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_node\_index} routine provides the indices of the
-executing node in the target node array.
+The {\tt xmp\_array\_gtol} routine translates an index (specified by
+{\tt g\_idx}) of a global array (specified by {\tt d}) into the
+corresponding index of its local section and sets to an array specified
+by {\tt l\_idx}. If the element of the specified index does not reside
+in the caller of the routine, the resulting array is set to an
+unspecified value.
 
-\subsubsection*{Arguments}
+\subsubsection*{Input Arguments}
 
 \begin{itemize}
  \item {\tt d} is a descriptor, that is, an object of type {\tt
-       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with the node array.
- \item {\tt idx} is a one-dimensional integer array. {\tt
-       dim} is the rank of the node array.
+       type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the target global array.
+ \item \verb![F]! {\tt g\_idx} is a rank-one integer array of the size
+       equal to the rank of the target global array specified by {\tt
+       d}. {\tt NDIMS} is the rank of the target global array.
+ \item \verb![C]! {\tt g\_idx} is a one-dimensional integer array.
 \end{itemize}
 
-
-\subsection{\tt xmp\_node\_size}
-\index{xmp\_node\_size@{\tt xmp\_node\_size}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt subroutine}& {\tt xmp\_node\_size(d, size)}\\
-          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
-          & {\tt integer} & {\tt size(dim)}\\
-
-\verb![C]!&  {\tt void}& {\tt xmp\_node\_size(xmp\_desc\_t d, int size[])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_node\_size} routine provides the size of each dimension of
-the target node array.
-
-\subsubsection*{Arguments}
+\subsubsection*{Output Arguments}
 
 \begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with the node array.
- \item {\tt size} is a one-dimensional integer array. {\tt
-       dim} is the rank of the node array.
+ \item \verb![F]! {\tt l\_idx} is a rank-one integer array of the size
+       equal to the rank of the target global array specified by {\tt
+       d}. {\tt NDIMS} is the rank of the target global array.
+ \item \verb![C]! {\tt l\_idx} is a one-dimensional integer array.
 \end{itemize}
 
-\subsection{\tt xmp\_gt\_size}
-\index{xmp\_gt\_size@{\tt xmp\_gt\_size}}
+\subsection{\tt xmp\_array\_lsize}
+\index{xmp\_array\_lsize@{\tt xmp\_array\_lsize}}
 
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
 
-\verb![F]!& {\tt subroutine}& {\tt xmp\_gt\_size(d, size)}\\
-          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
-          & {\tt integer} & {\tt size(dim)}\\
+\verb![F]!& {\tt integer function}& {\tt xmp\_array\_lsize(d, dim, lsize)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt lsize}\\
 
-\verb![C]!&  {\tt void}& {\tt xmp\_gt\_size(xmp\_desc\_t d, int size[])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_gt\_size} routine provides the global size of each
-dimension of the target template.
-
-\subsubsection*{Arguments}
-
-\begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with the target template.
- \item {\tt size} is a one-dimensional integer array. {\tt
-       dim} is the rank of the template.
-\end{itemize}
-
-\subsection{\tt xmp\_lt\_size}
-\index{xmp\_lt\_size@{\tt xmp\_lt\_size}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt subroutine}& {\tt xmp\_lt\_size(d, size)}\\
-          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
-          & {\tt integer} & {\tt size(dim)}\\
-
-\verb![C]!&  {\tt void}& {\tt xmp\_lt\_size(xmp\_desc\_t d, int size[])}\\
+\verb![C]!&  {\tt int}& {\tt xmp\_array\_lsize(xmp\_desc\_t d, int dim, int lsize)}\\
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_lt\_size} routine provides the local size of each dimension
-of the target template.
+The {\tt xmp\_array\_lsize} routine provides the local size of each dimension of the target global array.
+  When the target global array has a shadow, the local size include the size of the shadow.
+  Each output value is implementation-dependent.
 
-\subsubsection*{Arguments}
-
+\subsubsection*{Input Arguments}
 \begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with the template.
- \item {\tt size} is a one-dimensional integer array. {\tt
-       dim} is the rank of the template.
-\end{itemize}
-
-
-\subsection{\tt xmp\_ga\_size}
-\index{xmp\_ga\_size@{\tt xmp\_ga\_size}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt subroutine}& {\tt xmp\_ga\_size(d, size)}\\
-          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
-          & {\tt integer} & {\tt size(dim)}\\
-
-\verb![C]!&  {\tt void}& {\tt xmp\_ga\_size(xmp\_desc\_t d, int size[])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_ga\_size} routine provides the global size of each
-dimension of the target global array.
-
-\subsubsection*{Arguments}
-
-\begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
        in {\XMPC}, that is associated with the global array.
- \item {\tt size} is to be set to a one-dimensional integer array. {\tt
-       dim} is the rank of the global array.
+ \item {\tt dim} is a target dimension of the global array.
 \end{itemize}
 
-\subsection{\tt xmp\_la\_size}
-\index{xmp\_la\_size@{\tt xmp\_la\_size}}
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt lsize} is a local size of target dimension of the global array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_array\_laddr}
+\index{xmp\_array\_laddr@{\tt xmp\_array\_laddr}}
 
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
 
-\verb![F]!& {\tt subroutine}& {\tt xmp\_la\_size(d, size)}\\
-          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
-          & {\tt integer} & {\tt size(dim)}\\
-
-\verb![C]!&  {\tt void}& {\tt xmp\_la\_size(xmp\_desc\_t d, int size[])}\\
+\verb![C]!&  {\tt int}& {\tt xmp\_array\_laddr(xmp\_desc\_t d, void **laddr)}\\
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_la\_size} routine provides the local size of each
-dimension of the global array.
+The {\tt xmp\_array\_laddr} routine provides the local address of the target global array. 
+ The local address is implementation-dependent.
 
-\subsubsection*{Arguments}
 
+\subsubsection*{Input Arguments}
 \begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt xmp\_desc\_t},
        in {\XMPC}, that is associated with the global array.
- \item {\tt size} is a one-dimensional integer array. {\tt
-       dim} is the rank of the global array.
 \end{itemize}
 
-\subsection{\tt xmp\_ga\_template\_unitsize}
-\index{xmp\_ga\_template\_unitsize@{\tt xmp\_ga\_template\_unitsize}}
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt laddr} is a local address of the target global array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_array\_lead\_dim}
+\index{xmp\_array\_lead_dim@{\tt xmp\_array\_lead\_dim}}
 
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_template\_unitsize(d, unitsize)}\\
-          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
-          & {\tt integer} & {\tt unitsize(dim)}\\
-
-\verb![C]!&  {\tt void}& {\tt xmp\_ga\_template\_unitsize(xmp\_desc\_t d, int unitsize[])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_ga\_template\_unitsize} routine provides the blocking
-factor of each dimension of the target template.
-
-\subsubsection*{Arguments}
-
-\begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with the template.
- \item {\tt unitsize} is a one-dimensional integer array. {\tt dim} is
-       the rank of the template.
-\end{itemize}
-
-
-\subsection{\tt xmp\_ga\_first\_idx\_node\_index}
-\index{xmp\_ga\_first\_idx\_node\_index@{\tt
-xmp\_ga\_first\_idx\_node\_index}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&  {\tt subroutine}& {\tt xmp\_ga\_first\_idx\_node\_index(d, idx)}\\
-          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
-          & {\tt integer} & {\tt idx(dim)}\\
-
-\verb![C]!&  {\tt void}& {\tt xmp\_ga\_first\_idx\_node\_index(xmp\_desc\_t d, int idx[])}\\
+\verb![F]!& {\tt integer function}& {\tt xmp\_array\_lead\_dim(d, size)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt size(N)}\\
+          
+\verb![C]!&  {\tt int}& {\tt xmp\_array\_lead\_dim(xmp\_desc\_t d, int size[])}\\
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_ga\_first\_idx\_node\_index} routine provides the indices
-of the node onto which the {\it first} element of the global array is
-distributed.
+The {\tt xmp\_array\_lead\_dim} routine provides the leading dimension of each local section of the target global array. Each output value is implementation-dependent.
 
-\subsubsection*{Arguments}
-
+\subsubsection*{Input Arguments}
 \begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
        in {\XMPC}, that is associated with the global array.
- \item {\tt idx} is a one-dimensional integer array. {\tt dim} is the
-       rank of node array associated with the global array.
 \end{itemize}
 
-
-\subsection{\tt xmp\_la\_lead\_dim}
-\index{xmp\_la\_lead\_dim@{\tt xmp\_la\_lead\_dim}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&  {\tt subroutine}& {\tt xmp\_la\_lead\_dim(d, lead\_dim)}\\
-          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
-          & {\tt integer} & {\tt lead\_dim}\\
-
-\verb![C]!&  {\tt void}& {\tt xmp\_la\_lead\_dim(xmp\_desc\_t d, int lead\_dim)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_la\_lead\_dim} routine provides the leading dimension of
-each local section of the target global array.
-
-\subsubsection*{Arguments}
-
+\subsubsection*{Output Arguments}
 \begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with the global array.
- \item {\tt lead\_dim} is an integer scalar.
+ \item {\tt size} is a one-dimensional integer array.
+       The extent {\tt N} of {\tt size} must be more than {\tt NDIMS-1}. 
+       {\tt NDIMS} is the rank of the global array. 
 \end{itemize}
-
-
-%\subsection{\tt xmp\_la\_addr}
-%
-%\subsubsection*{Format}
-%
-%\begin{tabular}{lll}
-%
-%\verb![F]!&  {\tt subroutine}& {\tt xmp\_la\_addr(d, addr)}\\
-%          & {\tt xmp\_desc\_t} & {\tt d}\\
-%          & {\tt integer, allocatable} & {\tt addr}\\
-%
-%\verb![C]!&  {\tt void}& {\tt xmp\_la\_addr(xmp\_desc\_t d, int* addr)}\\
-%
-%\end{tabular}
-%
-%\subsubsection*{Synopsis}
-%
-%The {\tt xmp\_la\_addr} routine provides the base address of each local
-%section of the target global array.
-%
-%\subsubsection*{Arguments}
-%
-%\begin{itemize}
-% \item {\tt d} is a descriptor, that is, an object of type {\tt
-%       xmp\_desc\_t} that is associated with the global array.
-% \item {\tt addr} is the base address of the local array.
-%\end{itemize}
 
 
 \section{Example}
@@ -582,40 +422,50 @@ each local section of the target global array.
 
       use xmp_lib
 
-      integer n,nrhs,ia,ja,ib,jb,ictxt,info
+      integer n,nrhs,ia,ja,ib,jb,ictxt,info,desca(9),descb(9),ierr
       double precision a,b
-      integer(kind=xmp_desc_kind) da,db
-      integer size_a(2),unitsize_a(2),rank_a(2),lead_dim_a,desca(9)
-      integer size_b(2),unitsize_b(2),rank_b(2),lead_dim_b,descb(9)
+      type(xmp_desc) da,db,dta,dtb
+      integer lbound_a1,ubound_a1,lbound_a2,ubound_a2
+      integer blocksize_a1,blocksize_a2,lead_dim_a
+      integer lbound_b1,ubound_b1,lbound_b2,ubound_b2
+      integer blocksize_b1,blocksize_b2,lead_dim_b
       
-      call xmp_ga_size(da,size_a)
-      call xmp_ga_template_unitsize(da,unitsize_a)
-      call xmp_ga_first_idx_nodes_rank(da,rank_a)
-      call xmp_la_lead_dim(da,lead_dim_a)
+      ierr=xmp_array_lbound(da,1,lbound_a1)
+      ierr=xmp_array_ubound(da,1,ubound_a1)
+      ierr=xmp_array_lbound(da,2,lbound_a2)
+      ierr=xmp_array_ubound(da,2,ubound_a2)
+      ierr=xmp_align_template(da,dta)
+      ierr=xmp_dist_blocksize(dta,1,blocksize_a1)
+      ierr=xmp_dist_blocksize(dta,2,blocksize_a2)
+      ierr=xmp_array_lead_dim(da,1,lead_dim_a)
       
-      call xmp_ga_size(db,size_b)
-      call xmp_ga_template_unitsize(db,unitsize_b)
-      call xmp_ga_first_idx_nodes_rank(db,rank_b)
-      call xmp_la_lead_dim(db,lead_dim_b)
+      ierr=xmp_array_lbound(db,1,lbound_b1)
+      ierr=xmp_array_ubound(db,1,ubound_b1)
+      ierr=xmp_array_lbound(db,2,lbound_b2)
+      ierr=xmp_array_ubound(db,2,ubound_b2)
+      ierr=xmp_align_template(db,dtb)
+      ierr=xmp_dist_blocksize(dtb,1,blocksize_b1)
+      ierr=xmp_dist_blocksize(dtb,2,blocksize_b2)
+      ierr=xmp_array_lead_dim(db,1,lead_dim_b)
       
       desca(1)=1
       desca(2)=ictxt
-      desca(3)=size_a(1)
-      desca(4)=size_a(2)
-      desca(5)=unitsize_a(1)
-      desca(6)=unitsize_b(2)
-      desca(7)=rank_a(1)
-      desca(8)=rank_a(2)
+      desca(3)=ubound_a1-lbound_a1+1
+      desca(4)=ubound_a2-lbound_a2+1
+      desca(5)=blocksize_a1
+      desca(6)=blocksize_a2
+      desca(7)=0
+      desca(8)=0
       desca(9)=lead_dim_a
       
       descb(1)=1
       descb(2)=ictxt
-      descb(3)=size_b(1)
-      descb(4)=size_b(2)
-      descb(5)=unitsize_b(1)
-      descb(6)=unitsize_b(2)
-      descb(7)=rank_b(1)
-      descb(8)=rank_b(2)
+      descb(3)=ubound_b1-lbound_b1+1
+      descb(4)=ubound_b2-lbound_b2+1
+      descb(5)=blocksize_b1
+      descb(6)=blocksize_b2
+      descb(7)=0
+      descb(8)=0
       descb(9)=lead_dim_b
       
       call pdgesv(n,nhrs,a,ia,ja,desca,ipiv,b,ib,jb,descb,info)

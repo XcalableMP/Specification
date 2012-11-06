@@ -28,7 +28,7 @@ intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
 
 \begin{tabular}{lll}
 
-\verb![F]!&  {\tt integer(kind=xmp\_desc\_kind)}& {\tt xmp\_desc\_of(xmp\_entity)}\\
+\verb![F]!&  {\tt type(xmp\_desc)}& {\tt xmp\_desc\_of(xmp\_entity)}\\
 
 \verb![C]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of(xmp\_entity)}
 
@@ -52,8 +52,8 @@ template, or node array. The resulting descriptor can be used as an
 input argument of the inquiry procedures which is described in appendix
 \ref{chap:Interface to Numerical Libraries}.
 
-The kind type parameter of the type of the descriptor, {\tt
-xmp\_desc\_kind}, in {\XMPF} is implementation-dependent, and defined in
+The type of the descriptor, {\tt type(xmp\_desc)}, in {\XMPF} 
+is implementation-dependent, and defined in
 a Fortran module named {\tt xmp\_lib} or a Fortran {\tt include} file
 named {\tt xmp\_lib.h}.
 
@@ -325,47 +325,7 @@ asynchronous communication initiated by a global communication construct
 with the {\tt async} clause.
 
 
-\section{Miscellaneous Procedures}
-
-\subsection{\tt xmp\_gtol}
-\Intrinsic{xmp\_gtol}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt subroutine} & {\tt xmp\_gtol(d, g\_idx, l\_idx)} \\
-          & {\tt integer(kind=xmp\_desc\_kind)} & {\tt d}\\
-          & {\tt integer} & {\tt g\_idx(NDIMS)}\\
-          & {\tt integer} & {\tt l\_idx(NDIMS)}\\
-          & & \\
-\verb![C]!&  {\tt void} & {\tt xmp\_gtol(xmp\_desc\_t d, int g\_idx[], int l\_idx[])}
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_gtol} routine translates an index (specified by
-{\tt g\_idx}) of a global array (specified by {\tt d}) into the
-corresponding index of its local section and sets to an array specified
-by {\tt l\_idx}. If the element of the specified index does not reside
-in the caller of the routine, the resulting array is set to an
-unspecified value.
-
-\subsubsection*{Arguments}
-
-\begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       integer(kind=xmp\_desc\_kind)}, in {\XMP}, or {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with the target global array.
- \item \verb![F]! {\tt g\_idx} is a rank-one integer array of the size
-       equal to the rank of the target global array specified by {\tt
-       d}.
- \item \verb![F]! {\tt l\_idx} is a rank-one integer array of the size
-       equal to the rank of the target global array specified by {\tt
-       d}.
- \item \verb![C]! {\tt g\_idx} is a one-dimensional integer array.
- \item \verb![C]! {\tt l\_idx} is a one-dimensional integer array.
-\end{itemize}
-
+\section{Memory Allocation Procedures}
 
 \subsection{\tt [C] xmp\_malloc}
 \label{subsec: xmp_malloc}
@@ -382,7 +342,8 @@ unspecified value.
 The {\tt xmp\_malloc} routine allocates a storage for the local section
 of a one-dimensional global array of size {\tt size} that is associated
 with a descriptor specified by {\tt d}, and returns the pointer to it on
-each node.
+each node. For an example of {\tt xmp\_malloc}, refer to section 
+\ref{sec:Dynamic Allocation of Global Data in C}.
 
 \subsubsection*{Arguments}
 
@@ -392,3 +353,789 @@ each node.
        one-dimensional global array to be allocated.
  \item {\tt size} is the size of the global array to be allocated.
 \end{itemize}
+
+
+\section{Mapping Inquiry Procedures}
+
+All mapping inquiry procedures are specified by integer functions. When these inquiry procedures return zero on normal completion, and other implementation-dependent integer on failure. 
+Specifications of some inquiry procedures are shown below.
+
+\subsection{\tt xmp\_nodes\_ndims}
+\index{xmp\_nodes\_ndims@{\tt xmp\_nodes\_ndims}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_nodes\_ndims(d, ndims)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt ndims}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_nodes\_ndims(xmp\_desc\_t d, int *ndims)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_nodes\_ndims} routine provides the rank of the target node array.
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the node array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt ndims} is the rank of the node array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_nodes\_index}
+\index{xmp\_nodes\_index@{\tt xmp\_nodes\_index}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_nodes\_index(d, dim, index)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt index}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_nodes\_index(xmp\_desc\_t d, int dim, int *index)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_nodes\_index} routine provides the indices of the
+executing node in the target node array.
+
+\subsubsection*{Input Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)} in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the node array.
+ \item {\tt dim} is a target dimension of the node array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+
+\begin{itemize}
+ \item {\tt index} is an index of the target dimension of the node array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_nodes\_size}
+\index{xmp\_node\_size@{\tt xmp\_nodes\_size}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_nodes\_size(d, dim, size)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt size}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_nodes\_size(xmp\_desc\_t d, int dim, int *size)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_nodes\_size} routine provides the size of each dimension of the target node array.
+
+\subsubsection*{Input Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the node array.
+ \item {\tt dim} is a target dimension of the node array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+
+\begin{itemize}
+ \item {\tt size} is an extent of the target dimension of the node array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_nodes\_attr}
+\index{xmp\_nodes\_attr@{\tt xmp\_nodes\_attr}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_nodes\_attr(d, attr)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt attr}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_nodes\_attr(xmp\_desc\_t d, int *attr)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_nodes\_attr} routine provides the attribute of the target node array. This routine outputs one of:
+
+\begin{tabular}{lll}
+  \hspace{2.5cm} & {\tt XMP\_ENTIRE\_NODES} & (Entire nodes)\\
+                 & {\tt XMP\_EXECUTING\_NODES}  & (Executing nodes) \\
+                 & {\tt XMP\_PRIMARY\_NODES} & (Primary nodes) \\
+                 & {\tt XMP\_EQUIVALENCE\_NODES} & (Equivalence nodes) \\
+\end{tabular}
+
+  Each output integer value for the attribute is implementation-dependent.
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the node array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt attr} is an attribute of the target node array.
+\end{itemize}
+
+\subsection{\tt xmp\_template\_fixed}
+\index{xmp\_template\_fixed@{\tt xmp\_template\_fixed}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_template\_fixed(d, fixed)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt logical} & {\tt fixed}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_template\_fixed(xmp\_desc\_t d, \_Bool *fixed)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_template\_fixed} routine provides the logical value which shows whether the template is fixed or not. 
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the template.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt fixed} is a logical scalar. When the template is fixed, fixed is true.
+\end{itemize}
+
+\subsection{\tt xmp\_template\_ndims}
+\index{xmp\_template\_ndims@{\tt xmp\_template\_ndims}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_template\_ndims(d, ndims)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt ndims}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_template\_ndims(xmp\_desc\_t d, int *ndims)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_template\_ndims} routine provides the rank of the target template
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the template.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt ndims} is the rank of the template.
+\end{itemize}
+
+
+\subsection{\tt xmp\_template\_lbound}
+\index{xmp\_template\_lbound@{\tt xmp\_template\_lbound}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_template\_lbound(d, dim, lbound)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt lbound}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_template\_lbound(xmp\_desc\_t d, int dim, int *lbound)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_template\_lbound} routine provides the lower bound of each dimension of the template.
+  When the lower bound is not fixed, this routine the implemetation-dependent negative integer value {\tt XMP\_UNDEFINED}. 
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the template.
+        \item {\tt dim} is a target dimension of the template.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt lbound} is a lower bound of the target dimension of the template.
+\end{itemize}
+
+
+\subsection{\tt xmp\_template\_ubound}
+\index{xmp\_template\_ubound@{\tt xmp\_template\_ubound}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_template\_ubound(d, dim, ubound)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt ubound}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_template\_ubound(xmp\_desc\_t d, int dim, int *ubound)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_template\_ubound} routine provides the upper bound of each dimension of the template.
+  When the upper bound is not fixed, this routine returns {\tt XMP\_UNDEFINED}.
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the template.
+        \item {\tt dim} is a target dimension of the template.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt ubound} is a upper bound of the target dimension of the template.
+\end{itemize}
+
+
+\subsection{\tt xmp\_dist\_format}
+\index{xmp\_dist\_format@{\tt xmp\_dist\_format}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_dist\_format(d, dim, format)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt format}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_dist\_format(xmp\_desc\_t d, int dim, int *format)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_dist\_format} routine provides the distribution format of each dimension of the target template.
+ This routine outputs one of:
+
+\begin{tabular}{lll}
+       \hspace{2.5cm} & {\tt XMP\_NOT\_DISTRIBUTED} & (Not distributed)\\
+                      & {\tt XMP\_BLOCK}  & (Block distribution) \\
+                      & {\tt XMP\_CYCLIC} & (Cyclic distribution) \\
+                      & {\tt XMP\_GBLOCK} & (Gblock distribution) \\
+\end{tabular}
+
+  Each output integer value for the distribution format is implementation-dependent.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the template.
+        \item {\tt dim} is a target dimension of the template.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt format} is a distribution format of the target dimension of the template.
+\end{itemize}
+
+
+\subsection{\tt xmp\_dist\_blocksize}
+\index{xmp\_dist\_blocksize@{\tt xmp\_dist\_blocksize}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_dist\_blocksize(d, dim, blocksize)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt blocksize}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_dist\_blocksize(xmp\_desc\_t d, int dim, int *blocksize)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_dist\_blocksize} routine provides the blocking extent of each dimension of the target template.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the template.
+        \item {\tt dim} is a target dimension of the template.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt blocksize} is a blocking extent of the target dimension of the template.
+\end{itemize}
+
+
+\subsection{\tt xmp\_dist\_gblockmap}
+\index{xmp\_dist\_blocksize@{\tt xmp\_dist\_gblockmap}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_dist\_gblockmap(d, dim, map)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt map(N)}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_dist\_gblockmap(xmp\_desc\_t d, int dim, int map[])}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_dist\_gblockmap} routine provides a mapping array. When dim dimension of the global array is distributed by gblock and a mapping array is fixed, this routine returns zero. 
+  When a mapping array is not fixed, this routine returns {\tt XMP\_UNDEFINED}.
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the template.
+ \item {\tt dim} is a target dimension of the template.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt map} is a one-dimensional integer array. The extent {\tt N} of {\tt map} must be more than the size of the corresponding dimension of the node array that the template maps.
+   The i-th element of {\tt map} is the value of the i-th element of the target mapping array. 
+\end{itemize}
+
+
+\subsection{\tt xmp\_dist\_nodes}
+\index{xmp\_dist\_nodes@{\tt xmp\_dist\_nodes}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_dist\_nodes(d, dn)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt type(xmp\_desc)} & {\tt dn}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_dist\_nodes(xmp\_desc\_t d, xmp\_desc\_t *dn)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_dist\_nodes} routine provides an object which of type {\tt type(xmp\_desc)} is associated with the node array.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the template.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt dn} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the node array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_dist\_axis}
+\index{xmp\_dist\_axis@{\tt xmp\_dist\_axis}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_dist\_axis(d, dim, axis)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt axis}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_dist\_axis(xmp\_desc\_t d, int dim, int *axis)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_dist\_axis} routine provides the dimension of the node array associated with each dimension of the template. When no dimension of a node array maps a dimension of a template, this routine returns {\tt XMP\_UNDEFINED}.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the template.
+ \item {\tt dim} is a target dimension of the template.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt axis} is a dimension of the node array associated with the target dimension of the template.
+\end{itemize}
+
+
+\subsection{\tt xmp\_align\_axis}
+\index{xmp\_align\_axis@{\tt xmp\_align\_axis}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_align\_axis(d, dim, axis)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt axis}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_align\_axis(xmp\_desc\_t d, int dim, int *axis)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_align\_axis} routine provides the dimension of the template associated with each dimension of the global array. When no dimension of a template maps a dimension of a global array, this routine returns {\tt XMP\_UNDEFINED}.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the global array.
+ \item {\tt dim} is a target dimension of the global array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt axis} is a dimension of the template associated with the target dimension of the global array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_align\_offset}
+\index{xmp\_align\_offset@{\tt xmp\_align\_offset}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_align\_offset(d, dim, offset)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt offset}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_align\_offset(xmp\_desc\_t d, int dim, int *offset)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_align\_offset} routine provides the offset of each dimension of the target global array. When there is no offset, this routine returns {\tt XMP\_UNDEFINED}.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the global array.
+ \item {\tt dim} is a target dimension of the global array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt offset} is an offset of the target dimension of the global array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_align\_replicated}
+\index{xmp\_align\_replicated@{\tt xmp\_align\_replicated}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_align\_replicated(d, dim, replicated)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt logical} & {\tt replicated}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_align\_replicated(xmp\_desc\_t d, int dim, \_Bool *replicated)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_align\_replicated} routine provides the logical value which shows whether the target dimension of the template that aligns the global array is replicated or not.
+  When the dimension of the template is replicated, this routine returns true.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the global array.
+ \item {\tt dim} is a target dimension of the global array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt replicated} is a logical scalar.
+\end{itemize}
+
+
+\subsection{\tt xmp\_align\_template}
+\index{xmp\_align\_template@{\tt xmp\_align\_template}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_align\_template(d, dt)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt type(xmp\_desc)} & {\tt dt}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_align\_template(xmp\_desc\_t d, xmp\_desc\_t *dn)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_align\_template} routine provides an object which of type {\tt type(xmp\_desc)} is associated with the template.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the global array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt dt} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the template.
+\end{itemize}
+
+
+\subsection{\tt xmp\_array\_ndims}
+\index{xmp\_array\_ndims@{\tt xmp\_array\_ndims}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_array\_ndims(d, ndims)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt ndims}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_array\_ndims(xmp\_desc\_t d, int *ndims)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_array\_ndims} routine provides the rank of the target global array
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the global array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt ndims} is the rank of the global array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_array\_lshadow}
+\index{xmp\_array\_lshadow@{\tt xmp\_array\_lshadow}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_array\_lshadow(d, dim, lshadow)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt lshadow}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_array\_lshadow(xmp\_desc\_t d, int dim, int *lshadow)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_array\_lshadow} routine provides the size of lower shadow of each dimension of the target global array.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the global array.
+ \item {\tt dim} is a target dimension of the global array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt lshadow} is a size of the lower shadow of the target dimension of the global array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_array\_ushadow}
+\index{xmp\_array\_ushadow@{\tt xmp\_array\_ushadow}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_array\_ushadow(d, dim, ushadow)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt ushadow}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_array\_ushadow(xmp\_desc\_t d, int dim, int *ushadow)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_array\_ushadow} routine provides the size of upper shadow of each dimension of the target global array.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the global array.
+ \item {\tt dim} is a target dimension of the global array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt ushadow} is a size of the upper shadow of the target dimension of the global array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_array\_lbound}
+\index{xmp\_array\_lbound@{\tt xmp\_array\_lbound}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_array\_lbound(d, dim, lbound)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt lbound}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_array\_lbound(xmp\_desc\_t d, int dim, int *lbound)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_array\_lbound} routine provides the lower bound of each dimension of the global array.
+  When the lower bound is not fixed, this routine returns {\tt XMP\_UNDEFINED}.
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the global array.
+ \item {\tt dim} is a target dimension of the global array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt lbound} is a lower bound of the target dimension of the global array.
+\end{itemize}
+
+
+\subsection{\tt xmp\_array\_ubound}
+\index{xmp\_array\_ubound@{\tt xmp\_array\_ubound}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_array\_ubound(d, dim, ubound)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt ubound}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_array\_ubound(xmp\_desc\_t d, int dim, int *ubound)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_array\_ubound} routine provides the upper bound of each dimension of the global array.
+  When the upper bound is not fixed, this routine returns {\tt XMP\_UNDEFINED}.
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the global array.
+ \item {\tt dim} is a target dimension of the global array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt ubound} is a upper bound of the target dimension of the global array.
+\end{itemize}
+
