@@ -324,8 +324,8 @@ being executed until the execution of all statements preceding a
 matching \Directive{post} construct is completed on the node specified
 by {\it node-ref}.
 
-A {\tt \Directive{wait}} construct issued with the arguments of {\it
-nodes-ref} and {\it tag} on a node (called a {\it \Term{waiting node}})
+A {\tt \Directive{wait}} construct issued with the arguments of {\it nodes-ref} and {\it tag} 
+on a node (called a {\it \Term{waiting node}})
 dynamically matches a {\tt \Directive{post}} construct issued with the
 arguments of the waiting node and the same value as {\it tag} by the
 node specified by {\it nodes-ref}.
@@ -347,6 +347,93 @@ any node.
        {\XMPF}, or type {\tt int}, in {\XMPC}.
 \end{itemize}
 
+\subsection{{\tt [C]} {\tt lock}/{\tt unlock} Construct}
+\subsubsection*{Synopsis}
+The {\tt \Directive{lock}}/{\tt \Directive{unlock}} constructs are equivalent to the 
+{\tt lock}/{\tt unlock} statements in Fortran 2008.
+
+\subsubsection*{Syntax}
+\Syntax{lock}
+\begin{tabular}{ll}
+\verb![C]! & \verb!#!include \verb!<!xmp.h\verb!>! \\
+\verb![C]! & {\tt xmp\_lock\_t} {\it lock-object}
+{\openb}{\tt ,} {\it lock-object} {\closeb}{\tt ...} \\
+\verb![C]! & \verb|#pragma xmp| {\tt lock} {\tt (}{\it lock-object}{\tt )}
+{\openb} {\tt acquired\_lock} {\tt (}{\it success}{\tt )} {\closeb}
+{\openb} {\tt stat} {\tt (}{\it status}{\tt )} {\closeb}\\
+\verb![C]! & \verb|#pragma xmp| {\tt unlock} {\tt (}{\it lock-object}{\tt )}
+{\openb} {\tt stat} {\tt (}{\it status}{\tt )} {\closeb}
+\end{tabular}
+
+\vspace{5mm}
+Please note the following points:
+\begin{itemize} \vspace{-2mm}
+ \item The type {\tt xmp\_lock\_t} is defined in ``xmp.h''. \vspace{-3mm}
+ \item The variable {\it lock-object} is a coarray. \vspace{-3mm}
+ \item The variable {\it success} is an expression of type {\tt bool}. \vspace{-3mm}
+ \item The variable {\it status} is an expression of type {\tt int}. 
+\end{itemize}
+
+\subsubsection*{Description}
+%The {\tt \Directive{lock}} construct, in combination with the {\tt \Directive{unlock}} construct,
+%is used to create a critical section on a target node.
+%The critical section is a range of a code which can be executed by only a node creates the critical section.
+%The critical section is started by the {\tt \Directive{lock}} construct,
+%and the critical section is ended by the {\tt \Directive{unlock}} construct.
+The {\tt \Directive{lock}} construct, in combination with the {\tt \Directive{unlock}} construct,
+is used to control a {\it lock-object}.
+The {\it lock-object} must be defined as a coarray to control it on a target node.
+The {\it lock-object} must be an expression of type {\tt xmp\_lock\_t} 
+which is an opaque object defined in ``xmp.h''.
+
+If the {\tt acquired\_lock} clause is not used in the {\tt \Directive{lock}} construct and 
+the {\it lock-object} is locked,
+a node stops at the {\tt \Directive{lock}} construct until the {\it lock-object} is unlocked by a different node.
+If the {\tt acquired\_lock} clause is used in the {\tt \Directive{lock}} construct and 
+the {\it lock-object} is locked by a different node,
+a node does not stop at the {\tt \Directive{lock}} construct and the variable {\it success} is defined with the value false
+and {\tt \Directive{lock}} construct leaves the {\it lock-object} unchanged.
+If the {\tt acquired\_lock} clause is used in the {\tt \Directive{lock}} construct and the {\it lock-object} is unlocked,
+the variable {\it success} is defined with the value true.
+
+The {\it status} is defined with one of the follow symbolic constants 
+when executing {\tt \Directive{lock}}/{\tt \Directive{unlock}} construct.
+
+\begin{itemize}
+\item {\tt XMP\_STAT\_SUCCESS} \vspace{-2mm}
+\item {\tt XMP\_STAT\_LOCKED} \vspace{-2mm}
+\item {\tt XMP\_STAT\_UNLOCKED} \vspace{-2mm}
+\item {\tt XMP\_STAT\_LOCKED\_OTHER\_IMAGE}
+\end{itemize}
+
+If an execution of {\tt \Directive{lock}}/{\tt \Directive{unlock}} construct is success,
+the {\it status} is defined with {\tt XMP\_STAT\_SUCCESS}.
+A condition where the {\it status} is defined with 
+{\tt XMP\_STAT\_LOCKED}, {\tt XMP\_STAT\_UNLOCKED}, or {\tt XMP\_STAT\_}
+{\tt LOCKED\_OTHER\_IMAGE} 
+is the same as that where the {\it status} is defined with
+{\tt STAT\_LOCKED}, {\tt STAT\_UNLOCKED}, or {\tt STAT\_LOCKED\_OTHER\_IMAGE} in Fortran 2008.
+These symbolic constants are defined in ``xmp.h''.
+If any other error condition occurs during execution of these constructs,
+the {\it status} is defined with a value which is different from the
+value of {\tt XMP\_STAT\_SUCCESS}, {\tt XMP\_STAT\_LOCKED}, 
+{\tt XMP\_STAT\_UNLOCKED}, and {\tt XMP\_STAT\_LOCKED\_OTHER\_IMAGE}.
+
+
+\subsubsection*{Example}
+\begin{XCexample}
+#include "xmp.h"
+
+xmp_lock_t lock_obj:[*];
+int A:[*], B;
+#pragma xmp nodes p(2)
+...
+#pragma xmp lock(lock_obj:[2])
+  if(xmp_node_num() == 1){
+    A:[2] = B;
+  }
+#pragma xmp unlock(lock_obj:[2])
+\end{XCexample}
 
 %\subsection{{\tt critical} Construct}
 %

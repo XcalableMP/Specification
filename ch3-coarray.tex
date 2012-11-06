@@ -4,6 +4,7 @@
 {\XMP} adopts coarray features for the local-view
 programming. Particularly in {\XMPF}, the features are compatible with
 that of Fortran 2008.
+We refer the ISO/IEC 1539-1:2010 as the Fortran 2008 standard.
 
 \section{Coarrays in XcalableMP}
 
@@ -33,14 +34,14 @@ Described in the rest of this section is the coarray features for
 
 \subsubsection*{Synopsis}
 
-Coarrays are declared with the {\tt coarray} directive in {\XMPC}.
+Coarrays are declared in {\XMPC}.
 
 \subsubsection*{Syntax}
 \Syntax{coarray}
 
 \begin{tabular}{ll}
-\verb![C]! & \verb|#pragma xmp coarray| {\it variable-name} {\openb}{\tt
-     ,} {\it variable-name} {\closeb}{\tt ...} {\tt :} 
+\verb![C]! & {\it data-type} {\it variable} {\openb}{\tt
+     ,} {\it variable} {\closeb}{\tt ...} {\tt :} 
 {\it codimensions} \\
 \end{tabular}
 
@@ -52,15 +53,15 @@ where {\it codimensions} is:
 \hspace{0.5cm} {\openb}{\tt [}{\it int-expr}{\tt ]}...{\closeb}{\tt [*]}
 
 \subsubsection*{Description}
+For {\XMPC}, 
+coarrays are declared with a colon and square bracket where {\it codimensions} specify the coshape of a variable.
 
-For {\XMPC}, coarrays are declared with the {\tt coarray} directive
-where {\it codimensions} specify the coshape of a variable.
+Note that, the {\tt coarray} directive for defining a coarray in the XcalableMP specification 1.0 (page 49) is obsolete.
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
- \item A coarray specified by {\it variable-name} must have a global
-       scope.
+ \item A coarray {\it variable} must have a global scope.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -68,19 +69,16 @@ where {\it codimensions} specify the coshape of a variable.
 
 \begin{XCexample}
 #pragma xmp nodes p(16)
-float x;
-#pragma xmp coarray x :[*]
+float x:[*];
 \end{XCexample}
 
-A variable {\tt x} that has a global scope is declared as a coarray by the
-{\tt coarray} directive.
+A variable {\it x} that has a global scope is declared as a coarray.
 
 \subsection{{\tt [C]} Reference of Coarrays}
 
 \subsubsection*{Synopsis}
-
-A coarray can be directly referenced or defined by any node. The target
-node is specified using an extended notation in {\XMPC}.
+A coarray can be directly referenced or defined by any node. 
+The target node is specified using an extended notation in {\XMPC}.
 
 \subsubsection*{Syntax}
 \index{coarray reference}
@@ -93,7 +91,7 @@ node is specified using an extended notation in {\XMPC}.
 \subsubsection*{Description}
 
 A sequence of {\tt [}{\it int-expr}{\tt ]}'s preceded by a colon in
-{\XMPC} determine the image index for a coarray to be accessed.
+{\XMPC} determines the image index for a coarray to be accessed.
 
 An reference of coarrays can appear in the same place as an reference of
 normal variables in the base languages.
@@ -109,8 +107,7 @@ copies it into the local storage for {\tt A}.
 
 \index{Example!coarray reference}
 \begin{XCexample}
-int A[10], B[10];
-#pragma xmp coarray A, B : [*]
+int A[10]:[*], B[10]:[*];
 
 A[:] = B[:]:[10];
 \end{XCexample}
@@ -383,68 +380,113 @@ A[:] = B[:]:[10];
 %\end{center}
 %\end{minipage}
 
-
-\subsection{{\tt [C] sync\_memory} Directive}
-
+\subsection{{\tt [C]} Syncronization of Coarrays} 
 \subsubsection*{Synopsis}
+{\XMPC} provides syncronization functions for coarrays.
 
-In {\XMPC}, the \Directive{sync\_memory} directive is used to complete
-all memory operations on coarrays.
-
-\subsubsection*{Syntax}
-\Syntax{sync\_memory}
-
-\begin{tabular}{ll}
-\verb![C]! & \verb|#pragma xmp sync_memory| \\
+\subsubsection*{Format}
+\begin{tabular}{lll}
+\verb![C]!&  {\tt void}& {\tt xmp\_sync\_all(int* {\it status})} \\
+\verb![C]!&  {\tt void}& {\tt xmp\_sync\_memory(int* {\it status})} \\
+\verb![C]!&  {\tt void}& {\tt xmp\_sync\_image(int {\it image}, int* {\it status})} \\
+\verb![C]!&  {\tt void}& {\tt xmp\_sync\_images(int {\it num}, int* {\it image\_set}, int* {\it status})} \\
+\verb![C]!&  {\tt void}& {\tt xmp\_sync\_images\_all(int* {\it status})}
 \end{tabular}
 
 \subsubsection*{Description}
 
-%The {\tt sync\_memory} directive ensures that any change of coarrays
-%on the image (or the executing node) is visible to other images (or
-%nodes) and any coarrays on the image can be referenced or defined by
-%other images.
-
-The {\tt sync\_memory} directive ensures that any changes of coarrays
-on the image (or the executing node) done by itself are visible to any
-images (or nodes) and any coarrays on the image can be referenced or
-defined by any images.
-%
-Note that no other {\XMP} directive ensures that.
-
-The {\tt sync\_memory} directive in {\XMPC} has a function equivalent
-to that of the {\tt sync memory} statement in {\XMPF}.
-
-\subsubsection*{Examples}
-\Example{sync\_memory}
-
-\begin{XCexample}
-#pragma xmp coarray a, b, c, d : [*]
-
-a = ...;
-... = b;
-c:[p] = ...;
-... = d:[q];
-
-#pragma xmp sync_memory
-\end{XCexample}
-
-\vspace{0.5cm}
-
-When a node finishes executing the {\tt sync\_memory} directive in this
-code snippet at runtime, the following are ensured that:
-
 \begin{itemize}
- \item the local definition of a coarray {\tt a} is complete
-       and it can be referenced and defined by any other nodes;
- \item the local reference of a coarray {\tt b} is complete
-       and it can be defined by any other nodes;
- \item the remote definition of a coarray {\tt c} from the node is
-       complete and it can be referenced and defined by any nodes;
-       and
- \item the remote reference of a coarray {\tt d} from the nodes is
-       complete and it can be defined by any nodes.
+ \item {\tt xmp\_sync\_all} is equivalent to the {\tt sync all} statement in Fortran 2008.
+ \item {\tt xmp\_sync\_memory} is equivalent to the {\tt sync memory} statement in Fortran 2008.
+ \item A combination of {\tt xmp\_sync\_image}, {\tt xmp\_sync\_images}, and {\tt xmp\_sync\_images\_all} 
+   is equivalent to the {\tt sync memory} statement in Fortran 2008.
+  \begin{itemize}
+    \item {\tt xmp\_sync\_image} is to synchronize one image.
+    \item {\tt xmp\_sync\_images} is to synchronize some images.
+    \item {\tt xmp\_sync\_images\_all} is to synchronize all images.
+  \end{itemize}
 \end{itemize}
+
+\subsubsection*{Arguments}
+\begin{itemize}
+  \item The argument {\it status} is defined with one of the follow symbolic constants.
+  \begin{itemize}
+    \item XMP\_STAT\_SUCCESS
+    \item XMP\_STAT\_STOPPED\_IMAGE
+  \end{itemize}
+  If an execution of the function is success, the {\it status} is defined with XMP\_STAT\_SUCCESS.
+  A condition where the {\it status} is defined with XMP\_STAT\_STOPPED\_IMAGE is the same as 
+  that where the {\it status} is defined with STAT\_STOPPED\_IMAGE in Fortran 2008.
+  These symbolic constants are defined in ``xmp.h''.
+  If any other error condition occurs during execution of these functions,
+  the {\it status} is defined with a value which is different from the value of XMP\_STAT\_SUCCESS and
+  XMP\_STAT\_STOPPED\_IMAGE.
+  \item In {\tt xmp\_sync\_image}, the variable {\it image} determines a target image index.
+  \item In {\tt xmp\_sync\_images}, the variable {\it num} is a number of target images, and 
+        the variable {\it image\_set} is an array where target images set is defined.
+\end{itemize}
+
+%\subsection{{\tt [C] sync\_memory} Directive}
+%
+%\subsubsection*{Synopsis}
+%
+%In {\XMPC}, the \Directive{sync\_memory} directive is used to complete
+%all memory operations on coarrays.
+%
+%\subsubsection*{Syntax}
+%\Syntax{sync\_memory}
+%
+%\begin{tabular}{ll}
+%\verb![C]! & \verb|#pragma xmp sync_memory| \\
+%\end{tabular}
+%
+%\subsubsection*{Description}
+%
+%%The {\tt sync\_memory} directive ensures that any change of coarrays
+%%on the image (or the executing node) is visible to other images (or
+%%nodes) and any coarrays on the image can be referenced or defined by
+%%other images.
+%
+%The {\tt sync\_memory} directive ensures that any changes of coarrays
+%on the image (or the executing node) done by itself are visible to any
+%images (or nodes) and any coarrays on the image can be referenced or
+%defined by any images.
+%%
+%Note that no other {\XMP} directive ensures that.
+%
+%The {\tt sync\_memory} directive in {\XMPC} has a function equivalent
+%to that of the {\tt sync memory} statement in {\XMPF}.
+%
+%\subsubsection*{Examples}
+%\Example{sync\_memory}
+%
+%\begin{XCexample}
+%// a, b, c, and d are coarrays
+%
+%a = ...;
+%... = b;
+%c:[p] = ...;
+%... = d:[q];
+%
+%#pragma xmp sync_memory
+%\end{XCexample}
+%
+%\vspace{0.5cm}
+%
+%When a node finishes executing the {\tt sync\_memory} directive in this
+%code snippet at runtime, the following are ensured that:
+%
+%\begin{itemize}
+% \item the local definition of a coarray {\tt a} is complete
+%       and it can be referenced and defined by any other nodes;
+% \item the local reference of a coarray {\tt b} is complete
+%       and it can be defined by any other nodes;
+% \item the remote definition of a coarray {\tt c} from the node is
+%       complete and it can be referenced and defined by any nodes;
+%       and
+% \item the remote reference of a coarray {\tt d} from the nodes is
+%       complete and it can be defined by any nodes.
+%\end{itemize}
 
 %\subsubsection*{Restrictions}
 %
@@ -505,3 +547,4 @@ code snippet at runtime, the following are ensured that:
 %\begin{XCexample}
 %      A[:] = B[:]:[10];    // copy from B on image 10 to A
 %\end{XCexample}
+
