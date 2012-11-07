@@ -505,6 +505,44 @@ The {\tt xmp\_nodes\_attr} routine provides the attribute of the target node arr
  \item {\tt attr} is an attribute of the target node array.
 \end{itemize}
 
+
+\subsection{\tt xmp\_nodes\_equiv}
+\index{xmp\_nodes\_equiv@{\tt xmp\_nodes\_equiv}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!& {\tt integer function}& {\tt xmp\_nodes\_equiv(d, dn)}\\
+          & {\tt type(xmp\_desc)} & {\tt d}\\
+          & {\tt type(xmp\_desc)} & {\tt dn}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_nodes\_equiv(xmp\_desc\_t d, xmp\_desc\_t *dn)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmp\_nodes\_equiv} routine provides an object which of type {\tt type(xmp\_desc)} is associated with the referenced node set of the target node array. The referenced node set is shown in the third form of the nodes directive.
+
+
+\subsubsection*{Input Arguments}
+\begin{itemize}
+ \item {\tt d} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the target node array.
+       The attribute of {\tt d} must be {\tt XMP\_EQUIVALENCE\_NODES}.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+\begin{itemize}
+ \item {\tt dn} is a descriptor, that is, an object of type 
+       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
+       in {\XMPC}, that is associated with the referenced node set of 
+       the target node array.
+\end{itemize}
+
+
 \subsection{\tt xmp\_template\_fixed}
 \index{xmp\_template\_fixed@{\tt xmp\_template\_fixed}}
 
