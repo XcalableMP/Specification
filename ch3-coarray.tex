@@ -1,34 +1,778 @@
 \chapter{Support for the Local-view Programming}
 \label{chap:Support for the Local-view Programming}
 
-{\XMP} adopts coarray features for the local-view
-programming. Particularly in {\XMPF}, the features are compatible with
-that of Fortran 2008.
-We refer to the ISO/IEC 1539-1:2010 as the Fortran 2008 standard.
+%{\XMP} adopts coarray features for the local-view
+%programming. Particularly in {\XMPF}, the features are compatible with
+%that of Fortran 2008.
+%We refer to the ISO/IEC 1539-1:2010 as the Fortran 2008 standard.
 
-\section{Coarrays in XcalableMP}
+The coarray features in Fortran 2008 are extended and integrated into
+XcalableMP. The specifications in this chapter are designed to achieve
+the following purposes:
 
-The specification of the coarray features in XcalableMP conforms to that
-of Fortran 2008 unless otherwise provided.
+\begin{itemize}
+ \item Upward compatibility to the Fortran 2008 coarray features\\
+If an {\XMPF} program does not contain any XMP directives,
+any standard-conforming Fortran 2008 program
+remains standard-conforming under XcalableMP.
+In this sense, the interpretations and extensions defined in this
+ chapter are upward compatible with the Fortran International Standard, ISO/IEC 1539-1:2010 (Fortran 2008).
+
+ \item Support for task parallelism \\
+       XcalableMP makes it possible to construct a task parallel program by
+       combining multiple Fortran 2008 codes, which might be developed
+       independently, with minimum modifications.
+
+ \item Integration of global-view style programming and local-view style programming\\
+       In XcalableMP, users can use global-view style programming of
+       XcalableMP or local-view style programming, which is typically
+       used in MPI or Fortran 2008 programs, appropriately according to
+       the characteristics of code in a program.
+
+ \item Possibility of the support for multiple topologies of a computing system\\
+       An XcalableMP processor may allow users to specify the correspondence between 
+       node arrays and the topologies of a computing system and
+       exploit the full potential of a particular system.
+
+\end{itemize}
+
+
+\section{Rules Determining Image Index}
+%An image is an instance of an XcalableMP program.
+%A node array is a set of nodes, whose individual elements are arranged
+%in a rectangular pattern.
+%Each node or each element of an instance of a node array
+%uniquely corresponds to an image.
+This section defines how the image index of an image in a set of images
+is determined in association with a node array and a TASK directive construct.
+
+
+
+\subsection{Primary image index}
+Every image has a default image index in all the images at the
+invocation of a program. 
+In XcalableMP, the default image index is the primary image index
+and is an integer value in the range one to the number of images
+at the invocation of a program. 
+
+%\subsection{Primary node array}
+%A primary node array is a node array declared with ``=**'' in a NODES directive.
+A primary node array corresponds to all the images at the invocation of
+a program, and also corresponds to all the nodes at the invocation of
+a program.
+The primary image index of an image is the (Fortran) subscript order value of 
+the uniquely corresponding element of a primary node array.
+%The primary node number of a node is also the (Fortran) subscript order value of 
+%the uniquely corresponding element of a primary node array.
+
+
+\subsection{Image index determined by a {\itshape task-directive}}
+
+Execution of a {\itshape task-directive} determines that a set of nodes (and
+the corresponding set of images) forms an executing node set.
+If a name of a node array or a subobject of a node array 
+appears in the {\itshape task-directive}, the nodes and the corresponding 
+images in the executing node set are ordered in (Fortran) array element order in
+the node array or the subobject of the node array.
+If a name of a template array or a subobject of a template array
+appears in the {\itshape task-directive}, the nodes and the corresponding images 
+in the executing node set 
+are ordered in (Fortran) array element order in the corresponding 
+subobject of the node array.
+The image index of an image in the determined set of images 
+is the integer order value in the range one to the cardinality of the set of images.
+%The node number of a node in the determined set of nodes
+%is the integer order value in the range one to the cardinality of the set of nodes.
+
+
+\subsection{Current image index}
+
+%The current set of images is a set of images 
+%determined by the most lately executed {\itshape task-directive} in the
+%TASK directive constructs that are not completed
+%if any TASK directive constructs are being executed.
+The image index of an image in the current set of images is
+the current image index.
+
+A current executing node array corresponds to the 
+current set of images and also the current executing node set 
+at the evaluation of the declaration of the node array.
+Each image in the current set of images corresponds 
+to the element of an executing node array whose
+subscript order value is the same as the current image index
+of the image at the evaluation of the declaration of the executing node array.
+In particular, when there are no TASK directive constructs that are not
+completed, the current image index of an image is the same as the
+primary image index.
+
+%The current set of images corresponds to 
+%primary node arrays and all the nodes at the invocation of a program
+%if there are no TASK directive constructs that are not completed.
+
+
+\subsection{Image index determined by a non-primary node array}
+%\subsection{Non-primary node array}
+
+%A non-primary node array is a node array declared without ``={\it node-ref}'', ``=**'', or ``=*''
+%in a NODES directive.
+
+A non-primary node array corresponds to all the images at the invocation of
+a program, and also corresponds to all the nodes at the invocation of
+a program. The correspondence between each image and 
+each element of a non-primary node array is processor-dependent.
+A processor may support any means to specify the correspondence.
+
+The image index of an image in all the images at the invocation 
+of a program is the subscript order value of the corresponding element of
+a non-primary node array if and only if the current set of images
+corresponds to the non-primary node whole array in which
+the nodes in the executing node set are ordered in (Fortran) array element order in the non-primary node whole array.
+The image index is a non-primary image index. 
+
+The correspondence between the primary image index and a non-primary image
+index of the same image is processor-dependent.
+Between any two distinct non-primary node arrays, 
+the correspondence between a non-primary image index 
+and the other non-primary image index of the same image is
+processor-dependent unless they have the same shape. 
+If two non-primary node arrays have the same shape,
+the corresponding elements of the node arrays correspond
+to the same image.
+
+
+%\subsection{Executing node array}
+%An executing node array is a node array declared with ``=*''
+%in a NODES directive.
+%A current executing node array corresponds to the executing node set
+%and also the current set of images
+%at the evaluation of the declaration of the node array.
 %
-Each node in the entire node set is considered to correspond to each
-image of a program. Therefore the number of images is always equal to
-the size of the entire node set. The image index of a node is its node
-number of the entire node set.
+%Each image in the current set of images corresponds 
+%to the element of an executing node array whose
+%subscript order value is the same as the current image index
+%of the image at the evaluation of the declaration of the executing node array.
 
-Declaring coarrays on an arbitrary node array, which may not correspond
-to the entire node set, is an open issue of {\XMP} and under
-discussion. Note that even if the coarray features of {\XMP} would be
-extended in the future version so that they could be declared on a
-subset of the entire node set, they are compatible with those of Fortran
-2008 as long as declared on the entire node set.
 
-Terms related to coarrays in {\XMP} (e.g. \Term{coshape}, coindex,
-cobound, \Term{cosubscript}, image, image index, etc.) are derived from
-that in Fortran 2008.
+\subsection{Image index determined by an equivalenced node array}
 
-Described in the rest of this section is the coarray features for
-{\XMPC}.
+A NODES directive with ``={\it node-ref}'' that is not ``=*'' or ``=**''
+specifies that
+each element of the declared node array corresponds in (Fortran) array
+element order
+to that of the {\it node-ref},
+which is a name of a node array or a subobject of a node array.
+The nodes in the declared node array and the corresponding images 
+are ordered in (Fortran) array element order in the {\it node-ref}.
+The image index of an image in the set of images
+corresponding to the declared node array
+is the integer order value in the range one to the cardinality of the set of images.
+%The node number of a node in the set of nodes corresponding to the declared node array
+%is the integer order value in the range one to the cardinality of the set of nodes.
+
+
+\subsection{On-node image index}
+
+XcalableMP supports COARRAY directive and IMAGE directive to
+specify that an image index indicates the image corresponding to
+the element of a particular node array whose subscript order value is 
+the same as the image index.
+The image index is an on-node image index for the specified node array. 
+Since evaluation of the declaration of a node array 
+determines a set of images corresponding to the node array,
+the directives specify that the set of images 
+is the ``all images'' for the image indices the directives affect.
+In particular, the on-node image index for a primary node array
+is the primary image index. 
+
+
+\section{Basic concepts}
+
+
+In XcalableMP, ``all images'' in Fortran 2008 changes coupled with the 
+execution of TASK directive constructs and
+ means the current set of images.
+In particular,
+when an ALLOCATE statement is executed for which an {\it allocate-object} is
+a coarray, there is an implicit synchronization of 
+all the images in the current set of images.
+On each image in the current set of images, execution of the segment 
+following the statement is delayed until
+all other images in the set have executed the same
+statement the same number of times.
+When a DEALLOCATE statement is executed for which an {\it allocate-object} is
+a coarray, there is an implicit synchronization of all the images
+in the current set of images.
+On each image in the current set of images, execution of the segment following the
+statement is delayed until all other images in the set
+have executed the same statement the same number of times.
+
+
+
+%\subsection{A restriction on allocatable coarrays}
+
+\begin{itemize}
+ \item 
+When an allocatable coarray is allocated during the execution of
+       TASK directive constructs,
+       the coarray shall be subsequently deallocated before the completion of 
+       the TASK directive construct whose
+       {\itshape task-directive} is the most lately executed one 
+       in the TASK directive constructs that are not completed at the allocation.
+
+\end{itemize}
+
+
+The image index determined by an image selector 
+indicates the current image index by default.
+Coarrays are visible within the range of the ``all images'' and
+accessed with the current image index by default.
+The image index that appears in an executable statement
+indicates the current image index by default.
+
+
+\subsection{Examples}
+
+\begin{itemize}
+ 
+ \item In the following code fragment, the value of a coarray {\ttfamily b} on 
+the images 1, 2, 3, and 4, which constitute the executing node set
+and correspond to {\ttfamily node(5)}, {\ttfamily node(6)}, {\ttfamily node(7)}, and {\ttfamily node(8)} respectively,
+is defined with the value of the coarray {\ttfamily a} on {\ttfamily node(5)}.
+
+\begin{verbatim}
+      program xmpcoarray
+!$xmp nodes node(8)=**   ! A primary node array.
+!$xmp task on node(5:8)  ! The executing node set
+        call sub         ! corresponds to node(5:8).
+!$xmp end task
+      end
+
+      subroutine sub           
+      real, save :: a[*], b[*] ! The images 1, 2, 3,
+         :                     ! and 4 correspond to node(5:8),
+      b = a[1]                 ! respectively.
+\end{verbatim}
+
+ \item In the following code fragment, an allocatable coarray {\ttfamily a}
+is allocated on the images 1, 2, 3, and 4, 
+which constitute the executing node set
+and correspond to {\ttfamily node(5)}, {\ttfamily node(6)}, {\ttfamily node(7)}, and {\ttfamily node(8)} respectively.
+
+\begin{verbatim}
+      program xmpcoarray
+!$xmp nodes node(8)=**
+!$xmp task on node(5:8)  ! The executing node set
+        call sub2        ! corresponds to node(5:8).
+!$xmp end task
+      end
+
+      subroutine sub2           
+      real, allocatable :: a(:)[:]
+        :                         
+      allocate(a(0:99)[*])        
+\end{verbatim}
+\end{itemize}
+
+
+
+\paragraph*{Note}
+\begin{itemize}
+ \item 
+       The result value of {\tt xmp\_num\_nodes()}
+       is always the same as that of {\ttfamily NUM\_IMAGES()}.
+
+ \item 
+  The result value of {\tt xmp\_node\_num()} is always the same as that of {\tt THIS\_IMAGE()}.
+ \item 
+       In a READ statement, an io-unit that is an asterisk identifies an
+       external unit that is preconnected for sequential formatted input
+       only on the image whose primary image index is 1.
+
+\end{itemize}
+
+
+
+\section{COARRAY directive}
+\subsection{Purpose and form of the COARRAY directive}
+
+The COARRAY directive maps coarrays onto a node array and
+the set of images that corresponds to the node array.
+An image index determined by an image selector for a coarray
+that appears in a COARRAY directive
+always indicates the on-node image index for the node array;
+that is, the specified image corresponds to the node whose subscript order value in the
+node array is the same as the image index.
+
+A coarray appearing in a COARRAY directive is an on-node coarray of the node array that is specified in the CORRAY directive.
+
+
+\medskip
+
+
+\begin{tabular}{llll}
+ & & & \\
+\verb![F]!  &  {\it coarray-directive} &  {\bf is} & \verb|!$xmp| {\tt coarray on} {\it node-name} {\tt ::} {\it object-name-list}\\
+ & & & \\
+\verb![C]!  &   {\it coarray-directive} &  {\bf is} & \verb|#pragma xmp| {\tt coarray on} {\it node-name} {\tt ::} {\it object-name-list}\\
+ & & & 
+\end{tabular}
+
+
+\begin{itemize}
+ \item An {\it object-name} shall be a name of a coarray declared 
+       in the same scoping unit.
+
+ \item The same {\it object-name} shall not appear more than once
+       in COARRAY directives in a scoping unit.
+
+ \item If an {\it object-name} is a name of an allocatable object,
+       the current set of images
+       at the allocation and the deallocation of the
+       object shall correspond to the node array specified as the {\it
+       node-name} and the current image index of each image shall 
+       be the same as the subscript order value of the corresponding element of the node array.
+
+ \item If an {\it object-name} is a name of an allocated allocatable
+       dummy argument,
+       the set of images onto which it is mapped
+       shall be a subset of the set of images that has allocated most lately 
+       the corresponding argument in the chain of argument associations.
+       
+ \item If an {\it object-name} is a name of a nonallocatable dummy argument
+       whose ultimate argument has allocatable attribute,
+       the set of images onto which the {\it object-name} is mapped
+       shall be a subset of the set of images that has allocated most lately 
+       the corresponding argument in the chain of argument associations.
+
+ \item The image index determined by an image selector for an on-node
+       coarray shall be in the range of one to the size of the node
+       array onto which the on-node coarray is mapped.
+
+ \item 
+THIS\_IMAGE(COARRAY[,DIM]) shall be invoked by
+the image contained in the set of images onto which
+the COARRAY argument is mapped,
+if the COARRAY argument appears in a COARRAY directive.
+
+
+\end{itemize}
+
+\paragraph*{Note}
+\begin{itemize}
+ \item 
+       The result value of THIS\_IMAGE(COARRAY)
+       is the sequence of cosubscript
+       values for the COARRAY argument that would specify the current image index of
+       the invoking image, if the COARRAY argument does not appear in a COARRAY
+       directive.
+       The result value of THIS\_IMAGE(COARRAY)
+       is the sequence of cosubscript
+       values for the COARRAY argument that would specify the on-node image index of the invoking image
+for the node array onto which the COARRAY argument is mapped,
+       if the COARRAY argument appears in a COARRAY directive.	      
+
+ \item 
+
+       The result value of THIS\_IMAGE(COARRAY,DIM) is
+       the value
+       of cosubscript DIM in the sequence of cosubscript values
+       for the COARRAY argument that would specify the current image index of
+       the invoking image, if the COARRAY argument does not appear in a COARRAY
+       directive.
+       The result value of THIS\_IMAGE(COARRAY,DIM) is
+       the value
+       of cosubscript DIM in the sequence of cosubscript values
+       for the COARRAY argument that would specify the on-node image index of
+       the invoking image for the node array
+       onto which the COARRAY argument is mapped,
+       if the COARRAY argument appears in a COARRAY
+       directive.
+\end{itemize}
+
+
+\subsection{An example of the COARRAY directive}
+
+
+\begin{verbatim}
+      module global
+!$xmp nodes node(8)=**    
+      real s[*]             ! The coarray s is always 
+!$xmp coarray on node :: s  ! visible on node(1:8).
+      end global
+
+      program coarray
+      use global
+!$xmp task on node(5:8)     ! The executing node set 
+        call sub            ! consists of node(5:8).
+!$xmp end task
+      end
+
+      subroutine sub
+      use global
+      real, save :: a[*]    ! The images 1, 2, 3, and 4 
+         :                  ! correspond to node(5:8), respectively.
+      if(this_image().eq.1)then ! The value of the coarray a on node(5) 
+         s[1] = a               ! defines that of the coarray s on node(1)
+      endif
+\end{verbatim}
+
+
+\section{IMAGE directive}
+\subsection{Purpose and form of the IMAGE directive}
+
+The IMAGE directive specifies that 
+an image index in the following executable statement
+indicates the on-node image index
+of the node array specified in the IMAGE directive
+unless the image index is determined by an image selector.
+
+
+The IMAGE directive also specifies that 
+execution of a SYNC ALL statement performs a synchronization of all the
+images corresponding to the node array specified in the IMAGE directive.
+
+
+\medskip
+
+
+\begin{tabular}{llll}
+ & & & \\
+\verb![F]!  &   {\it image-directive} &  {\bf is} & \verb|!$xmp| {\tt image} {\tt (} {\it node-name} {\tt )}\\
+ & & & \\
+\verb![C]!  &   {\it image-directive} &  {\bf is} & \verb|#pragma xmp| {\tt image} {\tt (} {\it node-name} {\tt )}\\
+ & & & 
+\end{tabular}
+
+
+\begin{itemize}
+ \item An {\it image-directive} shall be followed by a sync all statement,
+       an image control statement that contains {\it image-set}, or a reference to
+       an intrinsic procedure that has {\tt IMAGES} argument.
+\end{itemize}
+
+\subsection{An example of the IMAGE directive}
+
+\begin{verbatim}
+      module global
+!$xmp nodes node(8)=**
+      real s[*]             ! The coarray s is always visible 
+!$xmp coarray on node :: s  ! on node(1:8).
+      end global
+
+      program image
+      use global
+!$xmp tasks
+!$xmp task on node(1:4) 
+        call subA  ! The executing node set consists of node(1:4).
+!$xmp end task
+!$xmp task on node(5:8) 
+        call subB  ! The executing node set consists of node(5:8).
+!$xmp end task
+!$xmp end tasks
+      end
+
+      subroutine subA      
+      use global
+      real, save :: a[*] ! The images 1, 2, 3, and 4 
+         :               ! correspond to node(1:4), respectively.
+!$xmp image(node)        ! Synchronization between node(1:4) and
+        sync images(5)   ! node(5).
+      a = s[1]           ! a on node(1:4) is defined with 
+         :               ! the value of s on node(1).
+      end subroutine	
+
+      subroutine subB 
+      use global
+      real, save :: b[*] ! The images 1, 2, 3, and 4 
+         :               ! correspond to node(5:8), respectively.
+      if(this_image() .eq. 1)then ! The image 1 indicates node(5).
+        s[1] = b      ! s on node(1) is defined with the value of 
+                      ! b on node(5).
+!$xmp   image(node)                ! Synchronization between 
+          sync images((/1,2,3,4/)) ! node(5) and node(1:4).
+      endif
+         :
+      end subroutine		
+\end{verbatim}
+
+
+\section{Image index translation intrinsic procedures}
+
+XcalableMP supports intrinsic procedures to translate
+image indices between different sets of images.
+
+\subsection{Translation to the primary image index}
+
+{\bf xmp\_get\_primary\_image\_index(NUMBER,INDEX,PRI\_INDEX,NODE\_DESC)}
+
+
+\begin{description}
+ \item[Description.] Translate image indices to the primary image indices.
+
+ \item[Class.] Subroutine.
+	    
+ \item[Arguments.] 
+	    \begin{description}
+	     \item[NUMBER] shall be a scalar of type default integer. It is an INTENT(IN) argument.
+	     \item[INDEX] shall be a rank-one array of type default integer.
+			The size of {\bfseries INDEX} shall be
+			greater than or equal to the value of {\bfseries NUMBER}.
+			It is an INTENT(IN) argument.
+			The value of each element of {\bfseries INDEX} shall be in
+			the range one
+			to the size of the node array specified 
+			in {\bfseries NODE\_DESC} if {\bfseries NODE\_DESC} appears.
+			The value of each element of {\bfseries INDEX} shall be in
+			the range one
+			to the cardinality of the current set of images
+			if {\bfseries NODE\_DESC} does not appear.
+	     \item[PRI\_INDEX] shall be a rank-one array of type default integer.
+			The size of {\bfseries PRI\_INDEX} shall be
+			greater than or equal to the value of {\bfseries NUMBER}.
+			It is an INTENT(OUT) argument.
+			If {\bfseries NODE\_DESC} appears,
+			{\bfseries PRI\_INDEX(i)} is assigned the primary image index
+			corresponding to the element of the node array
+			specified in {\bfseries NODE\_DESC}
+			whose subscript order value is {\bfseries INDEX(i)}; otherwise,
+			{\bfseries PRI\_INDEX(i)} is assigned the primary image index
+			corresponding to the image whose
+			current image index is {\bfseries INDEX(i)}.
+	     \item[NODE\_DESC (optional)] shall be a descriptor of a
+			node array. It is an INTENT(IN) argument.
+			{\bfseries NODE\_DESC} shall appear in XcalableMP C.
+	    \end{description}
+
+ \item[Example.] 
+In the following code fragment, the value of {\ttfamily index(1:4)} is {\ttfamily (/5,6,7,8/)}.
+\begin{verbatim}
+!$xmp nodes node(1:8)=**        ! A primary node array
+!$xmp nodes subnode(4)=node(5:8)
+      integer index(4)
+      call xmp_get_primary_image_index&
+           &(4,(/1,2,3,4/),index,xmp_desc_of(subnode))
+\end{verbatim}
+\end{description}
+
+
+\subsection{Translation to the current image index}
+%{\bf XMP\_GET\_IMAGE\_INDEX(CURINDEX,INDEX,NUM,NODE\_DESC)}
+
+{\bf xmp\_get\_image\_index(NUMBER,INDEX,CUR\_INDEX,NODE\_DESC)}
+
+\begin{description}
+ \item[Description.] Translate image indices to the current image indices.
+
+ \item[Class.] Subroutine.
+	    
+ \item[Arguments.] 
+	    \begin{description}
+	     \item[NUMBER] shall be a scalar of type default integer. It is an INTENT(IN) argument.
+	     \item[INDEX] shall be a rank-one array of type default integer.
+			The size of {\bfseries INDEX} shall be
+			greater than or equal to the value of {\bfseries NUMBER}.
+			It is an INTENT(IN) argument.
+			The value of each element of {\bfseries INDEX} shall be in
+			the range one
+			to the size of the node array specified 
+			in {\bfseries NODE\_DESC}.
+	     \item[CUR\_INDEX] shall be a rank-one array of type default integer.
+			The size of {\bfseries CUR\_INDEX} shall be
+			greater than or equal to the value of {\bfseries NUMBER}.
+			It is an INTENT(OUT) argument.
+			If the current image index 
+			corresponding to the element of the node-array
+			specified in {\bfseries NODE\_DESC}
+			whose subscript order value is {\bfseries INDEX(i)}
+			exists,
+			{\bfseries CUR\_INDEX(i)} is assigned the current image index;
+			otherwise, {\bfseries CUR\_INDEX(i)} is assigned zero.
+	     \item[NODE\_DESC] shall be a descriptor of a
+			node array. It is an INTENT(IN) argument.
+	    \end{description}
+
+ \item[Example.] 
+In the following code fragment, the value of {\ttfamily index(1:4)} is {\ttfamily (/1,2,3,4/)}.
+\begin{verbatim}
+!$xmp nodes node(1:8)=**        
+      integer index(4)
+!$xmp task on node(5:8)
+        call xmp_get_image_index&
+             &(4,(/5,6,7,8/),index,xmp_desc_of(node))
+!$xmp end task
+\end{verbatim}
+\end{description}
+
+
+\section{Examples of communication between tasks}
+
+\begin{itemize}
+ \item In the following program fragment, two tasks communicate
+with each other with synchronization.
+\begin{verbatim}
+      module nodes
+!$xmp nodes node(8)=**            ! A primary node array
+      integer, parameter :: n=2
+!$xmp nodes subnodeA(n)=node(1:n)      ! subnodeA is for taskA.
+!$xmp nodes subnodeB(8-n)=node(n+1:8)  ! subnodeB is for taskB.
+      endmodule
+
+      module intertask
+      use nodes
+      real,save :: dA[*],dB[*]     
+      endmodule
+
+      use nodes
+!$xmp tasks  
+!$xmp task on subnodeA  ! The taskA is invoked on subnodeA.
+        call taskA
+!$xmp end task
+!$xmp task on subnodeB  ! The taskB is invoked on subnodeB.
+        call taskB
+!$xmp end task
+!$xmp end tasks
+      end
+
+      subroutine taskA
+      use intertask 
+         :
+      me = this_image()    ! The value of me is i on subnodeA(i).
+      if(me.eq.1)then
+        call xmp_get_primary_image_index&  ! The value of iyouabs
+               &(1,(/1/),iyouabs,subnodeB) ! is n+1.
+!$xmp   image(node)                    ! Synchronization between
+          sync images(iyouabs)         ! node(1) and node(n+1).
+        call exchange(dA,dB,iyouabs)   
+!$xmp   image(node)                    ! Synchronization between
+          sync images(iyouabs)         ! node(1) and node(n+1).
+      endif
+      sync all                ! Synchronization within subnodeA.
+      if(me.ne.1)dA = dA[1]            
+      sync all                ! Synchronization within subnodeA.
+       :
+      end
+
+      subroutine taskB
+      use intertask
+         :
+      me = this_image()    ! The value of me is i on subnodeB(i).
+      if(me.eq.1)then
+        call xmp_get_primary_image_index&  ! The value of iyouabs
+             &(1,(/1/),iyouabs,subnodeA)   ! is 1.
+!$xmp   image(node)                    ! Synchronization between
+          sync images(iyouabs)         ! node(n+1) and node(1).
+        call exchange(dB,dA,iyouabs)   
+!$xmp   image(node)                    ! Synchronization between
+          sync images(iyouabs)         ! node(n+1) and node(1).
+      endif
+      sync all                ! Synchronization within subnodeB.
+      if(me.ne.1)dB = dB[1]  
+      sync all                ! Synchronization within subnodeB.
+
+      end
+
+      subroutine exchange(mine,yours,iput)
+      use nodes
+      real :: mine[*],yours[*]       ! mine and yours are always 
+!$xmp coarray on node :: mine,yours  ! visible on node(1:8).
+
+      yours[iput] = mine  ! node(1) puts mine to yours[n+1] and 
+                          ! node(n+1) puts mine to yours[1].
+      end
+\end{verbatim}
+
+
+ \item In the following program fragment, two tasks communicate
+with each other without one-to-one synchronization.
+
+\begin{verbatim}
+!$xmp nodes node(8)=**       ! A primary node array
+        :
+!$xmp tasks                        
+!$xmp   task on(node(1:n))
+          call taskA(n)      ! The taskA is invoked on node(1:n)
+!$xmp   end task
+!$xmp   task on(node(n+1:8))
+          call taskB(8-n)    ! The taskB is invoked on node(n+1:8)
+!$xmp   end task
+!$xmp end tasks
+      end
+
+      subroutine taskA(n)
+      real,save :: yours[*],mine[*]
+!$xmp nodes subnode(n)=*        ! An executing node array
+
+      me = this_image()
+      if(me.eq. NUM_IMAGES())then
+         call xmp_get_primary_image_index(1,me,meabs) ! meabs=n.
+         call exchange(yours,mine,meabs,meabs+1,NUM_IMAGES())
+      endif
+      sync all                  ! Synchronization within node(1:n).
+      if(me.ne.NUM_IMAGES())mine = mine[NUM_IMAGES()] 
+      sync all                  ! Synchronization within node(1:n).
+      end
+
+      subroutine taskB(m)
+      real,save :: yours[*],mine[*]
+!$xmp nodes subnode(m)=*        ! An executing node array
+
+      me = this_image()
+      if(me.eq.1)then
+         call xmp_get_abs_image_index(1,me,meabs) ! meabs=n+1.
+         call exchange(yours,mine,meabs,meabs-1,NUM_IMAGES())
+      endif
+      sync all                  ! Synchronization within node(n+1:8).
+      if(me.ne.1)mine = mine[1]       
+      sync all                  ! Synchronization within node(n+1:8).
+      end
+
+      subroutine exchange(yours,mine,meabs,iyouabs,nnodes)
+      USE, INTRINSIC :: ISO_FORTRAN_ENV
+      real :: yours[*],mine[*]
+      real, save :: s[*]                       ! only for exchage.
+      TYPE(LOCK_TYPE),save :: lock[*]          ! for lock.
+!$xmp nodes subnode(nnodes)=*     ! An executing node array.
+!$xmp nodes node(8)=**            ! The coarrays s and lock are 
+!$xmp coarray on node :: s,lock   ! always visible on node(1:8).
+
+      LOCK(lock[meabs])   ! node(n) puts yours[n] to s[n] and 
+      s[meabs] = yours    ! node(n+1) puts yours[n+1] to s[n+1].
+      UNLOCK(lock[meabs])
+
+      LOCK(lock[iyouabs])  ! node(n) gets s[n+1] into mine[n] and 
+      mine = s[iyouabs]    ! node(n+1) gets s[n] into mine[n+1].
+      UNLOCK(lock[iyouabs])
+      end
+\end{verbatim}
+
+\end{itemize}
+
+%\section{Coarrays in XcalableMP}
+%
+%The specification of the coarray features in XcalableMP conforms to that
+%of Fortran 2008 unless otherwise provided.
+%%
+%Each node in the entire node set is considered to correspond to each
+%image of a program. Therefore the number of images is always equal to
+%the size of the entire node set. The image index of a node is its node
+%number of the entire node set.
+%
+%Declaring coarrays on an arbitrary node array, which may not correspond
+%to the entire node set, is an open issue of {\XMP} and under
+%discussion. Note that even if the coarray features of {\XMP} would be
+%extended in the future version so that they could be declared on a
+%subset of the entire node set, they are compatible with those of Fortran
+%2008 as long as declared on the entire node set.
+%
+%Terms related to coarrays in {\XMP} (e.g. \Term{coshape}, coindex,
+%cobound, \Term{cosubscript}, image, image index, etc.) are derived from
+%that in Fortran 2008.
+
+\section{{\tt [C]} Coarrays in {\XMPC}.}
+
+%Described in the rest of this section is the coarray features for
+%{\XMPC}.
+This section describes the coarray features for {\XMPC}.
 
 \subsection{{\tt [C]} Declaration of Coarrays}
 

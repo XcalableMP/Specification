@@ -5,7 +5,7 @@
 \subsubsection*{Synopsis}
 
 In {\XMPF}, the {\tt \Directive{local\_alias}} directive declares a
-local data object as an alias to the local section of a distributed
+local data object as an alias to the local section of a mapped
 array.
 
 \subsubsection*{Syntax}
@@ -20,45 +20,108 @@ array.
 
 \subsubsection*{Description}
 
-This directive declares that a local array specified by
-{\it local-array-name} is a ``\Term{local alias}'' to the global array
-specified by {\it global-array-name}.
+%This directive declares that a local array specified by
+%{\it local-array-name} is a ``\Term{local alias}'' to the global array
+%specified by {\it global-array-name}.
+The LOCAL\_ALIAS directive associates a non-mapped array with
+an explicitly mapped array.
+The non-mapped array is an associating local array and
+the explicitly mapped array is an associated global array.
+The shape of the associating local array is the same as
+that of the node-local portion of the associated global array
+including shadow area.
+Each element of the associating local array shares the 
+same storage unit in array element order with that of the node-local portion 
+of the associated global array.
+An associating local array and the corresponding global array always have
+the same allocation status.
+An associating local array always has the dynamic type
+and type parameter values of the corresponding 
+associated global array.
 
-The shape of a local alias is the same as that of the local section of
-the global array that is owned by each node.
+%The shape of a local alias is the same as that of the local section of
+%the global array that is owned by each node.
 %Note that the local part includes the shadow area.
+%An associating local array is defined when the corresponding 
+%associated global array is defined. 
 
-A local alias is defined when the corresponding global array
-is defined. If the corresponding global array is statically
-allocated, then the local alias is always defined in its scoping unit;
-if not, the local alias is not defined until the corresponding global
-array is allocated.
 
-An array specified by {\it local-array-name} may be a coarray.
+An associating local array may be a coarray.
+An associating local array that is a coarray is
+an on-node coarray of the node array onto which the corresponding
+associated global array is mapped.
+Every specification and restriction on coarrays is also applied to an associating local
+array that is a coarray except that
+an associating local array is always declared with
+{\it deferred-shape-spec-list} of the same rank as the associated global array.
+In particular, a processor shall ensure that an associating local array 
+that is a coarray has
+the same bounds on all the images corresponding to the node array
+onto which the corresponding associated global array is mapped.
+The mapping attributes allowed for an associated global array are
+processor-dependent.
 
 Note that the base language {\Fort} is extended so that a deferred-shape
-array that is not either an allocatable array or an array pointer can be
-declared if it is specified as a ``local alias'' by the {\tt
-local\_alias} directive.
+array that is not either an allocatable array or an array pointer is
+declared if it is specified as a 
+{\it local-array-name} in the {\tt local\_alias} directive.
 
-In {\XMPC}, the address-of operator applied to global data
+In {\XMPC}, the {\tt address-of} operator applied to global data
 substitutes for the {\tt local\_alias} directive (see \ref{sec:pointer
 to global data}).
 
-\subsubsection*{Restriction}
+
+\subsubsection*{Restrictions}
 
 \begin{itemize}
- \item The array specified by {\it local-array-name} must not be aligned
-       by an {\tt align} directive.
- \item The array specified by {\it global-array-name} must be aligned
-       by an {\tt align} directive.
- \item The data type and rank of the array specified by {\it
-       local-array-name} must be the same as those of the array
-       specified by {\it global-array-name}.
- \item The array specified by {\it local-array-name} must be a
-       deferred-shape array, which means that it must be declared with 
-       a {\it deferred-shape-spec-list} in a type declaration statement
-       or a {\tt DIMENSION} statement.
+ \item A {\it global-array-name} shall be a name of an explicitly mapped
+       array declared in the same scoping unit. 
+
+ \item A {\it local-array-name} shall be a name of a non-mapped array
+       declared in the same scoping unit. 
+
+ \item A {\it local-array-name} shall not be a dummy argument.
+
+ \item An associating local array shall have the declared type and type parameters of
+       the corresponding associated global array.
+
+ \item An associating local array shall be declared with
+       {\it deferred-shape-spec-list} of the
+       same rank as the corresponding associated global array.
+
+ \item A {\it local-array-name} shall appear in a COARRAY directive in the
+       same scoping unit and the {\it node-name} in the COARRAY directive
+       shall be the name of the node array onto which the
+       associated global array is mapped.
+
+ \item 
+If an associated global array is a dummy argument and corresponds to
+an associating local array that is a coarray, 
+the corresponding effective argument shall be
+an explicitly mapped array or a subobject of 
+an explicitly mapped array whose name appears
+in a LOCAL\_ALIAS directive %as a {\it global-array-name} 
+and the corresponding associating local array shall be a coarray.
+
+ \item If a dummy argument is a coarray 
+       and the corresponding ultimate argument is a coarray appearing in
+       a LOCAL\_ALIAS directive, % as a {\it local-array-name},
+       the dummy argument shall appear in a COARRAY directive
+       with a node array corresponding to
+       a subset of the set of images that corresponds to the node array
+       onto which the ultimate argument is mapped.
+%
+% \item The array specified by {\it local-array-name} must not be aligned
+%       by an {\tt align} directive.
+% \item The array specified by {\it global-array-name} must be aligned
+%       by an {\tt align} directive.
+% \item The data type and rank of the array specified by {\it
+%       local-array-name} must be the same as those of the array
+%       specified by {\it global-array-name}.
+% \item The array specified by {\it local-array-name} must be a
+%       deferred-shape array, which means that it must be declared with 
+%       a {\it deferred-shape-spec-list} in a type declaration statement
+%       or a {\tt DIMENSION} statement.
 % \item \verb![C]! The array specified by {\it local-array-name} must be
 %       a pointer.
 \end{itemize}
@@ -153,7 +216,7 @@ correspondence of each element of a to that of {\tt b} on {\tt n(2)}.
       real :: b(:)[*]
 !$xmp local_alias b => a
 
-      c
+      ¡Ä
 
 !$xmp template_fix :: t(128)
 
