@@ -242,11 +242,11 @@ A recommended design of the interface is as follows:
 \end{itemize}
 
 
-\section{Extended Mapping Inquiry Procedures}
+\section{Extended Mapping Inquiry Functions}
 
-In this section, the extended mapping inquiry procedures, which are
+In this section, the extended mapping inquiry functions, which are
 implementation-dependent, are shown.
-Specifications of the procedures below are from the Omni XcalableMP
+Specifications of the functions below are from the Omni XcalableMP
 compiler (\url{http://www.xcalablemp.org/download.html}).
 
 \subsection{\tt xmp\_array\_gtol}
@@ -265,19 +265,17 @@ compiler (\url{http://www.xcalablemp.org/download.html}).
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_array\_gtol} routine translates an index (specified by
+The {\tt xmp\_array\_gtol} function translates an index (specified by
 {\tt g\_idx}) of a global array (specified by {\tt d}) into the
 corresponding index of its local section and sets to an array specified
 by {\tt l\_idx}. If the element of the specified index does not reside
-in the caller of the routine, the resulting array is set to an
+in the caller of the function, the resulting array is set to an
 unspecified value.
 
 \subsubsection*{Input Arguments}
 
 \begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type {\tt
-       type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with the target global array.
+ \item {\tt d} is a descriptor of a global array.
  \item \verb![F]! {\tt g\_idx} is a rank-one integer array of the size
        equal to the rank of the target global array specified by {\tt
        d}. {\tt NDIMS} is the rank of the target global array.
@@ -311,15 +309,13 @@ unspecified value.
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_array\_lsize} routine provides the local size of each
+The {\tt xmp\_array\_lsize} function provides the local size of each
 dimension of the target global array. Note that the local size includes
 the size of the shadow.
 
 \subsubsection*{Input Arguments}
 \begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type 
-       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with a global array.
+ \item {\tt d} is a descriptor of a global array.
  \item {\tt dim} is the target dimension of the global array.
 \end{itemize}
 
@@ -343,14 +339,12 @@ the size of the shadow.
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_array\_laddr} routine provides the local address of the
+The {\tt xmp\_array\_laddr} function provides the local address of the
 target global array. 
 
 \subsubsection*{Input Arguments}
 \begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type 
-       {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with a global array.
+ \item {\tt d} is a descriptor of a global array.
 \end{itemize}
 
 \subsubsection*{Output Arguments}
@@ -376,14 +370,12 @@ target global array.
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_array\_lead\_dim} routine provides the leading dimension
+The {\tt xmp\_array\_lead\_dim} function provides the leading dimension
 of each local section of the target global array.
 
 \subsubsection*{Input Arguments}
 \begin{itemize}
- \item {\tt d} is a descriptor, that is, an object of type 
-       {\tt type(xmp\_desc)}, in {\XMPF}, or {\tt xmp\_desc\_t},
-       in {\XMPC}, that is associated with a global array.
+ \item {\tt d} is a descriptor of a global array.
 \end{itemize}
 
 \subsubsection*{Output Arguments}
