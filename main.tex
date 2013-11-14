@@ -1,7 +1,7 @@
 \documentclass[a4paper,11pt,twoside]{report}
 %%\usepackage{program}
 \usepackage{ascmac}
-\usepackage{graphicx}  % for EPS and PDF 
+\usepackage[dvipdfmx]{graphicx}  % for EPS and PDF 
 \usepackage{url}
 \usepackage{fancyvrb}
 \usepackage{makeidx}
@@ -12,7 +12,9 @@
 
 %\usepackage[dvipdfm,bookmarkstype=toc,colorlinks=true,urlcolor=black,%
 %    linkcolor=black,citecolor=black,linktocpage=true,bookmarks=false]{hyperref}
-\usepackage[dvipdfm,bookmarkstype=toc,colorlinks=true,urlcolor=black,%
+%\usepackage[dvipdfm,bookmarkstype=toc,colorlinks=true,urlcolor=black,%
+%    linkcolor=black,citecolor=black,bookmarks=false]{hyperref}
+\usepackage[dvipdfm,bookmarkstype=toc,urlcolor=black,%
     linkcolor=black,citecolor=black,bookmarks=false]{hyperref}
 
 \setcounter{secnumdepth}{4}
@@ -139,19 +141,19 @@ $\langle${\it ex-scalable-em-p}$\rangle$\\
 Language Specification\\
 %Application Program Interface\\
 \vspace{2cm}
-Version 1.1\\}
+Version 1.2\\}
 %DRAFT 0.7}
 \author{
 \Large XcalableMP Specification Working Group\\
 }
-\date{\vspace{4cm}\Large November, 2012}
+\date{\vspace{4cm}\Large November, 2013}
 
 \makeindex
 
 \begin{document}
 \maketitle
 
-Copyright \copyright 2008-2012 {\XMP} Specification Working Group.
+Copyright \copyright 2008-2013 {\XMP} Specification Working Group.
 Permission to copy without fee all or part of this material is granted,
 provided the {\XMP} Specification Working Group copyright notice and the
 title of this document appear. Notice is given that copying is by permission
@@ -160,6 +162,7 @@ of {\XMP} Specification Working Group.
 \pagenumbering{roman}
 \tableofcontents
 \listoffigures
+\listoftables
 %%%%\listoftables
 
 \chapter*{Acknowledgment}
@@ -244,7 +247,11 @@ Japan, and is supported by PC Cluster Consortium.
 
 \input{ch4.tex}
 \cleardoublepage
+
 \input{ch5.tex}
+\cleardoublepage
+
+\input{ch6.tex}
 
 \begin{thebibliography}{99}
 \addcontentsline{toc}{chapter}{\bibname}

@@ -38,7 +38,7 @@ If both of an actual and its associating dummy arguments are coarrays,
 they must be declared on the same node set.
 
 
-\paragraph{Implementation.}
+\paragraph*{Implementation.}
 
 The {\XMP} compiler does not transform either local actual or dummy
 arguments, so that the backend compiler of the base language can treat
@@ -112,7 +112,7 @@ interface of the invoked procedure that the corresponding dummy argument
 is neither an explicit-shape nor assumed-size array.
 
 
-\paragraph{Implementation.}
+\paragraph*{Implementation.}
 
 In order to implement sequence association, the name, a section, or an
 element of a global data appearing as an actual argument is treated by
@@ -312,7 +312,7 @@ argument is {\it descriptor associated} with the dummy
 argument. According to the descriptor association rule, the dummy
 argument inherits its shape and storage from the actual argument.
 
-\paragraph{Implementation.}
+\paragraph*{Implementation.}
 
 In order to implement the descriptor association, a global actual
 argument is treated by the {\XMP} compiler:
@@ -456,7 +456,7 @@ When a dummy argument is a global data, an address is received and
 used as the base address of each of its local section.
 
 
-\paragraph{Implementation.}
+\paragraph*{Implementation.}
 
 The name of a global data appearing as an actual argument is
 treated by the {\XMP} compiler as the pointer to the first element of
