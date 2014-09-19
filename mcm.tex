@@ -1,0 +1,189 @@
+%% \documentclass{article}
+%% \usepackage{amsmath,amssymb,graphicx,verbatim,url,listings}%,stmaryrd
+%% %\usepackage[varg]{txfonts}
+%% \usepackage[all]{xy}
+
+%% \begin{document}
+
+\chapter{XcalableMP Memory Consistency Model}
+
+%loop construct is synchronous.  But practically OK?
+
+%array construct is synchronous.  But semantically OK?
+
+This chapter explains a memory consistency model that XcalableMP adopts.
+
+Memory consistency models specify rules between multiple data
+accesses.  Since XcalableMP is an extension of the base lanugages, its
+memory consistency model is also defined to be their extension, that
+is, XcalableMP adopts all the rules that base languages do.
+
+In addition, XcalableMP adopts some rules.  XcalableMP provides
+\emph{global view} that the base languages do not.  In global view,
+\emph{global communication constructs} are used to access distributed
+data.  Furthermore, distributed data can be accessed through
+designating data in local view.  Conversely, non-distributed data can
+be accessed through designating distributed data by using global
+communication constructs in global view.  These, of course, are not
+considered under the memory consistency models of the base language.
+Therefore, XcalableMP memory consistency model adopts additional rules
+about global communication constructs.
+
+Recall that global communication constructs are collective as
+described in Section~\ref{sec:glossary}.
+
+\section{Synchronous Communications}
+
+The constructs \texttt{reflect}, \texttt{gmove} (and its following
+assignment statement), \texttt{reduction}, and \texttt{bcast} are
+synchronous if \texttt{async} is not specified.  It means that
+executions of these constructs guarantee completions of data
+synchronizations, that is, global constructs read data that are
+written by statements that are previously executed, and their
+following statements and global constructs read data written by global
+constructs.  This is guaranteed even if the distributed data are
+accessed in local view.
+
+For example, in the following code, the assignment statement \texttt{l(1)=1} is
+guaranteed to be completed before the \texttt{gmove} construct is
+executed.  Therefore, the value of \texttt{g(6)} must be \texttt{1}.
+Furthermore, since the \texttt{gmove} construct completes before the
+assignment statement \texttt{x=m(2)} is executed, the value of \texttt{x} on
+\texttt{p(1)} must be \texttt{1}.
+\begin{center}
+\begin{XFexample}
+!$xmp nodes p(2)
+!$xmp template t(10)
+!$xmp distribute (block) onto p :: t
+       integer :: g(10), h(10)
+!$xmp align (i) with t(i) :: g, h
+       integer :: l(10), m(10)
+!$xmp local_alias l => g
+!$xmp local_alias m => h
+       integer x
+
+l(1)=1
+!$xmp gmove
+h(2)=g(6)
+x=m(2)
+\end{XFexample}
+\end{center}
+
+Similarly, these are also guaranteed when an integer \texttt{1} is
+stored at \texttt{g(6)} through a coarray \texttt{l} as follows:
+\begin{center}
+\begin{XFexample}
+!$xmp nodes p(2)
+!$xmp template t(10)
+!$xmp distribute (block) onto p :: t
+       integer :; g(10), h(10)
+!$xmp align (i) with t(i) :: g, h
+       integer :; l(10), m(10)
+!$xmp local_alias l => g
+!$xmp local_alias m => h
+!$xmp coarray on p :: l(:)[*]
+       integer x
+
+l(1)[2]=1
+!$xmp gmove
+h(2)=g(6)
+x=m(2)
+\end{XFexample}
+\end{center}
+
+Remark that synchronous global constructs do not guarantee completions
+of data are written by asynchronous global constructs that are
+previously executed.  For example, in the following code, the value of
+\texttt{x} may be \texttt{1} or \texttt{2}.
+
+\begin{center}
+\begin{XFexample}
+!$xmp nodes p(2)
+!$xmp template t(10)
+!$xmp distribute (block) onto p :: t
+       integer :; g(10), h(10)
+!$xmp align (i) with t(i) :: g, h
+       integer :; l(10), m(10)
+!$xmp local_alias l => g
+!$xmp local_alias m => h
+!$xmp coarray on p :: l(:)[*]
+       integer x
+
+l(1)[2]=1
+!$xmp gmove async(1)
+g(7)=g(1)+1
+!$xmp gmove
+h(2)=g(7)
+x=m(2)
+!$xmp wait_async(1)
+\end{XFexample}
+\end{center}
+
+\section{Asynchronous Communications}
+
+The constructs \texttt{reflect}, \texttt{gmove} (and its following
+assignment statement), \texttt{reduction}, and \texttt{bcast} are asynchronous
+if \texttt{async}s are specified.  Completions of data read and
+written by these global constructs are not guaranteed until
+\texttt{wait\_async}s are executed.
+
+For example, in the following code, the assignment statement \texttt{l(1)=1} may
+not be completed before the \texttt{gmove} construct is executed.
+Therefore, the value of \texttt{g(6)} is undefined.  Moreover, since
+the \texttt{gmove} construct may not complete before the assignment statement
+\texttt{x=m(2)} is executed, the value of \texttt{x} on \texttt{p(1)}
+is undefined even if the value of \texttt{g(6)} is \texttt{1}.  This
+is also the case with coarrays.
+\begin{center}
+\begin{XFexample}
+!$xmp nodes p(2)
+!$xmp template t(10)
+!$xmp distribute (block) onto p :: t
+       integer :: g(10), h(10)
+!$xmp align (i) with t(i) :: g, h
+       integer :: l(10), m(10)
+!$xmp local_alias l => g
+!$xmp local_alias m => h
+       integer x
+
+l(1)=1
+!$xmp gmove async(1)
+h(2)=g(6)
+x=m(2)
+!$xmp wait_async(1)
+\end{XFexample}
+\end{center}
+
+The \texttt{wait\_async(\textit{async-id})} guarantees a completion of
+a global construct that has \textit{async-id}.  However, it does not
+guarantee that an effect of an assignment statement that follows the global
+construct is kept.
+
+For example, in the following code, the value of \texttt{x} may be
+undefined, \texttt{1}, or \texttt{2}.
+\begin{center}
+\begin{XFexample}
+!$xmp nodes p(2)
+!$xmp template t(10)
+!$xmp distribute (block) onto p :: t
+       integer :: g(10), h(10)
+!$xmp align (i) with t(i) :: g, h
+       integer :: l(10), m(10)
+!$xmp local_alias l => g
+!$xmp local_alias m => h
+       integer x
+
+l(1)=1
+!$xmp gmove async(1)
+h(2)=g(6)
+m(2)=2
+!$xmp wait_async(1)
+x=m(2)
+\end{XFexample}
+\end{center}
+
+
+
+%\end{document}
+
+
