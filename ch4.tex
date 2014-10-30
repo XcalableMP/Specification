@@ -1,599 +1,1837 @@
-%\chapter{Procedure call and data mapping for procedure argument}
-\chapter{Procedure Interfaces}
-\label{chap:procedure}
-\index{procedure interface}
+\chapter{Support for the Local-view Programming}
+\label{chap:Support for the Local-view Programming}
 
-This chapter describes the procedure interfaces, that is, how
-procedures are invoked and arguments are passed, in {\XMP}.
+In this chapter, the coarray features in XcalableMP, which are based on
+that of Fortran 2008, are described. Note that they are available also
+in {\XMPC}. Additionally, some directives for the local-view programming
+are also described.
 
-In order to achieve high composability of {\XMP} programs, it is one of
-the most important requirement that {\XMP} procedures can invoke
-procedures written in the base language with as a few restrictions as
-possible.
-%The procedure interfaces in {\XMP} is designed so as to
-%satisfy the requirement.
+%{\XMP} adopts coarray features for the local-view
+%programming. Particularly in {\XMPF}, the features are compatible with
+%that of Fortran 2008.
+%We refer to the ISO/IEC 1539-1:2010 as the Fortran 2008 standard.
 
-
-\section{General Rule}
-
-In {\XMP}, a procedure invocation itself is a local operation and does
-not cause any communication or synchronization at runtime. Thus, a node
-can invoke any procedure, whether written in {\XMP} or in the base
-language, at any point of the execution.
-%
-There is no restriction on the characteristics of procedures invoked by
-an {\XMP} procedure, except for a few ones on its argument, which is
-explained below.
-
-A local data in the actual or dummy argument list (referred to as a {\it
-\Term{local actual argument}} and a {\it \Term{local dummy argument}},
-respectively) are treated by the {\XMP} compiler in the same manner as
-by the compiler of the base language.
-%
-This rule makes it possible that a local actual argument in a procedure
-written in {\XMP} can be associated with a dummy argument of a procedure
-written in the base language.
-
-If both of an actual and its associating dummy arguments are coarrays,
-they must be declared on the same node set.
-
-
-\paragraph*{Implementation.}
-
-The {\XMP} compiler does not transform either local actual or dummy
-arguments, so that the backend compiler of the base language can treat
-them in its usual way.
-
-\vspace{1.5zw}
-
-\hspace{-1.2\parindent}
-The rest of this chapter specifies how global data appearing as an
-actual and a dummy argument list (referred to as a {\it \Term{global actual
-argument}} and a {\it \Term{global dummy argument}}, respectively) are
-processed by the {\XMP} compiler.
-
-
-\section{Argument Passing Mechanism in {\XMP} Fortran}
-
-%Any section (except for an element) of a global data may not be put in
-%the actual argument list. Therefore only the name or an element of it
-%may be put in the actual argument list.
-
-Either of the following global data can be put in the actual argument list:
+The coarray features in Fortran 2008 are extended and integrated into
+XcalableMP. The specifications in this chapter are designed to achieve
+the following purposes:
 
 \begin{itemize}
- \item an array name;
- \item an array element; or
- \item an array section that satisfies both of the following two
-       conditions:
-       \begin{itemize}
-	\item its subscript list is a list of zero or more colons
-	      (``{\tt :}'') followed by zero or more {\it int-expr}'s;
-	\item a subscript of the dimension having shadow is {\it
-	      int-expr} unless it is the last dimension.
-       \end{itemize}
+ \item Upward compatibility to the Fortran 2008 coarray features\\
+If an {\XMPF} program does not contain any XMP directives,
+any standard-conforming Fortran 2008 program
+remains standard-conforming under XcalableMP.
+In this sense, the interpretations and extensions defined in this
+ chapter are upward compatible with the Fortran International Standard, ISO/IEC 1539-1:2010 (Fortran 2008).
+
+ \item Support for task parallelism \\
+       XcalableMP makes it possible to construct a task parallel program by
+       combining multiple Fortran 2008 codes, which might be developed
+       independently, with minimum modifications.
+
+ \item Integration of global-view style programming and local-view style programming\\
+       In XcalableMP, users can use global-view style programming of
+       XcalableMP or local-view style programming, which is typically
+       used in MPI or Fortran 2008 programs, appropriately according to
+       the characteristics of code in a program.
+
+ \item Possibility of the support for multiple topologies of a computing system\\
+       An XcalableMP processor may allow users to specify the correspondence between 
+       node arrays and the topologies of a computing system and
+       exploit the full potential of a particular system.
+
 \end{itemize}
 
-There are two kinds of argument association for global data in {\XMP}
-Fortran: one is {\it \Term{sequence association}}, which is for a global
-dummy that is an explicit-shape or assumed-size array, and the other is
-{\it \Term{descriptor association}}, which is for all other global dummy.
+
+\section{Rules Determining Image Index}
+%An image is an instance of an XcalableMP program.
+%A node array is a set of nodes, whose individual elements are arranged
+%in a rectangular pattern.
+%Each node or each element of an instance of a node array
+%uniquely corresponds to an image.
+This section defines how the image index of an image in a set of images
+is determined in association with a node array and a {\tt task} construct.
 
 
-\subsection{Sequence Association of Global Data}
-\index{sequence association}
 
-The concept of sequence association in {\Fort} is extended for global
-actual and dummy arguments in {\XMP} as follows.
+\subsection{Primary Image Index}
+Every image has a default image index in all the images at the
+invocation of a program. 
+In XcalableMP, the default image index is the primary image index
+and is an integer value in the range one to the number of images
+at the invocation of a program. 
 
-If the actual argument is an array name or an array section that
-satisfies the above conditions, it represents an element sequence
-consisting of the elements of its local section in Fortran's array
-element order on each node.
+%\subsection{Primary node array}
+%A primary node array is a node array declared with ``=**'' in a NODES directive.
+A primary node array corresponds to all the images at the invocation of
+a program, and also corresponds to all the nodes at the invocation of
+a program.
+The primary image index of an image is the (Fortran) subscript order value of 
+the uniquely corresponding element of a primary node array.
+%The primary node number of a node is also the (Fortran) subscript order value of 
+%the uniquely corresponding element of a primary node array.
+
+
+\subsection{Image Index Determined by a {\tt task} Directive}
+
+Execution of a {\tt task} directive determines that a set of nodes (and
+the corresponding set of images) forms an executing node set.
+If a name of a node array or a subobject of a node array 
+appears in the {\tt task} directive, the nodes and the corresponding 
+images in the executing node set are ordered in (Fortran) array element order in
+the node array or the subobject of the node array.
+If a name of a template array or a subobject of a template array
+appears in the {\tt task} directive, the nodes and the corresponding images 
+in the executing node set 
+are ordered in (Fortran) array element order in the corresponding 
+subobject of the node array.
+The image index of an image in the determined set of images 
+is the integer order value in the range one to the cardinality of the set of images.
+%The node number of a node in the determined set of nodes
+%is the integer order value in the range one to the cardinality of the set of nodes.
+
+
+\subsection{Current Image Index}
+
+%The current set of images is a set of images 
+%determined by the most lately executed {\itshape task-directive} in the
+%TASK directive constructs that are not completed
+%if any TASK directive constructs are being executed.
+The image index of an image in the current set of images is
+the current image index.
+
+A current executing node array corresponds to the 
+current set of images and also the current executing node set 
+at the evaluation of the declaration of the node array.
+Each image in the current set of images corresponds 
+to the element of an executing node array whose
+subscript order value is the same as the current image index
+of the image at the evaluation of the declaration of the executing node array.
+In particular, when there are no {\tt task} directive constructs that are not
+completed, the current image index of an image is the same as the
+primary image index.
+
+%The current set of images corresponds to 
+%primary node arrays and all the nodes at the invocation of a program
+%if there are no TASK directive constructs that are not completed.
+
+
+\subsection{Image Index Determined by a Non-primary Node Array}
+%\subsection{Non-primary node array}
+
+%A non-primary node array is a node array declared without ``={\it node-ref}'', ``=**'', or ``=*''
+%in a NODES directive.
+
+A non-primary node array corresponds to all the images at the invocation of
+a program, and also corresponds to all the nodes at the invocation of
+a program. The correspondence between each image and 
+each element of a non-primary node array is processor-dependent.
+A processor may support any means to specify the correspondence.
+
+The image index of an image in all the images at the invocation 
+of a program is the subscript order value of the corresponding element of
+a non-primary node array if and only if the current set of images
+corresponds to the non-primary node whole array in which
+the nodes in the executing node set are ordered in (Fortran) array element order in the non-primary node whole array.
+The image index is a non-primary image index. 
+
+The correspondence between the primary image index and a non-primary image
+index of the same image is processor-dependent.
+Between any two distinct non-primary node arrays, 
+the correspondence between a non-primary image index 
+and the other non-primary image index of the same image is
+processor-dependent unless they have the same shape. 
+If two non-primary node arrays have the same shape,
+the corresponding elements of the node arrays correspond
+to the same image.
+
+
+%\subsection{Executing node array}
+%An executing node array is a node array declared with ``=*''
+%in a NODES directive.
+%A current executing node array corresponds to the executing node set
+%and also the current set of images
+%at the evaluation of the declaration of the node array.
 %
-Also, if the actual argument is an element of a global data, it
-represents an element sequence consisting of the corresponding element
-in the local section and each element that follows it in array element
-order on each node.
-
-An global actual argument that represents an element sequence and
-corresponds to a global dummy argument is sequence associated with
-the the dummy argument if the dummy argument is an explicit-shape or
-assumed-size array.
-%
-According to this (extended) sequence association rule, each element of
-the element sequence represented by the global actual argument is
-associated with the element of the local section of the global dummy
-argument that has the same position in array element order.
-
-Sequence association is the default rule of association for global
-actual arguments and therefore is applied unless it is obvious from the
-interface of the invoked procedure that the corresponding dummy argument
-is neither an explicit-shape nor assumed-size array.
+%Each image in the current set of images corresponds 
+%to the element of an executing node array whose
+%subscript order value is the same as the current image index
+%of the image at the evaluation of the declaration of the executing node array.
 
 
-\paragraph*{Implementation.}
+\subsection{Image Index Determined by an Equivalenced Node Array}
 
-In order to implement sequence association, the name, a section, or an
-element of a global data appearing as an actual argument is treated by
-the {\XMP} compiler as the base address of its local section on each
-node, and the global data appearing as the corresponding dummy argument
-is initialized at runtime so as to be composed of the local sections
-each of which starts from the address received as the argument.
-%
-On a node that does not have the local section corresponding to the
-actual argument, an unspecified value (e.g. null) is received.
-
-Such implementation implies that in many cases, in order to associate
-properly a global actual argument with the global dummy argument, their
-mappings (including their shadow attributes) must be identical.
-
-
-\subsubsection*{Examples}
-\index{Example!procedure interface}
-
-\begin{description}
-
-\item[Example 1]
-
-	   Both the actual argument {\tt a} and the dummy argument {\tt
-	   x} are global explicit-shape arrays, and therefore {\tt
-	   a} is sequence associated with {\tt x}.
-
-	   It is the base address of the local section of {\tt a} that
-	   passed between these subroutines on each node. Each the local
-	   section of {\tt x} starts from the received address (Figure
-	   \ref{fig5.1}).
-
-\begin{XFexample}
-      subroutine xmp_sub1
-!$xmp nodes p(4)
-!$xmp template t(100)
-!$xmp distribute t(block) onto p
-      real a(100)
-!$xmp align a(i) with t(i)
-!$xmp shadow a(1:1) 
-      call xmp_sub2(a)
-      end subroutine
-
-      subroutine xmp_sub2(x)
-!$xmp nodes p(4)
-!$xmp template t(100)
-!$xmp distribute t(block) onto p
-      real x(100)
-!$xmp align x(i) with t(i)
-!$xmp shadow x(1:1) 
-      ...
-\end{XFexample}
-
-\begin{myfigure}
- \includegraphics[scale=0.7]{figs/fig5.1.eps}
- \caption{Sequence Association with a Global Dummy Argument}
- \label{fig5.1}
-\end{myfigure}
-
-\item[Example 2]
-
-	   The actual argument {\tt a} is a global explicit-shape array,
-	   and the dummy argument {\tt x} is a local explicit-shape. 
-	   Sequence association is applied also in this case.
-
-	   The caller subroutine {\tt xmp\_sub1} passes the base address
-	   of the local section of {\tt a} on each node, and the callee
-	   {\tt f\_sub2} receives it and initializes {\tt x} with the
-	   storage starting from it (Figure \ref{fig5.2}).
-
-\begin{XFexample}
-      subroutine xmp_sub1
-!$xmp nodes p(4)
-!$xmp template t(100)
-!$xmp distribute t(block) onto p
-      real a(100)
-!$xmp align a(i) with t(i)
-!$xmp shadow a(1:1) 
-      n = 1 + 100/4 + 1
-      call f_sub2(a,n)
-      end subroutine
-\end{XFexample}
-\begin{Fexample}
-      subroutine f_sub2(x,n)
-      real x(n)
-      ...
-\end{Fexample}
-
-\begin{myfigure}
- \includegraphics[scale=0.7]{figs/fig5.2.eps}
- \caption{Sequence Association with a Local Dummy Argument}
- \label{fig5.2}
-\end{myfigure}
-
-\item[Example 3]
-
-	   The actual argument {\tt a(:,1)} is a contiguous section of
-	   the global data, and the dummy argument {\tt x} is a local
-	   explicit-shape array. Sequence association is applied 
-	   in this case, but only the node {\tt p(1)} owns the section.
-	   Hence, {\tt f\_sub2} is invoked only by {\tt p(1)} (Figure
-	   \ref{fig5.25}).
-
-\begin{XFexample}
-      subroutine xmp_sub1
-!$xmp nodes p(4)
-!$xmp template t(100,100)
-!$xmp distribute t(*,block) onto p
-      real a(100,100)
-!$xmp align a(i,j) with t(i,j)
-!$xmp shadow a(0,1:1)
-      n = 100
-!$xmp task on p(1)
-      call f_sub2(a(:,1),n)
-!$xmp end task
-      end subroutine
-\end{XFexample}
-%
-\begin{Fexample}
-      subroutine f_sub2(x,n)
-      real x(n)
-      ...
-\end{Fexample}
-
-\clearpage
-
-\begin{myfigure}
- \includegraphics[scale=0.7]{figs/fig5.25.eps}
- \caption{Sequence Association of a Section of a Global Data as an
- Actual Argument with a Local Dummy Argument}
- \label{fig5.25}
-\end{myfigure}
-
-\item[Example 4]
-
-	   The actual argument {\tt a(1)} is an element of the global
-	   data, and the dummy argument {\tt x} is a local
-	   explicit-shape array. Sequence association is applied 
-	   in this case, but only the node {\tt p(1)} owns the element.
-	   Hence, {\tt f\_sub2} is invoked only by {\tt p(1)}(Figure
-	   \ref{fig5.3}).
-
-\begin{XFexample}
-      subroutine xmp_sub1
-!$xmp nodes p(4)
-!$xmp template t(100)
-!$xmp distribute t(block) onto p
-      real a(100)
-!$xmp align a(i) with t(i)
-!$xmp shadow a(1:1)
-      n = 100/4
-!$xmp task on p(1)
-      call f_sub2(a(1),n)
-!$xmp end task
-      end subroutine
-\end{XFexample}
-%
-\begin{Fexample}
-      subroutine f_sub2(x,n)
-      real x(n)
-      ...
-\end{Fexample}
-
-\begin{myfigure}
- \includegraphics[scale=0.7]{figs/fig5.3.eps}
- \caption{Sequence Association of an Element of a Global Data as an
- Actual Argument with a Local Dummy Argument}
- \label{fig5.3}
-\end{myfigure}
-
-\item[Example 5]
-
-	   Even if either the global actual or dummy argument has a full
-	   shadow, the sequence association rule is the same in
-	   principle. Hence, the base address of the local section of
-	   {\tt a} is passed between these subroutines on each node, and
-	   each the local section of {\tt x} starts from the received
-	   address (Figure \ref{fig5.4}).
-
-\begin{myfigure}
- \includegraphics[scale=0.7]{figs/fig5.4.eps}
- \caption{Sequence Association with a Global Dummy Argument that Has
- Full Shadow}
- \label{fig5.4}
-\end{myfigure}
-
-\end{description}
+A {\tt nodes} directive with ``={\it node-ref}'' that is not ``=*'' or ``=**''
+specifies that
+each element of the declared node array corresponds in (Fortran) array
+element order
+to that of the {\it node-ref},
+which is a name of a node array or a subobject of a node array.
+The nodes in the declared node array and the corresponding images 
+are ordered in (Fortran) array element order in the {\it node-ref}.
+The image index of an image in the set of images
+corresponding to the declared node array
+is the integer order value in the range one to the cardinality of the set of images.
+%The node number of a node in the set of nodes corresponding to the declared node array
+%is the integer order value in the range one to the cardinality of the set of nodes.
 
 
-\subsection{Descriptor Association of Global Data}
-\index{descriptor association}
+\subsection{On-node Image Index}
 
-When the actual argument is a global data and it is obvious from the
-interface of the invoked procedure that the corresponding dummy argument
-is neither an explicit-shape nor assumed-size array, the actual
-argument is {\it descriptor associated} with the dummy
-argument. According to the descriptor association rule, the dummy
-argument inherits its shape and storage from the actual argument.
+XcalableMP supports the {\tt coarray} directive and the {\tt image}
+directive to 
+specify that an image index indicates the image corresponding to
+the element of a particular node array whose subscript order value is 
+the same as the image index.
+The image index is an on-node image index for the specified node array. 
+Since evaluation of the declaration of a node array 
+determines a set of images corresponding to the node array,
+the directives specify that the set of images 
+is the ``all images'' for the image indices the directives affect.
+In particular, the on-node image index for a primary node array
+is the primary image index. 
 
-\paragraph*{Implementation.}
 
-In order to implement the descriptor association, a global actual
-argument is treated by the {\XMP} compiler:
+\section{Basic Concepts}
+
+
+In XcalableMP, ``all images'' in Fortran 2008 changes coupled with the 
+execution of {\tt task} constructs and
+ means the current set of images.
+In particular,
+when an {\tt allocate} statement is executed for which an {\it
+allocate-object} is a coarray, there is an implicit synchronization of 
+all the images in the current set of images.
+On each image in the current set of images, execution of the segment 
+following the statement is delayed until
+all other images in the set have executed the same
+statement the same number of times.
+When a {\tt deallocate} statement is executed for which an {\it
+allocate-object} is a coarray, there is an implicit synchronization of
+all the images in the current set of images.
+On each image in the current set of images, execution of the segment following the
+statement is delayed until all other images in the set
+have executed the same statement the same number of times.
+
+
+
+%\subsection{A restriction on allocatable coarrays}
 
 \begin{itemize}
- \item as if it were the {\it global-data descriptor} of the actual array, 
-       which is an internal data structure managed by the {\XMP} runtime
-       system to hold information on a global data (see \ref{subsec:
-       xmp_desc_of}), if the dummy is a global data; or
- \item as it is an array representing the local section of the actual
-       array, which is to be processed by the backend Fortran compiler
-       in the same manner as usual data, if the dummy is a local data.
+ \item 
+When an allocatable coarray is allocated during the execution of
+       {\tt task} constructs,
+       the coarray shall be subsequently deallocated before the completion of 
+       the {\tt task} construct whose
+       {\tt task} directive is the most lately executed one 
+       in the {\tt task} constructs that are not completed at the allocation.
+
 \end{itemize}
 
-For the first case, a global dummy is initialized at runtime with a copy
-of the global-data descriptor received.
 
-When an actual argument is descriptor associated with the dummy argument
-and their mappings are not identical, the {\XMP} runtime system may
-detect and report the error.
+The image index determined by an image selector 
+indicates the current image index by default.
+Coarrays are visible within the range of the ``all images'' and
+accessed with the current image index by default.
+The image index that appears in an executable statement
+indicates the current image index by default.
 
-\subsubsection*{Examples}
-\index{Example!procedure interface}
+
+\subsection{Examples}
+
+\begin{itemize}
+ 
+ \item In the following code fragment, the value of a coarray {\ttfamily b} on 
+the images 1, 2, 3, and 4, which constitute the executing node set
+and correspond to {\ttfamily node(5)}, {\ttfamily node(6)}, {\ttfamily node(7)}, and {\ttfamily node(8)} respectively,
+is defined with the value of the coarray {\ttfamily a} on {\ttfamily node(5)}.
+
+\begin{XFexample}
+      program xmpcoarray
+!$xmp nodes node(8)=**   ! A primary node array.
+!$xmp task on node(5:8)  ! The executing node set
+        call sub         ! corresponds to node(5:8).
+!$xmp end task
+      end
+
+      subroutine sub           
+      real, save :: a[*], b[*] ! The images 1, 2, 3,
+         :                     ! and 4 correspond to node(5:8),
+      b = a[1]                 ! respectively.
+\end{XFexample}
+
+ \item In the following code fragment, an allocatable coarray {\ttfamily a}
+is allocated on the images 1, 2, 3, and 4, 
+which constitute the executing node set
+and correspond to {\ttfamily node(5)}, {\ttfamily node(6)}, {\ttfamily node(7)}, and {\ttfamily node(8)} respectively.
+
+\begin{XFexample}
+      program xmpcoarray
+!$xmp nodes node(8)=**
+!$xmp task on node(5:8)  ! The executing node set
+        call sub2        ! corresponds to node(5:8).
+!$xmp end task
+      end
+
+      subroutine sub2           
+      real, allocatable :: a(:)[:]
+        :                         
+      allocate(a(0:99)[*])        
+\end{XFexample}
+\end{itemize}
+
+
+
+\paragraph*{Note}
+\begin{itemize}
+ \item 
+       The result value of {\tt xmp\_num\_nodes()}
+       is always the same as that of {\ttfamily NUM\_IMAGES()}.
+
+ \item 
+  The result value of {\tt xmp\_node\_num()} is always the same as that of {\tt THIS\_IMAGE()}.
+ \item 
+       In a {\tt read} statement, an io-unit that is an asterisk
+       identifies an external unit that is preconnected for sequential
+       formatted input only on the image whose primary image index is one.
+
+\end{itemize}
+
+
+
+\section{{\tt coarray} Directive}
+\subsection{Purpose and Form of the {\tt coarray} Directive}
+
+The {\tt coarray} directive maps coarrays onto a node array and
+the set of images that corresponds to the node array.
+An image index determined by an image selector for a coarray
+that appears in a {\tt coarray} directive
+always indicates the on-node image index for the node array;
+that is, the specified image corresponds to the node whose subscript
+order value in the node array is the same as the image index.
+
+A coarray appearing in a {\tt coarray} directive is an on-node coarray
+of the node array that is specified in the {\tt coarray} directive.
+
+
+\medskip
+
+
+\begin{tabular}{llll}
+ & & & \\
+\verb![F]!&\verb|!$xmp| {\tt coarray on} {\it node-name} {\tt ::} {\it object-name-list}\\
+ & & & \\
+\verb![C]!&\verb|#pragma xmp| {\tt coarray on} {\it node-name} {\tt ::} {\it object-name-list}\\
+ & & & 
+\end{tabular}
+
+
+\begin{itemize}
+ \item An {\it object-name} shall be a name of a coarray declared 
+       in the same scoping unit.
+
+ \item The same {\it object-name} shall not appear more than once
+       in {\tt coarray} directives in a scoping unit.
+
+ \item If an {\it object-name} is a name of an allocatable object,
+       the current set of images
+       at the allocation and the deallocation of the
+       object shall correspond to the node array specified as the {\it
+       node-name} and the current image index of each image shall 
+       be the same as the subscript order value of the corresponding
+       element of the node array.
+
+ \item If an {\it object-name} is a name of an allocated allocatable
+       dummy argument,
+       the set of images onto which it is mapped
+       shall be a subset of the set of images that has allocated most lately 
+       the corresponding argument in the chain of argument associations.
+       
+ \item If an {\it object-name} is a name of a nonallocatable dummy argument
+       whose ultimate argument has allocatable attribute,
+       the set of images onto which the {\it object-name} is mapped
+       shall be a subset of the set of images that has allocated most lately 
+       the corresponding argument in the chain of argument associations.
+
+ \item The image index determined by an image selector for an on-node
+       coarray shall be in the range of one to the size of the node
+       array onto which the on-node coarray is mapped.
+
+ \item 
+THIS\_IMAGE(COARRAY[,DIM]) shall be invoked by
+the image contained in the set of images onto which
+the COARRAY argument is mapped,
+if the COARRAY argument appears in a {\tt coarray} directive.
+
+
+\end{itemize}
+
+\paragraph*{Note}
+\begin{itemize}
+ \item 
+       The result value of THIS\_IMAGE(COARRAY)
+       is the sequence of cosubscript
+       values for the COARRAY argument that would specify the current image index of
+       the invoking image, if the COARRAY argument does not appear in a
+       {\tt coarray} directive.
+       The result value of THIS\_IMAGE(COARRAY)
+       is the sequence of cosubscript
+       values for the COARRAY argument that would specify the on-node image index of the invoking image
+for the node array onto which the COARRAY argument is mapped,
+       if the COARRAY argument appears in a {\tt coarray} directive.	      
+
+ \item 
+
+       The result value of THIS\_IMAGE(COARRAY,DIM) is
+       the value
+       of cosubscript DIM in the sequence of cosubscript values
+       for the COARRAY argument that would specify the current image index of
+       the invoking image, if the COARRAY argument does not appear in a
+       {\tt coarray} directive.
+       The result value of THIS\_IMAGE(COARRAY,DIM) is
+       the value
+       of cosubscript DIM in the sequence of cosubscript values
+       for the COARRAY argument that would specify the on-node image index of
+       the invoking image for the node array
+       onto which the COARRAY argument is mapped,
+       if the COARRAY argument appears in a {\tt coarray}
+       directive.
+\end{itemize}
+
+
+\subsection{An Example of the {\tt coarray} Directive}
+
+
+\begin{XFexample}
+      module global
+!$xmp nodes node(8)=**    
+      real s[*]             ! The coarray s is always 
+!$xmp coarray on node :: s  ! visible on node(1:8).
+      end global
+
+      program coarray
+      use global
+!$xmp task on node(5:8)     ! The executing node set 
+        call sub            ! consists of node(5:8).
+!$xmp end task
+      end
+
+      subroutine sub
+      use global
+      real, save :: a[*]    ! The images 1, 2, 3, and 4 
+         :                  ! correspond to node(5:8), respectively.
+      if(this_image().eq.1)then ! The value of the coarray a on node(5) 
+         s[1] = a               ! defines that of the coarray s on node(1)
+      endif
+\end{XFexample}
+
+
+\section{{\tt image} Directive}
+\subsection{Purpose and Form of the {\tt image} Directive}
+
+The {\tt image} directive specifies that 
+an image index in the following executable statement
+indicates the on-node image index
+of the node array specified in the {\tt image} directive
+unless the image index is determined by an image selector.
+
+
+The {\tt image} directive also specifies that 
+execution of a {\tt sync all} statement performs a synchronization of
+all the images corresponding to the node array specified in the {\tt
+image} directive.
+
+
+\medskip
+
+
+\begin{tabular}{llll}
+ & & & \\
+\verb![F]! & \verb|!$xmp| {\tt image} {\tt (} {\it node-name} {\tt )}\\
+ & & & \\
+\verb![C]! & \verb|#pragma xmp| {\tt image} {\tt (} {\it node-name} {\tt )}\\
+ & & & 
+\end{tabular}
+
+
+\begin{itemize}
+ \item An {\tt image} directive shall be followed by a sync all statement,
+       an image control statement that contains {\it image-set}, or a reference to
+       an intrinsic procedure that has {\tt IMAGES} argument.
+\end{itemize}
+
+\subsection{An Example of the {\tt image} Directive}
+
+\begin{XFexample}
+      module global
+!$xmp nodes node(8)=**
+      real s[*]             ! The coarray s is always visible 
+!$xmp coarray on node :: s  ! on node(1:8).
+      end global
+
+      program image
+      use global
+!$xmp tasks
+!$xmp task on node(1:4) 
+        call subA  ! The executing node set consists of node(1:4).
+!$xmp end task
+!$xmp task on node(5:8) 
+        call subB  ! The executing node set consists of node(5:8).
+!$xmp end task
+!$xmp end tasks
+      end
+
+      subroutine subA      
+      use global
+      real, save :: a[*] ! The images 1, 2, 3, and 4 
+         :               ! correspond to node(1:4), respectively.
+!$xmp image(node)        ! Synchronization between node(1:4) and
+        sync images(5)   ! node(5).
+      a = s[1]           ! a on node(1:4) is defined with 
+         :               ! the value of s on node(1).
+      end subroutine	
+
+      subroutine subB 
+      use global
+      real, save :: b[*] ! The images 1, 2, 3, and 4 
+         :               ! correspond to node(5:8), respectively.
+      if(this_image() .eq. 1)then ! The image 1 indicates node(5).
+        s[1] = b      ! s on node(1) is defined with the value of 
+                      ! b on node(5).
+!$xmp   image(node)                ! Synchronization between 
+          sync images((/1,2,3,4/)) ! node(5) and node(1:4).
+      endif
+         :
+      end subroutine		
+\end{XFexample}
+
+
+\section{Image Index Translation Intrinsic Procedures}
+
+XcalableMP supports intrinsic procedures to translate
+image indices between different sets of images.
+
+\subsection{Translation to the Primary Image Index}
+
+{\bf xmp\_get\_primary\_image\_index(NUMBER,INDEX,PRI\_INDEX,NODE\_DESC)}
 
 \begin{description}
+ \item[Description.] Translate image indices to the primary image indices.
 
-\item[Example 1]
+ \item[Class.] Subroutine.
+	    
+ \item[Arguments.] \hspace{1cm}
+	    \begin{description}
+	     \item[NUMBER] shall be a scalar of type default integer. It
+			is an INTENT(IN) argument.
+	     \item[INDEX] shall be a rank-one array of type default integer.
+			The size of {\bfseries INDEX} shall be
+			greater than or equal to the value of {\bfseries NUMBER}.
+			It is an INTENT(IN) argument.
+			The value of each element of {\bfseries INDEX} shall be in
+			the range one
+			to the size of the node array specified 
+			in {\bfseries NODE\_DESC} if {\bfseries NODE\_DESC} appears.
+			The value of each element of {\bfseries INDEX} shall be in
+			the range one
+			to the cardinality of the current set of images
+			if {\bfseries NODE\_DESC} does not appear.
+	     \item[PRI\_INDEX] shall be a rank-one array of type default integer.
+			The size of {\bfseries PRI\_INDEX} shall be
+			greater than or equal to the value of {\bfseries NUMBER}.
+			It is an INTENT(OUT) argument.
+			If {\bfseries NODE\_DESC} appears,
+			{\bfseries PRI\_INDEX(i)} is assigned the primary image index
+			corresponding to the element of the node array
+			specified in {\bfseries NODE\_DESC}
+			whose subscript order value is {\bfseries INDEX(i)}; otherwise,
+			{\bfseries PRI\_INDEX(i)} is assigned the primary image index
+			corresponding to the image whose
+			current image index is {\bfseries INDEX(i)}.
+	     \item[NODE\_DESC (optional)] shall be a descriptor of a
+			node array. It is an INTENT(IN) argument.
+			{\bfseries NODE\_DESC} shall appear in XcalableMP C.
+	    \end{description}
 
-	   There is the explicit interface of the subroutine
-	   {\tt xmp\_sub2} specified by an interface block in the
-	   subroutine {\tt xmp\_sub1}, from which it is found that the
-	   dummy argument {\tt x} is a global assumed-shape
-	   array. Therefore the global actual argument {\tt a} is
-	   descriptor associated with the global dummy argument {\tt
-	   x}.
-
-	   It is the global-data descriptor of {\tt a} that passed
-	   between these subroutines. The dummy argument {\tt x} is
-	   initialized by the {\XMP} runtime system on the basis of the
-	   information extracted from the descriptor received (Figure
-	   \ref{fig5.5}).
-
+ \item[Example.] 
+In the following code fragment, the value of {\ttfamily index(1:4)} is {\ttfamily (/5,6,7,8/)}.
 \begin{XFexample}
-      subroutine xmp_sub1
-
-!$xmp nodes p(4)
-!$xmp template t(100)
-!$xmp distribute t(block) onto p
-      real a(100)
-!$xmp align a(i) with t(i)
-!$xmp shadow a(1:1)
-
-      interface
-      subroutine xmp_sub2(x)
-!$xmp nodes p(4)
-!$xmp template t(100)
-!$xmp distribute t(block) onto p
-      real x(:)
-!$xmp align x(i) with t(i)
-!$xmp shadow a(1:1)
-      end subroutine xmp_sub2
-      end interface
-
-      call xmp_sub2(a)
-
-      end subroutine
-
-      subroutine xmp_sub2(x)
-!$xmp nodes p(4)
-!$xmp template t(100)
-!$xmp distribute t(block) onto p
-      real x(:)
-!$xmp align x(i) with t(i)
-!$xmp shadow a(1:1)
-      ...
+!$xmp nodes node(1:8)=**        ! A primary node array
+!$xmp nodes subnode(4)=node(5:8)
+      integer index(4)
+      call xmp_get_primary_image_index&
+           &(4,(/1,2,3,4/),index,xmp_desc_of(subnode))
 \end{XFexample}
-
-\begin{myfigure}
- \includegraphics[scale=0.7]{figs/fig5.5.eps}
- \caption{Descriptor Association with a Global Dummy Argument}
- \label{fig5.5}
-\end{myfigure}
-
-\item[Example 2]
-
-	   There is the explicit interface of the subroutine
-	   {\tt f\_sub2}, which is written in {\Fort},
-	   specified by an interface block in the subroutine {\tt
-	   xmp\_sub1}, and the dummy argument {\tt x} is a local
-	   (i.e. non-mapped) assumed-shape array. Therefore the global
-	   actual argument {\tt a} is descriptor associated with the
-	   local dummy argument {\tt x}.
-
-	   The global actual argument is replaced with its local section
-	   by the {\XMP} compiler and the association of the local
-	   section with the dummy argument is to be processed by the
-	   backend Fortran compiler in the same manner as usual data 
-	   (Figure \ref{fig5.6}).
-
-\begin{XFexample}
-      subroutine xmp_sub1
-
-!$xmp nodes p(4)
-!$xmp template t(100)
-!$xmp distribute t(block) onto p
-      real a(100)
-!$xmp align a(i) with t(i)
-!$xmp shadow a(1:1) 
-
-      interface
-      subroutine f_sub2(x)
-      real x(:)
-      end subroutine f_sub2
-      end interface
-
-      call f_sub2(a)
-
-      end subroutine
-\end{XFexample}
-\begin{Fexample}
-      subroutine f_sub2(x)
-      real x(:)
-      ...
-\end{Fexample}
-
-\begin{myfigure}
- \includegraphics[scale=0.7]{figs/fig5.6.eps}
- \caption{Descriptor Association with a Local Dummy Argument}
- \label{fig5.6}
-\end{myfigure}
-
 \end{description}
 
 
-\section{Argument Passing Mechanism in {\XMP} C}
+\subsection{Translation to the Current Image Index}
+%{\bf XMP\_GET\_IMAGE\_INDEX(CURINDEX,INDEX,NUM,NODE\_DESC)}
 
-When an actual argument is a global data, it is passed by the address
-of its local section.
+{\bf xmp\_get\_image\_index(NUMBER,INDEX,CUR\_INDEX,NODE\_DESC)}
+
+\begin{description}
+ \item[Description.] Translate image indices to the current image indices.
+
+ \item[Class.] Subroutine.
+	    
+ \item[Arguments.] \hspace{1cm}
+	    \begin{description}
+	     \item[NUMBER] shall be a scalar of type default integer. It is an INTENT(IN) argument.
+	     \item[INDEX] shall be a rank-one array of type default integer.
+			The size of {\bfseries INDEX} shall be
+			greater than or equal to the value of {\bfseries NUMBER}.
+			It is an INTENT(IN) argument.
+			The value of each element of {\bfseries INDEX} shall be in
+			the range one
+			to the size of the node array specified 
+			in {\bfseries NODE\_DESC}.
+	     \item[CUR\_INDEX] shall be a rank-one array of type default integer.
+			The size of {\bfseries CUR\_INDEX} shall be
+			greater than or equal to the value of {\bfseries NUMBER}.
+			It is an INTENT(OUT) argument.
+			If the current image index 
+			corresponding to the element of the node-array
+			specified in {\bfseries NODE\_DESC}
+			whose subscript order value is {\bfseries INDEX(i)}
+			exists,
+			{\bfseries CUR\_INDEX(i)} is assigned the current image index;
+			otherwise, {\bfseries CUR\_INDEX(i)} is assigned zero.
+	     \item[NODE\_DESC] shall be a descriptor of a
+			node array. It is an INTENT(IN) argument.
+	    \end{description}
+
+ \item[Example.] 
+In the following code fragment, the value of {\ttfamily index(1:4)} is {\ttfamily (/1,2,3,4/)}.
+\begin{XFexample}
+!$xmp nodes node(1:8)=**        
+      integer index(4)
+!$xmp task on node(5:8)
+        call xmp_get_image_index&
+             &(4,(/5,6,7,8/),index,xmp_desc_of(node))
+!$xmp end task
+\end{XFexample}
+\end{description}
+
+
+\section{Examples of Communication between Tasks}
+
+\begin{itemize}
+ \item In the following program fragment, two tasks communicate
+with each other with synchronization.
+\begin{XFexample}
+      module nodes
+!$xmp nodes node(8)=**            ! A primary node array
+      integer, parameter :: n=2
+!$xmp nodes subnodeA(n)=node(1:n)      ! subnodeA is for taskA.
+!$xmp nodes subnodeB(8-n)=node(n+1:8)  ! subnodeB is for taskB.
+      endmodule
+
+      module intertask
+      use nodes
+      real,save :: dA[*],dB[*]     
+      endmodule
+
+      use nodes
+!$xmp tasks  
+!$xmp task on subnodeA  ! The taskA is invoked on subnodeA.
+        call taskA
+!$xmp end task
+!$xmp task on subnodeB  ! The taskB is invoked on subnodeB.
+        call taskB
+!$xmp end task
+!$xmp end tasks
+      end
+
+      subroutine taskA
+      use intertask 
+         :
+      me = this_image()    ! The value of me is i on subnodeA(i).
+      if(me.eq.1)then
+        call xmp_get_primary_image_index&  ! The value of iyouabs
+               &(1,(/1/),iyouabs,subnodeB) ! is n+1.
+!$xmp   image(node)                    ! Synchronization between
+          sync images(iyouabs)         ! node(1) and node(n+1).
+        call exchange(dA,dB,iyouabs)   
+!$xmp   image(node)                    ! Synchronization between
+          sync images(iyouabs)         ! node(1) and node(n+1).
+      endif
+      sync all                ! Synchronization within subnodeA.
+      if(me.ne.1)dA = dA[1]            
+      sync all                ! Synchronization within subnodeA.
+       :
+      end
+
+      subroutine taskB
+      use intertask
+         :
+      me = this_image()    ! The value of me is i on subnodeB(i).
+      if(me.eq.1)then
+        call xmp_get_primary_image_index&  ! The value of iyouabs
+             &(1,(/1/),iyouabs,subnodeA)   ! is 1.
+!$xmp   image(node)                    ! Synchronization between
+          sync images(iyouabs)         ! node(n+1) and node(1).
+        call exchange(dB,dA,iyouabs)   
+!$xmp   image(node)                    ! Synchronization between
+          sync images(iyouabs)         ! node(n+1) and node(1).
+      endif
+      sync all                ! Synchronization within subnodeB.
+      if(me.ne.1)dB = dB[1]  
+      sync all                ! Synchronization within subnodeB.
+
+      end
+
+      subroutine exchange(mine,yours,iput)
+      use nodes
+      real :: mine[*],yours[*]       ! mine and yours are always 
+!$xmp coarray on node :: mine,yours  ! visible on node(1:8).
+
+      yours[iput] = mine  ! node(1) puts mine to yours[n+1] and 
+                          ! node(n+1) puts mine to yours[1].
+      end
+\end{XFexample}
+
+
+ \item In the following program fragment, two tasks communicate
+with each other without one-to-one synchronization.
+
+\begin{XFexample}
+!$xmp nodes node(8)=**       ! A primary node array
+        :
+!$xmp tasks                        
+!$xmp   task on(node(1:n))
+          call taskA(n)      ! The taskA is invoked on node(1:n)
+!$xmp   end task
+!$xmp   task on(node(n+1:8))
+          call taskB(8-n)    ! The taskB is invoked on node(n+1:8)
+!$xmp   end task
+!$xmp end tasks
+      end
+
+      subroutine taskA(n)
+      real,save :: yours[*],mine[*]
+!$xmp nodes subnode(n)=*        ! An executing node array
+
+      me = this_image()
+      if(me.eq. NUM_IMAGES())then
+         call xmp_get_primary_image_index(1,me,meabs) ! meabs=n.
+         call exchange(yours,mine,meabs,meabs+1,NUM_IMAGES())
+      endif
+      sync all                  ! Synchronization within node(1:n).
+      if(me.ne.NUM_IMAGES())mine = mine[NUM_IMAGES()] 
+      sync all                  ! Synchronization within node(1:n).
+      end
+
+      subroutine taskB(m)
+      real,save :: yours[*],mine[*]
+!$xmp nodes subnode(m)=*        ! An executing node array
+
+      me = this_image()
+      if(me.eq.1)then
+         call xmp_get_abs_image_index(1,me,meabs) ! meabs=n+1.
+         call exchange(yours,mine,meabs,meabs-1,NUM_IMAGES())
+      endif
+      sync all                  ! Synchronization within node(n+1:8).
+      if(me.ne.1)mine = mine[1]       
+      sync all                  ! Synchronization within node(n+1:8).
+      end
+
+      subroutine exchange(yours,mine,meabs,iyouabs,nnodes)
+      USE, INTRINSIC :: ISO_FORTRAN_ENV
+      real :: yours[*],mine[*]
+      real, save :: s[*]                       ! only for exchage.
+      TYPE(LOCK_TYPE),save :: lock[*]          ! for lock.
+!$xmp nodes subnode(nnodes)=*     ! An executing node array.
+!$xmp nodes node(8)=**            ! The coarrays s and lock are 
+!$xmp coarray on node :: s,lock   ! always visible on node(1:8).
+
+      LOCK(lock[meabs])   ! node(n) puts yours[n] to s[n] and 
+      s[meabs] = yours    ! node(n+1) puts yours[n+1] to s[n+1].
+      UNLOCK(lock[meabs])
+
+      LOCK(lock[iyouabs])  ! node(n) gets s[n+1] into mine[n] and 
+      mine = s[iyouabs]    ! node(n+1) gets s[n] into mine[n+1].
+      UNLOCK(lock[iyouabs])
+      end
+\end{XFexample}
+
+\end{itemize}
+
+%\section{Coarrays in XcalableMP}
 %
-When a dummy argument is a global data, an address is received and
-used as the base address of each of its local section.
-
-
-\paragraph*{Implementation.}
-
-The name of a global data appearing as an actual argument is
-treated by the {\XMP} compiler as the pointer to the first element of
-its local section on each node.
+%The specification of the coarray features in XcalableMP conforms to that
+%of Fortran 2008 unless otherwise provided.
+%%
+%Each node in the entire node set is considered to correspond to each
+%image of a program. Therefore the number of images is always equal to
+%the size of the entire node set. The image index of a node is its node
+%number of the entire node set.
 %
-On a node onto which no part of the global data is mapped, the pointer
-is set to an unspecified value (e.g. null).
+%Declaring coarrays on an arbitrary node array, which may not correspond
+%to the entire node set, is an open issue of {\XMP} and under
+%discussion. Note that even if the coarray features of {\XMP} would be
+%extended in the future version so that they could be declared on a
+%subset of the entire node set, they are compatible with those of Fortran
+%2008 as long as declared on the entire node set.
 %
-Note that an element of a global data in the actual argument list is
-treated in the same manner as those in other usual statements because an
-array element is passed by value as in C.
+%Terms related to coarrays in {\XMP} (e.g. \Term{coshape}, coindex,
+%cobound, \Term{cosubscript}, image, image index, etc.) are derived from
+%that in Fortran 2008.
 
-The name of a global data appearing as a dummy argument is
-treated by the {\XMP} compiler as the pointer to the first element of
-its local section on each node.
-%
-As a result, it is initialized at runtime so as to be
-composed of the local sections on the executing nodes.
+\section{{\tt [C]} Coarrays in {\XMPC}.}
 
-Such implementation implies that in many cases, in order to pass
-properly a global actual argument to the corresponding global dummy 
-argument, their mappings (including their shadow attributes) must be
-identical.
+%Described in the rest of this section is the coarray features for
+%{\XMPC}.
+This section describes the coarray features for {\XMPC}.
+
+\subsection{{\tt [C]} Declaration of Coarrays}
+
+\subsubsection*{Synopsis}
+
+Coarrays are declared in {\XMPC}.
+
+\subsubsection*{Syntax}
+\Syntax{coarray}
+
+\begin{tabular}{ll}
+\verb![C]! & {\it data-type} {\it variable} {\openb}{\tt
+     ,} {\it variable} {\closeb}{\tt ...} {\tt :} 
+{\it codimensions} \\
+\end{tabular}
+
+\vspace{0.5cm}
+
+where {\it codimensions} is:
+
+\vspace{0.3cm}
+\hspace{0.5cm} {\openb}{\tt [}{\it int-expr}{\tt ]}...{\closeb}{\tt [*]}
+
+\subsubsection*{Description}
+For {\XMPC}, 
+coarrays are declared with a colon and square bracket where {\it codimensions} specify the coshape of a variable.
+
+Note that, the {\tt coarray} directive for defining a coarray in the XcalableMP specification 1.0 (page 49) is obsolete.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item A coarray {\it variable} must have a global scope.
+\end{itemize}
 
 \subsubsection*{Examples}
-%\index{Example!procedure interface}
+\Example{coarray}
+
+\begin{XCexample}
+#pragma xmp nodes p(16)
+float x:[*];
+\end{XCexample}
+
+A variable {\it x} that has a global scope is declared as a coarray.
+
+\subsection{{\tt [C]} Reference of Coarrays}
+
+\subsubsection*{Synopsis}
+A coarray can be directly referenced or defined by any node. 
+The target node is specified using an extended notation in {\XMPC}.
+
+\subsubsection*{Syntax}
+\index{coarray reference}
+\index{Syntax!coarray reference}
+
+\begin{tabular}{ll}
+\verb![C]! & {\it variable} {\tt :} {\tt [}{\it int-expr}{\tt ]}...\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+A sequence of {\tt [}{\it int-expr}{\tt ]}'s preceded by a colon in
+{\XMPC} determines the image index for a coarray to be accessed.
+
+An reference of coarrays can appear in the same place as an reference of
+normal variables in the base languages.
+
+\subsubsection*{Examples}
+\Example{coarray}
+
+In the following code, each executing node gets whole of {\tt B} from
+the image 10 (that is, the tenth node of the entire node set) and
+copies it into the local storage for {\tt A}.
+
+\vspace{0.3cm}
+
+\index{Example!coarray reference}
+\begin{XCexample}
+int A[10]:[*], B[10]:[*];
+
+A[:] = B[:]:[10];
+\end{XCexample}
+
+%\subsection{Declaration of Coarrays}
+%
+%\subsubsection*{Synopsis}
+%
+%Coarrays are declared in the same manner as in Fortran 2008 for {\XMPF},
+%or with the {\tt coarray} directive for {\XMPC}.
+%
+%\subsubsection*{Syntax}
+%\Syntax{coarray}
+%
+%\begin{tabular}{ll}
+%%\verb![F]! & {\it type-declaration-stmt} {\openb}{\tt on} {\it
+%% nodes-ref}{\closeb}\\
+%%\verb![F]! & {\it codimension-stmt} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
+%\verb![F]! & \verb|!$xmp coarray| {\it variable-name} {\openb}{\tt ,}
+%     {\it variable-name} {\closeb}{\tt ...} {\tt on} {\it nodes-ref} \\
+%\verb![C]! & \verb|#pragma xmp coarray| {\it variable-name} {\openb}{\tt
+%     ,} {\it variable-name} {\closeb}{\tt ...} {\tt :} 
+%{\it codimensions} {\openb}{\tt on} {\it nodes-ref}{\closeb}\\
+%\end{tabular}
+%
+%\vspace{0.5cm}
+%
+%where {\it codimensions} is:
+%
+%\vspace{0.3cm}
+%\hspace{0.5cm} {\openb}{\tt [}{\it int-expr}{\tt ]}...{\closeb}{\tt [*]}
+%
+%\subsubsection*{Description}
+%
+%For {\XMPF}, coarrays are declared in the same manner as in Fortran
+%2008, which is not described in this document.
+%%
+%For {\XMPC}, coarrays are declared with the {\tt coarray} directive
+%where {\it codimensions} specify the \Term{coshape} of a variable.
+%%
+%Terms related to coarrays in {\XMP} (e.g. coshape, coindex,
+%cobound, \Term{cosubscript}, image, image index, etc.) are derived from
+%that in Fortran 2008.
+%
+%In addition, the {\tt on} clause of the {\tt coarray} directive
+%specifies a node array on each element of which the coarray object is
+%allocated, and associates each {\it \Term{image}} of the coarray with a
+%node of the node array so that an image having an {\it \Term{image
+%index}} is associated with a node that have the same index of the node
+%array in the Fortran's array element order.
+%%
+%If the {\tt coarray} directive is not specified in {\XMPF} or the {\tt
+%on} clause of the {\tt coarray} directive is not specified in {\XMPC},
+%then it is assumed that an implicit node array corresponding to the
+%executing node set is specified.
+%
+%Note that an actual coarray and its associating dummy coarray must be
+%declared on the same node set (see chapter \ref{chap:procedure}).
+%
+%\subsubsection*{Restrictions}
+%
+%\begin{itemize}
+% \item \verb![F]! All of the variables appeared in a {\tt coarray}
+%       directive must have the codimension attributes.
+% \item If the coarray specified by {\it variable-name} is local to the
+%       procedure, the node set specified by the {\tt on} clause must be
+%       the executing node set of the procedure or its subset.
+%% \item The node array specified by the {\tt on} clause of the {\tt
+%%       coarray} directive for a procedure-local variable must
+%%       correspond to the executing node set of the procedure.
+%% \item \verb![F]! All of the variables declared by {\it
+%%       type-declaration-stmt} in the first form with the {\tt on} clause
+%%       must have the codimension attribute.
+%% \item \verb![F]! At most one {\tt on} clause can be specified for a
+%%       variable in a scoping unit.
+%% \item The cosize of each declared coarray must be less than or equal to
+%%       the size of the node set specified by the {\tt on} clause.
+%\end{itemize}
+%
+%\subsubsection*{Examples}
+%\Example{coarray}
+%
+%\begin{description}
+%\item[Example 1]
+%\hspace{\hsize}
+%\begin{XFexample}
+%!$xmp nodes w(50)
+%      real wa(100)[*]
+%      ...
+%!$xmp tasks
+%!$xmp task on w(1:30)
+%      call task1 ( wa )
+%!$xmp end task
+%!$xmp task on w(32:50)
+%      call task2 ( wa )
+%!$xmp end task
+%      ...
+%      subroutine task1 ( aa )
+%!$xmp nodes w(50)
+%!$xmp nodes p(50) = *
+%      real aa(100)[*]
+%!$xmp coarray aa on w
+%      real b(100)[*] 
+%      ...
+%      subroutine task2 ( aa )
+%!$xmp nodes w(50)
+%!$xmp nodes p(20) = *
+%      real aa(100)[*]
+%!$xmp coarray aa on w
+%      real c(100)[*] 
+%      ...
+%\end{XFexample}
+%
+%	   The coarray {\tt wa} declared on the entire node set {\tt w}
+%	   is passed as an actual argument to subroutines {\tt task1}
+%	   and {\tt task2}.
+%	   In these subroutines, the coarray object is referenced as the
+%	   formal argument {\tt aa} and its declaration requires the {\tt
+%	   on} clause to specify the entire node set, which is
+%	   different from the executing node set.
+%%	   By this declaration, the subroutine can
+%%	   access {\tt wa}.
+%	   Note that the coarrays {\tt b} and {\tt c} are
+%	   local variables in the subroutines {\tt task1} and {\tt
+%	   task2}, respectively, and therefore they are declared on the
+%	   executing node set specified by {\tt p}.
+%%	   Since {\tt b} is
+%%	   mapped to {\tt w(1:30)} and {\tt c} is mapped onto {\tt
+%%	   w(31:51)}, there is no way to access coarray {\tt c} ({\tt
+%%	   b}) from {\tt task1} ({\tt task2}) because a subroutine can
+%%	   access the entire node set or its subset as well as the
+%%	   executing node set.
+%
+%\item[Example 2]
+%\hspace{\hsize}
+%\begin{Fexample}
+%!$xmp nodes w1(200)
+%      real one(100)[*]
+%      real two(50)[20,*]
+%\end{Fexample}
+%
+%%$
+%
+%	   The entire node set contains 200 nodes, on which coarrays {\tt
+%	   one} and {\tt two} are declared. In this case, it is
+%	   guaranteed that {\tt one(...)[i+(j-1)*20]} and {\tt
+%	   two(...)[i,j]} reside in the same node, which is also the
+%	   case for the following codes. Such a rule is compatible with
+%	   that of Fortran 2008. The shape of the entire node set has
+%	   nothing to do with the image of coarrays.
+%
+%\begin{Fexample}
+%!$xmp nodes w2(20,10)
+%      real one(100)[*]
+%      real two(50)[20,*]
+%\end{Fexample}
+%
+%\begin{Fexample}
+%!$xmp nodes w3(10,5,4)
+%      real one(100)[*]
+%      real two(50)[20,*]
+%\end{Fexample}
+%
+%\item[Example 2]
+%\hspace{\hsize}
+%\begin{XFexample}
+%!$xmp nodes w1(200)
+%!$xmp nodes w2(20,10)
+%      real one(100)[*]
+%      real two(50)[20,*]
+%!$xmp coarray one, two on w1
+%      real ichi(100)[*]
+%      real ni(50)[20,*]
+%!$xmp coarray ichi, ni on w2
+%\end{XFexample}
+%
+%%In many application programs, neighbor communication
+%%is an important communication pattern. The optimal mapping from
+%%the logical node to the physical node depends on the number of dimensions. For
+%%example, the optimal mapping for the communication between
+%%{\tt one(...)[i]} and {\tt one(...)[i+1]} is different from the
+%%mapping for the communication between {\tt two(...)[i,j]} and {\tt
+%%  two(...)[i+1,j]}. 
+%
+%%In {\XMP}, several mappings can be described. In this example, the
+%%mapping may be compatible with Coarray Fortran, and a different mapping
+%%can be selected. By switching the runtime option, node sets {\tt w1} and
+%%{\tt w2} can be different node sets. 
+%
+%	   The coarrays {\tt one} and {\tt two} are declared on the node
+%	   set {\tt w1}, and therfore {\tt
+%	   one(...)[i+(j-1)*20]} and {\tt two(...)[i,j]} reside in the
+%	   same node. The coarrays {\tt ichi} and {\tt ni} are declared
+%	   on a node set {\tt w2}, and {\tt
+%	   ichi(...)[i+(j-1)*20]} and {\tt ni(...)[i,j]} reside in the
+%	   same node.
+%%
+%	   However, it is not guaranteed either that {\tt one(...)[i]}
+%	   and {\tt ichi(...)[i]} reside in the same node or that {\tt 
+%	   two(...)[i,j]} and {\tt ni(...)[i,j]} reside in the same
+%	   node.
+%%
+%	   Note that this point is {\it not} compatible with Fortran
+%	   2008.
+%
+%\end{description}
+
+
+%\subsection{Reference of Coarrays}
+%
+%\subsubsection*{Synopsis}
+%
+%A coarray can be directly referenced or defined by any node in the node
+%set on which it is declared. The target node is specified in the same
+%manner as in Fortran 2008 in {\XMPF} or using an extended notation in
+%{\XMPC}.
+%
+%\subsubsection*{Syntax}
+%\index{coarray reference}
+%\index{Syntax!coarray reference}
+%
+%\begin{tabular}{ll}
+%\verb![F]! & {\it variable} {\tt [} {\it int-expr} 
+%{\openb}, {\it int-expr} {\closeb}... {\tt ]}\\
+%\verb![C]! & {\it variable} {\tt :} {\tt [}{\it int-expr}{\tt ]}...\\
+%\end{tabular}
+%
+%\subsubsection*{Description}
+%
+%A sequence of {\it int-expr}'s in a square bracket in {\XMPF} and a
+%sequence of {\tt [}{\it int-expr}{\tt ]}'s preceded by a colon in
+%{\XMPC} determine the image index for a coarray to be accessed.
+%
+%An reference of coarrays can appear in the same place as an reference of
+%normal variables in the base languages.
+%
+%Note that a coarray cannot be directly accessed by a node outside the
+%node set on which it is declared.%, unlike in Fortran 2008.
+%
+%\subsubsection*{Examples}
+%\Example{coarray}
+%
+%In each of the following two codes, two coarrays {\tt A} and {\tt B} are
+%declared on the executing node set, and each executing node gets whole
+%of {\tt B} from the image 10 (that is, the tenth node of the executing
+%node set) and copies it into the local storage for {\tt A}.
+%
+%\vspace{0.5cm}
+%
+%\index{Example!coarray reference}
+%\begin{minipage}{0.45\hsize}
+%\begin{center}
+%\begin{Fexample}
+%      integer A(10)[*], B(10)[*]
+%
+%
+%      A(:) = B(:)[10]
+%\end{Fexample}
+%\end{center}
+%\end{minipage}
+%%
+%\begin{minipage}{0.45\hsize}
+%\begin{center}
+%\begin{XCexampleR}
+%int A[10], B[10];
+%#pragma xmp coarray A, B : [*]
+%
+%A[:] = B[:]:[10];
+%\end{XCexampleR}
+%\end{center}
+%\end{minipage}
+
+\subsection{{\tt [C]} Syncronization of Coarrays} 
+\subsubsection*{Synopsis}
+{\XMPC} provides syncronization functions for coarrays.
+
+\subsubsection*{Format}
+\begin{tabular}{lll}
+\verb![C]!&  {\tt void}& {\tt xmp\_sync\_all(int* {\it status})} \\
+\verb![C]!&  {\tt void}& {\tt xmp\_sync\_memory(int* {\it status})} \\
+\verb![C]!&  {\tt void}& {\tt xmp\_sync\_image(int {\it image}, int* {\it status})} \\
+\verb![C]!&  {\tt void}& {\tt xmp\_sync\_images(int {\it num}, int* {\it image\_set}, int* {\it status})} \\
+\verb![C]!&  {\tt void}& {\tt xmp\_sync\_images\_all(int* {\it status})}
+\end{tabular}
+
+\subsubsection*{Description}
+
+\begin{itemize}
+ \item {\tt xmp\_sync\_all} is equivalent to the {\tt sync all} statement in Fortran 2008.
+ \item {\tt xmp\_sync\_memory} is equivalent to the {\tt sync memory} statement in Fortran 2008.
+ \item A combination of {\tt xmp\_sync\_image}, {\tt xmp\_sync\_images}, and {\tt xmp\_sync\_images\_all} 
+   is equivalent to the {\tt sync memory} statement in Fortran 2008.
+  \begin{itemize}
+    \item {\tt xmp\_sync\_image} is to synchronize one image.
+    \item {\tt xmp\_sync\_images} is to synchronize some images.
+    \item {\tt xmp\_sync\_images\_all} is to synchronize all images.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection*{Arguments}
+\begin{itemize}
+  \item The argument {\it status} is defined with one of the follow symbolic constants.
+  \begin{itemize}
+    \item XMP\_STAT\_SUCCESS
+    \item XMP\_STAT\_STOPPED\_IMAGE
+  \end{itemize}
+  If an execution of the function is success, the {\it status} is defined with XMP\_STAT\_SUCCESS.
+  A condition where the {\it status} is defined with XMP\_STAT\_STOPPED\_IMAGE is the same as 
+  that where the {\it status} is defined with STAT\_STOPPED\_IMAGE in Fortran 2008.
+  These symbolic constants are defined in ``xmp.h''.
+  If any other error condition occurs during execution of these functions,
+  the {\it status} is defined with a value which is different from the value of XMP\_STAT\_SUCCESS and
+  XMP\_STAT\_STOPPED\_IMAGE.
+  \item In {\tt xmp\_sync\_image}, the variable {\it image} determines a target image index.
+  \item In {\tt xmp\_sync\_images}, the variable {\it num} is a number of target images, and 
+        the variable {\it image\_set} is an array where target images set is defined.
+\end{itemize}
+
+%\subsection{{\tt [C] sync\_memory} Directive}
+%
+%\subsubsection*{Synopsis}
+%
+%In {\XMPC}, the \Directive{sync\_memory} directive is used to complete
+%all memory operations on coarrays.
+%
+%\subsubsection*{Syntax}
+%\Syntax{sync\_memory}
+%
+%\begin{tabular}{ll}
+%\verb![C]! & \verb|#pragma xmp sync_memory| \\
+%\end{tabular}
+%
+%\subsubsection*{Description}
+%
+%%The {\tt sync\_memory} directive ensures that any change of coarrays
+%%on the image (or the executing node) is visible to other images (or
+%%nodes) and any coarrays on the image can be referenced or defined by
+%%other images.
+%
+%The {\tt sync\_memory} directive ensures that any changes of coarrays
+%on the image (or the executing node) done by itself are visible to any
+%images (or nodes) and any coarrays on the image can be referenced or
+%defined by any images.
+%%
+%Note that no other {\XMP} directive ensures that.
+%
+%The {\tt sync\_memory} directive in {\XMPC} has a function equivalent
+%to that of the {\tt sync memory} statement in {\XMPF}.
+%
+%\subsubsection*{Examples}
+%\Example{sync\_memory}
+%
+%\begin{XCexample}
+%// a, b, c, and d are coarrays
+%
+%a = ...;
+%... = b;
+%c:[p] = ...;
+%... = d:[q];
+%
+%#pragma xmp sync_memory
+%\end{XCexample}
+%
+%\vspace{0.5cm}
+%
+%When a node finishes executing the {\tt sync\_memory} directive in this
+%code snippet at runtime, the following are ensured that:
+%
+%\begin{itemize}
+% \item the local definition of a coarray {\tt a} is complete
+%       and it can be referenced and defined by any other nodes;
+% \item the local reference of a coarray {\tt b} is complete
+%       and it can be defined by any other nodes;
+% \item the remote definition of a coarray {\tt c} from the node is
+%       complete and it can be referenced and defined by any nodes;
+%       and
+% \item the remote reference of a coarray {\tt d} from the nodes is
+%       complete and it can be defined by any nodes.
+%\end{itemize}
+
+%\subsubsection*{Restrictions}
+%
+%\begin{itemize}
+% \item \verb![C]! The variable specified by {\it variable} must be a
+%       coarray.
+% \item \verb![C]! The number of {\tt [}{\it int-expr}{\tt ]} must be
+%       equal to the corank of the variable specified by {\it variable}.
+% \item \verb![C]! The value of a each {\it int-expr} must be within the
+%       cobounds for its codimension.
+% \item \verb![C]! The sequence of {\tt [}{\it int-expr}{\tt ]} must
+%       specify an image index value that is not greater than the cosize
+%       of the variable specified by {\it variable}.
+%\end{itemize}
+
+
+%\section{Coarray in the {\C} language}
+%
+%{\XMP} adopts coarray notation. In order to use coarray notation in {\C},
+%we propose some extensions of the language.
+
+%\subsection{Declarations and reference of coarray}
+%
+%A coarray is declared by the coarray directive in {\C}.
+%
+%\Syntax{coarray}
+%\begin{tabular}{ll}
+%\verb![C]! & \verb|#pragma xmp| {\tt coarray} {\it coarray-dimension}
+%  {\tt ::} {\it array-variable} \\
+%\verb![C]! & \verb|#pragma xmp| {\tt coarray} {\it array-variable}
+%{\it coarray-dimension} \\
+%\end{tabular}
+%
+%The coarray directive declares a coarray with the coarray dimension.
+%
+%\subsubsection*{Examples}
+%\Example{coarray}
+%
+%\hspace{\hsize}
+%\begin{XCexample}
+%int A[10], B[10];
+%#pragma xmp coarray [*]: A, B
+%
+%double p[100][100];
+%#pragma xmp coarray p[20][*]
+%\end{XCexample}
+%
+%The coarray object is referenced in the following expression:
+%
+%\begin{tabular}{ll}
+%\hspace{0.5cm} & {\it scalar-variable} {\tt :} {\it image-index} \\
+% & {\it array-section-expression} {\tt :} {\it image-index} \\
+%\end{tabular}
+%
+%This expression indicates the co-array on the image indicated by {\it image-index}.
+%
+%\hspace{\hsize}
+%\begin{XCexample}
+%      A[:] = B[:]:[10];    // copy from B on image 10 to A
+%\end{XCexample}
+
+\section{Directives for the Local-view Programming}
+
+\subsection{{\tt [F] local\_alias} Directive}
+
+\subsubsection*{Synopsis}
+
+In {\XMPF}, the {\tt \Directive{local\_alias}} directive declares a
+local data object as an alias to the local section of a mapped
+array.
+
+\subsubsection*{Syntax}
+\Syntax{local\_alias}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt local\_alias} {\it local-array-name}
+\verb|=>| {\it global-array-name} \\
+%\verb![C]! & \verb|#pragma xmp| {\tt local\_alias} {\it local-array-name}
+%\verb|=>| {\it global-array-name} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+%This directive declares that a local array specified by
+%{\it local-array-name} is a ``\Term{local alias}'' to the global array
+%specified by {\it global-array-name}.
+The LOCAL\_ALIAS directive associates a non-mapped array with
+an explicitly mapped array.
+The non-mapped array is an associating local array and
+the explicitly mapped array is an associated global array.
+The shape of the associating local array is the same as
+that of the node-local portion of the associated global array
+including shadow area.
+Each element of the associating local array shares the 
+same storage unit in array element order with that of the node-local portion 
+of the associated global array.
+An associating local array and the corresponding global array always have
+the same allocation status.
+An associating local array always has the dynamic type
+and type parameter values of the corresponding 
+associated global array.
+
+%The shape of a local alias is the same as that of the local section of
+%the global array that is owned by each node.
+%Note that the local part includes the shadow area.
+%An associating local array is defined when the corresponding 
+%associated global array is defined. 
+
+
+An associating local array may be a coarray.
+An associating local array that is a coarray is
+an on-node coarray of the node array onto which the corresponding
+associated global array is mapped.
+Every specification and restriction on coarrays is also applied to an associating local
+array that is a coarray except that
+an associating local array is always declared with
+{\it deferred-shape-spec-list} of the same rank as the associated global array.
+In particular, a processor shall ensure that an associating local array 
+that is a coarray has
+the same bounds on all the images corresponding to the node array
+onto which the corresponding associated global array is mapped.
+The mapping attributes allowed for an associated global array are
+processor-dependent.
+
+Note that the base language {\Fort} is extended so that a deferred-shape
+array that is not either an allocatable array or an array pointer is
+declared if it is specified as a 
+{\it local-array-name} in the {\tt local\_alias} directive.
+
+In {\XMPC}, the {\tt address-of} operator applied to global data
+substitutes for the {\tt local\_alias} directive (see \ref{sec:pointer
+to global data}).
+
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item A {\it global-array-name} shall be a name of an explicitly mapped
+       array declared in the same scoping unit. 
+
+ \item A {\it local-array-name} shall be a name of a non-mapped array
+       declared in the same scoping unit. 
+
+ \item A {\it local-array-name} shall not be a dummy argument.
+
+ \item An associating local array shall have the declared type and type parameters of
+       the corresponding associated global array.
+
+ \item An associating local array shall be declared with
+       {\it deferred-shape-spec-list} of the
+       same rank as the corresponding associated global array.
+
+ \item A {\it local-array-name} shall appear in a COARRAY directive in the
+       same scoping unit and the {\it node-name} in the COARRAY directive
+       shall be the name of the node array onto which the
+       associated global array is mapped.
+
+ \item 
+If an associated global array is a dummy argument and corresponds to
+an associating local array that is a coarray, 
+the corresponding effective argument shall be
+an explicitly mapped array or a subobject of 
+an explicitly mapped array whose name appears
+in a LOCAL\_ALIAS directive %as a {\it global-array-name} 
+and the corresponding associating local array shall be a coarray.
+
+ \item If a dummy argument is a coarray 
+       and the corresponding ultimate argument is a coarray appearing in
+       a LOCAL\_ALIAS directive, % as a {\it local-array-name},
+       the dummy argument shall appear in a COARRAY directive
+       with a node array corresponding to
+       a subset of the set of images that corresponds to the node array
+       onto which the ultimate argument is mapped.
+%
+% \item The array specified by {\it local-array-name} must not be aligned
+%       by an {\tt align} directive.
+% \item The array specified by {\it global-array-name} must be aligned
+%       by an {\tt align} directive.
+% \item The data type and rank of the array specified by {\it
+%       local-array-name} must be the same as those of the array
+%       specified by {\it global-array-name}.
+% \item The array specified by {\it local-array-name} must be a
+%       deferred-shape array, which means that it must be declared with 
+%       a {\it deferred-shape-spec-list} in a type declaration statement
+%       or a {\tt DIMENSION} statement.
+% \item \verb![C]! The array specified by {\it local-array-name} must be
+%       a pointer.
+\end{itemize}
+
+\subsubsection*{Examples}
+\Example{local\_alias}
 
 \begin{description}
 
 \item[Example 1]
+\hspace{\hsize}
 
-	   The global actual argument {\tt a} is treated by the {\XMP}
-	   compiler as the pointer to the first element of its local
-	   section, which is passed to the callee, on each node.
+\begin{XFexample}
+!$xmp nodes n(4)
+!$xmp template :: t(100)
+!$xmp distribute (block) onto n :: t
 
-	   The global dummy argument {\tt x} is initialized so that each
-	   of its local section starts from the address held by the
-	   received pointer (Figure \ref{fig5.7}).
+      real :: a(100)
+!$xmp align (i) with t(i) :: a
+!$xmp shadow (1) :: a
 
-\begin{XCexample}
-void xmp_func1()
-{
-#pragma xmp nodes p(4)
-#pragma xmp template t(0:99)
-#pragma xmp distribute t(block) onto p
-  float a[100];
-#pragma xmp align a[i] with t(i)
-#pragma xmp shadow a[1:1]
+      real :: b(:)
+!$xmp local_alias b => a
+\end{XFexample}
 
-  xmp_func2(a);
-}
+The array {\tt a} is distributed by block onto four nodes.
+The node {\tt n(2)} has its local section of twenty-five elements ({\tt
+a(25:50)}) with shadow areas of size one on both of the upper and lower 
+bounds. The local alias {\tt b} is an array of 27 elements
+({\tt b(1:27)}) on {\tt n(2)}. The table below shows the correspondence
+of each element of {\tt a} to that of {\tt b} on {\tt n(2)}.
 
-void xmp_func2(float x[100])
-{
-#pragma xmp nodes p(4)
-#pragma xmp template t(0:99)
-#pragma xmp distribute t(block) onto p
-#pragma xmp align x[i] with t(i)
-#pragma xmp shadow a[1:1]
-  ...
-\end{XCexample}
-
-\begin{myfigure}
- \includegraphics[scale=0.7]{figs/fig5.7.eps}
- \caption{Passing to a Global Dummy Argument}
- \label{fig5.7}
-\end{myfigure}
+\begin{center}
+\begin{tabular}{|c|c|}\hline
+{\tt a}      & {\tt b} \\ \hline\hline
+lower shadow & 1       \\ \hline
+26           & 2       \\ \hline
+27           & 3       \\ \hline
+28           & 4       \\ \hline
+\dots        & \dots   \\ \hline
+50           & 26      \\ \hline
+upper shadow & 27      \\ \hline
+\end{tabular}
+\end{center}
 
 \item[Example 2]
+\hspace{\hsize}
+\begin{XFexample}
+!$xmp nodes n(4)
+!$xmp template :: t(100)
+!$xmp distribute (cyclic) onto n :: t
 
-	   The global actual argument {\tt a} is treated by the {\XMP}
-	   compiler as the pointer to the first element of its local
-	   section, which is passed to the callee, on each node.
+      real :: a(100)
+!$xmp align (i) with t(i) :: a
 
-	   The local dummy argument {\tt x} on each node starts from the 
-	   address held by the received pointer (Figure \ref{fig5.8}).
+      real :: b(0:)
+!$xmp local_alias b => a
+\end{XFexample}
 
-\begin{XCexample}
-void xmp_func1()
-{
-#pragma xmp nodes p(4)
-#pragma xmp template t(0:99)
-#pragma xmp distribute t(block) onto p
-  float a[100];
-#pragma xmp align a[i] with t(i)
-#pragma xmp shadow a[1:1]
+An array {\tt a} is distributed cyclically onto four nodes.
+Node {\tt n(2)} has its local section of twenty-five elements ({\tt
+a(2:100:4)}).
+%with shadow areas of size one on the upper and lower 
+%bounds.
+The lower bound of local alias {\tt b} is declared to
+be zero. As a result, {\tt b} is an array of size 25 whose lower
+bound is zero ({\tt b(0:24)}) on {\tt n(2)}. The table below shows the
+correspondence of each element of a to that of {\tt b} on {\tt n(2)}.
 
-  c_func2(a);
-}
-\end{XCexample}
-\begin{Cexample}
-void c_func2(float x[27])
-{
-  ...
-\end{Cexample}
-
-\begin{myfigure}
- \includegraphics[scale=0.7]{figs/fig5.8.eps}
- \caption{Passing to a Local Dummy Argument}
- \label{fig5.8}
-\end{myfigure}
+\begin{center}
+\begin{tabular}{|c|c|}\hline
+{\tt a}      & {\tt b} \\ \hline\hline
+2            & 0       \\ \hline
+6            & 1       \\ \hline
+10           & 2       \\ \hline
+\dots        & \dots   \\ \hline
+98           & 24      \\ \hline
+\end{tabular}
+\end{center}
 
 \item[Example 3]
+\hspace{\hsize}
+\Example{template\_fix}
+\begin{XFexample}
+!$xmp nodes n(4)
+!$xmp template :: t(:)
+!$xmp distribute (block) onto n :: t
 
-	   The actual argument {\tt a[0]} is an element of the global
-	   data and the dummy argument {\tt x} is a scalar, in which
-	   case the normal argument-passing rule of {\C} for variables
-	   of a basic type (i.e. ``pass-by-value'') is applied. However,
-	   only the node {\tt p(1)} owns the element.
-	   Hence, {\tt c\_func2} is invoked only by {\tt p(1)} (Figure
-	   \ref{fig5.9}).
+      real, allocatable :: a(:)
+!$xmp align (i) with t(i) :: a
 
-\begin{XCexample}
-void xmp_func1()
-{
-#pragma xmp nodes p(4)
-#pragma xmp template t(0:99)
-#pragma xmp distribute t(block) onto p
-  float a[100];
-#pragma xmp align a[i] with t(i)
-#pragma xmp shadow a[1:1]
+      real :: b(:)[*]
+!$xmp local_alias b => a
 
-#pragma xmp task on p(1)
-  c_func2(a[0]);
-}
-\end{XCexample}
-\begin{Cexample}
-void c_func2(float x)
-{
-  ...
-\end{Cexample}
+      …
 
-\begin{myfigure}
- \includegraphics[scale=0.7]{figs/fig5.9.eps}
- \caption{Passing an Element of a Global Data as an Actual Argument to a
- Local Dummy Argument}
- \label{fig5.9}
-\end{myfigure}
+!$xmp template_fix :: t(128)
+
+      allocate (a(128))
+
+      if (me < 4) b(4) = b(4)[me +1]
+\end{XFexample}
+
+Since the global array {\tt a} is an allocatable array, its local alias
+{\tt b} is not defined when the subroutine starts execution. {\tt b} is
+defined when {\tt a} is allocated at the {\tt allocate}
+statement. Note that {\tt b} is declared as a coarray and therefore can be
+accessed in the same manner as a normal coarray.
 
 \end{description}
+
+
+%\subsection{{\tt async} Construct}
+%
+%\subsubsection*{Synopsis}
+%
+%The {\tt \Directive{async}} construct allows coarrays to be referenced
+%asynchronously.
+%
+%\subsubsection*{Syntax}
+%\Syntax{async}
+%
+%\begin{tabular}{ll}
+%\verb![F]! & \verb|!$xmp| {\tt async ( {\it async-id} )} \\
+%\verb![C]! & \verb|#pragma xmp| {\tt async ( {\it async-id} )} \\
+%\end{tabular}
+%
+%\subsubsection*{Description}
+%
+%An {\tt async} directive and the following statement
+%including coarray references constitute an {\tt async} construct.
+%
+%Coarrays appeared in an {\tt async} construct are referenced
+%asynchronously and therefore statements following it may be executed
+%before the operation is complete.
+%
+%\subsubsection*{Restriction}
+%
+%\begin{itemize}
+% \item {\it async-id} must be an integer expression.
+%\end{itemize}
+
+
+\subsection{{\tt post} Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{post}} construct, in combination with the {\tt
+\Directive{wait}} construct, specifies a point-to-point
+synchronization.
+
+\subsubsection*{Syntax}
+\Syntax{post}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt post ( {\it nodes-ref}, {\it tag} )}\\
+\verb![C]! & \verb|#pragma xmp| {\tt post ( {\it nodes-ref}, {\it tag} )}\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+%This construct prohibits statements that follow the construct from being
+%executed until the execution of all statements preceding a matching
+%\Directive{post} construct is completed on the node specified by {\it
+%node-ref}.
+
+This construct ensures that the execution of statements that precede
+it is completed before statements that follow the matching
+\Directive{wait} construct start to be executed.
+
+A {\tt \Directive{post}} construct issued with the arguments of {\it
+nodes-ref} and {\it tag} on a node (called a {\it \Term{posting node}})
+dynamically matches at most one {\tt \Directive{wait}} construct issued
+with the arguments of the posting node (unless omitted) 
+and the same value as {\it tag} (unless omitted) by the node specified
+by {\it nodes-ref}.
+
+\subsubsection*{Restriction}
+
+\begin{itemize}
+ \item {\it nodes-ref} must represent one node.
+ \item {\it tag} must be an expression of type default integer, in
+       {\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+\subsubsection*{Example}
+\Example{post}
+\Example{wait}
+
+\begin{description}
+
+\item[Example 1]
+\hspace{\hsize}
+
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{XFexample}
+      S1
+!$xmp post (p(2), 1)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp wait (p(1), 1)
+      S2
+\end{XFexample}
+\end{center}
+\end{minipage}
+
+It is assumed that the code of the left is executed by the node {\tt
+p(1)} while that on  the right is executed by node {\tt p(2)}.
+
+The {\tt post} construct on the left matches the {\tt wait} construct on
+the right because their {\it nodes-ref}'s represent each other and both
+{\it tags}'s have the same value of 1.
+%
+These constructs ensure that no statement in {\tt S2} is executed by
+{\tt p(2)} until the execution of all statements in {\tt S1} is
+completed by {\tt p(1)}.
+
+\item[Example 2]
+\hspace{\hsize}
+
+\begin{XFexample}
+!$xmp wait
+      S3
+\end{XFexample}
+
+It is assumed that this code is executed by node {\tt p(2)}.
+
+The {\tt post} construct in the left code in Example 1 may matches
+this {\tt wait} construct because both {\it nodes-ref} and
+{\it tag} are omitted in this {\tt wait} construct.
+
+\end{description}
+
+
+\subsection{{\tt wait} Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{wait}} construct, in combination with the {\tt
+\Directive{post}} construct, specifies a point-to-point
+synchronization.
+
+\subsubsection*{Syntax}
+\Syntax{wait}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt wait} {\openb}{\tt (} {\it nodes-ref}
+ {\openb}, {\it tag}{\closeb} {\tt )}{\closeb}\\
+\verb![C]! & \verb|#pragma xmp| {\tt wait} {\openb}{\tt (} {\it nodes-ref} 
+ {\openb}, {\it tag}{\closeb} {\tt )}{\closeb}\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+This construct prohibits statements that follow this construct from
+being executed until the execution of all statements preceding a
+matching \Directive{post} construct is completed on the node specified
+by {\it node-ref}.
+
+A {\tt \Directive{wait}} construct issued with the arguments of {\it nodes-ref} and {\it tag} 
+on a node (called a {\it \Term{waiting node}})
+dynamically matches a {\tt \Directive{post}} construct issued with the
+arguments of the waiting node and the same value as {\it tag} by the
+node specified by {\it nodes-ref}.
+
+If {\it tag} is omitted, then the {\tt \Directive{wait}} construct can
+match a {\tt \Directive{post}} construct issued with the arguments of
+the waiting node and any tag by the node specified by {\it nodes-ref}.
+%
+If both {\it tag} and {\it nodes-ref} are omitted, then the {\tt
+\Directive{wait}} construct can match a {\tt \Directive{post}}
+construct issued with the arguments of the waiting node and any tag on
+any node.
+
+\subsubsection*{Restriction}
+
+\begin{itemize}
+ \item {\it nodes-ref} must represent one node.
+ \item {\it tag} must be an expression of type default integer, in
+       {\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+\subsection{{\tt [C]} {\tt lock}/{\tt unlock} Construct}
+\subsubsection*{Synopsis}
+The {\tt \Directive{lock}}/{\tt \Directive{unlock}} constructs are equivalent to the 
+{\tt lock}/{\tt unlock} statements in Fortran 2008.
+
+\subsubsection*{Syntax}
+\Syntax{lock}
+\begin{tabular}{ll}
+\verb![C]! & \verb!#!include \verb!<!xmp.h\verb!>! \\
+\verb![C]! & {\tt xmp\_lock\_t} {\it lock-object}
+{\openb}{\tt ,} {\it lock-object} {\closeb}{\tt ...} \\
+\verb![C]! & \verb|#pragma xmp| {\tt lock} {\tt (}{\it lock-object}{\tt )}
+{\openb} {\tt acquired\_lock} {\tt (}{\it success}{\tt )} {\closeb}
+{\openb} {\tt stat} {\tt (}{\it status}{\tt )} {\closeb}\\
+\verb![C]! & \verb|#pragma xmp| {\tt unlock} {\tt (}{\it lock-object}{\tt )}
+{\openb} {\tt stat} {\tt (}{\it status}{\tt )} {\closeb}
+\end{tabular}
+
+\vspace{5mm}
+Please note the following points:
+\begin{itemize} \vspace{-2mm}
+ \item The type {\tt xmp\_lock\_t} is defined in ``xmp.h''. \vspace{-3mm}
+ \item The variable {\it lock-object} is a coarray. \vspace{-3mm}
+ \item The variable {\it success} is an expression of type {\tt int}. \vspace{-3mm}
+ \item The variable {\it status} is an expression of type {\tt int}. 
+\end{itemize}
+
+\subsubsection*{Description}
+%The {\tt \Directive{lock}} construct, in combination with the {\tt \Directive{unlock}} construct,
+%is used to create a critical section on a target node.
+%The critical section is a range of a code which can be executed by only a node creates the critical section.
+%The critical section is started by the {\tt \Directive{lock}} construct,
+%and the critical section is ended by the {\tt \Directive{unlock}} construct.
+The {\tt \Directive{lock}} construct, in combination with the {\tt \Directive{unlock}} construct,
+is used to control a {\it lock-object}.
+The {\it lock-object} must be defined as a coarray to control it on a target node.
+The {\it lock-object} must be an expression of type {\tt xmp\_lock\_t} 
+which is an opaque object defined in ``xmp.h''.
+
+If the {\tt acquired\_lock} clause is not used in the {\tt \Directive{lock}} construct and 
+the {\it lock-object} is locked,
+a node stops at the {\tt \Directive{lock}} construct until the {\it lock-object} is unlocked by a different node.
+If the {\tt acquired\_lock} clause is used in the {\tt \Directive{lock}} construct and 
+the {\it lock-object} is locked by a different node,
+a node does not stop at the {\tt \Directive{lock}} construct and the variable {\it success} is defined with the value false
+and {\tt \Directive{lock}} construct leaves the {\it lock-object} unchanged.
+If the {\tt acquired\_lock} clause is used in the {\tt \Directive{lock}} construct and the {\it lock-object} is unlocked,
+the variable {\it success} is defined with the value true.
+
+The {\it status} is defined with one of the follow symbolic constants 
+when executing {\tt \Directive{lock}}/{\tt \Directive{unlock}} construct.
+
+\begin{itemize}
+\item {\tt XMP\_STAT\_SUCCESS} \vspace{-2mm}
+\item {\tt XMP\_STAT\_LOCKED} \vspace{-2mm}
+\item {\tt XMP\_STAT\_UNLOCKED} \vspace{-2mm}
+\item {\tt XMP\_STAT\_LOCKED\_OTHER\_IMAGE}
+\end{itemize}
+
+If an execution of {\tt \Directive{lock}}/{\tt \Directive{unlock}} construct is success,
+the {\it status} is defined with {\tt XMP\_STAT\_SUCCESS}.
+A condition where the {\it status} is defined with 
+{\tt XMP\_STAT\_LOCKED}, {\tt XMP\_STAT\_UNLOCKED}, or {\tt XMP\_STAT\_}
+{\tt LOCKED\_OTHER\_IMAGE} 
+is the same as that where the {\it status} is defined with
+{\tt STAT\_LOCKED}, {\tt STAT\_UNLOCKED}, or {\tt STAT\_LOCKED\_OTHER\_IMAGE} in Fortran 2008.
+These symbolic constants are defined in ``xmp.h''.
+If any other error condition occurs during execution of these constructs,
+the {\it status} is defined with a value which is different from the
+value of {\tt XMP\_STAT\_SUCCESS}, {\tt XMP\_STAT\_LOCKED}, 
+{\tt XMP\_STAT\_UNLOCKED}, and {\tt XMP\_STAT\_LOCKED\_OTHER\_IMAGE}.
+
+
+\subsubsection*{Example}
+\begin{XCexample}
+#include "xmp.h"
+
+xmp_lock_t lock_obj:[*];
+int A:[*], B;
+#pragma xmp nodes p(2)
+...
+#pragma xmp lock(lock_obj:[2])
+  if(xmp_node_num() == 1){
+    A:[2] = B;
+  }
+#pragma xmp unlock(lock_obj:[2])
+\end{XCexample}
+
+%\subsection{{\tt critical} Construct}
+%
+%\subsubsection*{Synopsis}
+%
+%The {\tt \Directive{critical}} construct restricts execution of the
+%associated structured block to a single node at any given time.
+%
+%\subsubsection*{Syntax}
+%\Syntax{critical}
+%
+%\begin{tabular}{ll}
+%\verb![F]! & \verb|!$xmp| {\tt critical} \\
+%& {\it block} \\
+%& \verb|!$xmp| {\tt end critical} \\
+%& \\
+%\verb![C]! & \verb|#pragma xmp| {\tt critical} \\
+%& {\it block} \\
+%\end{tabular}
+%
+%%\subsubsection*{Restriction}
+%
+%\subsubsection*{Description}
+%
+%This construct specifies a {\it critical region}, at the beginning of
+%which a node waits until no other node is executing it. 
+%
+%%\subsubsection*{Examples}
+%%\Example{critical}
+%%
+%%\begin{XFexample}
+%%!$xmp critical
+%%      ...
+%%!$xmp end critical
+%%\end{XFexample}

@@ -1,0 +1,78 @@
+\chapter{OpenMP in {\XMP} Programs}
+\label{chap:openmp}
+
+The usage of OpenMP directives in {\XMP} programs is subjected to
+the following basic rule.
+
+\begin{itemize}
+ \item {\XMP} directives and the invocation of an {\XMP}
+       intrinsic/built-in procedure should be single-threaded, and
+       therefore may be placed in the sequential part, or one of
+       the {\tt single}, {\tt master}, and {\tt critical} regions
+       that is closely nested inside a {\tt parallel} region whose
+       parent thread is the initial thread;
+
+ \item with the exception that {\XMP}'s {\tt loop} directive that
+       controls a loop can be placed immediately inside OpenMP's
+       parallel loop directive ({\tt parallel do} for Fortran and
+       {\tt parallel for} for C), which controls the identical loop.
+\end{itemize}
+
+The behavior of coarray references in a {\tt parallel} region is
+implementation-dependent.
+
+\subsubsection*{Examples}
+\index{Example!OpenMP in XcalableMP programs}
+
+Assume that the following codes are placed in the sequential part of
+the program.
+
+\begin{XCexample}
+#pragma omp parallel for 
+for (...){
+  #pragma xmp barrier  // NG because not single-threaded
+}
+\end{XCexample}
+
+\begin{XCexample}
+#pragma omp parallel for 
+for (...){
+  #pragma omp single 
+  {
+    #pragma xmp barrier  // OK because single-threaded
+                         // (inside a single region)
+  }
+}
+\end{XCexample}
+
+\begin{XCexample}
+#pragma omp parallel for
+#pragma xmp loop  // OK because immediately nested
+for (...){
+  ...
+}
+\end{XCexample}
+
+\begin{XCexample}
+#pragma xmp loop  // OK because single-threaded (not nested)
+#pragma omp parallel for
+for (...){
+  ...
+}
+\end{XCexample}
+
+\begin{XCexample}
+#pragma xmp loop  // OK because single threaded (not nested)
+for (...){
+  #pragma omp parallel for
+  for (...) { ... }
+}
+\end{XCexample}
+
+\begin{XCexample}
+#pragma omp parallel for 
+for (...){
+  #pragma xmp loop  // NG because not immediately nested
+  for (...) { ... }
+}
+\end{XCexample}

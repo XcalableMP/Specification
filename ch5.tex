@@ -1,1691 +1,298 @@
-\chapter{Intrinsic and Library Procedures}
-\label{chap:Intrinsic and library procedures}
+\chapter{Base Language Extensions in {\XMPC}}
 
-This specification defines various procedures for system inquiry,
-synchronization, computations, etc. The procedures are provided as
-intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
+%This chapter describes base language extensions in {\XMPC} that is other
+%than coarrays described in Chapter \ref{chap:Support for the Local-view
+%Programming}.
 
-\section{{\tt [F]} Intrinsic Functions}
+This chapter describes base language extensions in {\XMPC} that is not
+described in any other chapters.
 
-\subsection{{\tt xmp\_desc\_of}}
-\label{subsec: xmp_desc_of}
-\Intrinsic{xmp\_desc\_of}
-\index{descriptor-of operator}
-\index{xmp\_desc\_of@{\tt xmp\_desc\_of}}
+\section{Array Section Notation}
 
-\subsubsection*{Format}
+\subsubsection*{Synopsis}
 
-\begin{tabular}{lll}
+The array section notation is a notation to describe a part of an array, 
+which is adapted in Fortran.
 
-\verb![F]!&  {\tt type(xmp\_desc)}& {\tt xmp\_desc\_of(xmp\_entity)}\\
+\subsubsection*{Syntax}
+\index{array section in XMP/C}
+\index{Syntax!array section in XMP/C}
 
+\begin{tabular}{llll}
+\verb![C]! & {\it array-section} & {\bf is} & {\it array-name}{\tt [} \{
+ {\it triplet} $\vert$ {\it int-expr} \} {\tt ]}...
+\end{tabular}
+
+\vspace{0.5cm}
+
+where {\it triplet} must be one of:
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it base} {\tt :} {\it length} {\tt :} {\it step} \\
+ \hspace{0.5cm} & {\it base} {\tt :} {\it length}\\
+ \hspace{0.5cm} & {\tt :} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+In {\XMPC}, the base language C is extended so that a part of an array,
+that is, an array section can be put in an {\it array assignment
+statement}, which is described in \ref{sec:Array assignment statements
+in C}, and some {\XMP} constructs. An array section is built from a
+subset of the elements of an array, which is specified by this notation
+including at least one {\it triplet}.
+
+When {\it step} is positive, the {\it triplet} specifies a set of
+subscripts that is a regularly spaced integer sequence of length {\it
+length} beginning with {\it base} and proceeding in increments of {\it
+step} up to the largest.
+%
+When {\it step} is negative, the {\it triplet} specifies a set of
+subscripts that is a regularly spaced integer sequence of length {\it
+length} beginning with {\it base} and proceeding in increments of {\it
+step} down to the smallest.
+
+%{\it lower-bound} and {\it upper-bound} specify an index range of array
+%elements. {\it lower-bound} and/or {\it upper-bound} can be omitted, in
+%which case they default to the lower and/or the upper bound of the
+%array. Therefore, {\tt A[:]} is a section containing the whole of {\tt
+%A}.
+%%
+%If {\it step} is specified, then the elements of an array section are
+%every ``step''-th element in the range specified by {\it lower-bound}
+%and/or {\it upper-bound}. For example, {\tt B[1:10:3]} is an array 
+%section of size 4 containing every third element of {\tt B} with indices
+%between 1 and 10 (i.e., indices 1, 4, 7, 10).
+
+When {\it step} is omitted, it is assumed to be ``1''.
+%
+When all of {\it base}, {\it length} and {\it step} is omitted, it is
+assumed that {\it base} is ``0'', {\it length} is the size of the
+dimension of the array, and {\it step} is ``1''.
+
+An array section can be considered as a virtual array containing the set
+of elements from the original array determined by all possible subscript
+lists specified by the sequence of {\it triplet}'s or {\it int-expr}'s
+in square brackets.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item \verb![C]! Each of {\it base}, {\it length} and {\it step} must
+       be an integer expression.
+% \item \verb![C]! When {\it step} is positive, {\it lower-bound} must be
+%       greater than or equal to the lower bound and {\it upper-bound}
+%       must be smaller than or equal to the upper bound of the dimension
+%       of the array specified by {\it array-name}.
+% \item \verb![C]! When {\it step} is negative, {\it lower-bound} must be
+%       smaller than or equal to the upper bound and {\it upper-bound}
+%       must be greater than or equal to the lower bound of the dimension
+%       of the array specified by {\it array-name}.
+ \item \verb![C]! {\it length} must be greater than zero.
+ \item \verb![C]! {\it step} must not be zero.
+\end{itemize}
+
+\subsubsection*{Example}
+\index{Example!array section in XMP/C}
+
+Assuming that an array {\tt A} is declared by the following statement,
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+\hspace{0.5cm} & {\tt int A[100];} \\
 \end{tabular}
 
 \vspace{0.3cm}
 
-Note that {\tt xmp\_desc\_of} is an intrinsic function in {\XMPF} or
-a built-in operator in {\XMPC}. For the {\tt xmp\_desc\_of} operator,
-refer to section \ref{sec:Descriptor of Global Data in C}.
+\hspace{-0.55cm}some array sections can be specified as follows:
 
-\subsubsection*{Synopsis}
-
-{\tt xmp\_desc\_of} returns a descriptor to retrieve informations of the
-specified global array, template, or node array. The resulting
-descriptor can be used as an input argument of mapping inquiry functions.
-
-The type of the descriptor, {\tt type(xmp\_desc)}, is
-implementation-dependent, and defined in a Fortran module named {\tt
-xmp\_lib} or a Fortran {\tt include} file named {\tt xmp\_lib.h}.
-
-\subsubsection*{Arguments}
-
-The argument or operand {\tt xmp\_entity} is the name of either a global
-array, a template or a node array.
-
-%\subsection{\tt xmp\_desc\_of}
-%\label{subsec: xmp_desc_of}
-%\Intrinsic{xmp\_desc\_of}
-%\index{descriptor-of operator}
-%\index{xmp\_desc\_of@{\tt xmp\_desc\_of}}
-%
-%\subsubsection*{Format}
-%
-%\begin{tabular}{lll}
-%
-%\verb![F]!&  {\tt type(xmp\_desc)}& {\tt xmp\_desc\_of(xmp\_entity)}\\
-%
-%\verb![C]!&  {\tt xmp\_desc\_t}& {\tt xmp\_desc\_of(xmp\_entity)}
-%
-%\end{tabular}
-%
-%\vspace{0.3cm}
-%
-%Note that {\tt xmp\_desc\_of} is an intrinsic function in {\XMPF} or
-%a built-in operator in {\XMPC}.
-%
-%\subsubsection*{Synopsis}
-%
-%%    A {\tt xmp\_desc\_of} is an input argument of query functions.
-%%    When Query functions get descriptor information of array
-%%    from XMP compiler, they must set a {\tt xmp\_desc\_of} as an
-%%    input argument.
-%
-%{\tt xmp\_desc\_of} returns, in {\XMPF}, or is evaluated to, in {\XMPC},
-%a descriptor to retrieve informations of the specified global array,
-%template, or node array. The resulting descriptor can be used as an
-%input argument of the inquiry functions which is described in appendix
-%\ref{chap:Interface to Numerical Libraries}.
-%
-%The type of the descriptor, {\tt type(xmp\_desc)}, in {\XMPF} 
-%is implementation-dependent, and defined in
-%a Fortran module named {\tt xmp\_lib} or a Fortran {\tt include} file
-%named {\tt xmp\_lib.h}.
-%
-%The type of the descriptor, {\tt xmp\_desc\_t}, in {\XMPC} is
-%implementation-dependent, and defined in a header file named {\tt xmp.h}
-%in {\XMPC}.
-%
-%%The type of the descriptor, {\tt xmp\_desc\_t}, is
-%%implementation-dependent, and defined in a Fortran module named {\tt
-%%xmp\_lib} or a Fortran {\tt include} file named {\tt xmp\_lib.h} in
-%%{\XMPF}, or a header file named {\tt xmp.h} in {\XMPC}.
-%
-%\subsubsection*{Arguments}
-%
-%The argument or operand {\tt xmp\_entity} is the name of either a global
-%array, a template or a node array.
-%
-%%   The argument of {\tt xmp\_desc\_of} is an {\it array-name}, a {\it template-name}, or a {\it nodes-name}.
-%%   In the case of {\it array-name}, return value d is a pointer to
-%%   be able to access array descriptor information.
-%%   In the case of {\it template-name}, return value d is a pointer to
-%%   be able to access template descriptor information.
-%%   In the case of {\it nodes-name}, return value d is a pointer to
-%%   be able to access node descriptor information.
-%%   If the argument of {\tt xmp\_desc\_of} is a local data, it is unchanged.
-
-
-\section{System Inquiry Functions}
-
-\begin{itemize}
-% \item {\tt [F] xmp\_desc\_of}
- \item {\tt xmp\_all\_node\_num}
- \item {\tt xmp\_all\_num\_nodes}
- \item {\tt xmp\_node\_num}
- \item {\tt xmp\_num\_nodes}
-% \item {\tt xmp\_mpi\_comm}
- \item {\tt xmp\_wtime}
- \item {\tt xmp\_wtick}
-\end{itemize}
-
-\subsection{\tt xmp\_all\_node\_num}
-\Intrinsic{xmp\_all\_node\_num}
-
-\subsubsection*{Format}
+\vspace{0.3cm}
 
 \begin{tabular}{lll}
-
-\verb![F]!&  {\tt integer function}& {\tt xmp\_all\_node\_num()}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_all\_node\_num(void)}
-
+\hspace{0.5cm} & {\tt A[10:10]} & array section of 10 elements from {\tt
+ A[10]} to {\tt A[19]} \\
+ & {\tt A[10:]} & array section of 90 elements from {\tt A[10]} to {\tt
+	 A[99]} \\
+ & {\tt A[:10]} & array section of 10 elements from {\tt A[0]} to {\tt
+	 A[9]} \\
+ & {\tt A[10:5:2]} & array section of 5 elements from {\tt A[10]} to
+	 {\tt A[18]} by step 2 \\
+ & {\tt A[:]} & the whole of {\tt A} \\
 \end{tabular}
+
+\section{Array Assignment Statement}
+\label{sec:Array assignment statements in C}
 
 \subsubsection*{Synopsis}
 
-     The {\tt xmp\_all\_node\_num} routine returns the node number,
-     within the primary node set, of the node that calls {\tt
-     xmp\_all\_node\_num}.
+An array assignment statement copies a value into each element of
+an array section.
 
-\subsubsection*{Arguments}
+%Array-valued expressions can be used by array section in assignments.
 
-    none.
-
-
-\subsection{\tt xmp\_all\_num\_nodes}
-\Intrinsic{xmp\_all\_num\_nodes}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&  {\tt integer function}& {\tt xmp\_all\_num\_nodes()}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_all\_num\_nodes(void)}
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-     The {\tt xmp\_all\_num\_nodes} routine returns the number of nodes
-     in the entire node set.
-
-\subsubsection*{Arguments}
-
-    none.
-
-
-\subsection{\tt xmp\_node\_num}
-\Intrinsic{xmp\_node\_num}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&  {\tt integer function}& {\tt xmp\_node\_num()}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_node\_num(void)}
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-     The {\tt xmp\_node\_num} routine returns the node number,
-     within the current executing node set, of the node that calls {\tt
-     xmp\_node\_num}.
-
-\subsubsection*{Arguments}
-
-none.
-
-
-\subsection{\tt xmp\_num\_nodes}
-\Intrinsic{xmp\_num\_nodes}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&  {\tt integer function}& {\tt xmp\_num\_nodes()}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_num\_nodes(void)}
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-     The {\tt xmp\_num\_nodes} routine returns the number of the
-     executing nodes.
-
-\subsubsection*{Arguments}
-
-none.
-
-%\subsection{\tt xmp\_mpi\_comm}
-%
-%\subsubsection*{Format}
-%
-%\begin{tabular}{lll}
-%
-%\verb![F]!&  {\tt integer function}& {\tt xmp\_mpi\_comm({\it nodes-name})}\\
-%
-%\verb![C]!&  {\tt int}& {\tt xmp\_mpi\_comm({\it nodes-name})}
-%
-%\end{tabular}
-%
-%\subsubsection*{Synopsis}
-%     The {\tt xmp\_mpi\_comm} routine returns the integer value with associated communicator
-%     to which {\it nodes-name} belongs. If non {\it nodes-name}, {\tt xmp\_mpi\_comm} returns 
-%     the value of MPI\_Comm\_World.
-%
-%\subsubsection*{Arguments}
-%    The argument of {\tt xmp\_mpi\_comm} is a {\it nodes-name} of the executing node set.
-%
-%
-
-\subsection{\tt xmp\_wtime}
-\Intrinsic{xmp\_wtime}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&  {\tt double precision function}& {\tt xmp\_wtime()}\\
-
-\verb![C]!&  {\tt double}& {\tt xmp\_wtime(void)}
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-    The {\tt xmp\_wtime} routine returns elapsed wall clock time in seconds 
-    since some time in the past. The ``time in the past'' is guaranteed
-    not to change during the life of the process.
-    There is no requirement that different nodes return ``the same time.''
-
-\subsubsection*{Arguments}
-    none.
-
-
-\subsection{\tt xmp\_wtick}
-\Intrinsic{xmp\_wtick}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&  {\tt double precision function}& {\tt xmp\_wtick()}\\
-
-\verb![C]!&  {\tt double}& {\tt xmp\_wtick(void)}
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-    The {\tt xmp\_wtick} routine returns the resolution of the timer
-    used by {\tt xmp\_wtime}. 
-    It returns a double precision value equal to the number of seconds 
-    between successive clock ticks.
-
-\subsubsection*{Arguments}
-    none.
-
-
-%\subsection{\tt xmp\_barrier}
-%
-%\subsubsection*{Format}
-%
-%\begin{tabular}{lll}
-%
-%\verb![F]!&  & {\tt xmp\_barrier({\it nodes-name})}\\
-%
-%\verb![C]!&  {\tt void}& {\tt  xmp\_barrier({\it nodes-name})}
-%
-%\end{tabular}
-%
-%\subsubsection*{Synopsis}
-%    The {\tt xmp\_barrier} routine blocks the caller until all nodes in the executing node set 
-%    indicated by {\it nodes-name} have called it.
-%    The call returns at any process only after all {\it nodes-name} member's nodes
-%    have entered the call.
-%
-%\subsubsection*{Arguments}
-%    The argument of {\tt xmp\_barrier} is a {\it nodes-name} of the executing node set.
-%
-
-%\section{Computational Intrinsic Procedures}
-%
-%\subsection{Fortran}
-%
-%\begin{itemize}
-% \item {\tt x = xmp\_scatter(a, idx1, idx2, ...)}
-% \item {\tt x = xmp\_gather(a, idx1, idx2, ...)}
-% \item {\tt v = xmp\_pack(a, mask)}
-% \item {\tt a = xmp\_unpack(v, mask)}
-% \item {\tt x = xmp\_sort\_up(a)}
-% \item {\tt x = xmp\_sort\_down(a)}
-% \item {\tt x = xmp\_cshift(a, shift, dim)}
-% \item {\tt x = xmp\_eoshift(a, shift, b, dim)}
-% \item {\tt m = xmp\_transpose(m)}
-%\end{itemize}
-%
-%
-%\subsection{C}
-%
-%
-%\begin{itemize}
-% \item {\tt x = xmp\_scatter(desc\_a, idx1, idx2, ...)}
-% \item {\tt x = xmp\_gather(desc\_a, idx1, idx2, ...)}
-% \item {\tt v = xmp\_pack(desc\_a, mask)}
-% \item {\tt a = xmp\_unpack(desc\_v, mask)}
-% \item {\tt x = xmp\_sort\_up(desc\_a)}
-% \item {\tt x = xmp\_sort\_down(desc\_a)}
-% \item {\tt x = xmp\_cshift(desc\_a, shift, dim)}
-% \item {\tt x = xmp\_eoshift(desc\_a, shift, b, dim)}
-% \item {\tt m = xmp\_transpose(desc\_m)}
-%\end{itemize}
-
-
-\section{Synchronization Functions}
-
-\subsection{\tt xmp\_test\_async}
-\Intrinsic{xmp\_test\_async}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt logical function} & {\tt xmp\_test\_async(async\_id)}\\
-          & {\tt integer} & {\tt async\_id}\\
-          & & \\
-\verb![C]!&  {\tt int} & {\tt  xmp\_test\_async(int async\_id)}
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_test\_async} routine returns {\tt .true.}, in {\XMPF}, or
-{\tt 1}, in {\XMPC}, if an asynchronous communication specified by the
-argument {\tt async\_id} is complete; otherwise, it returns {\tt .false.}
-or {\tt 0}.
-
-\subsubsection*{Arguments}
-
-The argument {\tt async\_id} is an integer expression that specifies an
-asynchronous communication initiated by a global communication construct
-with the {\tt async} clause.
-
-
-\section{Memory Allocation Functions}
-
-\subsection{\tt [C] xmp\_malloc}
-\label{subsec: xmp_malloc}
-\Intrinsic{xmp\_malloc}
+\subsubsection*{Syntax}
+\index{array assignment in XMP/C}
+\index{Syntax!array assignment in XMP/C}
 
 \begin{tabular}{ll}
-
-{\tt void*} & {\tt xmp\_malloc(xmp\_desc\_t d, size\_t size)}
-
+\verb![C]! & {\it array-section} {\openb}{\tt :}{\tt [}{\it int-expr}{\tt
+ ]}...{\closeb} {\tt =} \{ {\it variable} {\openb}{\tt :}{\tt [}{\it
+ int-expr}{\tt ]}...{\closeb} $\vert$ {\it int-expr \}}{\tt ;} \\
 \end{tabular}
 
-\subsubsection*{Synopsis}
+\subsubsection*{Description}
 
-The {\tt xmp\_malloc} routine allocates a storage for the local section
-of a one-dimensional global array of size {\tt size} that is associated
-with the descriptor specified by {\tt d}, and returns the pointer to it on
-each node. For an example of {\tt xmp\_malloc}, refer to section 
-\ref{sec:Dynamic Allocation of Global Data in C}.
+When the rhs is an array section, the value of each element of it is
+assigned to the corresponding element of the lhs array 
+section. When the rhs is an integer expression, its value is assigned to
+each element of the lhs array section.
 
-\subsubsection*{Arguments}
+The rhs and/or the lhs data can have cosubscripts.
+
+Note that an array assignment is a statement and therefore cannot
+appear as an expression in any other statements.
+
+\subsubsection*{Restrictions}
 
 \begin{itemize}
- \item {\tt d} is the descriptor associated with a pointer to the
-       one-dimensional global array to be allocated.
- \item {\tt size} is the size of the global array to be allocated.
+ \item \verb![C]! When the rhs is an array section, the lhs and the rhs
+       must have the same shape, i.e., the same number of dimensions and
+       size of each dimension.
+ \item \verb![C]! If {\it array-section} on the lhs is followed by
+       ``{\tt :}{\tt [}{\it int-expr}{\tt ]}...'', it must be a coarray.
+ \item \verb![C]! If {\it variable} on the rhs is followed by
+       ``{\tt :}{\tt [}{\it int-expr}{\tt ]}...'', it must be a coarray.
 \end{itemize}
 
-
-\section{Mapping Inquiry Functions}
-
-All mapping inquiry functions are specified as integer functions.
-These functions return zero on success and an implementation-dependent
-negative integer value on failure.
-
-\subsection{\tt xmp\_nodes\_ndims}
-\index{xmp\_nodes\_ndims@{\tt xmp\_nodes\_ndims}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_nodes\_ndims(d, ndims)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt ndims}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_nodes\_ndims(xmp\_desc\_t d, int *ndims)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_nodes\_ndims} function provides the rank of the target node
-array.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a node array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt ndims} is the rank of the node array specified by {\tt d}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_nodes\_index}
-\index{xmp\_nodes\_index@{\tt xmp\_nodes\_index}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_nodes\_index(d, dim, index)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt index}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_nodes\_index(xmp\_desc\_t d, int dim, int *index)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_nodes\_index} function provides the indices of the
-executing node in the target node array.
-
-\subsubsection*{Input Arguments}
-
-\begin{itemize}
- \item {\tt d} is a descriptor of a node array.
- \item {\tt dim} is the target dimension of the node array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-
-\begin{itemize}
- \item {\tt index} is an index of the target dimension of the node array
-       specified by {\tt d}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_nodes\_size}
-\index{xmp\_node\_size@{\tt xmp\_nodes\_size}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_nodes\_size(d, dim, size)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt size}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_nodes\_size(xmp\_desc\_t d, int dim, int *size)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_nodes\_size} function provides the size of each dimension
-of the target node array.
-
-\subsubsection*{Input Arguments}
-
-\begin{itemize}
- \item {\tt d} is a descriptor of a node array.
- \item {\tt dim} is the target dimension of the node array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-
-\begin{itemize}
- \item {\tt size} is an extent of the target dimension of the node array
-       specified by {\\t d}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_nodes\_attr}
-\index{xmp\_nodes\_attr@{\tt xmp\_nodes\_attr}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_nodes\_attr(d, attr)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt attr}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_nodes\_attr(xmp\_desc\_t d, int *attr)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_nodes\_attr} function provides the attribute of the target
-node array. The output value of the argument {\tt attr} is one of:
-
-\begin{tabular}{lll}
-  \hspace{2.5cm} & {\tt XMP\_ENTIRE\_NODES} & (Entire nodes)\\
-                 & {\tt XMP\_EXECUTING\_NODES}  & (Executing nodes) \\
-                 & {\tt XMP\_PRIMARY\_NODES} & (Primary nodes) \\
-                 & {\tt XMP\_EQUIVALENCE\_NODES} & (Equivalence nodes) \\
-\end{tabular}
-
-These are named constants defined in module {\tt xmp\_lib} 
-and in include file {\tt xmp\_lib.h} in {\XMPF}, and symbolic constants
-defined in header file {\tt xmp.h} in {\XMPC}.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a node array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt attr} is an attribute of the target node array specified by
-       {\tt d}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_nodes\_equiv}
-\index{xmp\_nodes\_equiv@{\tt xmp\_nodes\_equiv}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_nodes\_equiv(d, dn, lb,  ub, st)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt type(xmp\_desc)} & {\tt dn}\\
-          & {\tt integer}         & {\tt lb(*)}\\
-          & {\tt integer}         & {\tt ub(*)}\\
-          & {\tt integer}         & {\tt st(*)}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_nodes\_equiv(xmp\_desc\_t d, xmp\_desc\_t *dn,}\\
-          &           & \hspace{3.1cm}{\tt int lb[], int ub[], int st[])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_nodes\_equiv} function provides the descriptor of a node
-array and a subscript list that represent a node set that is 
-assigned to the target node array in the {\tt nodes} directive. This
-function returns with failure when the target node array is not declared
-as equivalenced.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a node array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt dn} is the descriptor of the referenced node array
-       if the target node array is declared as equivalenced; otherwise
-       {\tt dn} is set to undefined.
- \item {\tt lb} is a one-dimensional integer array the extent of which
-       must be more than or equal to the rank of the referenced node
-       array. The i-th element of {\tt lb} is set to the lower bound of
-       the i-th subscript of the node reference unless it is ``{\tt *}'',
-       or to undefined otherwise.
- \item {\tt ub} is a one-dimensional integer array the extent of which
-       must be more than or equal to the rank of the referenced node
-       array. The i-th element of {\tt ub} is set to the upper bound of
-       the i-th subscript of the node reference unless it is ``{\tt *}'',
-       or to undefined otherwise.
- \item {\tt st} is a one-dimensional integer array the extent of which
-       must be more than or equal to the rank of the referenced node
-       array. The i-th element of {\tt st} is set to the stride of
-       the i-th subscript of the node reference unless it is ``{\tt *}'',
-       or to zero otherwise.
-\end{itemize}
-
-
-\subsection{\tt xmp\_template\_fixed}
-\index{xmp\_template\_fixed@{\tt xmp\_template\_fixed}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_template\_fixed(d, fixed)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt logical} & {\tt fixed}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_template\_fixed(xmp\_desc\_t d, int *fixed)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_template\_fixed} function provides the logical value which
-shows whether the template is fixed or not.
-
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a template.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt fixed} is set to true in {\XMPF} and an
-       implementation-dependent non-zero integer value in {\XMPC} if the
-       template specified by {\tt d} is fixed; otherwise to false in
-       {\XMPF} and zero in {\XMPC}.
-\end{itemize}
-
-\subsection{\tt xmp\_template\_ndims}
-\index{xmp\_template\_ndims@{\tt xmp\_template\_ndims}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_template\_ndims(d, ndims)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt ndims}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_template\_ndims(xmp\_desc\_t d, int *ndims)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_template\_ndims} function provides the rank of the target
-template.
-
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a template.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt ndims} is the rank of the template specified by {\tt d}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_template\_lbound}
-\index{xmp\_template\_lbound@{\tt xmp\_template\_lbound}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_template\_lbound(d, dim, lbound)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt lbound}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_template\_lbound(xmp\_desc\_t d, int dim, int *lbound)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_template\_lbound} function provides the lower bound of each
-dimension of the template. This function returns with failure when the
-lower bound is not fixed.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a template.
- \item {\tt dim} is the target dimension of the template.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt lbound} is the lower bound of the target dimension of the
-       template specified by {\tt d}.  When the lower bound is not
-       fixed, it is set to undefined.
-\end{itemize}
-
-
-\subsection{\tt xmp\_template\_ubound}
-\index{xmp\_template\_ubound@{\tt xmp\_template\_ubound}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_template\_ubound(d, dim, ubound)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt ubound}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_template\_ubound(xmp\_desc\_t d, int dim, int *ubound)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_template\_ubound} function provides the upper bound of each
-dimension of the template. This function returns with failure when the
-upper bound is not fixed.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a template.
- \item {\tt dim} is the target dimension of the template.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt ubound} is a upper bound of the target dimension of the
-       template specified by {\tt d}. When the upper bound is not fixed,
-       it is set undefined.
-\end{itemize}
-
-
-\subsection{\tt xmp\_dist\_format}
-\index{xmp\_dist\_format@{\tt xmp\_dist\_format}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_dist\_format(d, dim, format)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt format}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_dist\_format(xmp\_desc\_t d, int dim, int *format)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_dist\_format} function provides the distribution format of
-a dimension of a template. The output value of the argument {\tt format}
-is one of:
-
-\begin{tabular}{lll}
-       \hspace{2.5cm} & {\tt XMP\_NOT\_DISTRIBUTED} & (not distributed)\\
-                      & {\tt XMP\_BLOCK}  & (block distribution) \\
-                      & {\tt XMP\_CYCLIC} & (cyclic distribution) \\
-                      & {\tt XMP\_GBLOCK} & (gblock distribution) \\
-\end{tabular}
-
-These symbolic constants are defined in ``xmp.h''.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a template.
- \item {\tt dim} is the target dimension of the template.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt format} is a distribution format of the target dimension of
-       the template specified by {\tt d}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_dist\_blocksize}
-\index{xmp\_dist\_blocksize@{\tt xmp\_dist\_blocksize}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_dist\_blocksize(d, dim, blocksize)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt blocksize}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_dist\_blocksize(xmp\_desc\_t d, int dim, int *blocksize)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_dist\_blocksize} function provides the block width of
-a dimension of a template.
-
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a template.
-        \item {\tt dim} is the target dimension of the template.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt blocksize} is the block width of the target dimension of
-       the template specified by {\tt d}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_dist\_gblockmap}
-\index{xmp\_dist\_blocksize@{\tt xmp\_dist\_gblockmap}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_dist\_gblockmap(d, dim, map)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt map(N)}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_dist\_gblockmap(xmp\_desc\_t d, int dim, int map[])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_dist\_gblockmap} function provides the mapping array of the
-{\tt gblock} distribution.
-
-When {\tt dim} dimension of the global array is distributed by {\tt
-gblock} and its mapping array is fixed, this function returns zero;
-otherwise it returns an implementation-dependent negative integer value.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a template.
- \item {\tt dim} is the target dimension of the template.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt map} is a one-dimensional integer array the extent of which
-       is more than the size of the corresponding
-       dimension of the node array onto which the template is
-       distributed.
-
-       The i-th element of {\tt map} is set to the value of the i-th
-       element of the target mapping array.
-\end{itemize}
-
-
-\subsection{\tt xmp\_dist\_nodes}
-\index{xmp\_dist\_nodes@{\tt xmp\_dist\_nodes}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_dist\_nodes(d, dn)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt type(xmp\_desc)} & {\tt dn}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_dist\_nodes(xmp\_desc\_t d, xmp\_desc\_t *dn)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_dist\_nodes} function provides the descriptor of the node
-array onto which a template is distributed.
-
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a template.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt dn} is the descriptor of the node array.
-\end{itemize}
-
-
-\subsection{\tt xmp\_dist\_axis}
-\index{xmp\_dist\_axis@{\tt xmp\_dist\_axis}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_dist\_axis(d, dim, axis)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt axis}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_dist\_axis(xmp\_desc\_t d, int dim, int *axis)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_dist\_axis} function provides the dimension of the node
-array onto which a dimension of a template is distributed. This function
-returns with failure when the dimension of the template is not
-distributed.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a template.
- \item {\tt dim} is the target dimension of the template.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt axis} is a dimension of the node array onto which 
-       the target dimension of the template specified by {\tt d} is
-       distributed.  When the dimension of the template is not
-       distributed, it is set to undefined.
-\end{itemize}
-
-
-\subsection{\tt xmp\_align\_axis}
-\index{xmp\_align\_axis@{\tt xmp\_align\_axis}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_align\_axis(d, dim, axis)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt axis}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_align\_axis(xmp\_desc\_t d, int dim, int *axis)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_align\_axis} function provides the dimension of the
-template with which a dimension of a global array is aligned. This
-function returns with failure when the dimension of the global array is
-not aligned.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a global array.
- \item {\tt dim} is the target dimension of the global array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt axis} is the dimension of the template with which the target
-       dimension of the global array specified by {\tt d} is
-       aligned. When the dimension of the global array is not aligned,
-       or collapsed, it is set to undefined.
-\end{itemize}
-
-
-\subsection{\tt xmp\_align\_offset}
-\index{xmp\_align\_offset@{\tt xmp\_align\_offset}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_align\_offset(d, dim, offset)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt offset}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_align\_offset(xmp\_desc\_t d, int dim, int *offset)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_align\_offset} function provides the align offset for a
-dimension of a global array. This function returns with failure when
-there is no offset.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a global array.
- \item {\tt dim} is the target dimension of the global array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt offset} is the align offset for the target dimension of the
-       global array specified by {\tt d}. When there is no offset, it is
-       set to undefined.
-\end{itemize}
-
-
-\subsection{\tt xmp\_align\_replicated}
-\index{xmp\_align\_replicated@{\tt xmp\_align\_replicated}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_align\_replicated(d, dim, replicated)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt logical} & {\tt replicated}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_align\_replicated(xmp\_desc\_t d, int dim, int *replicated)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_align\_replicated} function provides the logical value
-which shows whether the dimension of the template with which a global
-array is aligned is replicated or not. 
-
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a global array.
- \item {\tt dim} is the target dimension of the template with which the
-       global array is aligned.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt replicated} is a logical scalar, which is set to true if the
-       dimension of the template is replicated.
-
-\end{itemize}
-
-
-\subsection{\tt xmp\_align\_template}
-\index{xmp\_align\_template@{\tt xmp\_align\_template}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_align\_template(d, dt)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt type(xmp\_desc)} & {\tt dt}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_align\_template(xmp\_desc\_t d, xmp\_desc\_t *dn)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_align\_template} function provides the descriptor of the
-template with which a global array is aligned.
-
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a global array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt dt} is the descriptor of the template.
-\end{itemize}
-
-
-\subsection{\tt xmp\_array\_ndims}
-\index{xmp\_array\_ndims@{\tt xmp\_array\_ndims}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_array\_ndims(d, ndims)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt ndims}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_array\_ndims(xmp\_desc\_t d, int *ndims)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_array\_ndims} function provides the rank of a global
-array.
-
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a global array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt ndims} is the rank of the global array specified by {\tt d}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_array\_lshadow}
-\index{xmp\_array\_lshadow@{\tt xmp\_array\_lshadow}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_array\_lshadow(d, dim, lshadow)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt lshadow}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_array\_lshadow(xmp\_desc\_t d, int dim, int *lshadow)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_array\_lshadow} function provides the size of lower shadow
-of a dimension of a global array.
-
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a global array.
- \item {\tt dim} is the target dimension of the global array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt lshadow} is the size of the lower shadow of the target
-       dimension of the global array specified by {\tt d}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_array\_ushadow}
-\index{xmp\_array\_ushadow@{\tt xmp\_array\_ushadow}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_array\_ushadow(d, dim, ushadow)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt ushadow}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_array\_ushadow(xmp\_desc\_t d, int dim, int *ushadow)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_array\_ushadow} function provides the size of upper shadow
-of a dimension of a global array.
-
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a global array.
- \item {\tt dim} is the target dimension of the global array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt ushadow} is the size of the upper shadow of the target
-       dimension of the global array specified by {\tt d}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_array\_lbound}
-\index{xmp\_array\_lbound@{\tt xmp\_array\_lbound}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_array\_lbound(d, dim, lbound)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt lbound}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_array\_lbound(xmp\_desc\_t d, int dim, int *lbound)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_array\_lbound} function provides the lower bound of a
-dimension of a global array. This function returns with failure when the
-lower bound is not fixed.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a global array.
- \item {\tt dim} is the target dimension of the global array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt lbound} is the lower bound of the target dimension of the
-       global array specified by {\tt d}. When the lower bound is not
-       fixed, it is set to undefined.
-\end{itemize}
-
-
-\subsection{\tt xmp\_array\_ubound}
-\index{xmp\_array\_ubound@{\tt xmp\_array\_ubound}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_array\_ubound(d, dim, ubound)}\\
-          & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt ubound}\\
-
-\verb![C]!&  {\tt int}& {\tt xmp\_array\_ubound(xmp\_desc\_t d, int dim, int *ubound)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_array\_ubound} function provides the upper bound of a
-dimension of a global array. This function returns with failure when the
-upper bound is not fixed.
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt d} is a descriptor of a global array.
- \item {\tt dim} is the target dimension of the global array.
-\end{itemize}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt ubound} is the upper bound of the target dimension of the
-       global array specified by {\tt d}. When the upper bound is not
-       fixed, it is set to undefined.
-\end{itemize}
-
-\section{{\tt [F]} Array Intrinsic Functions of the Base Language}
-\index{array intrinsic functions}
-
-The array intrinsic functions of the base language Fortran are
-classified into three classes: {\it inquiry}, {\it elemental}, and
-{\it transformational}.
-
-This section specifies how these functions work in the XMP/F
-programs when a global array appears as an argument.
-
-\begin{itemize}
- \item Inquiry functions
-
-       The inquiry functions with a global array or its subobject
-       being an argument are regarded as inquiries about the global
-       array and return its ``global'' properties, as if it were not
-       distributed.
-
- \item Elemental functions
-
-       The result of the elemental functions with a global array or
-       its subobject being an argument is of the same shape and
-       mapping as the argument.
+\subsubsection*{Examples}
+\index{Example!array assignment in XMP/C}
+
+An array assignment statement in the fourth line copies the elements
+{\tt B[0]} through {\tt B[4]} into the elements {\tt A[5]} through {\tt
+A[9]}.
+
+\hspace{\hsize}
+\begin{XCexample}
+int A[10];
+int B[5];
+    ...
+A[5:5] = B[0:5]; 
+\end{XCexample}
+
+
+\section{Built-in Functions for Array Section}
+\index{built-in functions of XMP/C}
+
+Some built-in functions are defined that can accept one or more array
+sections as arguments, and, in addition, some of them are array-valued.
 %
-       Note that such a reference of these elemental functions is in
-       effect limited to be in the {\tt array} construct.
-
- \item Transformational functions
-
-       It is not defined how the transformational functions with a
-       global array or its subobject being an argument work.
-%
-       A processor shall detect such a reference of these functions
-       and issue a warning message for it.
-%
-       Some intrinsic transformational subroutines are defined in
-       section \ref{112125_19Sep13} as alternatives to these
-       transformational functions.
-
-\end{itemize}
-
-
-\section{{\tt [C]} Built-in Elemental Functions}
-\label{094142_25Sep13}
-\index{built-in elemental functions}
-
-Some built-in elemental functions that could operate each element of
-array arguments are defined in {\XMPC}. Such a built-in function
-accepts one or more array sections as its arguments and returns an
-array-valued result of the same shape and mapping as the argument.
-%
-The values of the elements of the result are the same as would have
-been obtained if the scalar function of the C standard library had
-been applied separately to the corresponding elements of each array
-argument.
-
-These functions can appear in the right-hand side of an array
-assignment statement, and should be preceded by the {\tt array}
+Such array-valued functions can appear in the right-hand side of an
+array assignment statement, and should be preceded by the {\tt array}
 directive if the array section is distributed.
 
-Table \ref{tab:elemental_c} shows the list of built-in elemental
-functions in {\XMPC}. Their elementwise behavior is the same as those of
-the corresponding functions in the C standard library.
+Each of the built-in functions for array section are described in
+Sections \ref{094142_25Sep13} and \ref{112125_19Sep13}.
 
-\begin{table}[h]
- \caption[Built-in Elemental Functions in {\XMPC}]{Built-in Elemental
- Functions in {\XMPC} (The first line means the element type of their
- argument(s) and return value.)}
- \label{tab:elemental_c}
- \begin{center}
- \begin{tabular}{c|c|c} \hline\hline
- double & float & long double \\ \hline
- acos & acosf & acosl \\
- asin & asinf & asinl \\
- atan & atanf & atanl \\
- atan2 & atan2f & atan2l \\
- cos & cosf & cosl \\
- sin & sinf & sinl \\
- tan & tanf & tanl \\
 
-% acosh & acoshf & acoshl \\
-% asinh & asinhf & asinhl \\
-% atanh & atanhf & atanhl \\
- cosh & coshf & coshl \\
- sinh & sinhf & sinhl \\
- tanh & tanhf & tanhl \\
+\section{Pointer to Global Data}
+\label{sec:pointer to global data}
 
- exp & expf & expl \\
-% exp2 & exp2f & exp2l \\
-% expm1 & expm1f & expm1l \\
- frexp & frexpf & frexpl \\
-% ilogb & ilogbf & ilogbl \\
- ldexp & ldexpf & ldexpl \\
- log & logf & logl \\
- log10 & log10f & log10l \\
-% log1p & log1pf & log1pl \\
-% log2 & log2f & log2l \\
-% logb & logbf & logbl \\
-%% modf & modff & modfl \\
-% scalbn & scalbnf & scalbnl \\
-% scalbln & scalblnf & scalblnl \\
+\subsection{Name of Global Array}
 
-% cbrt & cbrtf & cbrtl \\
- fabs & fabsf & fabsl \\
-% hypot & hypotf & hypotl \\
- pow & powf & powl \\
- sqrt & sqrtf & sqrtl \\
+The name of a global array is considered to represent an abstract entity
+in the {\XMP} language. It is not interpreted as the pointer to the array,
+while the name of a local array is.
 
-% erf & erff & erfl \\
-% erfc & erfcf & erfcl \\
-% lgamma & lgammaf & lgammal \\
-% tgamma & tgammaf & tgammal \\
+However, the name of a global array appeared in an expression is
+evaluated to the pointer to the base address of its local section on
+each node. The pointer, as a normal (local) pointer, can be operated on
+each node.
 
- ceil & ceilf & ceill \\
- floor & floorf & floorl \\
-% near byint near byintf near byintl \\
-% rint & rintf & rintl \\
-% lrint & lrintf & lrintl \\
-% llrint & llrintf & llrintl \\
-% round & roundf & roundl \\
-% lround & lroundf & lroundl \\
-% llround & llroundf & llroundl \\
-% trunc & truncf & truncl \
+\subsection{The Address-of Operator}
+\index{address-of operator}
 
- fmod & fmodf & fmodl \\ \hline
-% remainder & remainderf & remainderl \\
-% remquo & remquof & remquol \\
+The result of the address-of operator (``{\tt \&}'') applied to an
+element of a global array is the pointer to the corresponding element of
+its local section. Note that the value of the result pointer is defined
+only on the node that owns the element. The pointer, as a normal (local)
+pointer, can be operated on the node.
+
+As a result, for a global array {\tt a}, {\tt a} and {\tt \&a[0]} are
+not always evaluated to the same value.
+
+\section{Dynamic Allocation of Global Data}
+\label{sec:Dynamic Allocation of Global Data in C}
+
+In {\XMPC}, it is possible to allocate global arrays at runtime only
+when they are one-dimensional.
 %
-% copysign & copysignf & copysignl \\
-% nan & nanf & nanl \\
-% next after next afterf next afterl \\
-% next toward next towardf & next towardl \\
+Such allocation is done through the following steps.
 %
-% fdim & fdimf & fdiml \\
-% fmax & fmaxf & fmaxl \\
-% fmin & fminf & fminl \\
-
-% fma & fmaf & fmal \\
- \end{tabular} 
- \end{center}
-\end{table}
-
-\section{Intrinsic/Built-in Transformational Procedures}
-\label{112125_19Sep13}
-\index{intrinsic transformational procedures}
-\index{built-in transformational procedures}
-
-Some intrinsic/built-in transformational procedures are defined for
-non-elemental operation of arrays.
-
-Note that each ``array argument'' of the following procedures must be
-an array name or an array section, in {\XMPF}, or an array section, in
-{\XMPC}, that represents whole of the array.
-
-\subsection{\tt xmp\_scatter}
-\index{xmp\_scatter@{\tt xmp\_scatter}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&            & {\tt xmp\_scatter(x, a, idx1, ..., idxn)}\\
-
-\verb![C]!& {\tt void} & {\tt xmp\_scatter(x[:]..., a[:]..., idx1[:]..., ..., idxn[:]...)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_scatter} procedure copies the value of each element of
-an array {\tt a} to the corresponding element of an array {\tt x}
-determined by vectors {\tt idx1}, ..., {\tt idxn}.
-
-This procedure produces the same result as the following Fortran
-assignment statement does when {\tt x}, {\tt a}, and {\tt idx1}, ...,
-{\tt idxn} are not mapped.
-
-\begin{verbatim}
-x(idx1(:,:,...), ..., idxn(:,:,...)) = a(:,:,...)
-\end{verbatim}
-
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt x} is an array of any type, shape and mapping.
-\end{itemize}
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt a} is an array of the same type as {\tt x} and any shape
-       and mapping.
- \item {\tt idx1}, ..., {\tt idxn} are integer arrays of the same
-       shape and mapping as {\tt a}. The number of {\tt idx}'s is
-       equal to the rank of {\tt x}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_gather}
-\index{xmp\_gather@{\tt xmp\_gather}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&            & {\tt xmp\_gather(x, a, idx1, ..., idxn)}\\
-
-\verb![C]!& {\tt void} & {\tt xmp\_gather(x[:]..., a[:]..., idx1[:]..., ..., idxn[:]...)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_gather} procedure copies the value of each element of
-an array {\tt a} determined by vectors {\tt idx1}, ..., {\tt idxn}
-to the corresponding element of an array {\tt x}.
-
-This procedure produces the same result as the following Fortran
-assignment statement does when {\tt x}, {\tt a}, and {\tt idx1}, ...,
-{\tt idxn} are not mapped.
-
-\begin{verbatim}
-x(:,:,...) = a(idx1(:,:,...), ..., idxn(:,:,...))
-\end{verbatim}
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt x} is an array of any type, shape and mapping.
-\end{itemize}
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt a} is an array of the same type as {\tt x} and any shape
-       and mapping.
- \item {\tt idx1}, ..., {\tt idxn} are integer arrays of the same
-       shape and mapping as {\tt x}. The number of {\tt idx}'s is
-       equal to the rank of {\tt a}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_pack}
-\index{xmp\_pack@{\tt xmp\_pack}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&            & {\tt xmp\_pack(v, a, [mask])}\\
-
-\verb![C]!& {\tt void} & {\tt xmp\_pack(v[:], a[:]..., [mask[:]...])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_pack} procedure packs all the elements of an array {\tt
-a}, if {\tt mask} is not specified, or the elements selected by {\tt
-mask}, to a vector {\tt v} according to the array element order of the
-base language.
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt v} is a one-dimensional array of any type, size and
-       mapping.
-\end{itemize}
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt a} is an array of the same type of {\tt v} and any shape
-       and mapping.
- \item (optional) {\tt mask} is a logical array of the same shape and
-       mapping as {\tt a}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_unpack}
-\index{xmp\_unpack@{\tt xmp\_unpack}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&            & {\tt xmp\_unpack(a, v, [mask])}\\
-
-\verb![C]!& {\tt void} & {\tt xmp\_unpack(a[:]..., v[:], [mask[:]...])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_unpack} procedure unpacks a vector {\tt v} to all the
-elements of an array {\tt a}, if {\tt mask} is not specified, or the
-elements selected by a mask {\tt mask} according
-to the array element order of the base language.
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt a} is an array of any type, shape and mapping.
-\end{itemize}
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt v} is a one-dimensional array of the same type of {\tt a}
-       and any shape and mapping.
- \item (optional) {\tt mask} is a logical array of the same shape and
-       mapping as {\tt a}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_transpose}
-\index{xmp\_transpose@{\tt xmp\_transpose}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&            & {\tt xmp\_transpose(x, a, opt)}\\
-
-\verb![C]!& {\tt void} & {\tt xmp\_transpose(x[:][:], a[:][:], int opt)}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_transpose} procedure sets the result obtained by
-transposing a matrix {\tt a} to a matrix {\tt x}.
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt x} is a two-dimensional array of any type, shape and mapping.
-\end{itemize}
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt a} is a two-dimensional array of the same type as {\tt x}
-       and any mapping. The extent of the first dimension is equal to
-       that of the second dimension of {\tt x} and the extent of the
-       second dimension is equal to that of the first dimension of
-       {\tt x}.
- \item {\tt opt} is an integer scalar. If {\tt opt} is 0, the value of
-       {\tt a} remains unchanged after calling this procedure. If {\tt
-       opt} is 1, the value may be changed.
-\end{itemize}
-
-
-\subsection{\tt xmp\_matmul}
-\index{xmp\_matmul@{\tt xmp\_matmul}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&            & {\tt xmp\_matmul(x, a, b)}\\
-
-\verb![C]!& {\tt void} & {\tt xmp\_matmul(x[:][:], a[:][:], b[:][:])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_matmul} procedure computes the product of matrices {\tt
-a} and {\tt b}, and sets the result to a matrix {\tt x}.
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt x} is a two-dimensional array of any numerical type, shape
-       and mapping.
-\end{itemize}
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt a} is a two-dimensional array of the same type of {\tt x}
-       and any mapping. The extent of the first dimension is equal to
-       that of {\tt x}.
- \item {\tt b} is a two-dimensional array of the same type of {\tt x}
-       and any mapping. The extent of the first dimension is equal to
-       that of the second dimension of {\tt a} and the extent of the
-       second dimension is equal to that of {\tt x}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_sort\_up}
-\index{xmp\_sort\_up@{\tt xmp\_sort\_up}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&            & {\tt xmp\_sort\_up(v1, v2)}\\
-
-\verb![C]!& {\tt void} & {\tt xmp\_sort\_up(v1[:], v2[:])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_sort\_up} procedure sets the result obtained by sorting
-elements of a vector {\tt v2} in ascending order to a vector {\tt v1}.
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt v1} is a one-dimensional array of any numerical type,
-       shape and mapping.
-\end{itemize}
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt v2} is a one-dimensional array of the same type, shape and
-       mapping as {\tt v1}.
-\end{itemize}
-
-
-\subsection{\tt xmp\_sort\_down}
-\index{xmp\_sort\_down@{\tt xmp\_sort\_down}}
-
-\subsubsection*{Format}
-
-\begin{tabular}{lll}
-
-\verb![F]!&            & {\tt xmp\_sort\_down(v1, v2)}\\
-
-\verb![C]!& {\tt void} & {\tt xmp\_sort\_down(v1[:], v2[:])}\\
-
-\end{tabular}
-
-\subsubsection*{Synopsis}
-
-The {\tt xmp\_sort\_down} procedure sets the result obtained by
-sorting elements of a vector {\tt v2} in descending order to a vector
-{\tt v1}.
-
-\subsubsection*{Output Arguments}
-\begin{itemize}
- \item {\tt v1} is a one-dimensional array of any numerical type,
-       shape and mapping.
-\end{itemize}
-
-\subsubsection*{Input Arguments}
-\begin{itemize}
- \item {\tt v2} is a one-dimensional array of the same type, shape and
-       mapping as {\tt v1}.
-\end{itemize}
-
-%xmp_cshift
-%xmp_eoshift
+\begin{enumerate}
+ \item Declare a pointer to an object of the type of the global array to
+       be allocated.
+ \item Align the pointer with a template as if it were a one-dimensional
+       array.
+ \item Allocate a storage of the global size with the {\tt xmp\_malloc}
+       library procedure and assign the result value to the
+       pointer on each node.
+\end{enumerate}
+%
+The specification of {\tt xmp\_malloc} is described in section
+\ref{subsec: xmp_malloc}.
+
+\subsection*{Example}
+
+A pointer {\tt pa} to a float is declared in line 5 and aligned with a
+template {\tt t} in line 6. {\tt t} is initially undefined and fixed by
+the {\tt template\_fix} directive in line 10. The storage for a global
+data, that is, each of its local section is allocated with {\tt
+xmp\_malloc} and {\tt pa} is set to point it on each node in line 12. For
+details of the operator {\tt xmp\_desc\_of}, refer to the next section.
+
+\index{Example!dynamic allocation in XMP/C}
+\Intrinsic{xmp\_malloc}
+\Example{template\_fix}
+\Example{xmp\_malloc}
+\Example{xmp\_desc\_of}
+\begin{XCexample}
+#pragma nodes p(NP)
+#pragma xmp template t(:)
+#pragma xmp distribute t(block) onto p
+
+float *pa;
+#pragma xmp align pa[i] with t(i)
+
+...
+
+#pragma xmp template_fix t(N)
+
+pa = (float *)xmp_malloc(xmp_desc_of(pa), N);
+\end{XCexample}
+
+\section{The Descriptor-of Operator}
+\label{sec:Descriptor of Global Data in C}
+\index{xmp\_desc\_of@{\tt xmp\_desc\_of}}
+
+%When distribution of Global data is defined, query function which have 
+%operator {\tt xmp\_desc\_of} as argument can return some descriptor
+%information. 
+
+The \Term{descriptor-of operator} (``{\tt xmp\_desc\_of}'') is
+introduced as a built-in operator in {\XMPC}.
+
+The result of the descriptor-of operator applied to {\XMP} entities such
+as node arrays, templates and global arrays is their {\it
+\Term{descriptor}}, which can be used, for example, as an argument of
+some inquiry procedures. The type of the result, {\tt xmp\_desc\_t}, is
+implementation-dependent, and defined in the {\tt xmp.h} header file in
+{\XMPC}.
+
+For the {\tt xmp\_desc\_of} intrinsic function in {\XMPF}, refer to
+section \ref{subsec: xmp_desc_of}.
+
+%For details of the {\tt xmp\_desc\_of} library procedure, refer to
+%Chapter \ref{chap:Intrinsic and library procedures}.
