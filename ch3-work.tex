@@ -494,14 +494,17 @@ reduction-kind} of {\tt FIRSTMAX}, {\tt FIRSTMIN}, {\tt LASTMAX}, or
 {\tt LASTMIN}, is equivalent to the {\tt reduction} construct
 with the same {\it reduction-kind} and {\it reduction-variable},
 and an {\tt on} clause obtained from that of the {\tt loop} directive by
-replacing:
-%
-\begin{itemize}
- \item ``{\tt :}'' in the {\it nodes-ref} or the {\it template-ref} with
-       ``{\tt *}'', and
- \item {\it loop-index} in the {\it nodes-ref} or the {\it template-ref}
-       with a triplet representing the range of its value.
-\end{itemize}
+\mytextcolor{red}{replacing each {\it loop-index} in the {\it
+nodes-ref} or the {\it template-ref} with a triplet representing the
+range of its value.}
+% replacing:
+% %
+% \begin{itemize}
+%  \item ``{\tt :}'' in the {\it nodes-ref} or the {\it template-ref} with
+%        ``{\tt *}'', and
+%  \item {\it loop-index} in the {\it nodes-ref} or the {\it template-ref}
+%        with a triplet representing the range of its value.
+% \end{itemize}
 %
 Therefore, for example, the two codes below are equivalent.
 

@@ -777,13 +777,14 @@ with each other without one-to-one synchronization.
 %cobound, \Term{cosubscript}, image, image index, etc.) are derived from
 %that in Fortran 2008.
 
-\section{{\tt [C]} Coarrays in {\XMPC}.}
+\section{{\tt [C]} Coarrays in {\XMPC}}
 
 %Described in the rest of this section is the coarray features for
 %{\XMPC}.
 This section describes the coarray features for {\XMPC}.
 
 \subsection{{\tt [C]} Declaration of Coarrays}
+\label{173311_31Oct14}
 
 \subsubsection*{Synopsis}
 
@@ -792,10 +793,14 @@ Coarrays are declared in {\XMPC}.
 \subsubsection*{Syntax}
 \Syntax{coarray}
 
+% \begin{tabular}{ll}
+% \verb![C]! & {\it data-type} {\it variable} {\openb}{\tt
+%      ,} {\it variable} {\closeb}{\tt ...} {\tt :} 
+% {\it codimensions} \\
+% \end{tabular}
+
 \begin{tabular}{ll}
-\verb![C]! & {\it data-type} {\it variable} {\openb}{\tt
-     ,} {\it variable} {\closeb}{\tt ...} {\tt :} 
-{\it codimensions} \\
+\verb![C]! & \mytextcolor{red}{{\it data-type} {\it variable} {\tt :} {\it codimensions}} \\
 \end{tabular}
 
 \vspace{0.5cm}
@@ -1304,6 +1309,7 @@ A[:] = B[:]:[10];
 \section{Directives for the Local-view Programming}
 
 \subsection{{\tt [F] local\_alias} Directive}
+\label{172700_31Oct14}
 
 \subsubsection*{Synopsis}
 
@@ -1356,7 +1362,7 @@ associated global array is mapped.
 Every specification and restriction on coarrays is also applied to an associating local
 array that is a coarray except that
 an associating local array is always declared with
-{\it deferred-shape-spec-list} of the same rank as the associated global array.
+\mytextcolor{red}{\it assumed-shape-spec-list} of the same rank as the associated global array.
 In particular, a processor shall ensure that an associating local array 
 that is a coarray has
 the same bounds on all the images corresponding to the node array
@@ -1389,7 +1395,7 @@ to global data}).
        the corresponding associated global array.
 
  \item An associating local array shall be declared with
-       {\it deferred-shape-spec-list} of the
+       \mytextcolor{red}{\it assumed-shape-spec-list} of the
        same rank as the corresponding associated global array.
 
  \item A {\it local-array-name} shall appear in a COARRAY directive in the

@@ -8,6 +8,7 @@ This chapter describes base language extensions in {\XMPC} that is not
 described in any other chapters.
 
 \section{Array Section Notation}
+\label{173437_31Oct14}
 
 \subsubsection*{Synopsis}
 
@@ -25,14 +26,17 @@ which is adapted in Fortran.
 
 \vspace{0.5cm}
 
-where {\it triplet} must be one of:
+%where {\it triplet} must be one of:
+\mytextcolor{red}{where {\it triplet} is:}
 
 \vspace{0.3cm}
 
 \begin{tabular}{ll}
- \hspace{0.5cm} & {\it base} {\tt :} {\it length} {\tt :} {\it step} \\
- \hspace{0.5cm} & {\it base} {\tt :} {\it length}\\
- \hspace{0.5cm} & {\tt :} \\
+ \hspace{0.5cm} & \mytextcolor{red}{{\openb}{\it base}{\closeb} {\tt :}
+  {\openb}{\it length}{\closeb} {\openb}{\tt :} {\it step}{\closeb}}\\
+% \hspace{0.5cm} & \mytextcolor{red}{{\tt [} {\it base} {\tt ]:[} {\it length} {\tt ]:[} {\it step} {\tt ]}}\\
+% \hspace{0.5cm} & \mytextcolor{red}{{\tt [} {\it base} {\tt ]:[} {\it length} {\tt ]}}\\
+% \hspace{0.5cm} & {\tt :} \\
 \end{tabular}
 
 \subsubsection*{Description}
@@ -66,11 +70,17 @@ step} down to the smallest.
 %section of size 4 containing every third element of {\tt B} with indices
 %between 1 and 10 (i.e., indices 1, 4, 7, 10).
 
-When {\it step} is omitted, it is assumed to be ``1''.
-%
-When all of {\it base}, {\it length} and {\it step} is omitted, it is
-assumed that {\it base} is ``0'', {\it length} is the size of the
-dimension of the array, and {\it step} is ``1''.
+\mytextcolor{red}{
+When {\it base} is omitted, it is assumed to be 0. When {\it length}
+is omitted, it is assumed to be the size of the dimension of the
+array. When {\it step} is omitted, it is assumed to be 1.
+}
+
+% When {\it step} is omitted, it is assumed to be ``1''.
+% %
+% When all of {\it base}, {\it length} and {\it step} is omitted, it is
+% assumed that {\it base} is ``0'', {\it length} is the size of the
+% dimension of the array, and {\it step} is ``1''.
 
 An array section can be considered as a virtual array containing the set
 of elements from the original array determined by all possible subscript
@@ -114,8 +124,9 @@ Assuming that an array {\tt A} is declared by the following statement,
 \begin{tabular}{lll}
 \hspace{0.5cm} & {\tt A[10:10]} & array section of 10 elements from {\tt
  A[10]} to {\tt A[19]} \\
- & {\tt A[10:]} & array section of 90 elements from {\tt A[10]} to {\tt
-	 A[99]} \\
+ & {\tt A[10:]} & \mytextcolor{red}{array section of 10 elements from
+		  {\tt A[10]} to {\tt A[109]}, which would}\\
+ &              & \mytextcolor{red}{cause an error at runtime}\\
  & {\tt A[:10]} & array section of 10 elements from {\tt A[0]} to {\tt
 	 A[9]} \\
  & {\tt A[10:5:2]} & array section of 5 elements from {\tt A[10]} to
@@ -138,19 +149,37 @@ an array section.
 \index{Syntax!array assignment in XMP/C}
 
 \begin{tabular}{ll}
-\verb![C]! & {\it array-section} {\openb}{\tt :}{\tt [}{\it int-expr}{\tt
- ]}...{\closeb} {\tt =} \{ {\it variable} {\openb}{\tt :}{\tt [}{\it
- int-expr}{\tt ]}...{\closeb} $\vert$ {\it int-expr \}}{\tt ;} \\
+\verb![C]! & \mytextcolor{red}{{\it array-section} {\openb}{\tt :}{\tt [}{\it int-expr}{\tt
+ ]}...{\closeb} {\tt =} {\it expression}{\tt ;}}\\
 \end{tabular}
+
+% \begin{tabular}{ll}
+% \verb![C]! & {\it array-section} {\openb}{\tt :}{\tt [}{\it int-expr}{\tt
+%  ]}...{\closeb} {\tt =} \{ {\it variable} {\openb}{\tt :}{\tt [}{\it
+%  int-expr}{\tt ]}...{\closeb} $\vert$ {\it int-expr \}}{\tt ;} \\
+% \end{tabular}
 
 \subsubsection*{Description}
 
-When the rhs is an array section, the value of each element of it is
+\mytextcolor{red}{
+The value of each element of the result of the rhs expression is
 assigned to the corresponding element of the lhs array 
-section. When the rhs is an integer expression, its value is assigned to
-each element of the lhs array section.
+section.
+%
+When an operator or an elemental function (see section
+\ref{094142_25Sep13}) is applied to array sections in the rhs
+expression, it is evaluated to an array section that has the same shape
+as of the operands or arguments and each element of which is the result of
+the operator or function applied to corresponding element of the
+operands or arguments, where a scalar object is assumed to be an array
+section that has the same shape as of the array section(s) and each
+element of which has its value.}
 
-The rhs and/or the lhs data can have cosubscripts.
+% When the rhs is an array section, the value of each element of it is
+% assigned to the corresponding element of the lhs array 
+% section. When the rhs is an integer expression, its value is assigned to
+% each element of the lhs array section.
+% The rhs and/or the lhs data can have cosubscripts.
 
 Note that an array assignment is a statement and therefore cannot
 appear as an expression in any other statements.
@@ -158,13 +187,16 @@ appear as an expression in any other statements.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
- \item \verb![C]! When the rhs is an array section, the lhs and the rhs
-       must have the same shape, i.e., the same number of dimensions and
-       size of each dimension.
+ \item \verb![C]! any array section appearing in the rhs expression and
+	   the lhs must have the same shape, i.e., the same number of
+	   dimensions and size of each dimension.
+ % \item \verb![C]! When the rhs is an array section, the lhs and the rhs
+ %       must have the same shape, i.e., the same number of dimensions and
+ %       size of each dimension.
  \item \verb![C]! If {\it array-section} on the lhs is followed by
        ``{\tt :}{\tt [}{\it int-expr}{\tt ]}...'', it must be a coarray.
- \item \verb![C]! If {\it variable} on the rhs is followed by
-       ``{\tt :}{\tt [}{\it int-expr}{\tt ]}...'', it must be a coarray.
+ % \item \verb![C]! If {\it variable} on the rhs is followed by
+ %       ``{\tt :}{\tt [}{\it int-expr}{\tt ]}...'', it must be a coarray.
 \end{itemize}
 
 \subsubsection*{Examples}
