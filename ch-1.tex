@@ -46,7 +46,7 @@ The features of {\XMP} are summarized as follows:
        Space (PGAS) languages, such as coarray of the {\Fort} 2008
        standard, for the ``local-view'' programming.
 
- \item Extention of existing base languages with directives is useful to
+ \item Extension of existing base languages with directives is useful to
        reduce code-rewriting and education costs. The {\XMP} language
        specification is defined on {\Fort} or {\C} as a base
        language.
@@ -137,7 +137,7 @@ proposals.
 \end{itemize}
 
 
-\section{Changes from Version 1.0}
+\section{Changes from Version 1.2}
 
 \begin{itemize}
  % \item The concept of the node array and the node set is reorganized.
@@ -148,12 +148,24 @@ proposals.
  % \item The appendix on a directive for thread parallelism is deleted.
  % \item The proposal on XcalableMP I/O is changed slightly and adopted.
  % \item etc.
- \item The concept of built-in function is introduced into {\XMPC}.
- \item The semantics of array intrinsic functions of the base language
-       appearing in {\XMPF} programs is defined.
- \item Built-in elemental functions for {\XMPF} are defined.
- \item Intrinsic/built-in transformational procedures are defined.
- \item The rule for mixing {\XMP} and OpenMP in a program is defined.
+ % \item The concept of built-in function is introduced into {\XMPC}.
+ % \item The semantics of array intrinsic functions of the base language
+ %       appearing in {\XMPF} programs is defined.
+ % \item Built-in elemental functions for {\XMPF} are defined.
+ % \item Intrinsic/built-in transformational procedures are defined.
+ % \item The rule for mixing {\XMP} and OpenMP in a program is defined.
+  \item The position of {\tt align} directives for dummy arguments
+		in {\XMPC} is specified.
+  \item It is specified that aligned arrays cannot be initialized.
+  \item Interpretation of a {\tt reduction} clause of the {\tt loop}
+		directive is corrected.
+  \item The syntax for declaring coarrays is changed.
+  \item An assumed-shape array can be the target of the {\tt
+		local\_alias} directive.
+  \item The syntax and the semantics of the array section notation in
+		{\XMPC} is modified.
+  \item The syntax of the array assignment statement in {\XMPC} is
+		extended.
 \end{itemize}
 
 
@@ -212,7 +224,7 @@ determined by the innermost {\tt task}, {\tt loop} or {\tt array}
 directive surrounding it dynamically, or at runtime.
 %
 The {\it \Term{current executing node set}} is an executing node set of
-the current context, which is managed by the {\XMP} runtimes system on
+the current context, which is managed by the {\XMP} runtime system on
 each node.
 
 %The initial ``current executing node set'' (or the {\it \Term{entire
