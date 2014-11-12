@@ -7,7 +7,7 @@
 \usepackage{fancyvrb}
 \usepackage{makeidx}
 \usepackage{here}
-\usepackage{color}
+\usepackage[dvipdfmx]{color}
 %\usepackage[sectionbib]{chapterbib}
 
 \usepackage{vruler}  %% if vertical ruler (line number) is needed
@@ -105,7 +105,8 @@
 \newcommand\gio{{\tt global\_io }}
 \newcommand\mio{{\tt master\_io }}
 
-\newcommand{\mytextcolor}[2]{\textcolor{#1}{#2}}
+%\newcommand{\mytextcolor}[2]{\textcolor{#1}{#2}}
+\newcommand{\mytextcolor}[2]{{#2}}
 \newcommand{\mycolor}[1]{\color{#1}}
 
 \newenvironment{point}[1]{\vspace*{0.3cm}\begin{itembox}{#1}}{\end{itembox}\vspace*{0.3cm}}
