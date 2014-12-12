@@ -5,7 +5,7 @@
 
 %% \begin{document}
 
-\chapter{XcalableMP Memory Consistency Model}
+\chapter{Memory Consistency Model}
 
 %loop construct is synchronous.  But practically OK?
 
@@ -55,17 +55,17 @@ assignment statement \texttt{x=m(2)} is executed, the value of \texttt{x} on
 !$xmp nodes p(2)
 !$xmp template t(10)
 !$xmp distribute (block) onto p :: t
-       integer :: g(10), h(10)
+      integer :: g(10), h(10)
 !$xmp align (i) with t(i) :: g, h
-       integer :: l(10), m(10)
+      integer :: l(10), m(10)
 !$xmp local_alias l => g
 !$xmp local_alias m => h
-       integer x
+      integer x
 
-l(1)=1
+      l(1)=1
 !$xmp gmove
-h(2)=g(6)
-x=m(2)
+      h(2)=g(6)
+      x=m(2)
 \end{XFexample}
 \end{center}
 
@@ -76,18 +76,18 @@ stored at \texttt{g(6)} through a coarray \texttt{l} as follows:
 !$xmp nodes p(2)
 !$xmp template t(10)
 !$xmp distribute (block) onto p :: t
-       integer :; g(10), h(10)
+      integer :; g(10), h(10)
 !$xmp align (i) with t(i) :: g, h
-       integer :; l(10), m(10)
+      integer :; l(10), m(10)
 !$xmp local_alias l => g
 !$xmp local_alias m => h
 !$xmp coarray on p :: l(:)[*]
-       integer x
+      integer x
 
-l(1)[2]=1
+      l(1)[2]=1
 !$xmp gmove
-h(2)=g(6)
-x=m(2)
+      h(2)=g(6)
+      x=m(2)
 \end{XFexample}
 \end{center}
 
@@ -101,20 +101,20 @@ previously executed.  For example, in the following code, the value of
 !$xmp nodes p(2)
 !$xmp template t(10)
 !$xmp distribute (block) onto p :: t
-       integer :; g(10), h(10)
+      integer :; g(10), h(10)
 !$xmp align (i) with t(i) :: g, h
-       integer :; l(10), m(10)
+      integer :; l(10), m(10)
 !$xmp local_alias l => g
 !$xmp local_alias m => h
 !$xmp coarray on p :: l(:)[*]
-       integer x
+      integer x
 
-l(1)[2]=1
+      l(1)[2]=1
 !$xmp gmove async(1)
-g(7)=g(1)+1
+      g(7)=g(1)+1
 !$xmp gmove
-h(2)=g(7)
-x=m(2)
+      h(2)=g(7)
+      x=m(2)
 !$xmp wait_async(1)
 \end{XFexample}
 \end{center}
@@ -139,17 +139,17 @@ is also the case with coarrays.
 !$xmp nodes p(2)
 !$xmp template t(10)
 !$xmp distribute (block) onto p :: t
-       integer :: g(10), h(10)
+      integer :: g(10), h(10)
 !$xmp align (i) with t(i) :: g, h
-       integer :: l(10), m(10)
+      integer :: l(10), m(10)
 !$xmp local_alias l => g
 !$xmp local_alias m => h
-       integer x
+      integer x
 
-l(1)=1
+      l(1)=1
 !$xmp gmove async(1)
-h(2)=g(6)
-x=m(2)
+      h(2)=g(6)
+      x=m(2)
 !$xmp wait_async(1)
 \end{XFexample}
 \end{center}
@@ -159,26 +159,26 @@ a global construct that has \textit{async-id}.  However, it does not
 guarantee that an effect of an assignment statement that follows the global
 construct is kept.
 
-For example, in the following code, the value of \texttt{x} may be
-undefined, \texttt{1}, or \texttt{2}.
+For example, in the following code, the value of \texttt{x} is
+undefined, that is, may be \texttt{1}, \texttt{2}, or anything else.
 \begin{center}
 \begin{XFexample}
 !$xmp nodes p(2)
 !$xmp template t(10)
 !$xmp distribute (block) onto p :: t
-       integer :: g(10), h(10)
+      integer :: g(10), h(10)
 !$xmp align (i) with t(i) :: g, h
-       integer :: l(10), m(10)
+      integer :: l(10), m(10)
 !$xmp local_alias l => g
 !$xmp local_alias m => h
-       integer x
+      integer x
 
-l(1)=1
+      l(1)=1
 !$xmp gmove async(1)
-h(2)=g(6)
-m(2)=2
+      h(2)=g(6)
+      m(2)=2
 !$xmp wait_async(1)
-x=m(2)
+      x=m(2)
 \end{XFexample}
 \end{center}
 
