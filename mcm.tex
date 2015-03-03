@@ -50,9 +50,10 @@ First, instructions are defined as
 \[
 i \Coloneqq \xsync \mid \xasync{\textit{async-id}} \mid \waitasync{\textit{async-id}} \mid \fstmt
 \]
-where $\xsync$ denotes a global construct with no \texttt{async}
-clause, $\xasync{\textit{async-id}}$ denotes a global construct with
-the clause $\texttt{async}(\textit{async-id})$,
+where $\xsync$ denotes a global communication construct with no
+\texttt{async} clause, $\xasync{\textit{async-id}}$ denotes a global
+communication construct with the clause
+$\texttt{async}(\textit{async-id})$,
 %$\waitasync{\textit{async-id}}$ denotes a
 %\texttt{wait\_async}(\textit{async-id}),
 and $\fstmt$ is a statement.
@@ -94,11 +95,11 @@ The constructs \texttt{reflect}, \texttt{gmove} (and its following
 assignment statement), \texttt{reduction}, and \texttt{bcast} are
 synchronous if \texttt{async} is not specified.  It means that
 executions of these constructs guarantee completions of data
-synchronizations, that is, global constructs read data that are
-written by statements that are previously executed, and their
-following statements and global constructs read data written by global
-constructs.  This is guaranteed even if the distributed data are
-accessed in local view.  Formally,\\
+synchronizations, that is, global communication constructs read data
+that are written by statements that are previously executed, and their
+following statements and global communication constructs read data
+written by global communication constructs.  This is guaranteed even
+if the distributed data are accessed in local view.  Formally,\\
 
 \noindent
 $\E{j_1}{\xsync} < \E{j_2}{i_2}$ implies $\R{j_1}{\xsync} < \E{j_2}{i_2}$.\\
@@ -150,10 +151,11 @@ stored at \texttt{g(6)} through a coarray \texttt{l} as follows:
 \end{XFexample}
 \end{center}
 
-Remark that synchronous global constructs do not guarantee completions
-of data are written by asynchronous global constructs that are
-previously executed.  For example, in the following code, the value of
-\texttt{x} may be \texttt{1} or \texttt{2}.
+Remark that synchronous global communication constructs do not
+guarantee completions of data are written by asynchronous global
+communication constructs that are previously executed.  For example,
+in the following code, the value of \texttt{x} may be \texttt{1} or
+\texttt{2}.
 
 \begin{center}
 \begin{XFexample}
@@ -183,8 +185,8 @@ previously executed.  For example, in the following code, the value of
 The constructs \texttt{reflect}, \texttt{gmove} (and its following
 assignment statement), \texttt{reduction}, and \texttt{bcast} are
 asynchronous if \texttt{async}s are specified.  Completions of data
-read and written by these global constructs are not guaranteed until
-\texttt{wait\_async}s are executed.  Formally,\\
+read and written by these global communication constructs are not
+guaranteed until \texttt{wait\_async}s are executed.  Formally,\\
 
 \noindent
 $\E{j_1}{\xasync{\textit{async-id}}} < \E{j_3}{\waitasync{\textit{async-id}}} < \E{j_2}{i_2}$\\
@@ -218,12 +220,9 @@ is also the case with coarrays.
 \end{center}
 
 The \texttt{wait\_async(\textit{async-id})} guarantees a completion of
-a global construct that has \textit{async-id}.  However, it does not
-guarantee that an effect of an assignment statement that follows the global
-construct is kept.
-
-
-
+a global communication construct that has \textit{async-id}.  However,
+it does not guarantee that an effect of an assignment statement that
+follows the global communication construct is kept.
 
 For example, in the following code, the value of \texttt{x} is
 undefined, that is, may be \texttt{1}, \texttt{2}, or anything else.
