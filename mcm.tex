@@ -7,6 +7,15 @@
 
 \chapter{Memory Consistency Model}
 
+\newcommand{\Coloneqq}{\mathrel{\colon\!=}}
+\newcommand{\xsync}{\texttt{xmp\_syn}}
+\newcommand{\xasync}[1]{\texttt{xmp\_asyn}(#1)}
+\newcommand{\waitasync}[1]{\texttt{wait\_async}(#1)}
+\newcommand{\fstmt}{\texttt{f\_stmt}}
+\newcommand{\F}[2]{\texttt{Fetch}^{#1} \: {#2}}
+\newcommand{\E}[2]{\texttt{Execute}^{#1} \: {#2}}
+\newcommand{\R}[2]{\texttt{Reflect}^{#1} \: {#2}}
+
 %loop construct is synchronous.  But practically OK?
 
 %array construct is synchronous.  But semantically OK?
@@ -33,15 +42,6 @@ Recall that global communication constructs are collective as
 described in Section~\ref{sec:glossary}.
 
 \section{Execution Traces}
-
-\newcommand{\Coloneqq}{\mathrel{\colon\!=}}
-\newcommand{\xsync}{\texttt{xmp\_syncro}}
-\newcommand{\xasync}[1]{\texttt{xmp\_asyncro}(#1)}
-\newcommand{\waitasync}[1]{\texttt{wait\_async}(#1)}
-\newcommand{\fstmt}{\texttt{f\_stmt}}
-\newcommand{\F}[2]{\texttt{Fetch}^{#1} \: {#2}}
-\newcommand{\E}[2]{\texttt{Execute}^{#1} \: {#2}}
-\newcommand{\R}[2]{\texttt{Reflect}^{#1} \: {#2}}
 
 This section explains execution traces that Xcalable memory
 consistency model admits.
@@ -78,16 +78,27 @@ In the following, $o_1 < o_2$ denotes $o_1 \leq o_2$ and $o_1
 \not\equiv o_2$, and $o_1 < o_2 < o_3$ denotes $o_1 < o_2$ and $o_2 <
 o_3$.
 
+{
+\renewcommand{\theequation}{\roman{equation}}
+\begin{figure}[htbp]
+\begin{align}
+& \F{j_1}{i_1} < \F{j_2}{i_2} \mbox{ implies } \E{j_1}{i_1} < \E{j_2}{i_2} \label{constraints:fetchorder}\\
+& \E{j_1}{\xsync} < \E{j_2}{i_2} \mbox{ implies } \R{j_1}{\xsync} < \E{j_2}{i_2} \label{constraints:synchronous}\\
+& \E{j_1}{\xasync{\textit{async-id}}} < \E{j_3}{\waitasync{\textit{async-id}}} < \E{j_2}{i_2} \mbox{ implies} \nonumber\\
+& \R{j_1}{\xasync{\textit{async-id}}} < \E{j_2}{i_2} \label{constraints:asynchronous}
+\end{align}
+\caption{Constraints that XcalableMP memory consistency model obligates}\label{fig:constraints}
+\end{figure}
+}
+
 \subsection{Common Constraints}
 
 This subsection explains some constraints that are common between
 synchronous and asynchronous communications.
 
 In XcalableMP memory consistency model, instructions are executed in
-the order in which they are fetched.  Formally,\\
-
-\noindent
-$\F{j_1}{i_1} < \F{j_2}{i_2}$ implies $\E{j_1}{i_1} < \E{j_2}{i_2}$.
+the order in which they are fetched.  Formally, this is represented by
+\ref{constraints:fetchorder} in Figure~\ref{fig:constraints}.
 
 \subsection{Constraints for Synchronous Communications}
 
@@ -99,10 +110,9 @@ synchronizations, that is, global communication constructs read data
 that are written by statements that are previously executed, and their
 following statements and global communication constructs read data
 written by global communication constructs.  This is guaranteed even
-if the distributed data are accessed in local view.  Formally,\\
-
-\noindent
-$\E{j_1}{\xsync} < \E{j_2}{i_2}$ implies $\R{j_1}{\xsync} < \E{j_2}{i_2}$.\\
+if the distributed data are accessed in local view.  Formally, this is
+represented by \ref{constraints:synchronous} in
+Figure~\ref{fig:constraints}
 
 For example, in the following code, the assignment statement \texttt{l(1)=1} is
 guaranteed to be completed before the \texttt{gmove} construct is
@@ -186,11 +196,9 @@ The constructs \texttt{reflect}, \texttt{gmove} (and its following
 assignment statement), \texttt{reduction}, and \texttt{bcast} are
 asynchronous if \texttt{async}s are specified.  Completions of data
 read and written by these global communication constructs are not
-guaranteed until \texttt{wait\_async}s are executed.  Formally,\\
-
-\noindent
-$\E{j_1}{\xasync{\textit{async-id}}} < \E{j_3}{\waitasync{\textit{async-id}}} < \E{j_2}{i_2}$\\
-implies $\R{j_1}{\xsync} < \E{j_2}{i_2}$.\\
+guaranteed until \texttt{wait\_async}s are executed.
+Formally, this is represented by
+\ref{constraints:asynchronous} in Figure~\ref{fig:constraints}.
 
 For example, in the following code, the assignment statement \texttt{l(1)=1} may
 not be completed before the \texttt{gmove} construct is executed.
