@@ -1047,13 +1047,13 @@
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      {\bf function name}  & \multicolumn{2}{c|}{\bf ssize\_t
       xmp\_fread\_all(fh, buffer, size, count)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of read variables \\ \cline{2-3}
       & size\_t size & the size of a read data element \\ \cline{2-3}
       & size\_t count & the number of read data elements \\ \hline
-      return value & size\_t & Upon successful completion, return the size
+      return value & ssize\_t & Upon successful completion, return the size
 	      of read data. Otherwise, negative number shall be
 	      returned. \\ \hline
       \end{tabular}
@@ -1072,13 +1072,13 @@
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      {\bf function name}  & \multicolumn{2}{c|}{\bf ssize\_t
       xmp\_fwrite\_all(fh, buffer, size, count)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of written variables \\ \cline{2-3}
       & size\_t size & the size of a written data element \\ \cline{2-3}
       & size\_t count & the number of written data elements \\ \hline
-      return value & size\_t & Upon successful completion, return the size
+      return value & ssize\_t & Upon successful completion, return the size
       of written data. Otherwise, negative number shall be
       returned. \\ \hline
       \end{tabular}
@@ -1094,12 +1094,12 @@
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      {\bf function name}  & \multicolumn{2}{c|}{\bf ssize\_t
       xmp\_fread\_darray\_all(fh, desc, rp)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & xmp\_desc\_t desc & descriptor \\ \cline{2-3}
       & xmp\_range\_t $*$rp & range descriptor \\ \hline
-      return value & size\_t & Upon successful completion, return the size
+      return value & ssize\_t & Upon successful completion, return the size
 	      of read data. Otherwise, negative number shall be
 	      returned. \\ \hline
       \end{tabular}
@@ -1118,12 +1118,12 @@
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      {\bf function name}  & \multicolumn{2}{c|}{\bf ssize\_t
       xmp\_fwrite\_darray\_all(fh, desc, rp)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & xmp\_desc\_t desc & descriptor \\ \cline{2-3}
       & xmp\_range\_t $*$rp & range descriptor \\ \hline
-      return value & size\_t & Upon successful completion, return the size
+      return value & ssize\_t & Upon successful completion, return the size
 	      of read data. Otherwise, negative number shall be
 	      returned. \\ \hline
       \end{tabular}
@@ -1159,13 +1159,13 @@
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      {\bf function name}  & \multicolumn{2}{c|}{\bf ssize\_t
       xmp\_fread\_shared(fh, buffer, size, count)}  \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of read variables \\ \cline{2-3}
       & size\_t size & the size of a read data element \\ \cline{2-3}
       & size\_t count & the number of read data elements \\ \hline
-      return value & size\_t & Upon successful completion, return the size
+      return value & ssize\_t & Upon successful completion, return the size
 	      of read data. Otherwise, negative number shall be
 	      returned. \\ \hline
       \end{tabular}
@@ -1183,13 +1183,13 @@
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      {\bf function name}  & \multicolumn{2}{c|}{\bf ssize\_t
         xmp\_fwrite\_shared(fh, buffer, size, count)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of written variables \\ \cline{2-3}
       & size\_t size & the size of a written data element \\ \cline{2-3}
       & size\_t count & the number of written data elements \\ \hline
-      return value & size\_t & Upon successful completion, return the size
+      return value & ssize\_t & Upon successful completion, return the size
 	      of written data. Otherwise, negative number shall be
 	      returned. \\ \hline
       \end{tabular}
@@ -1231,13 +1231,13 @@
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      {\bf function name}  & \multicolumn{2}{c|}{\bf ssize\_t
       xmp\_fread(fh, buffer, size, count)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of read variables \\ \cline{2-3}
       & size\_t size & the size of a read data element \\ \cline{2-3}
       & size\_t count & the number of read data elements \\ \hline
-      return value & size\_t & Upon successful completion, return the size
+      return value & ssize\_t & Upon successful completion, return the size
 	      of read data. Otherwise, negative number shall be
 	      returned. \\ \hline
       \end{tabular}
@@ -1255,13 +1255,13 @@
     \begin{center}
      \begin{tabular}{|l|r|p{80mm}|}
       \hline
-      {\bf function name}  & \multicolumn{2}{c|}{\bf size\_t
+      {\bf function name}  & \multicolumn{2}{c|}{\bf ssize\_t
       xmp\_fwrite(fh, buffer, size, count)} \\ \hline \hline
       argument & xmp\_file\_t $*$fh & file structure \\ \cline{2-3}
       & void $*$buffer & beginning address of written variables \\ \cline{2-3}
       & size\_t size & the size of a written data element \\ \cline{2-3}
       & size\_t count & the number of written data elements \\ \hline
-      return value & size\_t & Upon successful completion, return the size
+      return value & ssize\_t & Upon successful completion, return the size
 	      of written data. Otherwise, negative number shall be
 	      returned. \\ \hline
       \end{tabular}
