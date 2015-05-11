@@ -155,7 +155,7 @@ executed by 16 nodes.
 !$xmp nodes p(16)
 !$xmp nodes q(4,*)
 !$xmp nodes r(8)=p(3:10)
-!$xmp nodes z(2,3)=(1:6)
+!$xmp nodes z(2,3)=p(1:6)
       ...       
       end program 
 \end{XFexample}
@@ -169,7 +169,7 @@ int main() {
 #pragma xmp nodes p(16)
 #pragma xmp nodes q(4,*)
 #pragma xmp nodes r(8)=p(3:10)
-#pragma xmp nodes z(2,3)=(1:6)
+#pragma xmp nodes z(2,3)=p(1:6)
     ...
 }
 \end{XCexampleR}
@@ -344,7 +344,7 @@ integer variable.
 \Example{nodes}
 \begin{tabular}{l}
 \verb|!$xmp nodes r(2,2,4) = p(1:4,1:4)| \\
-\verb|!$xmp nodes r(2,2,4) = (1:16)| \\
+\verb|!$xmp nodes r(2,2,4) = p(1:16)| \\
 \end{tabular}
 
 \item To specify a node array that corresponds to the executing node set
@@ -353,7 +353,7 @@ integer variable.
 \Example{task}
 \begin{tabular}{l}
 \verb|!$xmp task on p(1:4,1:4)| \\
-\verb|!$xmp task on (1:16)| \\
+\verb|!$xmp task on p(1:16)| \\
 \verb|!$xmp task on p(:,*)| \\
 \verb|!$xmp task on (m)| \\
 \end{tabular}
