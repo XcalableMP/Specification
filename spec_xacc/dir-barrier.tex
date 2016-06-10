@@ -1,0 +1,36 @@
+\section{{\tt barrier} Construct}
+
+\subsection*{Synopsis}
+
+The {\tt \Directive{barrier}} construct specifies an explicit barrier
+at the point at which the construct appears.
+
+\subsection*{Syntax}
+\Syntax{barrier}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt barrier} {\openb}{\tt on} {\it nodes-ref}
+ $\vert${\it template-ref}{\closeb} \\
+\verb![C]! & \verb|#pragma xmp| {\tt barrier} {\openb}{\tt on} {\it
+     nodes-ref} $\vert$ {\it template-ref}{\closeb} \\
+\end{tabular}
+
+\subsection*{Description}
+
+The barrier operation is performed among the node set specified by
+the {\tt on} clause. If no {\tt on} clause is specified, then it is
+assumed that the current executing node set is specified in it.
+
+Note that an {\tt on} clause may represent multiple node sets. In such a
+case, a barrier operation is performed in each node set.
+
+%The barrier construct also has the function of ensuring that all of the
+%remote copy operations that are invoked by gmove in/out constructs
+%executed by the node set specified by the {\tt on} clause are finished.
+
+\subsection*{Restriction}
+
+\begin{itemize}
+\item The node set specified by the {\tt on} clause must be a subset of the
+      executing node set.  
+\end{itemize}
