@@ -13,13 +13,15 @@ reflection source to the corresponding shadow object.
 \begin{tabular}{ll}
  \verb![F]! & \verb|!$xmp| {\tt reflect} \verb|(| {\it array-name}
  {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
- &\hspace{3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
      {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt orthogonal|orth}{\closeb}
      {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 \verb![C]! & \verb|#pragma xmp| {\tt reflect} \verb|(| {\it array-name}
      {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
- &\hspace{3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
      {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt orthogonal|orth}{\closeb}
      {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 \end{tabular}
 
@@ -66,6 +68,10 @@ Particularly when the \Term{{\tt /periodic/} modifier} is specified in
 (upper) bound is treated as if corresponding to the data object of the
 global upper (lower) bound and updated with that value by the {\tt
 reflect} construct.
+
+When the {\tt orthogonal} or {\tt orth} clause is specified,
+the shadow object is updated only by orthogonal nodes.
+The {\tt orth} is the abbreviation for the {\tt orthogonal}.
 
 When the {\tt async} clause is specified, the statements following this
 construct may be executed before the operation is complete.
