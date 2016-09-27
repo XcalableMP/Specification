@@ -18,6 +18,23 @@ The {\tt nodes} directive declares a named node array.
  {\it nodes-decl} {\closeb}...\\
 \end{tabular}
 
+\vspace{0.3cm}
+
+where {\it nodes-decl} is one of:
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
+ {\it nodes-spec} {\closeb}... \verb|)| \\
+ \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
+     {\it nodes-spec} {\closeb}... \verb|)| {\tt =} {\it nodes-ref} \\
+ \hspace{0.5cm} & \verb![C]! {\it nodes-name} \verb|[| {\it nodes-spec}
+     \verb|]|{\openb} \verb|[| {\it nodes-spec} \verb|]|... {\closeb} \\
+ \hspace{0.5cm} & \verb![C]! {\it nodes-name} \verb|[| {\it nodes-spec}
+     \verb|]|{\openb} \verb|[| {\it nodes-spec} \verb|]|... {\closeb} {\tt =} {\it nodes-ref}
+\end{tabular}
+
 %\begin{tabular}{ll}
 %\verb![F]!&\verb|!$xmp| {\tt nodes} {\it nodes-name} \verb|(|
 %     {\it nodes-spec} {\openb}, {\it nodes-spec}
@@ -42,10 +59,6 @@ The {\tt nodes} directive declares a named node array.
 
 \vspace{0.3cm}
 
-where {\it nodes-decl} is one of:
-
-\vspace{0.3cm}
-
 %\begin{tabular}{ll}
 % \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
 % {\it nodes-spec} {\closeb}... \verb|)| \\
@@ -54,15 +67,6 @@ where {\it nodes-decl} is one of:
 % \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
 %     {\it nodes-spec} {\closeb}... \verb|)| {\tt =} {\it nodes-ref} \\
 %\end{tabular}
-
-\begin{tabular}{ll}
- \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
- {\it nodes-spec} {\closeb}... \verb|)| \\
- \hspace{0.5cm} & {\it nodes-name} \verb|(| {\it nodes-spec} {\openb},
-     {\it nodes-spec} {\closeb}... \verb|)| {\tt =} {\it nodes-ref}
-\end{tabular}
-
-\vspace{0.3cm}
 
 and {\it nodes-spec} must be one of:
 
@@ -73,13 +77,12 @@ and {\it nodes-spec} must be one of:
  \hspace{0.5cm} & {\tt *} \\
 \end{tabular}
 
-
 \subsubsection*{Description}
 
 The {\tt nodes} directive declares a node array that corresponds to a
 node set.
 
-The first form of the {\tt nodes} directive is used to declare a node
+The first and third forms of the {\tt nodes} directive are used to declare a node
 array that corresponds to the entire node set.
 %The second and third forms declare a new node array with a name, a
 %dimension, and a size in order to reference a set of nodes.
@@ -88,10 +91,9 @@ array that corresponds to the entire node set.
 %The ``{\tt *}'' symbol specifies the current executing node set.
 %The third form is used to declare a node array that corresponds to the
 %node set specified by {\it nodes-ref}.
-The second form is used to declare a node array, each node of which is
+The second and fourth forms are used to declare a node array, each node of which is
 assigned to a node of the node set specified by {\it nodes-ref} at the
-corresponding position in Fortran's array element order, as if the node
-set were a one-dimensional node array.
+corresponding position.
 
 %If {\it map-type} is specified as {\tt regular}, then the order of nodes in
 %the node array follows that of the {\Fort} array. Therefore, in the first
@@ -103,10 +105,12 @@ set were a one-dimensional node array.
 %system dependent. It is desirable to order the nodes in order to make use of
 %the network topology for efficient communication. 
 
-If {\it node-size} in the last dimension is ``{\tt *}'', then the size
+If {\it node-size} in the last dimension is ``{\tt *}'' in the first and second forms
+or in the first dimension is ``{\tt *}'' in the third and fourth forms, then the size
 of the node array is automatically adjusted according to the total size
-of the entire node set in the first form, the executing node set in the
-second form, or the referenced node set in the third form.
+of the entire node set in the first and third forms, 
+%the executing node set in the second form, 
+or the referenced node set in the second and fourth forms.
 
 \subsubsection*{Restrictions}
 
@@ -117,13 +121,15 @@ second form, or the referenced node set in the third form.
       the same scoping unit.
 %\item \verb![F]! The second form cannot be used in either the main
 %      program or a module.
-\item {\it nodes-spec} can be ``{\tt *}'' only in the last dimension.
+\item {\it nodes-spec} can be ``{\tt *}'' only in the last dimension in the first and second forms, and
+{\it nodes-spec} can be ``{\tt *}'' only in the first dimension in the third and fourth forms.
 \item {\it nodes-ref} must not reference {\it nodes-name} either
       directly or indirectly.
 \item If no {\it nodes-spec} is ``{\tt *}'', then the product
       of all {\it nodes-spec} must be equal to the total size of the
-      entire node set in the first form, the executing node set in the
-      second form, or the referenced node set in the third form.
+      entire node set in the first and third forms, 
+%      the executing node set in the second and fourth forms, 
+      or the referenced node set in the second and fourth forms.
 %
 %      The referenced node set must consist of all nodes in the first form,
 %      the executing node set in the second form, and the node set
@@ -166,10 +172,10 @@ executed by 16 nodes.
 \begin{center}
 \begin{XCexampleR}
 int main() {
-#pragma xmp nodes p(16)
-#pragma xmp nodes q(4,*)
-#pragma xmp nodes r(8)=p(3:10)
-#pragma xmp nodes z(2,3)=p(1:6)
+#pragma xmp nodes p[16]
+#pragma xmp nodes q[*][4]
+#pragma xmp nodes r[8]=p[2:8]
+#pragma xmp nodes z[3][2]=p[0:6]
     ...
 }
 \end{XCexampleR}
@@ -197,12 +203,12 @@ int main() {
 %      end program
 %\end{XFexample}
 
-The following is an example of a node declaration in a procedure.
-Since {\tt p} is declared in the second form to be of size 16 and
+The following are examples of a node declaration in a procedure.
+Since {\tt p} is declared in the second and fourth forms to be of size 16 and
 corresponds to the executing node set, the invocation of the {\tt foo}
 function must be executed by 16 nodes.
 %
-The node array {\tt q} is declared in the first form and corresponds to
+The node array {\tt q} is declared in the first and third forms, and corresponds to
 the entire node set. The node array {\tt r} is declared as a subset of
 {\tt p}, and {\tt x} as a subset of {\tt q}.
 
@@ -211,6 +217,10 @@ the entire node set. The node array {\tt r} is declared as a subset of
 %is a subset of {\tt p}, and the node array of {\tt x} is a subset of
 %{\tt q}.
 
+\vspace{0.5cm}
+
+\begin{minipage}{0.45\hsize}
+\begin{center}
 \begin{XFexample}
       function foo()
 !$xmp nodes p(16)=*
@@ -220,6 +230,22 @@ the entire node set. The node array {\tt r} is declared as a subset of
       ...
       end function
 \end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{XCexampleR}
+void foo(){
+#pragma xmp nodes p[16]=*
+#pragma xmp nodes q[*][4]
+#pragma xmp nodes r[8]=p[2:8]
+#pragma xmp nodes x[3][2]=q[0:3][0:2]
+    ...
+}
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 
 \subsection{Node Reference}
@@ -237,10 +263,12 @@ node array, the ``{\tt *}'' symbol or ``{\tt **}''.
 
 \begin{center}
 \begin{tabular}{lll}
-{\it nodes-ref} & {\bf is} & {\it nodes-name} {\openb}\verb|(| {\it nodes-subscript}
-	 {\openb}, {\it nodes-subscript} {\closeb}... \verb|)|{\closeb} \\
-                & {\bf or} & {\tt *} \\
-                & {\bf or} & {\tt **}
+  \phantom{ [C]} {\it nodes-ref} & {\bf is} & {\it nodes-name} {\openb}\verb|(| {\it nodes-subscript}
+       {\openb}, {\it nodes-subscript} {\closeb}... \verb|)|{\closeb} \\
+  \verb![C]! {\it nodes-ref} & {\bf is} & {\it nodes-name} 
+       {\openb}\verb|[| {\it nodes-subscript} \verb|]|{\openb} \verb|[| {\it nodes-subscript} \verb|]|... {\closeb}{\closeb}\\
+       & {\bf or} & {\tt *} \\
+       & {\bf or} & {\tt **}
 \end{tabular}
 \end{center}
 %
@@ -275,8 +303,7 @@ where {\it nodes-subscript} must be one of:
 %numbers of the entire node set.
 
 A node reference by {\it nodes-name} represents a node set corresponding
-to the node array specified by the name or its subarray, which is
-totally ordered in Fortran's array element order.
+to the node array specified by the name or its subarray.
 %
 A node reference by ``{\tt *}''
 represents the executing node set. A node reference by ``{\tt **}''
@@ -297,7 +324,7 @@ array.
 Thus, a node reference {\tt p($s_1$, ..., $s_{k-1}$, *, $s_{k+1}$, ...,
 $s_n$)} is interpreted as {\tt p($s_1$, ..., $s_{k-1}$, $j_k$,
 $s_{k+1}$, ..., $s_n$)} on the node {\tt p($j_1$, ..., $j_{k-1}$, $j_k$,
-$j_{k+1}$, ..., $j_n$)}.
+$j_{k+1}$, ..., $j_n$)} in XcalableMP Fortran.
 
 %Thus, the following node is referenced by name with the $k$-th subscript
 %``{\tt *}'':
@@ -331,66 +358,115 @@ Assume that {\tt p} is the name of a node array and that {\tt m} is an
 integer variable.
 
 \begin{itemize}
-\item As a target node array in the {\tt distribute} directive,
+\item As a target node array in the {\tt distribute} directive,\\
 
-\Example{distribute}
-\begin{tabular}{l}
-\verb|!$xmp distribute a(block) onto p| \\
-\end{tabular}%$
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp distribute a(block) onto p
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.54\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp distribute a(block) onto p
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \item To specify a node set to which the declared node array corresponds
-      in the second form of the {\tt nodes} directive,
+      in the third and fourth forms of the {\tt nodes} directive,\\
 
-\Example{nodes}
-\begin{tabular}{l}
-\verb|!$xmp nodes r(2,2,4) = p(1:4,1:4)| \\
-\verb|!$xmp nodes r(2,2,4) = p(1:16)| \\
-\end{tabular}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp nodes r(2,2,4) = p(1:4,1:4)
+!$xmp nodes r(2,2,4) = p(1:16)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.54\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp nodes r[4][2][2] = p[0:4][0:4]
+#pragma xmp nodes r[4][2][2] = p[0:16]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \item To specify a node array that corresponds to the executing node set
       of a task in the {\tt task} directive,
 
-\Example{task}
-\begin{tabular}{l}
-\verb|!$xmp task on p(1:4,1:4)| \\
-\verb|!$xmp task on p(1:16)| \\
-\verb|!$xmp task on p(:,*)| \\
-\verb|!$xmp task on (m)| \\
-\end{tabular}
-
-\item To specify a node array with which iterations of a loop are
-      aligned in the {\tt loop} directive,
-
-%In the {\tt loop} directive, sets of executing nodes are specified
-%      for the iterations.
-
-\Example{loop}
-\begin{tabular}{l}
-\verb|!$xmp loop (i) on p(lb(i):lb(i+1)-1)| \\
-\end{tabular}%$
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp task on p(1:4,1:4)
+!$xmp task on p(1:16)
+!$xmp task on p(:,*)
+!$xmp task on p(m)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.54\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp task on p[0:4][0:4]
+#pragma xmp task on p[0:16]
+#pragma xmp task on p[*][:]
+#pragma xmp task on p[m]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \item To specify a node array that corresponds to the executing node set
-      in the {\tt barrier} and the {\tt reduction} directive,
+      in the {\tt barrier} and the {\tt reduction} directive,\\
 
 %In {\tt barrier} directive and the {\tt reduction} directive,
 %executing nodes are specified. 
 
-\Example{barrier}
-\Example{reduction}
-\begin{tabular}{l}
-\verb|!$xmp barrier on p(5:8)| \\
-\verb|!$xmp reduction (+:a) on p(*,:)| \\
-\end{tabular}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp barrier on p(5:8)
+!$xmp reduction (+:a) on p(*,:)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.54\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp barrier on p[5:4]
+#pragma xmp reduction (+:a) on p[:][*]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \item To specify the source node and the node array that corresponds to
-      the executing node set in the {\tt bcast} directive,
+      the executing node set in the {\tt bcast} directive,\\
 
 %In the {\tt bcast} directive, a source node and executing nodes are specified.
 
-\Example{bcast}
-\begin{tabular}{l}
-\verb|!$xmp bcast (b) from p(k) on p(:)| \\
-\end{tabular}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp bcast (b) from p(k) on p(:)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.54\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp (b) from p[k-1] on p[:]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
+
 \end{itemize}
 
 %\subsubsection*{Examples}
