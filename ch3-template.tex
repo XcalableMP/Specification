@@ -33,7 +33,9 @@ where {\it template-decl} is:
 
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\it template-name} \verb|(| {\it template-spec}
- {\openb}, {\it template-spec} {\closeb}... \verb|)|
+ {\openb}, {\it template-spec} {\closeb}... \verb|)| \\
+ \hspace{0.5cm} \verb![C]!& {\it template-name} \verb|[| {\it template-spec} \verb|]|
+ {\openb} \verb|[| {\it template-spec} \verb|]|... {\closeb}
 \end{tabular}
 
 \vspace{0.3cm}
@@ -54,8 +56,9 @@ the sequence of {\it template-spec}'s. If every {\it template-spec} is
 ``:'', then the shape of the template is initially undefined. This
 template must not be referenced until the shape is defined by a {\tt
 template\_fix} directive (see section \ref{subsec:template_fix
-directive}) at runtime. If {\it int-expr} is specified as {\it
-template-spec}, then the default lower bound is one.
+directive}) at runtime. 
+If {\it int-expr} is specified as {\it template-spec},
+the default lower bound is one in XcalableMP Fortran, and the default lower bound is zero in XcalableMP C.
 
 \subsubsection*{Restrictions}
 
@@ -83,9 +86,12 @@ node set.
 
 \begin{center}
 \begin{tabular}{lll}
-{\it template-ref} & {\bf is} & {\it template-name} {\openb}\verb|(|
- {\it template-subscript} {\openb}, {\it
- template-subscript}{\closeb}... \verb|)|{\closeb} \\
+\phantom{[C] } {\it template-ref} & {\bf is} & {\it template-name} {\openb}\verb|(|
+ {\it template-subscript} {\openb}, {\it template-subscript}{\closeb}... \verb|)|{\closeb} \\
+
+\verb![C]! {\it template-ref} & {\bf is} & {\it template-name} {\openb}\verb|[|
+ {\it template-subscript} \verb|]| {\openb} \verb|[| {\it template-subscript} \verb|]|...{\closeb} {\closeb} \\
+
 %{\it template-subscript} & {\bf is} & {\it int-expr} $\vert$ {\it
 %	 triplet} $\vert$ {\tt *} \\
 \end{tabular}
@@ -141,44 +147,93 @@ Assume that {\tt t} is a template.
 %\item In the {\tt task} directive, a set of executing nodes is
 %      indirectly specified for the task.
 
-\Example{task}
-\begin{tabular}{l}
-\verb|!$xmp task on t(1:m,1:n)| \\
-\verb|!$xmp task on t| \\
-\end{tabular}
+\vspace{0.5cm}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp task on t(1:m,1:n)
+!$xmp task on t
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.49\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp task on t[0:m][0:n]
+#pragma xmp task on t
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \item In the {\tt loop} directive, the executing node set of each
       iteration of the following loop is indirectly specified with a
       template reference in the {\tt on} clause.
 
-\Example{loop}
-\begin{tabular}{l}
-\verb|!$xmp loop (i) on t(i-1)| \\
-\end{tabular}%$
+\vspace{0.5cm}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp loop (i) on t(i-1)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.49\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp loop (i) on t[i-1]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \item In the {\tt array} directive, the executing node set on which the
       following array assignment statement is performed in parallel is
       indirectly specified with a template reference in the {\tt on}
       clause.
 
-\Example{array}
-\begin{tabular}{l}
-\verb|!$xmp array on t(1:n)| \\
-\end{tabular}%$
+\vspace{0.5cm}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp array on t(1:n)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.49\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp array on t[0:n]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \item In the {\tt barrier}, {\tt reduction}, and {\tt bcast} directives,
       the node set that is to perform the operation collectively can be
       indirectly specified with a template reference in the {\tt on}
       clause.
 
-\Example{barrier}
-\Example{reduction}
-\Example{bcast}
-\begin{tabular}{l}
-\verb|!$xmp barrier on t(1:n)| \\
-\verb|!$xmp reduction (+:a) on t(*,:)| \\
-\verb|!$xmp bcast b from p(k) on t(1:n)| \\
-\end{tabular}
+\vspace{0.5cm}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp barrier on t(1:n)
+!$xmp reduction (+:a) on t(*,:)
+!$xmp bcast (b) on t(1:n)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.49\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp barrier on t[0:n]
+#pragma xmp reduction (+:a) on t[:][*]
+#pragma xmp bcast (b) on t[0:n]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \end{itemize}
 
