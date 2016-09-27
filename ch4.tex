@@ -826,7 +826,7 @@ Note that, the {\tt coarray} directive for defining a coarray in the XcalableMP 
 \Example{coarray}
 
 \begin{XCexample}
-#pragma xmp nodes p(16)
+#pragma xmp nodes p[16]
 float x:[*];
 \end{XCexample}
 
@@ -1798,7 +1798,7 @@ value of {\tt XMP\_STAT\_SUCCESS}, {\tt XMP\_STAT\_LOCKED},
 
 xmp_lock_t lock_obj:[*];
 int A:[*], B;
-#pragma xmp nodes p(2)
+#pragma xmp nodes p[2]
 ...
 #pragma xmp lock(lock_obj:[2])
   if(xmp_node_num() == 1){

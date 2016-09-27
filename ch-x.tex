@@ -80,7 +80,7 @@ none.
 #include "mpi.h"
 #include "xmp.h"
 
-#pragma xmp nodes p(4)
+#pragma xmp nodes p[4]
 
 int main(int argc, char *argv[]) {
   xmp_init_mpi(&argc, &argv)
@@ -89,9 +89,9 @@ int main(int argc, char *argv[]) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-#pragma xmp task on p(2:3)
+#pragma xmp task on p[1:2]
 {
-  MPI_Comm comm = xmp_get_mpi_comm(); // get the MPI communicator of p(2:3)
+  MPI_Comm comm = xmp_get_mpi_comm(); // get the MPI communicator of p[1:2]
 
   int rank, size;
   MPI_Comm_rank(comm, &rank);

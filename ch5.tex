@@ -291,16 +291,16 @@ details of the operator {\tt xmp\_desc\_of}, refer to the next section.
 \Example{xmp\_malloc}
 \Example{xmp\_desc\_of}
 \begin{XCexample}
-#pragma nodes p(NP)
-#pragma xmp template t(:)
-#pragma xmp distribute t(block) onto p
+#pragma nodes p[NP]
+#pragma xmp template t[:]
+#pragma xmp distribute t[block] onto p
 
 float *pa;
-#pragma xmp align pa[i] with t(i)
+#pragma xmp align pa[i] with t[i]
 
 ...
 
-#pragma xmp template_fix t(N)
+#pragma xmp template_fix t[N]
 
 pa = (float *)xmp_malloc(xmp_desc_of(pa), N);
 \end{XCexample}

@@ -488,22 +488,22 @@ identical.
 
 \item[Example 1]
 
-	   The global actual argument {\tt a} is treated by the {\XMP}
-	   compiler as the pointer to the first element of its local
-	   section, which is passed to the callee, on each node.
+The global actual argument {\tt a} is treated by the {\XMP}
+compiler as the pointer to the first element of its local
+section, which is passed to the callee, on each node.
 
-	   The global dummy argument {\tt x} is initialized so that each
-	   of its local section starts from the address held by the
-	   received pointer (Figure \ref{fig5.7}).
+The global dummy argument {\tt x} is initialized so that each
+of its local section starts from the address held by the
+received pointer (Figure \ref{fig5.7}).
 
 \begin{XCexample}
 void xmp_func1()
 {
-#pragma xmp nodes p(4)
-#pragma xmp template t(0:99)
-#pragma xmp distribute t(block) onto p
+#pragma xmp nodes p[4]
+#pragma xmp template t[100]
+#pragma xmp distribute t[block] onto p
   float a[100];
-#pragma xmp align a[i] with t(i)
+#pragma xmp align a[i] with t[i]
 #pragma xmp shadow a[1:1]
 
   xmp_func2(a);
@@ -511,10 +511,10 @@ void xmp_func1()
 
 void xmp_func2(float x[100])
 {
-#pragma xmp nodes p(4)
-#pragma xmp template t(0:99)
-#pragma xmp distribute t(block) onto p
-#pragma xmp align x[i] with t(i)
+#pragma xmp nodes p[4]
+#pragma xmp template t[100]
+#pragma xmp distribute t[block] onto p
+#pragma xmp align x[i] with t[i]
 #pragma xmp shadow a[1:1]
   ...
 \end{XCexample}
@@ -527,21 +527,21 @@ void xmp_func2(float x[100])
 
 \item[Example 2]
 
-	   The global actual argument {\tt a} is treated by the {\XMP}
-	   compiler as the pointer to the first element of its local
-	   section, which is passed to the callee, on each node.
+The global actual argument {\tt a} is treated by the {\XMP}
+compiler as the pointer to the first element of its local
+section, which is passed to the callee, on each node.
 
-	   The local dummy argument {\tt x} on each node starts from the 
-	   address held by the received pointer (Figure \ref{fig5.8}).
+The local dummy argument {\tt x} on each node starts from the 
+address held by the received pointer (Figure \ref{fig5.8}).
 
 \begin{XCexample}
 void xmp_func1()
 {
-#pragma xmp nodes p(4)
-#pragma xmp template t(0:99)
-#pragma xmp distribute t(block) onto p
+#pragma xmp nodes p[4]
+#pragma xmp template t[100]
+#pragma xmp distribute t[block] onto p
   float a[100];
-#pragma xmp align a[i] with t(i)
+#pragma xmp align a[i] with t[i]
 #pragma xmp shadow a[1:1]
 
   c_func2(a);
@@ -561,25 +561,24 @@ void c_func2(float x[27])
 
 \item[Example 3]
 
-	   The actual argument {\tt a[0]} is an element of the global
-	   data and the dummy argument {\tt x} is a scalar, in which
-	   case the normal argument-passing rule of {\C} for variables
-	   of a basic type (i.e. ``pass-by-value'') is applied. However,
-	   only the node {\tt p(1)} owns the element.
-	   Hence, {\tt c\_func2} is invoked only by {\tt p(1)} (Figure
-	   \ref{fig5.9}).
+The actual argument {\tt a[0]} is an element of the global
+data and the dummy argument {\tt x} is a scalar, in which
+case the normal argument-passing rule of {\C} for variables
+of a basic type (i.e. ``pass-by-value'') is applied. However,
+only the node {\tt p[0]} owns the element.
+Hence, {\tt c\_func2} is invoked only by {\tt p[0]} (Figure \ref{fig5.9}).
 
 \begin{XCexample}
 void xmp_func1()
 {
-#pragma xmp nodes p(4)
-#pragma xmp template t(0:99)
-#pragma xmp distribute t(block) onto p
+#pragma xmp nodes p[4]
+#pragma xmp template t[100]
+#pragma xmp distribute t[block] onto p
   float a[100];
-#pragma xmp align a[i] with t(i)
+#pragma xmp align a[i] with t[i]
 #pragma xmp shadow a[1:1]
 
-#pragma xmp task on p(1)
+#pragma xmp task on p[0]
   c_func2(a[0]);
 }
 \end{XCexample}
