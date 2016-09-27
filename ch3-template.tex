@@ -937,9 +937,10 @@ template.
 \verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} {\openb}\verb|(|
      {\it dist-format} {\openb}, {\it
      dist-format}{\closeb}...\verb|)|{\closeb} {\bsquare} \\
- & \hspace{3cm}{\bsquare} {\it template-name} {\openb}\verb|(|{\it
-     template-spec} {\openb}, {\it
-     template-spec}{\closeb}... \verb|)|{\closeb} \\
+ & \hspace{3cm}{\bsquare} {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb}... \verb|)|{\closeb} \\
+ & \hspace{4cm} or \\
+ & \hspace{3cm}{\bsquare} {\it template-name} \verb|[| {\it template-spec} \verb|]|
+     {\openb} \verb|[|{\it template-spec} \verb|]|... {\closeb} \\
 \end{tabular}
 \vspace{0.3cm}
 
@@ -1004,22 +1005,44 @@ as that in the {\tt distribute} directive.
 \subsubsection*{Example}
 \Example{template\_fix}
 
+\vspace{0.5cm}
+\begin{minipage}{0.45\hsize}
+\begin{center}
 \begin{XFexample}
-!$xmp template :: t(:)
-!$xmp distribute (gblock(*)) :: t
-
-      real , allocatable :: a(:)
-!$xmp align (i) with t(i) :: a
-      ...
-      N = ...; M(...) = ...
-      ...
+!$xmp template t(:)
+!$xmp distribute t(gblock(*))
+real, allocatable :: a(:)
+!$xmp align a(i) with t(i)
+...
+N = ...
+M(...) = ...
+...
 !$xmp template_fix(gblock(M)) t(N)
-      ...
-      allocate (a(N))
+...
+allocate (a(N))
 \end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.52\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp template t[:]
+#pragma xmp distribute t[gblock(*)]
+double *a;
+#pragma xmp align a[i] with t[i]
+...
+N = ...;
+M[] = {...};
+...
+#pragma xmp template_fix(gblock(M)) t[N]
+...
+a = malloc(N * sizeof(double));
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
-Since the shape is {\tt (:)} and the distribution format is {\tt
-gblock(*)}, 
+Since the shape is {\tt t(:)} or {\tt t[:]} and the distribution format is {\tt gblock(*)}, 
 the template {\tt t} is initially undefined. The allocatable array
 {\tt a} is aligned with {\tt t}. After the size {\tt N} and the
 mapping array {\tt M} is defined, {\tt t} is fixed by the {\tt
