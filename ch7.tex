@@ -106,12 +106,14 @@ array, a template or a node array.
 
 
 \section{System Inquiry Functions}
+\label{subsec:SystemInquiryFunctions}
 
 \begin{itemize}
 % \item {\tt [F] xmp\_desc\_of}
  \item {\tt xmp\_all\_node\_num}
  \item {\tt xmp\_all\_num\_nodes}
  \item {\tt xmp\_node\_num}
+ \item {\tt xmp\_node\_rank}
  \item {\tt xmp\_num\_nodes}
 % \item {\tt xmp\_mpi\_comm}
  \item {\tt xmp\_wtime}
@@ -188,6 +190,27 @@ array, a template or a node array.
 
 none.
 
+\subsection{\tt xmp\_node\_rank}
+\label{subsec:xmpnoderank}
+\Intrinsic{xmp\_node\_rank}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![F]!&  {\tt integer function}& {\tt xmp\_node\_rank()}\\
+
+\verb![C]!&  {\tt int}& {\tt xmp\_node\_rank(void)}
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+The {\tt xmp\_node\_rank} routine returns the node number - 1,
+within the current executing node set, of the node that calls {\tt xmp\_node\_rank}.
+
+\subsubsection*{Arguments}
+
+none.
 
 \subsection{\tt xmp\_num\_nodes}
 \Intrinsic{xmp\_num\_nodes}
