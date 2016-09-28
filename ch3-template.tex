@@ -58,7 +58,7 @@ template must not be referenced until the shape is defined by a {\tt
 template\_fix} directive (see section \ref{subsec:template_fix
 directive}) at runtime. 
 If {\it int-expr} is specified as {\it template-spec},
-the default lower bound is one in XcalableMP Fortran, and the default lower bound is zero in XcalableMP C.
+the default lower bound is one in the first form, and the default lower bound is zero in the second form.
 
 \subsubsection*{Restrictions}
 
@@ -160,7 +160,7 @@ Assume that {\tt t} is a template.
 \begin{minipage}{0.49\hsize}
 \begin{center}
 \begin{XCexampleR}
-#pragma xmp task on t[0:m][0:n]
+#pragma xmp task on t[0:n][0:m]
 #pragma xmp task on t
 \end{XCexampleR}
 \end{center}
@@ -504,7 +504,7 @@ second dimension of {\tt p} in {\tt block} format. The results are as follows:
 {\tt p[0][0]} & {\tt t[0:13][0:8:8][0:64]} \\ \hline
 {\tt p[0][1]} & {\tt t[0:13][1:8:8][0:64]} \\ \hline
 ... & ... \\ \hline
-{\tt p[4][7]} & {\tt t[53:12][7:8:8][0:64]} \\ \hline
+{\tt p[4][7]} & {\tt t[52:12][7:8:8][0:64]} \\ \hline
 \end{tabular}
 \end{center}
 \end{minipage}
@@ -1037,7 +1037,7 @@ M[] = {...};
 ...
 #pragma xmp template_fix(gblock(M)) t[N]
 ...
-a = malloc(N * sizeof(double));
+a = xmp_malloc(xmp_desc_of(a), N);
 \end{XCexampleR}
 \end{center}
 \end{minipage}
@@ -1049,4 +1049,20 @@ mapping array {\tt M} is defined, {\tt t} is fixed by the {\tt
   template\_fix} construct and {\tt a} is allocated.
 
 
-%\subsection{Local Section of Mapped Data}
+In {\XMPC}, it is possible to allocate global arrays at runtime only
+when they are one-dimensional.
+%
+Such allocation is done through the following steps.
+%
+\begin{enumerate}
+ \item Declare a pointer to an object of the type of the global array to
+       be allocated.
+ \item Align the pointer with a template as if it were a one-dimensional
+       array.
+ \item Allocate a storage of the global size with the function {\tt xmp\_malloc()}
+       and assign the result value to the pointer on each node.
+\end{enumerate}
+%
+The functions {\tt xmp\_desc\_of()} and {\tt xmp\_malloc()} are described in section 
+\ref{sec:Descriptor of Global Data in C} and \ref{subsec: xmp_malloc}, respectively.
+
