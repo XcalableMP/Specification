@@ -303,8 +303,8 @@ the resulting array is set to an unspecified value.
 \subsubsection*{Synopsis}
 
 The {\tt xmp\_array\_lsize} function provides the local size of each
-dimension of the target global array. Note that the local size includes
-the size of the shadow.
+dimension of the target global array. 
+Note that the local size does not include the size of the shadow.
 
 \subsubsection*{Input Arguments}
 \begin{itemize}
@@ -365,7 +365,10 @@ target global array.
 
 The {\tt xmp\_array\_lead\_dim} function provides the leading dimension
 of each local section of the target global array.
-The leading dimension is the size (Byte) to increment one element of the specified dimension.
+The leading dimension is the number of elements to increment one element of the specified dimension.
+For example, if a[10][20][30] is defined in XcalableMP C, 
+the leading dimension in the first dimension is 600, that of the second dimension is 30, and
+that of the last dimension is 1.
 
 \subsubsection*{Input Arguments}
 \begin{itemize}

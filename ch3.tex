@@ -1,0 +1,330 @@
+\chapter{Base Language Extensions in {\XMPC}}
+
+%This chapter describes base language extensions in {\XMPC} that is other
+%than coarrays described in Chapter \ref{chap:Support for the Local-view
+%Programming}.
+
+This chapter describes base language extensions in {\XMPC} that is not
+described in any other chapters.
+
+\section{Array Section Notation}
+\label{173437_31Oct14}
+
+\subsubsection*{Synopsis}
+
+The array section notation is a notation to describe a part of an array, 
+which is adapted in Fortran.
+
+\subsubsection*{Syntax}
+\index{array section in XMP/C}
+\index{Syntax!array section in XMP/C}
+
+\begin{tabular}{llll}
+\verb![C]! & {\it array-section} & {\bf is} & {\it array-name}{\tt [} \{
+ {\it triplet} $\vert$ {\it int-expr} \} {\tt ]}...
+\end{tabular}
+
+\vspace{0.5cm}
+
+%where {\it triplet} must be one of:
+\mytextcolor{red}{where {\it triplet} is:}
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & \mytextcolor{red}{{\openb}{\it base}{\closeb} {\tt :}
+  {\openb}{\it length}{\closeb} {\openb}{\tt :} {\it step}{\closeb}}\\
+% \hspace{0.5cm} & \mytextcolor{red}{{\tt [} {\it base} {\tt ]:[} {\it length} {\tt ]:[} {\it step} {\tt ]}}\\
+% \hspace{0.5cm} & \mytextcolor{red}{{\tt [} {\it base} {\tt ]:[} {\it length} {\tt ]}}\\
+% \hspace{0.5cm} & {\tt :} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+In {\XMPC}, the base language C is extended so that a part of an array,
+that is, an array section can be put in an {\it array assignment
+statement}, which is described in \ref{sec:Array assignment statements
+in C}, and some {\XMP} constructs. An array section is built from a
+subset of the elements of an array, which is specified by this notation
+including at least one {\it triplet}.
+
+When {\it step} is positive, the {\it triplet} specifies a set of
+subscripts that is a regularly spaced integer sequence of length {\it
+length} beginning with {\it base} and proceeding in increments of {\it
+step} up to the largest.
+%
+When {\it step} is negative, the {\it triplet} specifies a set of
+subscripts that is a regularly spaced integer sequence of length {\it
+length} beginning with {\it base} and proceeding in increments of {\it
+step} down to the smallest.
+
+%{\it lower-bound} and {\it upper-bound} specify an index range of array
+%elements. {\it lower-bound} and/or {\it upper-bound} can be omitted, in
+%which case they default to the lower and/or the upper bound of the
+%array. Therefore, {\tt A[:]} is a section containing the whole of {\tt
+%A}.
+%%
+%If {\it step} is specified, then the elements of an array section are
+%every ``step''-th element in the range specified by {\it lower-bound}
+%and/or {\it upper-bound}. For example, {\tt B[1:10:3]} is an array 
+%section of size 4 containing every third element of {\tt B} with indices
+%between 1 and 10 (i.e., indices 1, 4, 7, 10).
+
+\mytextcolor{red}{
+When {\it base} is omitted, it is assumed to be 0. When {\it length}
+is omitted, it is assumed to be the rest size of the dimension of the
+array. When {\it step} is omitted, it is assumed to be 1.
+}
+
+% When {\it step} is omitted, it is assumed to be ``1''.
+% %
+% When all of {\it base}, {\it length} and {\it step} is omitted, it is
+% assumed that {\it base} is ``0'', {\it length} is the size of the
+% dimension of the array, and {\it step} is ``1''.
+
+An array section can be considered as a virtual array containing the set
+of elements from the original array determined by all possible subscript
+lists specified by the sequence of {\it triplet}'s or {\it int-expr}'s
+in square brackets.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item \verb![C]! Each of {\it base}, {\it length} and {\it step} must
+       be an integer expression.
+% \item \verb![C]! When {\it step} is positive, {\it lower-bound} must be
+%       greater than or equal to the lower bound and {\it upper-bound}
+%       must be smaller than or equal to the upper bound of the dimension
+%       of the array specified by {\it array-name}.
+% \item \verb![C]! When {\it step} is negative, {\it lower-bound} must be
+%       smaller than or equal to the upper bound and {\it upper-bound}
+%       must be greater than or equal to the lower bound of the dimension
+%       of the array specified by {\it array-name}.
+ \item \verb![C]! {\it length} must be greater than zero.
+ \item \verb![C]! {\it step} must not be zero.
+\end{itemize}
+
+\subsubsection*{Example}
+\index{Example!array section in XMP/C}
+
+Assuming that an array {\tt A} is declared by the following statement,
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+\hspace{0.5cm} & {\tt int A[100];} \\
+\end{tabular}
+
+\vspace{0.3cm}
+
+\hspace{-0.55cm}some array sections can be specified as follows:
+
+\vspace{0.3cm}
+
+\begin{tabular}{lll}
+\hspace{0.5cm} & {\tt A[10:10]} & array section of 10 elements from {\tt
+ A[10]} to {\tt A[19]} \\
+ & {\tt A[10:]} & \mytextcolor{red}{array section of 10 elements from
+		  {\tt A[10]} to {\tt A[109]}, which would}\\
+ &              & \mytextcolor{red}{cause an error at runtime}\\
+ & {\tt A[:10]} & array section of 10 elements from {\tt A[0]} to {\tt
+	 A[9]} \\
+ & {\tt A[10:5:2]} & array section of 5 elements from {\tt A[10]} to
+	 {\tt A[18]} by step 2 \\
+ & {\tt A[:]} & the whole of {\tt A} \\
+\end{tabular}
+
+\section{Array Assignment Statement}
+\label{sec:Array assignment statements in C}
+
+\subsubsection*{Synopsis}
+
+An array assignment statement copies a value into each element of
+an array section.
+
+%Array-valued expressions can be used by array section in assignments.
+
+\subsubsection*{Syntax}
+\index{array assignment in XMP/C}
+\index{Syntax!array assignment in XMP/C}
+
+\begin{tabular}{ll}
+\verb![C]! & \mytextcolor{red}{{\it array-section} {\openb}{\tt :}{\tt [}{\it int-expr}{\tt
+ ]}...{\closeb} {\tt =} {\it expression}{\tt ;}}\\
+\end{tabular}
+
+% \begin{tabular}{ll}
+% \verb![C]! & {\it array-section} {\openb}{\tt :}{\tt [}{\it int-expr}{\tt
+%  ]}...{\closeb} {\tt =} \{ {\it variable} {\openb}{\tt :}{\tt [}{\it
+%  int-expr}{\tt ]}...{\closeb} $\vert$ {\it int-expr \}}{\tt ;} \\
+% \end{tabular}
+
+\subsubsection*{Description}
+
+\mytextcolor{red}{
+The value of each element of the result of the rhs expression is
+assigned to the corresponding element of the lhs array 
+section.
+%
+When an operator or an elemental function (see section
+\ref{094142_25Sep13}) is applied to array sections in the rhs
+expression, it is evaluated to an array section that has the same shape
+as of the operands or arguments and each element of which is the result of
+the operator or function applied to corresponding element of the
+operands or arguments, where a scalar object is assumed to be an array
+section that has the same shape as of the array section(s) and each
+element of which has its value.}
+
+% When the rhs is an array section, the value of each element of it is
+% assigned to the corresponding element of the lhs array 
+% section. When the rhs is an integer expression, its value is assigned to
+% each element of the lhs array section.
+% The rhs and/or the lhs data can have cosubscripts.
+
+Note that an array assignment is a statement and therefore cannot
+appear as an expression in any other statements.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item \verb![C]! any array section appearing in the rhs expression and
+	   the lhs must have the same shape, i.e., the same number of
+	   dimensions and size of each dimension.
+ % \item \verb![C]! When the rhs is an array section, the lhs and the rhs
+ %       must have the same shape, i.e., the same number of dimensions and
+ %       size of each dimension.
+ \item \verb![C]! If {\it array-section} on the lhs is followed by
+       ``{\tt :}{\tt [}{\it int-expr}{\tt ]}...'', it must be a coarray.
+ % \item \verb![C]! If {\it variable} on the rhs is followed by
+ %       ``{\tt :}{\tt [}{\it int-expr}{\tt ]}...'', it must be a coarray.
+\end{itemize}
+
+\subsubsection*{Examples}
+\index{Example!array assignment in XMP/C}
+
+An array assignment statement in the fourth line copies the elements
+{\tt B[0]} through {\tt B[4]} into the elements {\tt A[5]} through {\tt
+A[9]}.
+
+\hspace{\hsize}
+\begin{XCexample}
+int A[10];
+int B[5];
+    ...
+A[5:5] = B[0:5]; 
+\end{XCexample}
+
+
+\section{Built-in Functions for Array Section}
+\index{built-in functions of XMP/C}
+
+Some built-in functions are defined that can accept one or more array
+sections as arguments, and, in addition, some of them are array-valued.
+%
+Such array-valued functions can appear in the right-hand side of an
+array assignment statement, and should be preceded by the {\tt array}
+directive if the array section is distributed.
+
+Each of the built-in functions for array section are described in
+Sections \ref{094142_25Sep13} and \ref{112125_19Sep13}.
+
+
+\section{Pointer to Global Data}
+\label{sec:pointer to global data}
+
+\subsection{Name of Global Array}
+
+The name of a global array is considered to represent an abstract entity
+in the {\XMP} language. It is not interpreted as the pointer to the array,
+while the name of a local array is.
+
+However, the name of a global array appeared in an expression is
+evaluated to the pointer to the base address of its local section on
+each node. The pointer, as a normal (local) pointer, can be operated on
+each node.
+
+\subsection{The Address-of Operator}
+\index{address-of operator}
+
+The result of the address-of operator (``{\tt \&}'') applied to an
+element of a global array is the pointer to the corresponding element of
+its local section. Note that the value of the result pointer is defined
+only on the node that owns the element. The pointer, as a normal (local)
+pointer, can be operated on the node.
+
+As a result, for a global array {\tt a}, {\tt a} and {\tt \&a[0]} are
+not always evaluated to the same value.
+
+%\section{Dynamic Allocation of Global Data}
+%\label{sec:Dynamic Allocation of Global Data in C}
+
+%In {\XMPC}, it is possible to allocate global arrays at runtime only
+%when they are one-dimensional.
+%
+%Such allocation is done through the following steps.
+%
+%\begin{enumerate}
+% \item Declare a pointer to an object of the type of the global array to
+%       be allocated.
+% \item Align the pointer with a template as if it were a one-dimensional
+%       array.
+% \item Allocate a storage of the global size with the {\tt xmp\_malloc}
+%       library procedure and assign the result value to the
+%       pointer on each node.
+%\end{enumerate}
+%
+%The specification of {\tt xmp\_malloc} is described in section
+%\ref{subsec: xmp_malloc}.
+
+%\subsection*{Example}
+
+%A pointer {\tt pa} to a float is declared in line 5 and aligned with a
+%template {\tt t} in line 6. {\tt t} is initially undefined and fixed by
+%the {\tt template\_fix} directive in line 10. The storage for a global
+%data, that is, each of its local section is allocated with {\tt
+%xmp\_malloc} and {\tt pa} is set to point it on each node in line 12. For
+%details of the operator {\tt xmp\_desc\_of}, refer to the next section.
+
+%\index{Example!dynamic allocation in XMP/C}
+%\Intrinsic{xmp\_malloc}
+%\Example{template\_fix}
+%\Example{xmp\_malloc}
+%\Example{xmp\_desc\_of}
+%\begin{XCexample}
+%#pragma nodes p[NP]
+%#pragma xmp template t[:]
+%#pragma xmp distribute t[block] onto p
+%
+%float *pa;
+%#pragma xmp align pa[i] with t[i]
+%
+%...
+%
+%#pragma xmp template_fix t[N]
+%
+%pa = (float *)xmp_malloc(xmp_desc_of(pa), N);
+%\end{XCexample}
+
+\section{The Descriptor-of Operator}
+\label{sec:Descriptor of Global Data in C}
+\index{xmp\_desc\_of@{\tt xmp\_desc\_of}}
+
+%When distribution of Global data is defined, query function which have 
+%operator {\tt xmp\_desc\_of} as argument can return some descriptor
+%information. 
+
+The \Term{descriptor-of operator} (``{\tt xmp\_desc\_of}'') is
+introduced as a built-in operator in {\XMPC}.
+
+The result of the descriptor-of operator applied to {\XMP} entities such
+as node arrays, templates and global arrays is their {\it
+\Term{descriptor}}, which can be used, for example, as an argument of
+some inquiry procedures. The type of the result, {\tt xmp\_desc\_t}, is
+implementation-dependent, and defined in the {\tt xmp.h} header file in
+{\XMPC}.
+
+For the {\tt xmp\_desc\_of} intrinsic function in {\XMPF}, refer to
+section \ref{subsec: xmp_desc_of}.
+
+%For details of the {\tt xmp\_desc\_of} library procedure, refer to
+%Chapter \ref{chap:Intrinsic and library procedures}.
