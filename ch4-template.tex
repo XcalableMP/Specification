@@ -1,7 +1,5 @@
 \section{Template and Data Mapping Directives}
-
-\subsection{{\tt template} Directive}
-
+\subsection{{\tt template} Directive} \label{subsec:templateDirective}
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{template}} directive declares a template. 
@@ -34,8 +32,8 @@ where {\it template-decl} is:
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\it template-name} \verb|(| {\it template-spec}
  {\openb}, {\it template-spec} {\closeb}... \verb|)| \\
- \hspace{0.5cm} \verb![C]!& {\it template-name} \verb|[| {\it template-spec} \verb|]|
- {\openb} \verb|[| {\it template-spec} \verb|]|... {\closeb}
+ \hspace{0.5cm} \verb![C]!& {\it template-name} \verb|[| {\it template-spec-c} \verb|]|
+ {\openb} \verb|[| {\it template-spec-c} \verb|]|... {\closeb}
 \end{tabular}
 
 \vspace{0.3cm}
@@ -49,16 +47,27 @@ and {\it template-spec} must be one of:
  \hspace{0.5cm} & {\tt :} \\
 \end{tabular}
 
+\vspace{0.3cm}
+
+and {\it template-spec-c} must be one of:
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it int-expr} \\
+ \hspace{0.5cm} & {\tt :} \\
+\end{tabular}
+
 \subsubsection*{Description}
 
 The {\tt template} directive declares a template with the shape specified by
-the sequence of {\it template-spec}'s. If every {\it template-spec} is
-``:'', then the shape of the template is initially undefined. This
-template must not be referenced until the shape is defined by a {\tt
-template\_fix} directive (see section \ref{subsec:template_fix
-directive}) at runtime. 
-If {\it int-expr} is specified as {\it template-spec},
-the default lower bound is one in the first form, and the default lower bound is zero in the second form.
+the sequence of {\it template-spec}'s or {\it template-spec-c}'s.
+If every {\it template-spec} or {\it template-spec-c} is ``:'', 
+then the shape of the template is initially undefined. 
+This template must not be referenced until the shape is defined by 
+a {\tt template\_fix} directive (see section \ref{subsec:template_fix directive}) at runtime.
+If only {\it int-expr} is specified as {\it template-spec},
+the default lower bound is one.
 
 \subsubsection*{Restrictions}
 
@@ -67,6 +76,7 @@ the default lower bound is one in the first form, and the default lower bound is
        in the same scoping unit.
  \item Every {\it template-spec} must be either {\openb}{\it int-expr}
        {\tt :}{\closeb} {\it int-expr} or ``:''.
+ \item Every {\it template-spec-c} must be either {\it int-expr} or ``:''.
 \end{itemize}
 
 
