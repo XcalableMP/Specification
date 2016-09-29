@@ -284,7 +284,7 @@ the resulting array is set to an unspecified value.
  \item {\tt l\_idx} is an index of the local array.
 \end{itemize}
 
-\subsection{\tt xmp\_array\_lsize}
+\subsection{\tt xmp\_array\_lsize}\label{subsec:xmparraylsize}
 \index{xmp\_array\_lsize@{\tt xmp\_array\_lsize}}
 
 \subsubsection*{Format}
@@ -345,40 +345,30 @@ target global array.
 \end{itemize}
 
 
-\subsection{\tt xmp\_array\_lead\_dim}\label{subsec:xmparrayleaddim}
-\index{xmp\_array\_lead_dim@{\tt xmp\_array\_lead\_dim}}
+\subsection{\tt xmp\_array\_lda}\label{subsec:xmparraylda}
 
 \subsubsection*{Format}
-
 \begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_array\_lead\_dim(d, dim, size)}\\
+\verb![F]!& {\tt integer function}& {\tt xmp\_array\_lda(d, lda)}\\
           & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt dim}\\
-          & {\tt integer} & {\tt size}\\
-          
-\verb![C]!&  {\tt int}& {\tt xmp\_array\_lead\_dim(xmp\_desc\_t d, int dim, int* size)}\\
-
+          & {\tt integer} & {\tt lda}\\
+\verb![C]!&  {\tt int}& {\tt xmp\_array\_lda(xmp\_desc\_t d, int* lda)}\\
 \end{tabular}
 
 \subsubsection*{Synopsis}
+The {\tt xmp\_array\_lda} function provides the leading dimension of the two-dimensional global array.
+This function is used to call numerical libraries, such as BLAS.
+If the target global array is not a two-dimensional array, 
+the value of {\tt lda} is implementation-dependent.
 
-The {\tt xmp\_array\_lead\_dim} function provides the leading dimension
-of each local section of the target global array.
-The leading dimension is the number of elements to increment one element of the specified dimension.
-For example, if a[10][20][30] is defined in XcalableMP C, 
-the leading dimension in the first dimension is 600, that of the second dimension is 30, and
-that of the last dimension is 1.
-
-\subsubsection*{Input Arguments}
+\subsubsection*{Input Argument}
 \begin{itemize}
  \item {\tt d} is a descriptor of a global array.
- \item {\tt dim} is the target dimension of the global array.
 \end{itemize}
 
 \subsubsection*{Output Argument}
 \begin{itemize}
- \item {\tt size} is a leading dimesion of the target global array.
+ \item {\tt lda} is a leading dimesion of the target global array.
 \end{itemize}
 
 
