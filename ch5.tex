@@ -255,19 +255,19 @@ pointer, can be operated on the node.
 As a result, for a global array {\tt a}, {\tt a} and {\tt \&a[0]} are
 not always evaluated to the same value.
 
+\mytextcolor{red}{
 \section{Dynamic Allocation of Global Data}
 \label{sec:Dynamic Allocation of Global Data in C}
+}
 
-In {\XMPC}, it is possible to allocate global arrays at runtime only
-when they are one-dimensional.
+In {\XMPC}, it is possible to allocate global arrays at runtime.
 %
 Such allocation is done through the following steps.
 %
 \begin{enumerate}
  \item Declare a pointer to an object of the type of the global array to
        be allocated.
- \item Align the pointer with a template as if it were a one-dimensional
-       array.
+ \item Align the pointer with a template as if it were an array.
  \item Allocate a storage of the global size with the {\tt xmp\_malloc}
        library procedure and assign the result value to the
        pointer on each node.
@@ -291,18 +291,18 @@ details of the operator {\tt xmp\_desc\_of}, refer to the next section.
 \Example{xmp\_malloc}
 \Example{xmp\_desc\_of}
 \begin{XCexample}
-#pragma nodes p(NP)
-#pragma xmp template t(:)
-#pragma xmp distribute t(block) onto p
+#pragma nodes p(NP1,NP2)
+#pragma xmp template t(:,:)
+#pragma xmp distribute t(block,block) onto p
 
-float *pa;
-#pragma xmp align pa[i] with t(i)
+float (*pa)[N2];
+#pragma xmp align pa[i][j] with t(i,j)
 
 ...
 
-#pragma xmp template_fix t(N)
+#pragma xmp template_fix t(0:N1-1,0:N2-1)
 
-pa = (float *)xmp_malloc(xmp_desc_of(pa), N);
+pa = (float (*)[N2])xmp_malloc(xmp_desc_of(pa), N1, N2);
 \end{XCexample}
 
 \section{The Descriptor-of Operator}

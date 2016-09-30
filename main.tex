@@ -1,4 +1,4 @@
-%#MAKEINDEX /usr/texbin/makeindex main
+%#MAKEINDEX makeindex main
 \documentclass[a4paper,11pt,twoside]{report}
 %%\usepackage{program}
 \usepackage{amsmath}
@@ -9,6 +9,7 @@
 \usepackage{makeidx}
 \usepackage{here}
 \usepackage[dvipdfmx]{color}
+\usepackage{ulem}
 %\usepackage[sectionbib]{chapterbib}
 
 \usepackage{vruler}  %% if vertical ruler (line number) is needed
@@ -106,8 +107,8 @@
 \newcommand\gio{{\tt global\_io }}
 \newcommand\mio{{\tt master\_io }}
 
-%\newcommand{\mytextcolor}[2]{\textcolor{#1}{#2}}
-\newcommand{\mytextcolor}[2]{{#2}}
+\newcommand{\mytextcolor}[2]{\textcolor{#1}{#2}}
+%\newcommand{\mytextcolor}[2]{{#2}}
 \newcommand{\mycolor}[1]{\color{#1}}
 
 \newenvironment{point}[1]{\vspace*{0.3cm}\begin{itembox}{#1}}{\end{itembox}\vspace*{0.3cm}}

@@ -468,7 +468,7 @@ where {\it reduction-kind} is one of:
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt +} \\
  & {\tt *} \\
- & {\tt -} \\
+% & {\tt -} \\
  & {\tt .and.} \\
  & {\tt .or.} \\
  & {\tt .eqv.} \\
@@ -499,7 +499,7 @@ where {\it reduction-kind} is one of:
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt +} \\
  & {\tt *} \\
- & {\tt -} \\
+% & {\tt -} \\
  & {\verb|&|} \\
  & {\tt |} \\
  & {\verb|^|} \\
@@ -796,16 +796,20 @@ communications specified by {\it async-id} are complete.
 The {\tt \Directive{wait\_async}} construct blocks and therefore
 statements following it are not executed until all of the asynchronous
 communications that are specified by {\it async-id}'s and issued on the
-node set specified by the {\tt on} clause are complete. 
+node set specified by the {\tt on} clause are complete.
+\mytextcolor{red}{
+If an {\it async-id} is not associated with any asynchronous
+communication, the {\tt wait\_async} construct ignores it.
+}
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
  \item {\it async-id} must be an expression of type default integer, in
        {\XMPF}, or type {\tt int}, in {\XMPC}.
- \item {\it async-id} must be associated with an asynchronous
+ \item \mytextcolor{red}{\sout{{\it async-id} must be associated with an asynchronous
        communication by the {\tt async} clause of a communication
-       construct.
+       construct.}}
  \item The {\tt wait\_async} construct is global, which means that it must
        be executed by all nodes in the current executing node set, and
        each local variable referenced in the construct must have the

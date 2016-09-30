@@ -491,12 +491,16 @@ nest.
 
 The reduction operation executed, except in cases with {\it
 reduction-kind} of {\tt FIRSTMAX}, {\tt FIRSTMIN}, {\tt LASTMAX}, or
-{\tt LASTMIN}, is equivalent to the {\tt reduction} construct
-with the same {\it reduction-kind} and {\it reduction-variable},
-and an {\tt on} clause obtained from that of the {\tt loop} directive by
-\mytextcolor{red}{replacing each {\it loop-index} in the {\it
+{\tt LASTMIN},
+\mytextcolor{red}{
+is equivalent to the {\tt reduction}
+construct with {\it reduction-kind} of ``{\tt +}'' for ``{\tt -}'' in
+the clause and the same {\it reduction-kind} for the other kinds},
+ the same {\it
+reduction-variable}, and an {\tt on} clause obtained from that of the
+{\tt loop} directive by replacing each {\it loop-index} in the {\it
 nodes-ref} or the {\it template-ref} with a triplet representing the
-range of its value.}
+range of its value.
 % replacing:
 % %
 % \begin{itemize}
