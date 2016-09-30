@@ -1,7 +1,5 @@
 \section{Template and Data Mapping Directives}
-
-\subsection{{\tt template} Directive}
-
+\subsection{{\tt template} Directive} \label{subsec:templateDirective}
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{template}} directive declares a template. 
@@ -33,7 +31,9 @@ where {\it template-decl} is:
 
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\it template-name} \verb|(| {\it template-spec}
- {\openb}, {\it template-spec} {\closeb}... \verb|)|
+ {\openb}, {\it template-spec} {\closeb}... \verb|)| \\
+ \hspace{0.5cm} \verb![C]!& {\it template-name} \verb|[| {\it template-spec-c} \verb|]|
+ {\openb} \verb|[| {\it template-spec-c} \verb|]|... {\closeb}
 \end{tabular}
 
 \vspace{0.3cm}
@@ -47,15 +47,27 @@ and {\it template-spec} must be one of:
  \hspace{0.5cm} & {\tt :} \\
 \end{tabular}
 
+\vspace{0.3cm}
+
+and {\it template-spec-c} must be one of:
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & {\it int-expr} \\
+ \hspace{0.5cm} & {\tt :} \\
+\end{tabular}
+
 \subsubsection*{Description}
 
 The {\tt template} directive declares a template with the shape specified by
-the sequence of {\it template-spec}'s. If every {\it template-spec} is
-``:'', then the shape of the template is initially undefined. This
-template must not be referenced until the shape is defined by a {\tt
-template\_fix} directive (see section \ref{subsec:template_fix
-directive}) at runtime. If {\it int-expr} is specified as {\it
-template-spec}, then the default lower bound is one.
+the sequence of {\it template-spec}'s or {\it template-spec-c}'s.
+If every {\it template-spec} or {\it template-spec-c} is ``:'', 
+then the shape of the template is initially undefined. 
+This template must not be referenced until the shape is defined by 
+a {\tt template\_fix} directive (see section \ref{subsec:template_fix directive}) at runtime.
+If only {\it int-expr} is specified as {\it template-spec},
+the default lower bound is one.
 
 \subsubsection*{Restrictions}
 
@@ -64,6 +76,7 @@ template-spec}, then the default lower bound is one.
        in the same scoping unit.
  \item Every {\it template-spec} must be either {\openb}{\it int-expr}
        {\tt :}{\closeb} {\it int-expr} or ``:''.
+ \item Every {\it template-spec-c} must be either {\it int-expr} or ``:''.
 \end{itemize}
 
 
@@ -83,9 +96,12 @@ node set.
 
 \begin{center}
 \begin{tabular}{lll}
-{\it template-ref} & {\bf is} & {\it template-name} {\openb}\verb|(|
- {\it template-subscript} {\openb}, {\it
- template-subscript}{\closeb}... \verb|)|{\closeb} \\
+\phantom{[C] } {\it template-ref} & {\bf is} & {\it template-name} {\openb}\verb|(|
+ {\it template-subscript} {\openb}, {\it template-subscript}{\closeb}... \verb|)|{\closeb} \\
+
+\verb![C]! {\it template-ref} & {\bf is} & {\it template-name} {\openb}\verb|[|
+ {\it template-subscript} \verb|]| {\openb} \verb|[| {\it template-subscript} \verb|]|...{\closeb} {\closeb} \\
+
 %{\it template-subscript} & {\bf is} & {\it int-expr} $\vert$ {\it
 %	 triplet} $\vert$ {\tt *} \\
 \end{tabular}
@@ -141,44 +157,93 @@ Assume that {\tt t} is a template.
 %\item In the {\tt task} directive, a set of executing nodes is
 %      indirectly specified for the task.
 
-\Example{task}
-\begin{tabular}{l}
-\verb|!$xmp task on t(1:m,1:n)| \\
-\verb|!$xmp task on t| \\
-\end{tabular}
+\vspace{0.5cm}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp task on t(1:m,1:n)
+!$xmp task on t
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.49\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp task on t[0:n][0:m]
+#pragma xmp task on t
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \item In the {\tt loop} directive, the executing node set of each
       iteration of the following loop is indirectly specified with a
       template reference in the {\tt on} clause.
 
-\Example{loop}
-\begin{tabular}{l}
-\verb|!$xmp loop (i) on t(i-1)| \\
-\end{tabular}%$
+\vspace{0.5cm}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp loop (i) on t(i-1)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.49\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp loop (i) on t[i-1]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \item In the {\tt array} directive, the executing node set on which the
       following array assignment statement is performed in parallel is
       indirectly specified with a template reference in the {\tt on}
       clause.
 
-\Example{array}
-\begin{tabular}{l}
-\verb|!$xmp array on t(1:n)| \\
-\end{tabular}%$
+\vspace{0.5cm}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp array on t(1:n)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.49\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp array on t[0:n]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \item In the {\tt barrier}, {\tt reduction}, and {\tt bcast} directives,
       the node set that is to perform the operation collectively can be
       indirectly specified with a template reference in the {\tt on}
       clause.
 
-\Example{barrier}
-\Example{reduction}
-\Example{bcast}
-\begin{tabular}{l}
-\verb|!$xmp barrier on t(1:n)| \\
-\verb|!$xmp reduction (+:a) on t(*,:)| \\
-\verb|!$xmp bcast b from p(k) on t(1:n)| \\
-\end{tabular}
+\vspace{0.5cm}
+\begin{minipage}{0.43\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp barrier on t(1:n)
+!$xmp reduction (+:a) on t(*,:)
+!$xmp bcast (b) on t(1:n)
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.49\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp barrier on t[0:n]
+#pragma xmp reduction (+:a) on t[:][*]
+#pragma xmp bcast (b) on t[0:n]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 \end{itemize}
 
@@ -198,8 +263,10 @@ a template.
 \verb|(|{\it dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)| {\tt onto} {\it nodes-name} \\
 & \\
 \verb![C]! & \verb|#pragma xmp| {\tt distribute} {\it template-name} 
-\verb|(|{\it dist-format} {\openb}, {\it
-     dist-format}{\closeb}... \verb|)| {\bsquare} \\
+\verb|(|{\it dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)| {\bsquare} \\
+& \hspace{3cm}{\bsquare} {\tt onto} {\it nodes-name} \\
+\verb![C]! & \verb|#pragma xmp| {\tt distribute} {\it template-name}
+\verb|[| {\it dist-format} \verb|]| {\openb} \verb|[| {\it dist-format} \verb|]| ... {\closeb} {\bsquare} \\
 & \hspace{3cm}{\bsquare} {\tt onto} {\it nodes-name} \\
 \end{tabular}
 \vspace{0.3cm}
@@ -303,91 +370,157 @@ directives at runtime.
 \end{itemize}
 
 \subsubsection*{Examples}
-\Example{nodes}
-\Example{template}
-\Example{distribute}
-
 \begin{description}
-\item[Example 1]
-\hspace{\hsize}
+\item[Example 1]~\\[0.5cm]
+\begin{minipage}{0.43\hsize}
+\begin{center}
 \begin{XFexample}
 !$xmp nodes p(4)
 !$xmp template t(64)
 !$xmp distribute t(block) onto p
 \end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp nodes p[4]
+#pragma xmp template t[64]
+#pragma xmp distribute t[block] onto p
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
 The template {\tt t} is distributed in {\tt block} format, as shown in the
 following table.
 
+\begin{minipage}{0.43\hsize}
 \begin{center}
-\begin{tabular}{|c|c|}
-\hline
-{\tt p(1)} & {\tt t(1:16)} \\
-\hline
-{\tt p(2)} & {\tt t(17:32)} \\
-\hline
-{\tt p(3)} & {\tt t(33:48)} \\
-\hline
-{\tt p(4)} & {\tt t(49:64)} \\
-\hline
+\begin{tabular}{|c|c|} \hline
+{\tt p(1)} & {\tt t(1:16)}  \\ \hline
+{\tt p(2)} & {\tt t(17:32)} \\ \hline
+{\tt p(3)} & {\tt t(33:48)} \\ \hline
+{\tt p(4)} & {\tt t(49:64)} \\ \hline
 \end{tabular}
 \end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{tabular}{|c|c|} \hline
+{\tt p[0]} & {\tt t[0:16]}  \\ \hline
+{\tt p[1]} & {\tt t[16:16]} \\ \hline
+{\tt p[2]} & {\tt t[32:16]} \\ \hline
+{\tt p[3]} & {\tt t[48:16]} \\ \hline
+\end{tabular}
+\end{center}
+\end{minipage}
 
-\item[Example 2]
-\hspace{\hsize}
+\item[Example 2]~\\[0.5cm]
+\begin{minipage}{0.43\hsize}
+\begin{center}
+{\small
 \begin{XFexample}
 !$xmp nodes p(4)
 !$xmp template t(64)
 !$xmp distribute t(cyclic(8)) onto p
 \end{XFexample}
+}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+{\small
+\begin{XCexampleR}
+#pragma xmp nodes p[4]
+#pragma xmp template t[64]
+#pragma xmp distribute t[cyclic(8)] onto p
+\end{XCexampleR}
+}
+\end{center}
+\end{minipage}
 
 The template {\tt t} is distributed in {\tt cyclic} format of size
 eight, as shown in the following table.
 
+\begin{minipage}{0.43\hsize}
 \begin{center}
-\begin{tabular}{|c|c|}
-\hline
-{\tt p(1)} & {\tt t(1:8) t(33:40)} \\
-\hline
-{\tt p(2)} & {\tt t(9,16) t(41:48)} \\
-\hline
-{\tt p(3)} & {\tt t(17,24) t(49:56)} \\
-\hline
-{\tt p(4)} & {\tt t(25,32) t(57:64)} \\
-\hline
+\begin{tabular}{|c|c|} \hline
+{\tt p(1)} & {\tt t(1:8) t(33:40)}   \\ \hline
+{\tt p(2)} & {\tt t(9,16) t(41:48)}  \\ \hline
+{\tt p(3)} & {\tt t(17,24) t(49:56)} \\ \hline
+{\tt p(4)} & {\tt t(25,32) t(57:64)} \\ \hline
 \end{tabular}
 \end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{tabular}{|c|c|} \hline
+{\tt p[0]} & {\tt t[0:8] t[32:8]}  \\ \hline
+{\tt p[1]} & {\tt t[8:8] t[40:8]} \\ \hline
+{\tt p[2]} & {\tt t[16:8] t[48:8]} \\ \hline
+{\tt p[3]} & {\tt t[24:8] t[56:8]} \\ \hline
+\end{tabular}
+\end{center}
+\end{minipage}
 
-\item[Example 3]
-\hspace{\hsize}
+\item[Example 3]~\\[0.5cm]
+\begin{minipage}{0.44\hsize}
+\begin{center}
+{\footnotesize
 \begin{XFexample}
 !$xmp nodes p(8,5)
 !$xmp template t(64,64,64)
 !$xmp distribute t(*,cyclic,block) onto p
 \end{XFexample}
+}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.52\hsize}
+\begin{center}
+{\footnotesize
+\begin{XCexampleR}
+#pragma xmp nodes p[5][8]
+#pragma xmp template t[64][64][64]
+#pragma xmp distribute t[block][cyclic][*] onto p
+\end{XCexampleR}
+}
+\end{center}
+\end{minipage}
 
 The first dimension of the template {\tt t} is not distributed. The
 second dimension is distributed onto the first dimension of the node array
 {\tt p} in {\tt cyclic} format. The third dimension is distributed onto the
 second dimension of {\tt p} in {\tt block} format. The results are as follows:
 
+\begin{minipage}{0.43\hsize}
 \begin{center}
-\begin{tabular}{|c|c|}
-\hline
-{\tt p(1,1)} & {\tt t(1:64, 1:57:8, 1:13)} \\
-\hline
-{\tt p(2,1)} & {\tt t(1:64, 2:58:8, 1:13)} \\
-\hline
-... & ... \\
-\hline
-{\tt p(8,5)} & {\tt t(1:64, 8:64:8, 53:64)} \\
-\hline
+\begin{tabular}{|c|c|} \hline
+{\tt p(1,1)} & {\tt t(1:64, 1:57:8, 1:13)} \\ \hline
+{\tt p(2,1)} & {\tt t(1:64, 2:58:8, 1:13)} \\ \hline
+... & ... \\ \hline
+{\tt p(8,5)} & {\tt t(1:64, 8:64:8, 53:64)} \\ \hline
 \end{tabular}
 \end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{tabular}{|c|c|} \hline
+{\tt p[0][0]} & {\tt t[0:13][0:8:8][0:64]} \\ \hline
+{\tt p[0][1]} & {\tt t[0:13][1:8:8][0:64]} \\ \hline
+... & ... \\ \hline
+{\tt p[4][7]} & {\tt t[52:12][7:8:8][0:64]} \\ \hline
+\end{tabular}
+\end{center}
+\end{minipage}
 
-Note that the size of the third dimension of {\tt t}, 64, is not
-divisible by the size of the second dimension of {\tt p}, 5. Thus, sizes of
-the blocks in the third dimension are different among nodes.
+Note that the ``64'' in {\tt template t} is not divisible by ``5'' in {\tt node p}. 
+Thus, sizes of the blocks are different among nodes.
 
 \end{description}
 
@@ -410,11 +543,12 @@ mapped in the same way as a specified template.
      align-subscript}{\closeb}... \verb|)| \\ 
  & \\
 \verb![C]! & \verb|#pragma xmp| {\tt align} {\it array-name} 
-{\tt [}{\it align-source}{\tt ]} {\openb}{\tt [}{\it align-source}{\tt
-     ]}{\closeb}... {\bsquare} \\
+{\tt [}{\it align-source}{\tt ]} {\openb}{\tt [}{\it align-source}{\tt ]}{\closeb}... {\bsquare} \\
  & \hspace{3cm}{\bsquare} {\tt with} {\it template-name}
-\verb|(|{\it align-subscript} {\openb}, {\it
-     align-subscript}{\closeb}... \verb|)| \\
+\verb|(|{\it align-subscript} {\openb}, {\it align-subscript}{\closeb}... \verb|)| \\
+ & \hspace{4cm} or \\
+ & \hspace{3cm}{\bsquare} {\tt with} {\it template-name}
+\verb|[|{\it align-subscript} \verb|]| {\openb} \verb|[| {\it align-subscript} \verb|]|... {\closeb} \\
 \end{tabular}
 \vspace{0.3cm}
 
@@ -486,11 +620,10 @@ align-subscript}'s are interpreted as follows:
 	     matched up in corresponding left-to-right order, where any
 	     {\it align-source} and {\it align-subscript} that is not a
 	     colon is ignored.
-       \item \verb![C]! Colons in the sequence of {\it align-source}'s
-	     in right-to-left order and those in the sequence of {\it 
-	     align-subscript}'s in left-to-right order are matched up,
-	     where any {\it align-source} and {\it align-subscript} that
-	     is not a colon is ignored.
+       \item \verb![C]! Colons in the sequence of {\it align-source}'s in right-to-left order, and
+         those in the sequence of \verb|(|{\it align-subscript}\verb|)|'s in left-to-right order are matched up,
+         or those in the sequence of \verb|[|{\it align-subscript}\verb|]|'s in right-to-left order are matched up, 
+	 where any {\it align-source} and {\it align-subscript} that is not a colon is ignored.
       \end{itemize}
 
 %      If both of {\it align-source} and {\it align-subscript} is ``:'',
@@ -532,67 +665,132 @@ in the ANSI style).
 \Example{align}
 
 \begin{description}
-\item[Example 1]
-\hspace{\hsize}
+\item[Example 1]~\\[0.5cm]
+\begin{minipage}{0.43\hsize}
+\begin{center}
 \begin{XFexample}
 !$xmp align a(i) with t(i)
 \end{XFexample}
-%$
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp align a[i] with t[i]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
-The array element {\tt a(i)} is aligned with the template element {\tt
-t(i)}. This is equivalent to the following code.
+In XcalableMP Fortran,
+the array element {\tt a(i)} is aligned with the template element {\tt t(i)}.
+In XcalableMP C,
+the array element {\tt a[i]} is aligned with the template element {\tt t[i]}.
+These are equivalent to the following codes.
 
+\vspace{0.5cm}
+
+\begin{minipage}{0.43\hsize}
+\begin{center}
 \begin{XFexample}
 !$xmp align a(:) with t(:)
 \end{XFexample}
-%$
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp align a[:] with t[:]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
-\item[Example 2]
-\hspace{\hsize}
+\item[Example 2]~\\[0.5cm]
+\begin{minipage}{0.43\hsize}
+\begin{center}
 \begin{XFexample}
 !$xmp align a(*,j) with t(j)
 \end{XFexample}
-%$
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp align a[j][*] with t[j]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
-The subarray {\tt a(:,j)} is aligned with the template element {\tt
-t(j)}. Note that the first dimension of {\tt a} is collapsed.
+In XcalableMP Fortran,
+the subarray {\tt a(:,j)} is aligned with the template element {\tt t(j)}. 
+Note that the first dimension of {\tt a} is collapsed.
+In XcalableMP C,
+the subarray {\tt a[j][:]} is aligned with the template element {\tt t[j]}.
+Note that the second dimension of {\tt a} is collapsed.
 
-\item[Example 3]
-\hspace{\hsize}
+\item[Example 3]~\\[0.5cm]
+\begin{minipage}{0.43\hsize}
+\begin{center}
 \begin{XFexample}
 !$xmp align a(j) with t(*,j)
 \end{XFexample}
-%$
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp align a[j] with t[j][*]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
-The array element {\tt a(j)} is replicated and aligned with each
+In XcalableMP Fortran, 
+the array element {\tt a(j)} is replicated and aligned with each
 template element of {\tt t(:,j)}.
+In XcalableMP C,
+the array element {\tt a[j]} is replicated and aligned with each
+template element of {\tt t[j][:]}.
 
-\item[Example 4]
-\hspace{\hsize}
+\item[Example 4]~\\[0.5cm]
+\begin{minipage}{0.43\hsize}
+\begin{center}
 \begin{XFexample}
 !$xmp template t(n1,n2)
-      real a(m1,m2)
+real a(m1,m2)
 !$xmp align a(*,j) with t(*,j)
 \end{XFexample}
-%$
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.5\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp template t[n2][n1]
+double a[m2][m1]
+#pragma xmp align a[j][*] with t[j][*]
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
-	   The subarray {\tt a(:,j)} is aligned with each template
-	   element of {\tt t(:,j)}.
+In XcalableMP Fortran, 
+the subarray {\tt a(:,j)} is aligned with each template element of {\tt t(:,j)}.
+In XcalableMP C,
+the subarray {\tt a[j][:]} is aligned with each template element of {\tt t[j][:]}.
 
+By replacing ``{\tt *}'' of the array {\tt a} and ``{\tt *}'' of the template {\tt t} with a dummy variable {\tt i} and {\tt k},
+respectively, this alignment can be interpreted as the following mapping.
 
-	   By replacing ``{\tt *}'' in the first dimension of the array
-	   {\tt a} and ``{\tt *}'' in the first dimension of the
-	   template {\tt t} with a dummy variable {\tt i} and {\tt k},
-	   respectively, this alignment can be interpreted as the
-	   following mapping.
+% If ``{\tt *}'' in the first
+% dimension of the array {\tt a} is replaced by a dummy
+% variable {\tt i}, and ``{\tt *}'' in the first dimension of
+% the template {\tt t} is replaced by a dummy variable {\tt k},
+% then we have:
 
-%	   If ``{\tt *}'' in the first
-%	   dimension of the array {\tt a} is replaced by a dummy
-%	   variable {\tt i}, and ``{\tt *}'' in the first dimension of
-%	   the template {\tt t} is replaced by a dummy variable {\tt k},
-%	   then we have:
-
-$${a(i,j) \rightarrow t(k,j) \mid (i,j,k) \in (1:n1,\,1:n2,\,1:m1)}$$
+\verb|[F]| ${a(i,j) \rightarrow t(k,j) \mid (i,j,k) \in (1:n1,\,1:n2,\,1:m1)}$\\
+\verb|[C]| ${a[j][i] \rightarrow t[j][k] \mid (i,j,k) \in (0:n1,\,0:n2,\,0:m1)}$
 
 \end{description}
 
@@ -749,9 +947,10 @@ template.
 \verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} {\openb}\verb|(|
      {\it dist-format} {\openb}, {\it
      dist-format}{\closeb}...\verb|)|{\closeb} {\bsquare} \\
- & \hspace{3cm}{\bsquare} {\it template-name} {\openb}\verb|(|{\it
-     template-spec} {\openb}, {\it
-     template-spec}{\closeb}... \verb|)|{\closeb} \\
+ & \hspace{3cm}{\bsquare} {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb}... \verb|)|{\closeb} \\
+ & \hspace{4cm} or \\
+ & \hspace{3cm}{\bsquare} {\it template-name} \verb|[| {\it template-spec} \verb|]|
+     {\openb} \verb|[|{\it template-spec} \verb|]|... {\closeb} \\
 \end{tabular}
 \vspace{0.3cm}
 
@@ -816,26 +1015,64 @@ as that in the {\tt distribute} directive.
 \subsubsection*{Example}
 \Example{template\_fix}
 
+\vspace{0.5cm}
+\begin{minipage}{0.45\hsize}
+\begin{center}
 \begin{XFexample}
-!$xmp template :: t(:)
-!$xmp distribute (gblock(*)) :: t
-
-      real , allocatable :: a(:)
-!$xmp align (i) with t(i) :: a
-      ...
-      N = ...; M(...) = ...
-      ...
+!$xmp template t(:)
+!$xmp distribute t(gblock(*))
+real, allocatable :: a(:)
+!$xmp align a(i) with t(i)
+...
+N = ...
+M(...) = ...
+...
 !$xmp template_fix(gblock(M)) t(N)
-      ...
-      allocate (a(N))
+...
+allocate (a(N))
 \end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.52\hsize}
+\begin{center}
+\begin{XCexampleR}
+#pragma xmp template t[:]
+#pragma xmp distribute t[gblock(*)]
+double *a;
+#pragma xmp align a[i] with t[i]
+...
+N = ...;
+M[] = {...};
+...
+#pragma xmp template_fix(gblock(M)) t[N]
+...
+a = xmp_malloc(xmp_desc_of(a), N);
+\end{XCexampleR}
+\end{center}
+\end{minipage}
 
-Since the shape is {\tt (:)} and the distribution format is {\tt
-gblock(*)}, 
+Since the shape is {\tt t(:)} or {\tt t[:]} and the distribution format is {\tt gblock(*)}, 
 the template {\tt t} is initially undefined. The allocatable array
 {\tt a} is aligned with {\tt t}. After the size {\tt N} and the
 mapping array {\tt M} is defined, {\tt t} is fixed by the {\tt
   template\_fix} construct and {\tt a} is allocated.
 
 
-%\subsection{Local Section of Mapped Data}
+In {\XMPC}, it is possible to allocate global arrays at runtime only
+when they are one-dimensional.
+%
+Such allocation is done through the following steps.
+%
+\begin{enumerate}
+ \item Declare a pointer to an object of the type of the global array to
+       be allocated.
+ \item Align the pointer with a template as if it were a one-dimensional
+       array.
+ \item Allocate a storage of the global size with the function {\tt xmp\_malloc()}
+       and assign the result value to the pointer on each node.
+\end{enumerate}
+%
+The functions {\tt xmp\_desc\_of()} and {\tt xmp\_malloc()} are described in section 
+\ref{sec:Descriptor of Global Data in C} and \ref{subsec: xmp_malloc}, respectively.
+

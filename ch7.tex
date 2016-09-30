@@ -105,13 +105,18 @@ array, a template or a node array.
 
 
 \section{System Inquiry Functions}
+\label{subsec:SystemInquiryFunctions}
 
 \begin{itemize}
 % \item {\tt [F] xmp\_desc\_of}
  \item {\tt xmp\_all\_node\_num}
+ \item {\tt xmpc\_all\_node\_num}
  \item {\tt xmp\_all\_num\_nodes}
  \item {\tt xmp\_node\_num}
+ \item {\tt xmpc\_node\_num}
+ \item {\tt xmpc\_this\_image}
  \item {\tt xmp\_num\_nodes}
+ \item {\tt xmp\_num\_images}
 % \item {\tt xmp\_mpi\_comm}
  \item {\tt xmp\_wtime}
  \item {\tt xmp\_wtick}
@@ -123,70 +128,101 @@ array, a template or a node array.
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
-
 \verb![F]!&  {\tt integer function}& {\tt xmp\_all\_node\_num()}\\
-
 \verb![C]!&  {\tt int}& {\tt xmp\_all\_node\_num(void)}
-
 \end{tabular}
 
 \subsubsection*{Synopsis}
-
-     The {\tt xmp\_all\_node\_num} routine returns the node number,
-     within the primary node set, of the node that calls {\tt
-     xmp\_all\_node\_num}.
+The {\tt xmp\_all\_node\_num} routine returns the node number,
+within the primary node set, of the node that calls {\tt xmp\_all\_node\_num}.
 
 \subsubsection*{Arguments}
+none.
 
-    none.
+%%%%%%%%%%%%%
+\subsection{\tt xmpc\_all\_node\_num}\label{sub:xmpcallnodenum}
+\Intrinsic{xmpc\_all\_node\_num}
 
+\subsubsection*{Format}
 
+\begin{tabular}{lll}
+\verb![F]!&  {\tt integer function}& {\tt xmpc\_all\_node\_num()}\\
+\verb![C]!&  {\tt int}& {\tt xmpc\_all\_node\_num(void)}
+\end{tabular}
+
+\subsubsection*{Synopsis}
+The {\tt xmpc\_all\_node\_num} routine returns the node number $- 1$,
+within the primary node set, of the node that calls {\tt xmpc\_all\_node\_num}.
+
+\subsubsection*{Arguments}
+none.
+
+%%%%%%%%%%%%%
 \subsection{\tt xmp\_all\_num\_nodes}
 \Intrinsic{xmp\_all\_num\_nodes}
 
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
-
 \verb![F]!&  {\tt integer function}& {\tt xmp\_all\_num\_nodes()}\\
-
 \verb![C]!&  {\tt int}& {\tt xmp\_all\_num\_nodes(void)}
-
 \end{tabular}
 
 \subsubsection*{Synopsis}
-
-     The {\tt xmp\_all\_num\_nodes} routine returns the number of nodes
-     in the entire node set.
+The {\tt xmp\_all\_num\_nodes} routine returns the number of nodes
+in the entire node set.
 
 \subsubsection*{Arguments}
+none.
 
-    none.
-
-
+%%%%%%%%%%%%%
 \subsection{\tt xmp\_node\_num}
 \Intrinsic{xmp\_node\_num}
 
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
-
 \verb![F]!&  {\tt integer function}& {\tt xmp\_node\_num()}\\
-
 \verb![C]!&  {\tt int}& {\tt xmp\_node\_num(void)}
-
 \end{tabular}
 
 \subsubsection*{Synopsis}
-
-     The {\tt xmp\_node\_num} routine returns the node number,
-     within the current executing node set, of the node that calls {\tt
-     xmp\_node\_num}.
+The {\tt xmp\_node\_num} routine returns the node number,
+within the current executing node set, of the node that calls {\tt xmp\_node\_num}.
 
 \subsubsection*{Arguments}
-
 none.
 
+\subsection{\tt xmpc\_node\_num}\label{sub:xmpcnodenum}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+\verb![F]!&  {\tt integer function}& {\tt xmpc\_node\_num()}\\
+\verb![C]!&  {\tt int}& {\tt xmpc\_node\_num(void)}
+\end{tabular}
+
+\subsubsection*{Synopsis}
+The {\tt xmpc\_node\_num} routine returns the node number $- 1$,
+within the current executing node set, of the node that calls {\tt xmpc\_node\_num}.
+
+\subsubsection*{Arguments}
+none.
+
+\subsection{\tt xmpc\_this\_image}\label{sub:xmpcthisimage}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+\verb![F]!&  {\tt integer function}& {\tt xmpc\_this\_image()}\\
+\verb![C]!&  {\tt int}& {\tt xmpc\_this\_image(void)}
+\end{tabular}
+
+\subsubsection*{Synopsis}
+The {\tt xmpc\_this\_image} routine is equal to the {\tt xmpc\_node\_num} routine.
+
+\subsubsection*{Arguments}
+none.
 
 \subsection{\tt xmp\_num\_nodes}
 \Intrinsic{xmp\_num\_nodes}
@@ -194,20 +230,29 @@ none.
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
-
 \verb![F]!&  {\tt integer function}& {\tt xmp\_num\_nodes()}\\
-
 \verb![C]!&  {\tt int}& {\tt xmp\_num\_nodes(void)}
-
 \end{tabular}
 
 \subsubsection*{Synopsis}
-
-     The {\tt xmp\_num\_nodes} routine returns the number of the
-     executing nodes.
+The {\tt xmp\_num\_nodes} routine returns the number of the executing nodes.
 
 \subsubsection*{Arguments}
+none.
 
+\subsection{\tt xmp\_num\_images}\label{sub:xmpnumimages}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+\verb![F]!&  {\tt integer function}& {\tt xmp\_num\_images()}\\
+\verb![C]!&  {\tt int}& {\tt xmp\_num\_images(void)}
+\end{tabular}
+
+\subsubsection*{Synopsis}
+The {\tt xmp\_num\_images} routine is equal to the {\tt xmp\_num\_nodes} routine.
+
+\subsubsection*{Arguments}
 none.
 
 %\subsection{\tt xmp\_mpi\_comm}
@@ -215,21 +260,17 @@ none.
 %\subsubsection*{Format}
 %
 %\begin{tabular}{lll}
-%
 %\verb![F]!&  {\tt integer function}& {\tt xmp\_mpi\_comm({\it nodes-name})}\\
-%
 %\verb![C]!&  {\tt int}& {\tt xmp\_mpi\_comm({\it nodes-name})}
-%
 %\end{tabular}
 %
 %\subsubsection*{Synopsis}
-%     The {\tt xmp\_mpi\_comm} routine returns the integer value with associated communicator
-%     to which {\it nodes-name} belongs. If non {\it nodes-name}, {\tt xmp\_mpi\_comm} returns 
-%     the value of MPI\_Comm\_World.
+%The {\tt xmp\_mpi\_comm} routine returns the integer value with associated communicator
+%to which {\it nodes-name} belongs. If non {\it nodes-name}, {\tt xmp\_mpi\_comm} returns 
+%the value of MPI\_Comm\_World.
 %
 %\subsubsection*{Arguments}
-%    The argument of {\tt xmp\_mpi\_comm} is a {\it nodes-name} of the executing node set.
-%
+%The argument of {\tt xmp\_mpi\_comm} is a {\it nodes-name} of the executing node set.
 %
 
 \subsection{\tt xmp\_wtime}
@@ -238,22 +279,18 @@ none.
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
-
 \verb![F]!&  {\tt double precision function}& {\tt xmp\_wtime()}\\
-
 \verb![C]!&  {\tt double}& {\tt xmp\_wtime(void)}
-
 \end{tabular}
 
 \subsubsection*{Synopsis}
-    The {\tt xmp\_wtime} routine returns elapsed wall clock time in seconds 
-    since some time in the past. The ``time in the past'' is guaranteed
-    not to change during the life of the process.
-    There is no requirement that different nodes return ``the same time.''
+The {\tt xmp\_wtime} routine returns elapsed wall clock time in seconds 
+since some time in the past. The ``time in the past'' is guaranteed
+not to change during the life of the process.
+There is no requirement that different nodes return ``the same time.''
 
 \subsubsection*{Arguments}
-    none.
-
+none.
 
 \subsection{\tt xmp\_wtick}
 \Intrinsic{xmp\_wtick}
@@ -261,21 +298,18 @@ none.
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
-
 \verb![F]!&  {\tt double precision function}& {\tt xmp\_wtick()}\\
-
 \verb![C]!&  {\tt double}& {\tt xmp\_wtick(void)}
-
 \end{tabular}
 
 \subsubsection*{Synopsis}
-    The {\tt xmp\_wtick} routine returns the resolution of the timer
-    used by {\tt xmp\_wtime}. 
-    It returns a double precision value equal to the number of seconds 
-    between successive clock ticks.
+The {\tt xmp\_wtick} routine returns the resolution of the timer
+used by {\tt xmp\_wtime}. 
+It returns a double precision value equal to the number of seconds 
+between successive clock ticks.
 
 \subsubsection*{Arguments}
-    none.
+none.
 
 
 %\subsection{\tt xmp\_barrier}
@@ -283,11 +317,8 @@ none.
 %\subsubsection*{Format}
 %
 %\begin{tabular}{lll}
-%
 %\verb![F]!&  & {\tt xmp\_barrier({\it nodes-name})}\\
-%
 %\verb![C]!&  {\tt void}& {\tt  xmp\_barrier({\it nodes-name})}
-%
 %\end{tabular}
 %
 %\subsubsection*{Synopsis}
@@ -396,8 +427,7 @@ with the {\tt async} clause.
 \section{Memory Allocation Functions}
 }
 
-\subsection{\tt [C] xmp\_malloc}
-\label{subsec: xmp_malloc}
+\subsection{\tt [C] xmp\_malloc} \label{subsec: xmp_malloc}
 \Intrinsic{xmp\_malloc}
 
 \begin{tabular}{ll}

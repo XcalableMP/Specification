@@ -80,7 +80,7 @@ none.
 #include "mpi.h"
 #include "xmp.h"
 
-#pragma xmp nodes p(4)
+#pragma xmp nodes p[4]
 
 int main(int argc, char *argv[]) {
   xmp_init_mpi(&argc, &argv)
@@ -89,9 +89,9 @@ int main(int argc, char *argv[]) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-#pragma xmp task on p(2:3)
+#pragma xmp task on p[1:2]
 {
-  MPI_Comm comm = xmp_get_mpi_comm(); // get the MPI communicator of p(2:3)
+  MPI_Comm comm = xmp_get_mpi_comm(); // get the MPI communicator of p[1:2]
 
   int rank, size;
   MPI_Comm_rank(comm, &rank);
@@ -249,49 +249,42 @@ implementation-dependent, are shown.
 Specifications of the functions below are from the Omni XcalableMP
 compiler (\url{http://www.xcalablemp.org/download.html}).
 
-\subsection{\tt xmp\_array\_gtol}
+\subsection{\tt xmp\_array\_gtol} \label{subsec:xmparraygtol}
 \Intrinsic{xmp\_array\_gtol}
 
 \begin{tabular}{lll}
 
-\verb![F]!& {\tt integer function} & {\tt xmp\_array\_gtol(d, g\_idx, l\_idx)} \\
+\verb![F]!& {\tt integer function} & {\tt xmp\_array\_gtol(d, dim, g\_idx, l\_idx)} \\
           & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt g\_idx(NDIMS)}\\
-          & {\tt integer} & {\tt l\_idx(NDIMS)}\\
+          & {\tt integer} & {\tt dim}\\
+          & {\tt integer} & {\tt g\_idx}\\
+          & {\tt integer} & {\tt l\_idx}\\
           & & \\
-\verb![C]!&  {\tt void} & {\tt xmp\_array\_gtol(xmp\_desc\_t d, int g\_idx[], int l\_idx[])}
+\verb![C]!&  {\tt void} & {\tt xmp\_array\_gtol(xmp\_desc\_t d, int dim, int g\_idx, int* l\_idx)}
 
 \end{tabular}
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_array\_gtol} function translates an index (specified by
-{\tt g\_idx}) of a global array (specified by {\tt d}) into the
-corresponding index of its local section and sets to an array specified
-by {\tt l\_idx}. If the element of the specified index does not reside
-in the caller of the function, the resulting array is set to an
-unspecified value.
+The {\tt xmp\_array\_gtol} function translates a global index specified by {\tt g\_idx} of a global array specified by {\tt d} into the corresponding index of its local section and sets to an array specified by {\tt l\_idx}. 
+If the element of the specified index does not reside in the caller of the function, 
+the resulting array is set to an unspecified value.
 
 \subsubsection*{Input Arguments}
 
 \begin{itemize}
- \item {\tt d} is a descriptor of a global array.
- \item \verb![F]! {\tt g\_idx} is a rank-one integer array of the size
-       equal to the rank of the target global array specified by {\tt
-       d}. {\tt NDIMS} is the rank of the target global array.
- \item \verb![C]! {\tt g\_idx} is a one-dimensional integer array.
+ \item {\tt d} is a descriptor of the global array.
+ \item {\tt dim} is the target dimension of the global array.
+ \item {\tt g\_idx} is an index of the global array.
 \end{itemize}
 
-\subsubsection*{Output Arguments}
+\subsubsection*{Output Argument}
 
 \begin{itemize}
- \item \verb![F]! {\tt l\_idx} is a rank-one integer array of the size
-       equal to the rank of the target global array specified by {\tt
-       d}. {\tt NDIMS} is the rank of the target global array.
- \item \verb![C]! {\tt l\_idx} is a one-dimensional integer array.
+ \item {\tt l\_idx} is an index of the local array.
 \end{itemize}
 
-\subsection{\tt xmp\_array\_lsize}
+\subsection{\tt xmp\_array\_lsize}\label{subsec:xmparraylsize}
 \index{xmp\_array\_lsize@{\tt xmp\_array\_lsize}}
 
 \subsubsection*{Format}
@@ -310,8 +303,8 @@ unspecified value.
 \subsubsection*{Synopsis}
 
 The {\tt xmp\_array\_lsize} function provides the local size of each
-dimension of the target global array. Note that the local size includes
-the size of the shadow.
+dimension of the target global array. 
+Note that the local size does not include the size of the shadow.
 
 \subsubsection*{Input Arguments}
 \begin{itemize}
@@ -319,10 +312,9 @@ the size of the shadow.
  \item {\tt dim} is the target dimension of the global array.
 \end{itemize}
 
-\subsubsection*{Output Arguments}
+\subsubsection*{Output Argument}
 \begin{itemize}
- \item {\tt lsize} is the local size of the target dimension of the
-       global array.
+ \item {\tt lsize} is the local size of the target dimension of the global array.
 \end{itemize}
 
 
@@ -353,35 +345,30 @@ target global array.
 \end{itemize}
 
 
-\subsection{\tt xmp\_array\_lead\_dim}
-\index{xmp\_array\_lead_dim@{\tt xmp\_array\_lead\_dim}}
+\subsection{\tt xmp\_array\_lda}\label{subsec:xmparraylda}
 
 \subsubsection*{Format}
-
 \begin{tabular}{lll}
-
-\verb![F]!& {\tt integer function}& {\tt xmp\_array\_lead\_dim(d, size)}\\
+\verb![F]!& {\tt integer function}& {\tt xmp\_array\_lda(d, lda)}\\
           & {\tt type(xmp\_desc)} & {\tt d}\\
-          & {\tt integer} & {\tt size(N)}\\
-          
-\verb![C]!&  {\tt int}& {\tt xmp\_array\_lead\_dim(xmp\_desc\_t d, int size[])}\\
-
+          & {\tt integer} & {\tt lda}\\
+\verb![C]!&  {\tt int}& {\tt xmp\_array\_lda(xmp\_desc\_t d, int* lda)}\\
 \end{tabular}
 
 \subsubsection*{Synopsis}
+The {\tt xmp\_array\_lda} function provides the leading dimension of the two-dimensional global array.
+This function is used to call numerical libraries, such as BLAS.
+If the target global array is not a two-dimensional array, 
+the value of {\tt lda} is implementation-dependent.
 
-The {\tt xmp\_array\_lead\_dim} function provides the leading dimension
-of each local section of the target global array.
-
-\subsubsection*{Input Arguments}
+\subsubsection*{Input Argument}
 \begin{itemize}
  \item {\tt d} is a descriptor of a global array.
 \end{itemize}
 
-\subsubsection*{Output Arguments}
+\subsubsection*{Output Argument}
 \begin{itemize}
- \item {\tt size} is a one-dimensional integer array the extent of which
-       must be more than or equal to the rank of the target global array.
+ \item {\tt lda} is a leading dimesion of the target global array.
 \end{itemize}
 
 
