@@ -109,10 +109,10 @@ For example, in the following code, the assignment statement
 \texttt{g(:)=h(:)} is guaranteed to be completed before the second
 \texttt{gmove} construct is executed.  Therefore, the value of
 \texttt{g(i)} must be \texttt{i} when the assignment statement
-\texttt{x(:)=g(:)} is executed.
+\texttt{x(:)=g(6:10)} is executed.
 
 Finally, the value of \texttt{x(i)} on \texttt{p(1)} must be
-\texttt{i}.
+\texttt{i+5}.
 
 \begin{center}
 \begin{XFexample}
@@ -131,7 +131,7 @@ Finally, the value of \texttt{x(i)} on \texttt{p(1)} must be
 !$xmp gmove
       g(:)=h(:)
 !$xmp gmove
-      x(:)=g(:)
+      x(:)=g(6:10)
 \end{XFexample}
 \end{center}
 
@@ -149,10 +149,9 @@ For example, in the following code, the assignment statement
 \texttt{g(:)=h(:)} may not be completed before the second
 \texttt{gmove} construct is executed since the first \texttt{gmove}
 construct has \texttt{async} clause.  Therefore, the value of
-\texttt{g(i)} is not guaranteed to be \texttt{i}.
-
-Finally, the value of \texttt{x(i)} on \texttt{p(1)}
-is guaranteed to be \texttt{i}.
+\texttt{g(i)} is not guaranteed to be \texttt{i+5}.  Of course, the
+value of \texttt{x(i)} on \texttt{p(1)} is not guaranteed to be
+\texttt{i+5}.
 \begin{center}
 \begin{XFexample}
 !$xmp nodes p(2)
@@ -170,7 +169,7 @@ is guaranteed to be \texttt{i}.
 !$xmp gmove async(1)
       g(:)=h(:)
 !$xmp gmove
-      x(:)=g(:)
+      x(:)=g(6:10)
 !$xmp wait_async(1)
 \end{XFexample}
 \end{center}
@@ -178,7 +177,7 @@ is guaranteed to be \texttt{i}.
 The \texttt{wait\_async(\textit{async-id})} guarantees a completion of
 a global communication construct that has \textit{async-id}.
 Therefore, the value of \texttt{x(i)} is not guaranteed to be
-\texttt{i} in the following program:
+\texttt{i+5} in the following program:
 \begin{center}
 \begin{XFexample}
 !$xmp nodes p(2)
@@ -197,13 +196,13 @@ Therefore, the value of \texttt{x(i)} is not guaranteed to be
       g(:)=h(:)
 !$xmp wait_async(1)
 !$xmp gmove
-      x(:)=g(:)
+      x(:)=g(6:10)
 \end{XFexample}
 \end{center}
 
 Assignment statements in local view and \texttt{gmove} constructs in
 global view may race.  The value of \texttt{x(5)} is not guaranteed to
-be \texttt{6}, and may be \texttt{5} in the following program:
+be \texttt{6}, and may be \texttt{10} in the following program:
 \begin{center}
 \begin{XFexample}
 !$xmp nodes p(2)
