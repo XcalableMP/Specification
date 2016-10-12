@@ -66,12 +66,17 @@ one at the exit.
 
 \item[Example 1]
 
-	   Copies of variables {\tt a} and {\tt b} are replicated on
-	   nodes {\tt nd(1)} through {\tt nd(8)}. A task defined by
-	   the {\tt task} construct is executed only on {\tt nd(1)} and
-	   defines the copies of {\tt a} and {\tt b} on a node {\tt
-	   nd(1)}. The copies on nodes {\tt nd(2)} through {\tt nd(8)}
-	   are not defined.
+In XcalableMP Fortran, copies of variables {\tt a} and {\tt b} are replicated on
+nodes {\tt nd(1)} through {\tt nd(8)}. 
+A task defined by the {\tt task} construct is executed only on {\tt nd(1)} and
+defines the copies of {\tt a} and {\tt b} on a node {\tt nd(1)}. 
+The copies on nodes {\tt nd(2)} through {\tt nd(8)} are not defined.
+
+In XcalableMP C, copies of variables {\tt a} and {\tt b} are replicated on
+nodes {\tt nd[0]} through {\tt nd[7]}. 
+A task defined by the {\tt task} construct is executed only on {\tt nd[0]} and
+defines the copies of {\tt a} and {\tt b} on a node {\tt nd[0]}.
+The copies on nodes {\tt nd[1]} through {\tt nd[7]} are not defined.
 
 \hspace{\hsize}
 
@@ -95,13 +100,13 @@ one at the exit.
 \begin{minipage}{0.51\hsize}
 \begin{center}
 \begin{XCexampleR}
-#pragma xmp nodes nd(8)
-#pragma xmp template t(100)
-#pragma xmp distribute t(block) onto nd
+#pragma xmp nodes nd[8]
+#pragma xmp template t[100]
+#pragma xmp distribute t[block] onto nd
 
     float a, b;
 
-#pragma xmp task on nd(1)
+#pragma xmp task on nd[0]
     {
         scanf ("%f", &a);
         b = a*1.e-6;
@@ -114,10 +119,9 @@ one at the exit.
 
 \item[Example 2]
 
-	   According to the {\tt on} clause with a template reference,
-	   an assignment statement in the {\tt task} construct is
-	   executed by the owner of the array element {\tt a(:,j)} or
-	   {\tt a[j][:]}.
+According to the {\tt on} clause with a template reference,
+an assignment statement in the {\tt task} construct is
+executed by the owner of the array element {\tt a(:,j)} or {\tt a[j][:]}.
 
 \hspace{\hsize}
 
@@ -145,18 +149,18 @@ one at the exit.
 \begin{minipage}{0.51\hsize}
 \begin{center}
 \begin{XCexampleR}
-#pragma xmp nodes nd(8)
-#pragma xmp template t(100)
+#pragma xmp nodes nd[8]
+#pragma xmp template t[100]
 #pragma xmp distribute t(block) onto nd
 
     int i,j;
     float a[100][200];
-#pragma align a[j][*] with t(j+1)
+#pragma align a[j][*] with t[j]
 
     i = ...;
     j = ...;
 
-#pragma xmp task on t(j+1)
+#pragma xmp task on t[j]
     a[j][i] = 1.0;
 }
 \end{XCexampleR}
@@ -491,12 +495,16 @@ nest.
 
 The reduction operation executed, except in cases with {\it
 reduction-kind} of {\tt FIRSTMAX}, {\tt FIRSTMIN}, {\tt LASTMAX}, or
-{\tt LASTMIN}, is equivalent to the {\tt reduction} construct
-with the same {\it reduction-kind} and {\it reduction-variable},
-and an {\tt on} clause obtained from that of the {\tt loop} directive by
-\mytextcolor{red}{replacing each {\it loop-index} in the {\it
+{\tt LASTMIN},
+\mytextcolor{red}{
+is equivalent to the {\tt reduction}
+construct with {\it reduction-kind} of ``{\tt +}'' for ``{\tt -}'' in
+the clause and the same {\it reduction-kind} for the other kinds},
+ the same {\it
+reduction-variable}, and an {\tt on} clause obtained from that of the
+{\tt loop} directive by replacing each {\it loop-index} in the {\it
 nodes-ref} or the {\it template-ref} with a triplet representing the
-range of its value.}
+range of its value.
 % replacing:
 % %
 % \begin{itemize}

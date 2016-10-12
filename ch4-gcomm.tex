@@ -1,25 +1,25 @@
 \section{Global-view Communication and Synchronization Constructs}
 
-\subsection{{\tt reflect} Construct}
+\subsection{{\tt reflect} Construct} \label{sub:reflect}
 
 \subsubsection*{Synopsis}
-
 The {\tt \Directive{reflect}} construct assigns the value of a
 reflection source to the corresponding shadow object.
 
 \subsubsection*{Syntax}
 \Syntax{reflect}
-
 \begin{tabular}{ll}
  \verb![F]! & \verb|!$xmp| {\tt reflect} \verb|(| {\it array-name}
  {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
- &\hspace{3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
      {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt orthogonal}{\closeb}
      {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 \verb![C]! & \verb|#pragma xmp| {\tt reflect} \verb|(| {\it array-name}
      {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
- &\hspace{3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
      {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt orthogonal}{\closeb}
      {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
 \end{tabular}
 
@@ -66,6 +66,9 @@ Particularly when the \Term{{\tt /periodic/} modifier} is specified in
 (upper) bound is treated as if corresponding to the data object of the
 global upper (lower) bound and updated with that value by the {\tt
 reflect} construct.
+
+When the {\tt orthogonal} clause is specified,
+the shadow object is updated only by orthogonal nodes.
 
 When the {\tt async} clause is specified, the statements following this
 construct may be executed before the operation is complete.
@@ -468,7 +471,7 @@ where {\it reduction-kind} is one of:
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt +} \\
  & {\tt *} \\
- & {\tt -} \\
+% & {\tt -} \\
  & {\tt .and.} \\
  & {\tt .or.} \\
  & {\tt .eqv.} \\
@@ -499,7 +502,7 @@ where {\it reduction-kind} is one of:
 \begin{tabular}{ll}
  \hspace{0.5cm} & {\tt +} \\
  & {\tt *} \\
- & {\tt -} \\
+% & {\tt -} \\
  & {\verb|&|} \\
  & {\tt |} \\
  & {\verb|^|} \\
@@ -796,16 +799,20 @@ communications specified by {\it async-id} are complete.
 The {\tt \Directive{wait\_async}} construct blocks and therefore
 statements following it are not executed until all of the asynchronous
 communications that are specified by {\it async-id}'s and issued on the
-node set specified by the {\tt on} clause are complete. 
+node set specified by the {\tt on} clause are complete.
+\mytextcolor{red}{
+If an {\it async-id} is not associated with any asynchronous
+communication, the {\tt wait\_async} construct ignores it.
+}
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
  \item {\it async-id} must be an expression of type default integer, in
        {\XMPF}, or type {\tt int}, in {\XMPC}.
- \item {\it async-id} must be associated with an asynchronous
+ \item \mytextcolor{red}{\sout{{\it async-id} must be associated with an asynchronous
        communication by the {\tt async} clause of a communication
-       construct.
+       construct.}}
  \item The {\tt wait\_async} construct is global, which means that it must
        be executed by all nodes in the current executing node set, and
        each local variable referenced in the construct must have the
