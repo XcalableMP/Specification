@@ -1,10 +1,3 @@
-%% \documentclass{article}
-%% \usepackage{amsmath,amssymb,graphicx,verbatim,url,listings}%,stmaryrd
-%% %\usepackage[varg]{txfonts}
-%% \usepackage[all]{xy}
-
-%% \begin{document}
-
 \chapter{Memory Consistency Model}
 
 \newcommand{\Coloneqq}{\mathrel{\colon\!=}}
@@ -25,20 +18,19 @@ This chapter explains a memory consistency model that XcalableMP adopts.
 Memory consistency models specify rules about multiple data accesses
 to memories.  Since XcalableMP is an extension of the base languages,
 its memory consistency model is also defined to be their extension,
-that is, XcalableMP adopts all the rules that base languages do.
+that is, XcalableMP follows all the rules that base languages adopt.
 
-In addition, XcalableMP adopts some rules.  XcalableMP provides
-\emph{global view} that the base languages do not.  In global view,
-\emph{global communication constructs} are used to access distributed
-data.  Furthermore, distributed data can be accessed through
-designating data in local view.  Conversely, non-distributed data can
-be accessed through designating distributed data by using global
-communication constructs in global view.  These, of course, are not
-considered under the memory consistency models of the base language.
-Therefore, XcalableMP memory consistency model adopts additional rules
-about global communication constructs.
+In addition, XcalableMP introduces some rules about \emph{global
+  view}.  In global view, \emph{global communication constructs} are
+used to access distributed data.  Furthermore, distributed data can be
+accessed through designating data in local view.  Conversely,
+non-distributed data can be accessed through designating distributed
+data by using global communication constructs in global view.  These
+are not considered under the memory consistency models of the base
+language since global view is a new notion which is introduced by
+XcalableMP.
 
-Recall that global communication constructs are collective as
+Please recall that global communication constructs are collective as
 described in Section~\ref{sec:glossary}.
 
 \section{Execution Traces}
@@ -109,17 +101,19 @@ executions of these constructs guarantee completions of data
 synchronizations, that is, global communication constructs read data
 that are written by statements that are previously executed, and their
 following statements and global communication constructs read data
-written by global communication constructs.  This is guaranteed even
-if the distributed data are accessed in local view.  Formally, this is
+written by global communication constructs.  Formally, this is
 represented by \ref{constraints:synchronous} in
 Figure~\ref{fig:constraints}
 
-For example, in the following code, the assignment statement \texttt{l(1)=1} is
-guaranteed to be completed before the \texttt{gmove} construct is
-executed.  Therefore, the value of \texttt{g(6)} must be \texttt{1}.
-Furthermore, since the \texttt{gmove} construct completes before the
-assignment statement \texttt{x=m(2)} is executed, the value of \texttt{x} on
-\texttt{p(1)} must be \texttt{1}.
+For example, in the following code, the assignment statement
+\texttt{g(:)=h(:)} is guaranteed to be completed before the second
+\texttt{gmove} construct is executed.  Therefore, the value of
+\texttt{g(i)} must be \texttt{i} when the assignment statement
+\texttt{x(:)=g(6:10)} is executed.
+
+Finally, the value of \texttt{x(i)} on \texttt{p(1)} must be
+\texttt{i+5}.
+
 \begin{center}
 \begin{XFexample}
 !$xmp nodes p(2)
@@ -127,66 +121,17 @@ assignment statement \texttt{x=m(2)} is executed, the value of \texttt{x} on
 !$xmp distribute (block) onto p :: t
       integer :: g(10), h(10)
 !$xmp align (i) with t(i) :: g, h
-      integer :: l(10), m(10)
-!$xmp local_alias l => g
-!$xmp local_alias m => h
-      integer x
+      integer x(5)
 
-      l(1)=1
+!$xmp loop on t(i)
+      do i=1,10
+      h(i)=i
+      end do
+
 !$xmp gmove
-      h(2)=g(6)
-      x=m(2)
-\end{XFexample}
-\end{center}
-
-Similarly, these are also guaranteed when an integer \texttt{1} is
-stored at \texttt{g(6)} through a coarray \texttt{l} as follows:
-\begin{center}
-\begin{XFexample}
-!$xmp nodes p(2)
-!$xmp template t(10)
-!$xmp distribute (block) onto p :: t
-      integer :; g(10), h(10)
-!$xmp align (i) with t(i) :: g, h
-      integer :; l(10), m(10)
-!$xmp local_alias l => g
-!$xmp local_alias m => h
-!$xmp coarray on p :: l(:)[*]
-      integer x
-
-      l(1)[2]=1
+      g(:)=h(:)
 !$xmp gmove
-      h(2)=g(6)
-      x=m(2)
-\end{XFexample}
-\end{center}
-
-Remark that synchronous global communication constructs do not
-guarantee completions of data are written by asynchronous global
-communication constructs that are previously executed.  For example,
-in the following code, the value of \texttt{x} may be \texttt{1} or
-\texttt{2}.
-
-\begin{center}
-\begin{XFexample}
-!$xmp nodes p(2)
-!$xmp template t(10)
-!$xmp distribute (block) onto p :: t
-      integer :; g(10), h(10)
-!$xmp align (i) with t(i) :: g, h
-      integer :; l(10), m(10)
-!$xmp local_alias l => g
-!$xmp local_alias m => h
-!$xmp coarray on p :: l(:)[*]
-      integer x
-
-      l(1)[2]=1
-!$xmp gmove async(1)
-      g(7)=g(1)+1
-!$xmp gmove
-      h(2)=g(7)
-      x=m(2)
-!$xmp wait_async(1)
+      x(:)=g(6:10)
 \end{XFexample}
 \end{center}
 
@@ -200,13 +145,13 @@ guaranteed until \texttt{wait\_async}s are executed.
 Formally, this is represented by
 \ref{constraints:asynchronous} in Figure~\ref{fig:constraints}.
 
-For example, in the following code, the assignment statement \texttt{l(1)=1} may
-not be completed before the \texttt{gmove} construct is executed.
-Therefore, the value of \texttt{g(6)} is undefined.  Moreover, since
-the \texttt{gmove} construct may not complete before the assignment statement
-\texttt{x=m(2)} is executed, the value of \texttt{x} on \texttt{p(1)}
-is undefined even if the value of \texttt{g(6)} is \texttt{1}.  This
-is also the case with coarrays.
+For example, in the following code, the assignment statement
+\texttt{g(:)=h(:)} may not be completed before the second
+\texttt{gmove} construct is executed since the first \texttt{gmove}
+construct has \texttt{async} clause.  Therefore, the value of
+\texttt{g(i)} is not guaranteed to be \texttt{i+5}.  Of course, the
+value of \texttt{x(i)} on \texttt{p(1)} is not guaranteed to be
+\texttt{i+5}.
 \begin{center}
 \begin{XFexample}
 !$xmp nodes p(2)
@@ -214,26 +159,25 @@ is also the case with coarrays.
 !$xmp distribute (block) onto p :: t
       integer :: g(10), h(10)
 !$xmp align (i) with t(i) :: g, h
-      integer :: l(10), m(10)
-!$xmp local_alias l => g
-!$xmp local_alias m => h
-      integer x
+      integer x(5)
 
-      l(1)=1
+!$xmp loop on t(i)
+      do i=1,10
+      h(i)=i
+      end do
+
 !$xmp gmove async(1)
-      h(2)=g(6)
-      x=m(2)
+      g(:)=h(:)
+!$xmp gmove
+      x(:)=g(6:10)
 !$xmp wait_async(1)
 \end{XFexample}
 \end{center}
 
 The \texttt{wait\_async(\textit{async-id})} guarantees a completion of
-a global communication construct that has \textit{async-id}.  However,
-it does not guarantee that an effect of an assignment statement that
-follows the global communication construct is kept.
-
-For example, in the following code, the value of \texttt{x} is
-undefined, that is, may be \texttt{1}, \texttt{2}, or anything else.
+a global communication construct that has \textit{async-id}.
+Therefore, the value of \texttt{x(i)} is not guaranteed to be
+\texttt{i+5} in the following program:
 \begin{center}
 \begin{XFexample}
 !$xmp nodes p(2)
@@ -241,22 +185,102 @@ undefined, that is, may be \texttt{1}, \texttt{2}, or anything else.
 !$xmp distribute (block) onto p :: t
       integer :: g(10), h(10)
 !$xmp align (i) with t(i) :: g, h
-      integer :: l(10), m(10)
-!$xmp local_alias l => g
-!$xmp local_alias m => h
-      integer x
+      integer x(5)
 
-      l(1)=1
+!$xmp loop on t(i)
+      do i=1,10
+      h(i)=i
+      end do
+
 !$xmp gmove async(1)
-      h(2)=g(6)
-      m(2)=2
+      g(:)=h(:)
 !$xmp wait_async(1)
-      x=m(2)
+!$xmp gmove
+      x(:)=g(6:10)
 \end{XFexample}
 \end{center}
 
+Assignment statements in local view and \texttt{gmove} constructs in
+global view may race.  The value of \texttt{x(5)} is not guaranteed to
+be \texttt{6}, and may be \texttt{10} in the following program:
+\begin{center}
+\begin{XFexample}
+!$xmp nodes p(2)
+!$xmp template t(10)
+!$xmp distribute (block) onto p :: t
+      integer :: g(10), h(10)
+!$xmp align (i) with t(i) :: g, h
+      integer x(5)
 
+      integer l(5), m(5)
+!$xmp local_alias l => g
+!$xmp local_alias m => h
 
-%\end{document}
+!$xmp loop on t(i)
+      do i=1,10
+      h(i)=i
+      end do
 
+!$xmp gmove async(1)
+      g(:)=h(:)
+      l(5)=6
+!$xmp wait_async(1)
+      x(5)=l(5)
+\end{XFexample}
+\end{center}
+
+By avoiding the race, the value of \texttt{x(5)} is guaranteed to
+be \texttt{6} as follows:
+\begin{center}
+\begin{XFexample}
+!$xmp nodes p(2)
+!$xmp template t(10)
+!$xmp distribute (block) onto p :: t
+      integer :: g(10), h(10)
+!$xmp align (i) with t(i) :: g, h
+      integer x(5)
+      integer l(5), m(5)
+!$xmp local_alias l => g
+!$xmp local_alias m => h
+
+!$xmp loop on t(i)
+      do i=1,10
+      h(i)=i
+      end do
+
+!$xmp gmove async(1)
+      g(:)=h(:)
+!$xmp wait_async(1)
+      l(5)=6
+      x(5)=l(5)
+\end{XFexample}
+\end{center}
+
+Please note that function calls have no synchronization at its
+entrance/exit.  In the following program, the value of \texttt{x(5)}
+is not guaranteed to be \texttt{6}:
+\begin{center}
+\begin{XFexample}
+!$xmp nodes p(2)
+!$xmp template t(10)
+!$xmp distribute (block) onto p :: t
+      integer :: g(10), h(10)
+!$xmp align (i) with t(i) :: g, h
+      integer x(5)
+      integer l(5), m(5)
+!$xmp local_alias l => g
+!$xmp local_alias m => h
+
+!$xmp loop on t(i)
+      do i=1,10
+      h(i)=i
+      end do
+
+!$xmp gmove async(1)
+      call sub(g,h)
+      l(5)=6
+!$xmp wait_async(1)
+      x(5)=l(5)
+\end{XFexample}
+\end{center}
 
