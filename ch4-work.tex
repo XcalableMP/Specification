@@ -338,16 +338,35 @@ in parallel.
 
 \begin{tabular}{ll}
 \verb![F]! & \verb|!$xmp| {\tt loop} {\openb} \verb|(| {\it loop-index}
- {\openb}, {\it loop-index}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
- & \hspace{5cm}{\bsquare} {\tt on} \{{\it nodes-ref} $\vert$ {\it
-     template-ref}\} {\openb} {\it reduction-clause} {\closeb}... \\
+ {\openb}, {\it loop-index}{\closeb}... \verb|)| {\closeb} 
+	  {\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\bsquare} \\
+ & \hspace{5cm}{\bsquare} 
+	  {\openb} \verb|expand(| {\it expand-width} {\openb}, {\it
+	  expand-width}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
+ & \hspace{5cm}{\bsquare} 
+	  {\openb} \verb|margin(| {\it margin-width} {\openb}, {\it
+	  margin-width}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
+ & \hspace{5cm}{\bsquare} 
+	  {\openb} {\it reduction-clause} {\closeb}... \\
+ % & \hspace{5cm}{\bsquare} 
+ % 	  {\openb} \verb|pipeline(| {\it pipeline-spec} {\openb}, {\it
+ % 	  pipeline-spec}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
  & {\it do-loops} \\
  & \\
 \verb![C]! & \verb|#pragma xmp| {\tt loop} {\openb} \verb|(| {\it
      loop-index} {\openb}, {\it loop-index}{\closeb}... \verb|)|
-     {\closeb} {\bsquare} \\
- & \hspace{5cm}{\bsquare} {\tt on} \{{\it nodes-ref} $\vert$ {\it
-     template-ref}\} {\openb} {\it reduction-clause} {\closeb}... \\
+     {\closeb} {\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\bsquare} \\
+ & \hspace{5cm}{\bsquare} 
+	  {\openb} \verb|expand(| {\it expand-width} {\openb}, {\it
+	  expand-width}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
+ & \hspace{5cm}{\bsquare} 
+	  {\openb} \verb|margin(| {\it margin-width} {\openb}, {\it
+	  margin-width}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
+ & \hspace{5cm}{\bsquare}
+	  {\openb} {\it reduction-clause} {\closeb}... \\
+ % & \hspace{5cm}{\bsquare} 
+ % 	  {\openb} \verb|pipeline(| {\it pipeline-spec} {\openb}, {\it
+ % 	  pipeline-spec}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
  & {\it for-loops} \\
 \end{tabular}
 
@@ -364,12 +383,24 @@ in parallel.
 %
 \vspace{0.3cm}
 
-where {\it reduction-clause} is:
+where {\it expand-width} and {\it margin-width} must be one of:
 
 \vspace{0.3cm}
 
 \begin{tabular}{ll}
- \hspace{0.5cm} & reduction\verb|(| {\it reduction-kind} : {\it reduction-spec}
+ \hspace{0.5cm} & {\openb}{\tt /unbound/}{\closeb} {\it int-expr} \\
+                & {\openb}{\tt /unbound/}{\closeb} {\it int-expr} : {\it int-expr}
+\end{tabular}
+
+\vspace{0.3cm}
+
+
+{\it reduction-clause} is:
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & \verb|reduction(| {\it reduction-kind} : {\it reduction-spec}
  {\openb}, {\it reduction-spec} {\closeb}... \verb|)| \\
 \end{tabular}
 
@@ -420,8 +451,8 @@ where {\it reduction-clause} is:
 \end{tabular}
 
 \vspace{0.3cm}
-{
-and \it reduction-spec} is:
+
+and {\it reduction-spec} is:
 
 \vspace{0.3cm}
 
@@ -430,6 +461,17 @@ and \it reduction-spec} is:
  location-variable} {\openb}, {\it location-variable}
  {\closeb}... {\tt /} {\closeb} \\
 \end{tabular}
+
+% \vspace{0.3cm}
+
+% and {\it pipeline-spec} is:
+
+% \vspace{0.3cm}
+
+% \begin{tabular}{ll}
+%  \hspace{0.5cm} & {\it array-name} {\tt /} {\it int-expr} {\openb}, {\it
+% 	  int-expr} {\closeb}... {\tt /} \\
+% \end{tabular}
 
 \subsubsection*{Description}
 
@@ -492,6 +534,88 @@ nest.
 %reduction-kind} of {\tt FIRSTMAX}, {\tt FIRSTMIN}, {\tt LASTMAX}, or
 %{\tt LASTMIN}, is equivalent to the {\tt \Directive{reduction}}
 %construct with the following {\it template-spec} replacements:
+
+\mytextcolor{red}{
+When the {\tt expand} clause is specified and of the form ``{\it
+int-expr} : {\it int-expr}'' in a dimension, 
+the first {\it int-expr} is subtracted from the local lower bound in
+that dimension and the second one is added to the local upper bound.
+%
+When the {\tt expand} clause is specified and of the form {\it int-expr},
+the {\it int-expr} is subtracted from the local lower bound in that
+dimension and added to the local upper bounds.
+%
+However, an ``expanded'' local iteration space does not spread out of
+the original global itaration space unless the \Term{{\tt /unbound/}
+modifier} is specified in {\it expand-width}.
+}
+
+\mytextcolor{red}{
+When the {\tt margin} clause is specified, the loop is transformed so
+that its local iteration space, $margin$, is:
+$$margin = expand \bigtriangleup orig$$
+where $expand$ is a local iteration space when an {\tt expand} clause
+with the same argument(s) is specified, 
+$orig$ is that when neither $expand$ nor $margin$, and
+$\bigtriangleup$ is the symmetric difference operator.
+}
+
+\mytextcolor{red}{
+\begin{quotation}
+  (Advice to programmers and implementors) Using the {\tt expand} and
+  {\tt margin} clauses and asynchronous communication, programmers can
+  overlap computation and communication as in the code left
+  below. It is recommended for the implementation to support an
+  extension that is a syntactic sugar for those sequence of constructs,
+  such as the {\tt peel\_and\_wait} clause in the code right below.
+\end{quotation}
+}
+
+\vspace{1zw}
+
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{XFexample}
+!$xmp reflect (a) async(10)
+
+!$xmp loop (i,j) on t(i,j)
+!$xmp+              expand(-1,-1)
+      do j = 1, 16
+          do i = 1, 16
+              ...
+          end do
+      end do
+
+!$xmp wait_async (10)
+
+!$xmp loop (i,j) on t(i,j)
+!$xmp+              margin(-1,-1)
+      do j = 1, 16
+          do i = 1, 16
+              ...
+          end do
+      end do
+\end{XFexample}
+\end{center}
+\end{minipage}
+%
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{XFexampleR}
+!$xmp reflect (a) async(10)
+
+!$xmp loop (i,j) on t(i,j)
+!$xmp+   peel_and_wait(10, -1,-1)
+      do j = 1, 16
+          do i = 1, 16
+              ...
+          end do
+      end do
+\end{XFexampleR}
+\end{center}
+\end{minipage}
+
+\vspace{1zw}
 
 The reduction operation executed, except in cases with {\it
 reduction-kind} of {\tt FIRSTMAX}, {\tt FIRSTMIN}, {\tt LASTMAX}, or
@@ -619,6 +743,14 @@ construct as follows:
 %\end{minipage}
 % inserted by Sakagami,H. 09/11/13 ----- end ---
 
+% \mytextcolor{red}{
+% When the {\tt pipeline} clause is specified, the distributed loop nest is
+% executed by nodes in such a pipeline manner that 
+% %
+% each node waits until recieving from, executes its own local part of the loop nest, and
+% then sends, to resolve loop-carried dependence.
+% }
+
 \subsubsection*{Restrictions}
 
 \begin{itemize}
@@ -647,11 +779,30 @@ construct as follows:
        them, and the lower bound, upper bound and step of the associated
        loop must have the same value among all of them.
 
+ \item \mycolor{red}{Either of the {\tt expand} or {\tt margin} clause,
+	   if any, can be specified.}
+
+ \item The number of {\it expand-width}, if any, must be equal to the
+	   number of dimensions (or rank) of the template specified by {\it
+	   template-ref} or of the node array specified by {\it node-ref}.
+
+ \item The number of {\it margin-width}, if any, must be equal to the
+	   number of dimensions (or rank) of the template specified by {\it
+	   template-ref} or of the node array specified by {\it node-ref}.
+	   \mycolor{black}{}
+
 % modified by Sakagami,H. 09/11/13
  \item {\it reduction-spec} must have one or more {\it
        location-variable}'s if and only if {\it reduction-kind} is
        either {\tt FIRSTMAX}, {\tt FIRSTMIN}, {\tt LASTMAX}, or {\tt
        LASTMIN}.
+
+ % \item \mycolor{red}{The array specified by {\it array-name} in {\it
+ %       pipeline-spec} must be mapped onto the executing node set.}
+
+ % \item \mycolor{red}{The number of {\it int-expr} in {\it pipeline-spec}
+ % 	   must be equal to the number of dimensions (or rank) of the array
+ % 	   specified by {\it array-name} in {\it pipeline-spec}.}
 
 % inserted by Sakagami,H. 09/11/13
 %\item {\it reduction-clause} must reference the reduction operations
@@ -947,11 +1098,68 @@ the reduction clause. This example is equivalent to the code given below.
 	   reduction} construct.
 % modified by Sakagami,H. 09/11/13
 
-%\comment{This example is equivalent to the code below. 
-%\begin{XFexample}
-%???????????????? no example ?????????????????
-%\end{XFexample}}
+\item[Example 8]
+\hspace{\hsize}
+\mycolor{red}{
+\begin{XFexample}
+!$xmp loop (i,j) on t(i,j) expand(/unbound/1,/unbound/1)
+      do j = 1, 16
+          do i = 1, 16
+              ...
+          end do
+      end do
 
+!$xmp loop (i,j) on t(i,j) margin(/unbound/1,/unbound/1)
+      do j = 1, 16
+          do i = 1, 16
+              ...
+          end do
+      end do
+\end{XFexample}
+
+		   Assuming that the template {\tt t(100,100)} is distributed in
+		   (block,block) onto a node array {\tt p(4,4)}, the original local
+		   iterataion space on {\tt p(1,1)}, $orig_{1,1}$ is:
+		   \[
+		   \begin{array}{lllll}
+			 orig_{1,1} = \{ & (1,1), & (2,1), & (3,1), & (4,1), \\
+			                 & (1,2), & (2,2), & (3,2), & (4,2), \\
+			                 & (1,3), & (2,3), & (3,3), & (4,3), \\
+		                     & (1,4), & (2,4), & (3,4), & (4,4) \quad \}
+		   \end{array}			 
+		   \]
+		   and it is expanded with the {\tt expand} clause for the first
+		   loop, as follows:
+		   \[
+		   \begin{array}{lllllll}
+			 expand(1,1)_{1,1} = \{ & (0,0), & (0,1), & (0,2), & (0,3), & (0,4), & (0,5), \\
+			                        & (1,0), & (1,1), & (1,2), & (1,3), & (1,4), & (1,5), \\
+			                        & (2,0), & (2,1), & (2,2), & (2,3), & (2,4), & (2,5), \\
+			                        & (3,0), & (3,1), & (3,2), & (3,3), & (3,4), & (3,5), \\
+			                        & (4,0), & (4,1), & (4,2), & (4,3), & (4,4), & (4,5), \\
+			                        & (5,0), & (5,1), & (5,2), & (5,3), & (5,4), & (5,5) \quad \}
+		   \end{array}			 
+		   \]
+		   Note that $expand(1,1)_{1,1}$ spreads out of the original
+		   global iteration space $\{ (i,j) \, | \, 1 \le i,j \le 16 \}$
+		   because the {\tt /unbound/} specifier is specified in the
+		   {\tt expand} clause.
+
+		   The local iteration space for the second loop with the {\tt
+		   margin} clause is defined using the symmetric difference
+		   operator, as follows:
+		   \[
+		   \begin{array}{lllllllll}
+			 margin(1,1)_{1,1} &=& \multicolumn{7}{l}{expand(1,1)_{1,1} \triangle orig_{1,1}} \\
+		                       &=& \{ & (0,0), & (0,1), & (0,2), & (0,3), & (0,4), & (0,5), \\
+			                   & &    & (1,0), &        &        &        &        & (1,5), \\
+			                   & &    & (2,0), &        &        &        &        & (2,5), \\
+			                   & &    & (3,0), &        &        &        &        & (3,5), \\
+			                   & &    & (4,0), &        &        &        &        & (4,5), \\
+			                   & &    & (5,0), & (5,1), & (5,2), & (5,3), & (5,4), & (5,5) \quad \}
+		   \end{array}			 
+		   \]
+}
 \end{description}
 
 

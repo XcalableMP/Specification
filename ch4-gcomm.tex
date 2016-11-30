@@ -39,8 +39,8 @@ where {\it reflect-width} must be one of:
 The {\tt reflect} construct updates each of the shadow object of the
 array specified by {\it array-name} with the value of its corresponding
 reflection source. Note that the shadow objects corresponding to
-``obliquely-neighboring'' elements can be also updated with this
-construct.
+elements at the non-orthogonal positions are also updated with this
+construct as the default behavior.
 
 %copies the value of the reflection source of
 %the reflect-object specified by {\it array-name} to all shadow
@@ -49,8 +49,8 @@ construct.
 
 When the {\tt width} clause is specified and of the form ``{\it
 int-expr} : {\it int-expr}'' in a dimension, the shadow area of the
-width specified by the first {\it int-expr} at the upper bound and that
-specified by the second one at the lower bound in the dimension are
+width specified by the first {\it int-expr} at the lower bound and that
+specified by the second one at the upper bound in the dimension are
 updated.
 %
 When the {\tt width} clause is specified and of the form {\it int-expr},
@@ -655,7 +655,7 @@ snippet.
           sum = 0
 !$xmp loop (i) on t(i,j) 
           do i = 1, n
-              sum - sum + a(i,j) * p(i)
+              sum = sum + a(i,j) * p(i)
           end do
 !$xmp reduction(+:sum) on t(1:n,j)
           w(j) = sum
@@ -691,7 +691,7 @@ construct as follows:
           sum = 0
 !$xmp loop (i) on t(i,j) 
           do i = 1, n
-              sum - sum + a(i,j) * p(i)
+              sum = sum + a(i,j) * p(i)
           end do
           w(j) = sum
       end do
@@ -869,3 +869,115 @@ These constructs ensure that statements in {\tt S1} can be executed
 before the {\tt reflect} communication is complete and no statement in
 {\tt S2} is executed until the {\tt reflect} communication is
 complete.
+
+
+\mytextcolor{red}{
+\subsection{{\tt reduce\_shadow} Construct}
+}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{reduce\_shadow}} construct adds values of shadow
+objects to their reflection source.
+
+\subsubsection*{Syntax}
+\Syntax{reduce\_shadow}
+
+\begin{tabular}{ll}
+ \verb![F]! & \verb|!$xmp| {\tt reduce\_shadow} \verb|(| {\it array-name}
+ {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+     {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt orthogonal}{\closeb}
+     {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
+\verb![C]! & \verb|#pragma xmp| {\tt reduce\_shadow} \verb|(| {\it array-name}
+     {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+     {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt orthogonal}{\closeb}
+     {\openb}{\tt async (} {\it async-id} {\tt )}{\closeb} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The {\tt reduce\_shadow} construct adds values of shadow objects of the
+array specified by {\it array-name} to their reflection source. Note
+that the shadow objects corresponding to elements at the non-orothogonal
+positions are also added as the default behavior.
+
+When the {\tt width} clause is specified and of the form ``{\it
+int-expr} : {\it int-expr}'' in a dimension, the shadow areas of the
+width specified by the first {\it int-expr} at the lower bound and that
+specified by the second one at the upper bound in the dimension are
+added.
+%
+When the {\tt width} clause is specified and of the form {\it int-expr},
+the shadow areas of the same width specified at both the upper
+and lower bounds in the dimension are added.
+%
+When the {\tt width} clause is omitted, whole shadow area of the array
+is added.
+
+Particularly when the \Term{{\tt /periodic/} modifier} is specified in
+{\it reflect-width}, the addition of the shadow object in the dimension is
+``periodic,'' which means that the shadow object at the global lower
+(upper) bound is treated as if corresponding to the data object of the
+global upper (lower) bound and added by the {\tt reduce\_shadow}
+construct.
+
+When the {\tt orthogonal} clause is specified,
+the shadow object is added only by orthogonal nodes.
+
+When the {\tt async} clause is specified, the statements following this
+construct may be executed before the operation is complete.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item The arrays specified by the sequence of {\it array-name}'s must
+       be mapped onto the executing node set.
+ \item The width of each dimension specified by {\it
+       reflect-width} must not exceed the shadow width of the arrays.
+ \item The {\tt reduce\_shadow} construct is global, which means that it must be
+       executed by all nodes in the current executing node set, and each local
+       variable referenced in the construct must have the same value
+       among all of them.
+ \item {\it async-id} must be an expression of type default integer, in
+       {\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+\subsubsection*{Examples}
+\Example{reduce\_shadow}
+
+\begin{XFexample}
+      real rho(n,n)
+!$xmp align rho(i,j) with t1(i,j)
+!$xmp shadow rho(1:1)
+
+      real f(m)
+      integer x(m), y(m)
+!$xmp align (k) with t2(k) : f, x, y
+
+!$xmp loop on t2(k)
+      do i = 1, no
+        ix = x(i)
+        iy = y(i)
+        dx = x(i) - ix
+        dy = y(i) - iy
+        rho(ix  ,iy  ) = rho(ix  ,iy  ) + (1.0-dx)*(1.0-dy)*f(i)
+        rho(ix+1,iy  ) = rho(ix+1,iy  ) +      dx *(1.0-dy)*f(i)
+        rho(ix  ,iy+1) = rho(ix  ,iy+1) + (1.0-dx)*     dy *f(i)
+        rho(ix+1,iy+1) = rho(ix+1,iy+1) +      dx *     dy *f(i)
+      end do
+
+!$xmp reduce_shadow (rho)
+!$xmp reflect (rho)
+\end{XFexample}
+
+Assume that a two-dimensional field {\tt rho} and m particles are
+both distributed onto nodes. On each node, a contribution of a particle
+{\tt f(k)} is added to the nearest grid point of the field and its
+neighbors, which may be in the shadow area on the node. In the last two
+lines, the values of the shadow area from neighboring nodes are added to
+the corresponding data object and then the results are copied back to
+the shadow area on the neighboring nodes.
