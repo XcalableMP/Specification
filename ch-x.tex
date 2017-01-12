@@ -358,12 +358,10 @@ target global array.
 \subsubsection*{Synopsis}
 The {\tt xmp\_array\_lda} function provides the leading dimension of the two-dimensional global array.
 This function is used to call numerical libraries, such as BLAS.
-If the target global array is not a two-dimensional array, 
-the value of {\tt lda} is implementation-dependent.
 
 \subsubsection*{Input Argument}
 \begin{itemize}
- \item {\tt d} is a descriptor of a global array.
+ \item {\tt d} is a descriptor of a global array which must be a two-dimensional array.
 \end{itemize}
 
 \subsubsection*{Output Argument}
