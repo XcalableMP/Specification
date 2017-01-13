@@ -134,7 +134,7 @@ array, a template or a node array.
 
 \subsubsection*{Synopsis}
 The {\tt xmp\_all\_node\_num} routine returns the node number,
-within the primary node set, of the node that calls {\tt xmp\_all\_node\_num}.
+within the entire node set, of the node that calls {\tt xmp\_all\_node\_num}.
 
 \subsubsection*{Arguments}
 none.
@@ -152,7 +152,7 @@ none.
 
 \subsubsection*{Synopsis}
 The {\tt xmpc\_all\_node\_num} routine returns the node number $- 1$,
-within the primary node set, of the node that calls {\tt xmpc\_all\_node\_num}.
+within the entire node set, of the node that calls {\tt xmpc\_all\_node\_num}.
 
 \subsubsection*{Arguments}
 none.
@@ -565,7 +565,7 @@ of the target node array.
 \end{itemize}
 
 
-\subsection{\tt xmp\_nodes\_attr}
+\subsection{\tt xmp\_nodes\_attr}\label{sub:xmpnodesattr}
 \index{xmp\_nodes\_attr@{\tt xmp\_nodes\_attr}}
 
 \subsubsection*{Format}
@@ -588,7 +588,7 @@ node array. The output value of the argument {\tt attr} is one of:
 \begin{tabular}{lll}
   \hspace{2.5cm} & {\tt XMP\_ENTIRE\_NODES} & (Entire nodes)\\
                  & {\tt XMP\_EXECUTING\_NODES}  & (Executing nodes) \\
-                 & {\tt XMP\_PRIMARY\_NODES} & (Primary nodes) \\
+%%%                 & {\tt XMP\_PRIMARY\_NODES} & (Primary nodes) \\
                  & {\tt XMP\_EQUIVALENCE\_NODES} & (Equivalence nodes) \\
 \end{tabular}
 

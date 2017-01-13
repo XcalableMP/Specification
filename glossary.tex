@@ -160,7 +160,7 @@
 \end{namelist}
 
 
-\subsection{Node Terminology}
+\subsection{Node Terminology}\label{sub:nodeTerminology}
 
 \begin{namelist}{entire node setxxxx}
 
@@ -196,12 +196,8 @@
 
  A node set that contains all of the nodes participating in the
  execution of an {\XMP} program.
-
-\gitem{primary node set}
-
- An entire node set that is specified explicitly or implicitly, and is
- the current executing node set at the beginning of the program
- execution.
+ It is the current executing node set specified explicitly or 
+ implicitly at the beginning of the program execution. 
 
 \gitem{executing node set}
 
@@ -212,8 +208,8 @@
  This term is used in this document to represent the {\it current
  executing node set} unless it is ambiguous.
 %
- Note that the executing node set of the main routine is the
- primary node set.
+ The executing node set at the beginning of the program execution
+ is the entire node set.
 
 \gitem{current executing node set}
 
@@ -236,31 +232,17 @@
  each dimension of a node array is one in both {\XMPF} and {\XMPC}.
 
 
+\gitem{entire node array}
 
-\gitem{non-primary node array}
-
-A node array declared without ``={\it node-ref}'', ``=**'', or ``=*''
-in a NODES directive.
-A non-primary node array corresponds to all the nodes at the invocation of
-a program, and also corresponds to all the images at the invocation of
-a program.
-
-
-\gitem{primary node array}
-
- A node array declared with the rhs of a node reference by ``{\tt **}''
- representing the primary node set.
- A primary node array corresponds to all the nodes at the invocation of
- a program, and also corresponds to all the images at the invocation of
- a program.
+ A node array corresponding to the entire node set.
+ An entire node array can be declared by a NODES directive
+ without ``={\it node-ref}''.
 
 \gitem{executing node array}
 
- A node array declared with the rhs of a node reference by ``{\tt *}''
- representing the executing node set.
- An executing node array corresponds to the executing node set, and also
- corresponds to the current set of images at the evaluation of the
- declaration of the node array.
+ A node array corresponding to the executing node set.
+ An executing node array corresponding to the procedure
+ can be declared by a NODES directive with the node reference ``{\tt *}''.
 
 \gitem{parent node set}
 
@@ -458,7 +440,7 @@ totally ordered.
 
 \end{namelist}
 
-\subsection{Local-view Terminology}
+\subsection{Local-view Terminology}\label{sub:localViewTerminology}
 
 \begin{namelist}{entire node setxxxx}
 
@@ -481,28 +463,50 @@ totally ordered.
 % The coarray feature of {\XMP} is based on that of the Fortran 2008
 % standard.
 
-\gitem{current set of images}
- The current set of images is a set of images determined by the most
- lately executed {\itshape task-directive} in the TASK directive
- constructs that are not completed if any TASK directive constructs are
- being executed. The current set of images is all the images
- at the invocation of a program
- if there are no TASK directive constructs that are not completed.
-
 \gitem{image}
 
-An instance of an XcalableMP program.
-Each image uniquely corresponds to a node.
+An instance of an XcalableMP program corresponding to a node respectively.
+
+\gitem{image set}
+
+A totally ordered set of images.
 
 \gitem{image index}
 
-An integer value identifying an image in a set of images.
+An integer value that identifies an image in an image set,
+whose range is one to the size of the image set.
 
-In {\XMPC}, the lower cobound in each axis is one by default and
-taking account of the cobound,
-the cosubscript list in an image selector determines the
-image index in the same way that a subscript list in an array element
-determines the subscript order value in Fortran,
-taking account of the bounds.
+%???
+%In {\XMPC}, the lower cobound in each axis is one by default and
+%taking account of the cobound,
+%the cosubscript list in an image selector determines the
+%image index in the same way that a subscript list in an array element
+%determines the subscript order value in Fortran,
+%taking account of the bounds.
+
+\gitem{entire image set}
+
+The image set corresponding to the entire node set
+one to one in turn.
+
+\gitem{executing image set}
+
+An image set corresponding to the executing node set 
+one to one in turn.
+
+The executing image set at the beginning of the program execution
+is the entire image set.
+
+\gitem{allocation image set}
+
+An image set that the coarray data object is allocated on.
+
+The allocation image set for a non-allocatable [F] or a static [C] 
+coarray variable is the entire image set.
+Otherwise, 
+the allocation image set for an allocatable [F] or an auto [C] 
+coarray variable is the executing image set where it is allocated
+unless it is specified by the {\tt COARRAY} directive.
+
 
 \end{namelist}
