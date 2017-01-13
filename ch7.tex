@@ -5,7 +5,7 @@ This specification defines various procedures for system inquiry,
 synchronization, computations, etc. The procedures are provided as
 intrinsic procedures in {\XMPF} and library procedures in {\XMPC}.
 
-\section{{\tt [F]} Intrinsic Functions}
+\section{Intrinsic Functions}
 
 \subsection{{\tt xmp\_desc\_of}}
 \label{subsec: xmp_desc_of}
@@ -110,11 +110,11 @@ array, a template or a node array.
 \begin{itemize}
 % \item {\tt [F] xmp\_desc\_of}
  \item {\tt xmp\_all\_node\_num}
- \item {\tt xmpc\_all\_node\_num}
+ \item {\tt [C] xmpc\_all\_node\_num}
  \item {\tt xmp\_all\_num\_nodes}
  \item {\tt xmp\_node\_num}
- \item {\tt xmpc\_node\_num}
- \item {\tt xmpc\_this\_image}
+ \item {\tt [C] xmpc\_node\_num}
+ \item {\tt [C] xmpc\_this\_image}
  \item {\tt xmp\_num\_nodes}
  \item {\tt xmp\_num\_images}
 % \item {\tt xmp\_mpi\_comm}
@@ -140,13 +140,12 @@ within the entire node set, of the node that calls {\tt xmp\_all\_node\_num}.
 none.
 
 %%%%%%%%%%%%%
-\subsection{\tt xmpc\_all\_node\_num}\label{sub:xmpcallnodenum}
+\subsection{\tt [C] xmpc\_all\_node\_num}\label{sub:xmpcallnodenum}
 \Intrinsic{xmpc\_all\_node\_num}
 
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
-\verb![F]!&  {\tt integer function}& {\tt xmpc\_all\_node\_num()}\\
 \verb![C]!&  {\tt int}& {\tt xmpc\_all\_node\_num(void)}
 \end{tabular}
 
@@ -193,12 +192,11 @@ within the current executing node set, of the node that calls {\tt xmp\_node\_nu
 \subsubsection*{Arguments}
 none.
 
-\subsection{\tt xmpc\_node\_num}\label{sub:xmpcnodenum}
+\subsection{\tt [C] xmpc\_node\_num}\label{sub:xmpcnodenum}
 
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
-\verb![F]!&  {\tt integer function}& {\tt xmpc\_node\_num()}\\
 \verb![C]!&  {\tt int}& {\tt xmpc\_node\_num(void)}
 \end{tabular}
 
@@ -209,12 +207,11 @@ within the current executing node set, of the node that calls {\tt xmpc\_node\_n
 \subsubsection*{Arguments}
 none.
 
-\subsection{\tt xmpc\_this\_image}\label{sub:xmpcthisimage}
+\subsection{\tt [C] xmpc\_this\_image}\label{sub:xmpcthisimage}
 
 \subsubsection*{Format}
 
 \begin{tabular}{lll}
-\verb![F]!&  {\tt integer function}& {\tt xmpc\_this\_image()}\\
 \verb![C]!&  {\tt int}& {\tt xmpc\_this\_image(void)}
 \end{tabular}
 
