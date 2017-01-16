@@ -363,6 +363,7 @@ none.
 
 \mytextcolor{red}{
 \section{{\tt [C]} Execution Control Functions}
+\label{155019_16Jan17}
 }
 \subsection{{\tt xmp\_exit}}
 \label{subsec: xmp_exit}
@@ -1462,6 +1463,7 @@ an array name or an array section, in {\XMPF}, or an array section, in
 {\XMPC}, that represents whole of the array.
 
 \subsection{\tt xmp\_scatter}
+\label{155158_16Jan17}
 \index{xmp\_scatter@{\tt xmp\_scatter}}
 
 \subsubsection*{Format}
@@ -1553,6 +1555,7 @@ x(:,:,...) = a(idx1(:,:,...), ..., idxn(:,:,...))
 
 
 \subsection{\tt xmp\_pack}
+\label{155236_16Jan17}
 \index{xmp\_pack@{\tt xmp\_pack}}
 
 \subsubsection*{Format}
@@ -1593,6 +1596,7 @@ base language.
 
 
 \subsection{\tt xmp\_unpack}
+\label{155321_16Jan17}
 \index{xmp\_unpack@{\tt xmp\_unpack}}
 
 \subsubsection*{Format}
@@ -1621,8 +1625,13 @@ to the array element order of the base language.
 \begin{itemize}
  \item {\tt v} is a one-dimensional array of the same type of {\tt a}
        and any shape and mapping.
- \item (optional) {\tt mask} is a logical array of the same shape and
-       mapping as {\tt a}.
+ % \item (optional) {\tt mask} is a logical array of the same shape and
+ %       mapping as {\tt a}.
+ \item \mytextcolor{red}{
+	   (optional) {\tt mask} is an array of default logical, in {\XMPF},
+	   or of type \_Bool, in {\XMPC}, that has the same shape and
+	   mapping as {\tt a}.
+	   }
 \end{itemize}
 
 

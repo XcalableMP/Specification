@@ -117,9 +117,9 @@ The remainder of this document is structured as follows:
 
 \begin{itemize}
  \item Chapter 2: Overview of the {\XMP} Model and Language
- \item Chapter 3: Directives 
- \item Chapter 4: Support for the Local-view Programming
- \item Chapter 5: Base Language Extensions in {\XMPC}
+ \item Chapter 3: Base Language Extensions in {\XMPC}
+ \item Chapter 4: Directives 
+ \item Chapter 5: Support for the Local-view Programming
  \item Chapter 6: Procedure Interface
  \item Chapter 7: Intrinsic and Library Procedures
  \item Chapter 8: OpenMP in XcalableMP Programs
@@ -136,7 +136,7 @@ proposals.
  \item Appendix D: XcalableMP I/O
 \end{itemize}
 
-\section{Changes from Version 1.3}
+\section{Changes from Version 1.2.1}
 \begin{itemize}
   \item In XcalableMP C, a square bracket is available in {\it nodes-decl}, {\it nodes-ref}, 
   {\it template-ref}, and {\it template-decl}.
@@ -147,7 +147,24 @@ proposals.
   \item Add {\tt xmp\_num\_images()} in Section \ref{sub:xmpnumimages}.
   \item Modify {\tt xmp\_array\_gtol()} in Section \ref{subsec:xmparraygtol}.
   \item Change {\tt xmp\_array\_lsize()} not to include shadow object in Section \ref{subsec:xmparraylsize}.
-  \item Create {\tt xmp\_array\_lda()} from {\tt xmp\_array\_lead\_dim()} in Section \ref{subsec:xmparraylda}.
+  \item Create {\tt xmp\_array\_lda()} from {\tt
+		xmp\_array\_lead\_dim()} in Section \ref{subsec:xmparraylda}.
+
+  \item In XcalableMP C, dynamic allocataion of multi-dimensional global
+		data is allowed.
+  \item A restriction on the {\tt align} directive is added.
+  \item The {\tt expand} and {\tt margin} clauses of the {\tt loop}
+		construct are added.
+  \item The meaning of a reduction-kind ``{\tt -}'' in the {\tt
+		reduction} clause of the {\tt loop} construct is changed.
+  \item The treatment for {\it async-id} not associated with any asynchronous
+		communication is specified.
+  \item The {\tt reduce\_shadow} construct is added.
+  \item The description of the {\tt local\_alias} directive is modified.
+  \item The {\tt xmp\_exit} library function is added.
+  \item The specifications of {\tt xmp\_scatter}, {\tt xmp\_pack}, and
+		{\tt xmp\_unpack} are modified.
+  \item The memory consistency model of {\XMP} is discussed in the appendix.
 \end{itemize}
 
 \section{Changes from Version 1.2}
