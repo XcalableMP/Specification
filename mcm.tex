@@ -13,21 +13,22 @@
 
 %array construct is synchronous.  But semantically OK?
 
-This chapter explains a memory consistency model that XcalableMP adopts.
+This chapter explains the memory consistency model that is adopted by XcalableMP.
 
-Memory consistency models specify rules about multiple data accesses
-to memories.  Since XcalableMP is an extension of the base languages,
-its memory consistency model is also defined to be their extension,
-that is, XcalableMP follows all the rules that base languages adopt.
+Memory consistency models have specified rules regarding multiple data
+accesses to memory.  Because XcalableMP is an extension of the base
+languages, and its memory consistency model is defined as an extension
+to them, that is, XcalableMP follows all of the rules that are adopted
+by base languages.
 
 In addition, XcalableMP introduces some rules about \emph{global
   view}.  In global view, \emph{global communication constructs} are
 used to access distributed data.  Furthermore, distributed data can be
-accessed through designating data in local view.  Conversely,
-non-distributed data can be accessed through designating distributed
-data by using global communication constructs in global view.  These
-are not considered under the memory consistency models of the base
-language since global view is a new notion which is introduced by
+accessed by designating data in local view.  Conversely,
+non-distributed data can be accessed by designating distributed data
+using global communication constructs in global view.  These are not
+considered under the memory consistency models of the base language
+because global view is a new concept that was introduced by
 XcalableMP.
 
 Please recall that global communication constructs are collective as
@@ -35,8 +36,8 @@ described in Section~\ref{sec:glossary}.
 
 \section{Execution Traces}
 
-This section explains execution traces that Xcalable memory
-consistency model admits.
+This section explains execution traces that are enabled by the
+Xcalable memory consistency model.
 
 First, instructions are defined as
 \[
@@ -56,19 +57,19 @@ o \Coloneqq \F{j}{i} \mid \E{j}{i} \mid \R{j}{i}
 \]
 where $j$ is a positive integer.
 
-Operation $\F{j}{i}$ denotes that instruction $i$ is fetched at $j$
-times.  The integer $j$ is incremented whenever you break or exit
-loops.  The instructions that are called at multiple times in loops
-are indentified by $j$s.  Operation $\E{j}{i}$ denotes that
-instruction $i$ is executed.  Operation $\R{j}{i}$ denotes that effect
-of instruction $i$ is reflected to physical memories.
+Operation $\F{j}{i}$ denotes that instruction $i$ is fetched $j$
+times.  The integer $j$ is incremented whenever a loop is exited.  The
+instructions that are called multiple times in loops are identified by
+$j$s.  Operation $\E{j}{i}$ denotes that instruction $i$ is executed,
+while operation $\R{j}{i}$ denotes that the effect of instruction $i$
+is saved to physical memories.
 
 Finally, the memory consistency model defines constraints written by a
 partial order $\leq$ on operations as described below.  Execution
 traces are defined as sequences of operations that follow the order.
 In the following, $o_1 < o_2$ denotes $o_1 \leq o_2$ and $o_1
-\not\equiv o_2$, and $o_1 < o_2 < o_3$ denotes $o_1 < o_2$ and $o_2 <
-o_3$.
+\not\equiv o_2$.  In addition, $o_1 < o_2 < o_3$ denotes $o_1 < o_2$
+and $o_2 < o_3$.
 
 {
 \renewcommand{\theequation}{\roman{equation}}
@@ -79,31 +80,30 @@ o_3$.
 & \E{j_1}{\xasync{\textit{async-id}}} < \E{j_3}{\waitasync{\textit{async-id}}} < \E{j_2}{i_2} \mbox{ implies} \nonumber\\
 & \R{j_1}{\xasync{\textit{async-id}}} < \E{j_2}{i_2} \label{constraints:asynchronous}
 \end{align}
-\caption{Constraints that XcalableMP memory consistency model obligates.}\label{fig:constraints}
+\caption{Constraints that are required by the XcalableMP memory consistency model.}\label{fig:constraints}
 \end{figure}
 }
 
 \subsection{Common Constraints}
 
-This subsection explains some constraints that are common between
+In this subsection, we explain some constraints that are common to both
 synchronous and asynchronous communications.
 
-In XcalableMP memory consistency model, instructions are executed in
-the order in which they are fetched.  Formally, this is represented by
+In the XcalableMP memory consistency model, instructions are executed in
+the order in which they are fetched.  This is represented by
 \ref{constraints:fetchorder} in Figure~\ref{fig:constraints}.
 
 \subsection{Constraints for Synchronous Communications}
 
-The constructs \texttt{reflect}, \texttt{gmove} (and its following
+The constructs \texttt{reflect}, \texttt{gmove} (and its subsequent
 assignment statement), \texttt{reduction}, and \texttt{bcast} are
-synchronous if \texttt{async} is not specified.  It means that
-executions of these constructs guarantee completions of data
-synchronizations, that is, global communication constructs read data
-that are written by statements that are previously executed, and their
-following statements and global communication constructs read data
-written by global communication constructs.  Formally, this is
-represented by \ref{constraints:synchronous} in
-Figure~\ref{fig:constraints}
+synchronous if \texttt{async} is not specified.  This means that
+executions of these constructs guarantee the completion of data
+synchronization.  That is, global communication constructs read data
+that are written by previously executed statements, and their
+subsequent statements and global communication constructs read data
+that are written by global communication constructs.  This is given by
+\ref{constraints:synchronous} in Figure~\ref{fig:constraints}
 
 For example, in the following code, the assignment statement
 \texttt{g(:)=h(:)} is guaranteed to be completed before the second
@@ -111,7 +111,7 @@ For example, in the following code, the assignment statement
 \texttt{g(i)} must be \texttt{i} when the assignment statement
 \texttt{x(:)=g(6:10)} is executed.
 
-Finally, the value of \texttt{x(i)} on \texttt{p(1)} must be
+Finally, the value of \texttt{x(i)} on \texttt{p(1)} should be
 \texttt{i+5}.
 
 \begin{center}
@@ -141,13 +141,13 @@ The constructs \texttt{reflect}, \texttt{gmove} (and its following
 assignment statement), \texttt{reduction}, and \texttt{bcast} are
 asynchronous if \texttt{async}s are specified.  Completions of data
 read and written by these global communication constructs are not
-guaranteed until \texttt{wait\_async}s are executed.
-Formally, this is represented by
-\ref{constraints:asynchronous} in Figure~\ref{fig:constraints}.
+guaranteed until \texttt{wait\_async}s are executed.  This is
+represented by \ref{constraints:asynchronous} in
+Figure~\ref{fig:constraints}.
 
 For example, in the following code, the assignment statement
 \texttt{g(:)=h(:)} may not be completed before the second
-\texttt{gmove} construct is executed since the first \texttt{gmove}
+\texttt{gmove} construct is executed as the first \texttt{gmove}
 construct has \texttt{async} clause.  Therefore, the value of
 \texttt{g(i)} is not guaranteed to be \texttt{i+5}.  Of course, the
 value of \texttt{x(i)} on \texttt{p(1)} is not guaranteed to be
@@ -174,8 +174,8 @@ value of \texttt{x(i)} on \texttt{p(1)} is not guaranteed to be
 \end{XFexample}
 \end{center}
 
-The \texttt{wait\_async(\textit{async-id})} guarantees a completion of
-a global communication construct that has \textit{async-id}.
+The \texttt{wait\_async(\textit{async-id})} guarantees the completion
+of a global communication construct that has \textit{async-id}.
 Therefore, the value of \texttt{x(i)} is not guaranteed to be
 \texttt{i+5} in the following program:
 \begin{center}
