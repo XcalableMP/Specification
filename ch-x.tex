@@ -1,7 +1,7 @@
 \chapter{Programming Interface for {\MPI}}
 
    This chapter describes the programming interface for {\MPI},
-   which are widely used for parallel programming for cluster computing.
+   which is widely used for parallel programming in cluster computing.
    Users can introduce {\MPI} functions to {\XMP} using the interface.   
 
    {\XMP} provides the following user API functions to mix {\MPI}
@@ -216,9 +216,9 @@ int main(int argc, char *argv[]) {
    parallel libraries, which is effective to achieve high productivity
    and performance of {\XMP} programs.
    
-\section{Design of the Interface}
+\section{Interface Design}
 
-A recommended design of the interface is as follows:
+The recommended design of the interface is as follows:
 
 \begin{itemize}
 
@@ -227,14 +227,14 @@ A recommended design of the interface is as follows:
 
  \begin{myfigure}
   \includegraphics[scale=0.45]{figs/figb.1.eps}
-  \caption{Invocation of a Library Routine through an Interface Procedure}
+  \caption{Invocation of a library routine using an interface procedure.}
   \label{figb.1}
  \end{myfigure}
 
- \item When the numerical library routine needs information on an global
-       array, the interface extracts it from the descriptor using some
-       query routines provided by {\XMP} and passes it to the
-       numerical library routine as arguments.
+ \item When the numerical library routine requires information regarding
+       a global array, the interface extracts it from the descriptor
+       using query routines provided by {\XMP}, and passes it to the
+       numerical library routine as an argument.
 %
  \item The interface does not affect the behavior of numerical library
        routines except for restrictions concerning the {\XMP}
@@ -245,8 +245,8 @@ A recommended design of the interface is as follows:
 \section{Extended Mapping Inquiry Functions}
 
 In this section, the extended mapping inquiry functions, which are
-implementation-dependent, are shown.
-Specifications of the functions below are from the Omni XcalableMP
+implementation-defined, are shown.
+Specifications of the functions below are obtained from the Omni XcalableMP
 compiler (\url{http://www.xcalablemp.org/download.html}).
 
 \subsection{\tt xmp\_array\_gtol} \label{subsec:xmparraygtol}
@@ -266,7 +266,10 @@ compiler (\url{http://www.xcalablemp.org/download.html}).
 
 \subsubsection*{Synopsis}
 
-The {\tt xmp\_array\_gtol} function translates a global index specified by {\tt g\_idx} of a global array specified by {\tt d} into the corresponding index of its local section and sets to an array specified by {\tt l\_idx}. 
+The {\tt xmp\_array\_gtol} function translates a global index specified
+by {\tt g\_idx} of a global array specified by {\tt d} into the
+corresponding index of its local section, and sets it to an array specified
+by {\tt l\_idx}.  
 If the element of the specified index does not reside in the caller of the function, 
 the resulting array is set to an unspecified value.
 
@@ -361,12 +364,12 @@ This function is used to call numerical libraries, such as BLAS.
 
 \subsubsection*{Input Argument}
 \begin{itemize}
- \item {\tt d} is a descriptor of a global array which must be a two-dimensional array.
+ \item {\tt d} is a descriptor of a global array, which must be a two-dimensional array.
 \end{itemize}
 
 \subsubsection*{Output Argument}
 \begin{itemize}
- \item {\tt lda} is a leading dimesion of the target global array.
+ \item {\tt lda} is a leading dimension of the target global array.
 \end{itemize}
 
 
@@ -377,7 +380,7 @@ This function is used to call numerical libraries, such as BLAS.
    {\XMP} interface to numerical libraries.
    
    ScaLAPACK is a linear algebra library for distributed-memory.
-   Communication processes in the ScaLAPACK routines depends on BLACS
+   Communication processes in the ScaLAPACK routines depend on BLACS
    (Basic Linear Algebraic Communication Subprograms).
    ScaLAPACK library routines invoked from {\XMP} procedures also depend
    on BLACS. %Remarks of the design of the interface are as follows.
@@ -524,22 +527,22 @@ In this chapter, the memory-layout model of global data in the Omni
 {\XMP} compiler (\url{http://www.xcalablemp.org/download.html}) is
 presented for reference.
 
-The {\XMP} specification says that a global array is distributed onto
-a node array according to the data-mapping directives and, as a
+According to the {\XMP} specification, a global array is distributed onto
+a node array according to the data-mapping directives, and as a
 result, a node owns a set of elements.
 
 On each node, all and only the elements of the global array that it
-owns are gathered to form the local array of the same rank as the
+owns are gathered to form the local array having the same rank as the
 global. For each axis of the global data, all and only the indices 
 that the node owns are packed to the axis of the local array so that
-sequence can be maintained, with shadow area, if any, added at the
+the sequence can be maintained, with the shadow area, if any, added at the
 lower and/or upper bound of the axis.
 
-Eventually the local array is stored in memory on each node according
+Eventually, the local array is stored in memory on each node according
 to the rule for storing arrays in the base language, that is, in
 row-major order in XMP/Fortran and in column-major order in XMP/C.
 
-Note that, as a result of the model above, memory usage can be
+Note that owing to the model above, the memory usage may be
 non-uniform among the nodes.
 
 \subsubsection*{Example}
@@ -556,12 +559,12 @@ non-uniform among the nodes.
 \end{XFexample}
 
 The array {\tt a} is distributed by a format of {\tt (block,block)} onto
-a two-dimensional node array {\tt p} and each node owns a local array
-including a shadow area. Then the local array is stored in memory on
-each node as shown in Figure \ref{figc.1}.
+a two-dimensional node array {\tt p}, and each node owns a local array
+including a shadow area. Then, the local array is stored in memory on
+each node, as shown in Figure \ref{figc.1}.
 
 \begin{myfigure}
  \includegraphics[scale=0.9]{figs/figc.1.eps}
- \caption{Example of Memory Layout in the Omni {\XMP} compiler}
+ \caption{Example of memory layout in the Omni {\XMP} compiler.}
  \label{figc.1}
 \end{myfigure}

@@ -7,39 +7,39 @@
   \subsection{Local I/O}
 
   Local I/O is the way to use I/O statements and standard I/O functions in the
-  base languages, in which I/O statements and functions are used without
+  base languages, where I/O statements and functions are used without
   any directives.
 
   I/O statements (in {\XMP} {\Fort}) and I/O functions (in {\XMP} {\C})
-  are executed in local similar to other execution statements.
+  are executed locally similar to other execution statements.
   It depends on the system which nodes can handle the I/O statements and
   functions.
 
-  Local I/O can read a file written by the base language and, vice
+  Local I/O can read a file written by the base language, and vice
   versa.
 
-  [F] A name of a global array in the I/O list describes the
+  [F] The name of a global array in the I/O list describes the
   entire area of the array located in each node.
 
   An array element of a global array can be referred to as an I/O item only
   in the node where it is located.
 
-  [F] Any array section of a global array cannot be referred to as an
+  [F] No array section of a global array can be referred to as an
   I/O item.
 
   \subsection{Master I/O[F]}
 
   Master I/O is input and output for the file that corresponds to an
   executing node set.
-  Master I/O is collective execution.
+  Master I/O is a collective execution.
 
-  In master I/O, a global data is input and output as if it was executed
+  In master I/O, a global data object is input and output as if it was executed
   only by a master node, which represents the executing node set, through
   its local copy of the data.
 
-  The master node is chosen among the executing node set arbitrarily by the
-  system, and is unique to the executing node set during execution of
-  the program.
+  The master node is chosen by the system arbitrarily from among the
+  executing node set, and is unique to the executing node set during
+  execution of the program.
 
   Master I/O is provided in the form of directives of {\XMP} {\Fort}.
 
@@ -50,21 +50,20 @@
   When a local variable or an expression is written to a file, only the
   value of the data on the master node is written.
   
-  Master I/O can read a file written by the base language, and vice
+  Master I/O can read a file written in the base language, and vice
   versa.
   
 
   \subsection{Global I/O}
 
-  Global I/O is input and output for the file that corresponds to
+  Global I/O is input and output for a file that corresponds to
   an executing node set.
-  Some executions of global I/O are collective and the others are independent.
-  In a large system with many nodes, global I/O can be expected higher
-  speed and less memory consumption execution than master I/O.
+  Some executions of the global I/O are collective and the others are independent.
+  In a large system with many nodes, the global I/O can be expected to
+  have higher speed and less memory consumption execution than master I/O.
 
   [F] It is provided in the form of directives for a part of I/O
-  statements, such as OPEN, CLOSE, READ
-  and WRITE statements.
+  statements, such as OPEN, CLOSE, READ, and WRITE statements.
 
   [C] It is provided in the form of service functions and the include file.
 
@@ -76,13 +75,13 @@
 
   [F] File formats are not compatible between XcalableMP Fortran
   and the base language because global I/O does not generate or access
-  the file header and footer particular to the base language.
+  file headers and footers that are specific to the base language.
 
   There are three kinds of global I/O, as shown in Table
   \ref{tb:global}.
   {\bf Collective} global I/O is collective execution and
   sequential file access.
-  It handles global data in the sequential order, similar to master
+  It handles global data in a sequential order, similar to master
   I/O.
   {\bf Atomic} global I/O is independent execution and sequential file access.
   Executing nodes share file positioning of the global I/O file and
@@ -93,7 +92,7 @@
 
   \begin{table}[tb]
    \begin{center}
-    \caption{Global I/O}
+    \caption{Global I/O.}
     \label{tb:global}
     \begin{tabular}{|c||l|l|}
      \hline 
@@ -115,17 +114,16 @@
 
   \subsubsection*{Advice to programmers}
 
-  Local I/O is useful for debugging focusing on a node since local I/O
-  is executed on each node individually.
+  Local I/O is useful for debugging that is focused on a node because
+  local I/O is executed on each node individually.
 
-  Master I/O is a directive extension, in which the execution result
-  matches the one of the base language ignoring directive lines.
+  Master I/O is a directive extension, where the execution result
+  matches that of the base language, ignoring directive lines.
 
-  Global I/O aims for highly-parallel I/O using thousands of nodes.
-  It is limited to binary files.
-  It avoids extreme concentration of computational load and memory
-  consumption to specific nodes using MPI-IO or other parallel I/O
-  techniques.
+  Global I/O aims for highly parallel I/O using thousands of nodes.
+  It is limited to binary files, and it avoids the extreme concentration
+  of computational load and memory consumption to specific nodes using
+  MPI-IO or other parallel I/O techniques.
 
   \section{File Connection}
 
@@ -138,9 +136,9 @@
   
   There are two ways of file connections, dynamic connection and
   preconnection.
-  Dynamic connection connects a file during execution of the program.
+  Dynamic connection connects a file during the execution of the program.
   Preconnection connects a file at the beginning of execution of the
-  program and therefore it can execute I/O statements and functions
+  program, and it can therefore execute I/O statements and functions
   without the prior execution of an OPEN statement or a function call to
   open the file.
 
@@ -148,10 +146,12 @@
 
   The language processor of the base language connects the file to each
   node.
-  It is implementation dependent which nodes can access the standard
-  input, output and error files.
-  It is also implementation dependent how the accesses to the files with the same name by multiple nodes behaves.
-  The only primary node can access the standard input, output and error files.
+  It is implementation-defined which nodes can access the standard
+  input, output, and error files.
+  It is also implementation dependent how the accesses to the files with
+  the same name by multiple nodes behaves.
+  The only primary node can access the standard input, output, and error
+  files.
   
   \if 0
   File system visible to each node is implementation dependent.
@@ -167,40 +167,40 @@
 
   \subsection{{\tt [F]} File Connection in Master I/O}
 
-  An OPEN statement specified with a master I/O directive connects a
+  An OPEN statement that is specified with a master I/O directive connects a
   file to the executing node set.
   When a master I/O file is connected by a READ statement or a WRITE
   statement without encountering any OPEN statement, the name and
   attributes of the file depend on the language system of the base
   language.
   Disconnection from a master I/O file is executed by a CLOSE statement
-  or termination of the program.
+  or by the termination of the program.
 
-  Dynamic connection must be executed collectively by all nodes sharing
+  The dynamic connection must be executed collectively by all nodes sharing
   the file with the same unit number.
   Two executing node sets may employ the same unit number only if they
   have no common node.
 
-  The standard input, output and error files are preconnected to the
+  The standard input, output, and error files are preconnected to the
   entire node set.
   Therefore, master I/O executed on the entire node set is always
-  allowed without OPEN and CLOSE statements.
+  allowed without OPEN or CLOSE statements.
 
 
   \subsection{File Connection in Global I/O}
 
-  Dynamic connection of global I/O is collective execution and
+  The dynamic connection of global I/O is a collective execution, and
   is valid for the executing node set.
   Global I/O files cannot be preconnected.
 
   \subsubsection*{\tt [F]}
 
-  An OPEN statement specified with a global I/O directive connects a
+  An OPEN statement that is specified with a global I/O directive connects a
   file to the executing node set.
   Disconnection from a global I/O file is executed by a CLOSE statement
-  or termination of the program.
+  or by the termination of the program.
 
-  Dynamic connection must be executed collectively by all nodes sharing
+  The dynamic connection must be executed collectively by all nodes sharing
   the file with the same unit number.
   Two executing node sets may employ the same unit number only if they
   have no common node.
@@ -210,7 +210,7 @@
   A library function to open a global I/O file connects the file to the
   executing node set.
   Disconnection from a global I/O file is executed by a library function
-  to close the file or termination of the program.
+  to close the file or terminate the program.
 
   \section{Master I/O}
 
@@ -251,7 +251,9 @@
 
    \subsection*{Restriction}
    \begin{itemize}
-   \item The following items including a global array or a subobject of a global array must not appear in an input item or output item.
+   \item The following items, including a global array or a subobject of
+		 a global array, must not appear in an input item or output
+		 item.
 	  \begin{itemize}
  	   \item A substring-range
            \item A section-subscript
@@ -261,19 +263,19 @@
 
     \item An I/O statement specified with a master I/O directive must be
 	  executed collectively on the node set that is connected to the file.
-    \item Internal file I/O is not allowed as master I/O.
+    \item Internal file I/O is not permitted to be a master I/O.
    \end{itemize}
 	  
   \subsection*{Description}
 
-   An I/O statement specified with master I/O directive accesses a
-   file whose format is the same as the one of the base language.
+   An I/O statement that is specified with a master I/O directive accesses a
+   file whose format is the same as that of the base language.
    The access, including connection, disconnection, input and output,
-   file positioning, and inquiry, is collective and must be
-   executed on the same node set as the one where the file was
+   file positioning, and inquiry, is collective, and must be
+   executed on the same node set as the one on which the file was
    connected. 
 
-   A master node, a unique node to an executing node set, is chosen by the
+   A master node, which is a unique node to an executing node set, is chosen by the
    language system.
    Master I/O works as if all file accesses were executed only on the master
    node.
@@ -282,7 +284,7 @@
 
    \begin{table}[h]
     \begin{center}
-    \caption{Operations for I/O}
+    \caption{Operations for I/O.}
     \label{tb:opforio}
      \begin{tabular}{|l|p{40mm}|p{80mm}|}
       \hline
@@ -290,29 +292,31 @@
       \hline
       input item & name of global array & The data elements that are read 
 	      from the file in the sequential order of array elements are distributed onto 
-	      the global array on the node set. The file positioning increases by
-	      the size of data. \\
+	      the global array on the node set. The file positioning
+			   increases according to the size of data. \\
       \cline{2-3}
-      & array element of global array &  The data element that is read from the file
+      & array element of global array & The data element that is read from the file
 	      is copied to the element of the global array on the node to which it is mapped.
-	      The file positioning increases by the size of data. \\
+	      The file positioning increases according to the size of data. \\
       \cline{2-3}
       & local variable & The data element that is read from the file is replicated to the
 	      local variables on all nodes of the executing node
-	      set. The file positioning increases by the size of data. \\
+	      set. The file positioning increases according to the size of data. \\
       \cline{2-3}
       & implied DO loop & For each input item, repeat the above operation. \\
       \hline
       output item & name of global array & The data elements of the
 	      global array are collected and are written to the
 	      file in the sequential order of array elements. The file
-	      positioning increases by the size of data. \\
+	      positioning increases according to the size of data. \\
       \cline{2-3}
-      & array element of global array &  The element of the global array is written to the file. A file position increases by the size of data. \\
+      & array element of global array & The element of the global array
+			   is written to the file. A file position increases
+			   according to the size of data. \\
       \cline{2-3}
       & local variable and expression & The value evaluated on the master node
-	      is written to the file. The file positioning increases by
-	      the size of data. \\
+	      is written to the file. The file positioning increases
+			   according to the size of data. \\
       \cline{2-3}
       & implied DO loop & For each output item, repeat the above operation. \\
       \hline
@@ -327,15 +331,15 @@
    the file.
    In the namelist input, each item of the namelist is read from the
    file to the master node if it is recorded in the file.
-   And then all items of the namelist are replicated onto all nodes of
+   Then, all items of the namelist are replicated onto all nodes of
    the executing node set from the master node even if some items are not read from the file.
 
    IOSTAT and SIZE specifiers and specifiers of the INQUIRE statement
    that can return values always return the same value among the
    executing node set.
 
-   When a condition specified with ERR, END or EOR specifier is
-   satisfied, all nodes of executing node set are branched together to
+   When a condition that is specified with ERR, END or EOR specifier is
+   satisfied, all nodes of the executing node set are branched together to
    the same statement.
 
    \subsubsection*{Advice to implementers}
@@ -347,12 +351,15 @@
    
    \section{{\tt [F]} Global I/O}
 
-   Global I/O performs unformatted data transfer and can be expected to be higher performance and lower memory consumption than master I/O.
-%   Global I/O is restricted within unformatted (binary) files, but higher performance and lower memory consumption can be expected than master I/O.
+   Global I/O performs unformatted data transfer, and can be expected to
+   have a higher performance and lower memory consumption than master I/O. 
+%   Global I/O is restricted within unformatted (binary) files, but
+   %   higher performance and lower memory consumption can be expected
+   %   than master I/O.
    The file format is compatible with the one in MPI-IO.
 
-   Global I/O consists of three kinds, collective I/O, atomic I/O, and
-   direct I/O. 
+   There are three kinds of Global I/O, namely collective I/O, atomic
+   I/O, and direct I/O. 
 
    \subsection{Global I/O File Operation}
 
@@ -374,9 +381,9 @@
 
    \subsubsection*{Restriction}
 
-   I/O statements and specifiers available for an {\it io-statement} are
+   I/O statements and specifiers that are available for an {\it io-statement} are
    shown in the following table.
-   Definition of each specifier is described in the specification of the base language. 
+   The definition of each specifier is described in the specification of the base language. 
 
    Case of \gio construct without a direct clause:
    \begin{table}[h]
@@ -408,7 +415,7 @@
    \end{center}
    \end{table}
 
-   An input item and an output item of a data transfer statement with
+   The input item and output item of a data transfer statement with
    a \gio directive must be the name of a variable.
    
    \if 0
@@ -427,24 +434,26 @@
 
    \subsubsection*{Description}
 
-   Global I/O construct connects, disconnects, inputs and outputs the global I/O file,
-   which is compatible with MPI-IO.
+   Global I/O construct connects, disconnects, inputs, and outputs the
+   global I/O file, which is compatible with MPI-IO.
 
-   The standard input, output and error files cannot be a Global I/O file.
+   The standard input, output, and error files cannot be a Global I/O file.
    A Global I/O file cannot preconnect to any unit or any file handler,
-   and must explicitly be connected by the OPEN statement specified with
-   a \gio directive.
+   and must be explicitly connected by the OPEN statement that is
+   specified with a \gio directive.
 
-   The OPEN statement specified with a \gio directive is collective execution, and the file is shared among the executing node
+   The OPEN statement that is specified with a \gio directive is
+   collective execution, and the file is shared among the executing node 
    set.
    A file that has already been opened by another OPEN statement with
-   a \gio directive cannot be reopen by an OPEN statement with or
+   a \gio directive cannot be reopened by an OPEN statement with or
    without a \gio directive before closing it.
 
    A global I/O file must be disconnected explicitly by a CLOSE
-   statement specified with a \gio directive, otherwise the result of I/O
-   is not guaranteed.
-   The CLOSE statement specified with a \gio directive is a collective execution and must be executed by the same executing
+   statement that is specified with a \gio directive; otherwise, the
+   result of I/O is not guaranteed.
+   The CLOSE statement that is specified with a \gio directive is a
+   collective execution, and must be executed by the same executing 
    node set as the one where the OPEN statement is executed.
 
    Utilizable values of the specifiers in I/O statements are shown in the
@@ -519,31 +528,32 @@
 	 
    \end{itemize}
 
-   OPEN, CLOSE, READ and WRITE statements specified with \gio directives
-   without atomic and direct clauses are called collective OPEN, collective
-   CLOSE, collective READ, and collective WRITE statements respectively.
-   These all statements are called collective I/O statements.
+   OPEN, CLOSE, READ, and WRITE statements that are specified with \gio directives
+   without atomic or direct clauses are called collective OPEN, collective
+   CLOSE, collective READ, and collective WRITE statements, respectively.
+   All of these statements are called collective I/O statements.
 
-   OPEN, CLOSE, READ and WRITE statements specified with \gio directives
+   OPEN, CLOSE, READ, and WRITE statements specified with \gio directives
    with atomic clauses are called atomic OPEN, atomic CLOSE, atomic READ, and
-   atomic WRITE statements respectively.
-   These all statements are called atomic I/O statements.
+   atomic WRITE statements, respectively.
+   All of these statements are called atomic I/O statements.
 
-   OPEN, CLOSE, READ and WRITE statements specified with \gio directives
+   OPEN, CLOSE, READ, and WRITE statements specified with \gio directives
    with direct clauses are called direct OPEN, direct CLOSE, direct READ, and
-   direct WRITE statements respectively.
-   These all statements are called direct I/O statements.
+   direct WRITE statements, respectively.
+   All of these statements are called direct I/O statements.
 
-   The file connected by a collective, atomic or direct OPEN statement can
-   be read/be written only by the same type of READ/WRITE statements.
-   The file can be disconnected by the same type of a CLOSE statement.
+   The file connected by a collective, atomic, or direct OPEN statement can
+   be read/written only by the same type of READ/WRITE statements.
+   The file can be disconnected by the same type of CLOSE statement.
    Different types of global I/O cannot be executed together for the same file or the
    same unit.
    For example, atomic I/O statements cannot be executed for the unit
    connected by a collective OPEN statement.
 
    \subsubsection{{\tt file\_sync\_all} Directive}
-   Two data accesses conflict if they access the same absolute byte displacements of the same file and at least one is a write access.
+   Two data accesses conflict if they access the same absolute byte
+   displacements of the same file, and at least one is a write access. 
    When two accesses to the same file conflict in direct or collective I/O,
    the following file\_sync\_all directive to the file must be executed.
 
@@ -590,7 +600,7 @@
 
    All collective I/O statements execute collectively.
    In collective I/O, all accesses to a file, such as connection, disconnection,
-   input and output, must be executed on the same executing node set. 
+   input, and output, must be executed on the same executing node set. 
    
    The operations for I/O items are summarized in the following table.
 
@@ -610,7 +620,9 @@
       written to the file in the sequential order of the array elements.
       The file positioning seeks by the size of the data.
       \\ \cline{2-3}
-      & local variable, expression & The values evaluated on a node arbitrarily selected by the language processor from the executing node set.
+      & local variable, expression & The values evaluated on a node
+			   are arbitrarily selected by the language processor from the
+			   executing node set.
       The file positioning seeks by the size of the data.
       \\ \hline
       \end{tabular}
@@ -620,7 +632,11 @@
    \end{table}
 
 \if 0
-   If an axis of the global array is aligned to an axis of the template and they are not equal in length, the length of the axis of the global array is regarded as the length of the axis of the template. In the example below, array a is read/written in the collective I/O file as if it was declared as a(10,100).\\
+   If an axis of the global array is aligned to an axis of the template
+   and they are not equal in length, the length of the axis of the
+   global array is regarded as the length of the axis of the
+   template. In the example below, array a is read/written in the
+   collective I/O file as if it was declared as a(10,100).\\
    \begin{tabular}{ll}
      \verb|!$xmp| & \verb|template t(100)| \\
      & dimension a(10, 2:99) \\
@@ -633,7 +649,7 @@
    Atomic I/O statements read/write shared files exclusively among executing nodes
    in arbitrary order.
    Because it is a nondeterministic parallel execution,
-   the results can differ every execution time even for the same program.
+   the results may differ every execution time even for the same program.
 
    Atomic OPEN and CLOSE statements are executed collectively, while atomic
    READ and WRITE statements are executed independently.
@@ -648,8 +664,8 @@
 
    The initial file positioning is determined by the POSITION specifier of
    the atomic OPEN statement.
-   And then, the file positioning seeks in every READ and WRITE statement 
-   by the length of the input/output data.
+   Then, the file positioning seeks in every READ and WRITE statement 
+   according to the length of the input/output data.
 
 
    \subsection{Direct Global I/O Statement}
@@ -665,12 +681,16 @@
    same executing node set.
    
    Direct READ and WRITE statements read/write local data at the file positioning
-   specified by the REC specifier independently independently.
+   specified by the REC specifier independently.
    The file positioning is shifted from the top of the file by the product 
    of the specifiers RECL (of OPEN statement) and
    REC (of READ and WRITE statement). 
 
-   In order to guarantee the order of direct I/O statements to the same file position, the file should be closed or the file\_sync\_all directive should be executed between these statements. Otherwise, the outcome of multiple accesses to the same file position, in which at least one is a write access, is implementation dependent.
+   In order to guarantee the order of direct I/O statements to the same
+   file position, the file should be closed or the file\_sync\_all
+   directive should be executed between these statements. Otherwise, the
+   outcome of multiple accesses to the same file position, in which at
+   least one is a write access, is implementation dependent.
 
    \if 0
    \textcolor{red}{
@@ -685,7 +705,8 @@
    \section{{\tt [C]} Global I/O Library}
    XcalableMP C provides some data types defined in the include file ``xmp.h'',
    a set of library functions with arguments of the data types, and
-   built-in operators to get values of the data types from names of a variable, a template, etc..
+   built-in operators to get values of the data types from names of a
+   variable, a template, etc.
 
    The following types are provided.
 
@@ -738,14 +759,14 @@
     \item[xmp\_file\_t] A file handler.
 	       It is connected to a file when the file is opened.
 	       It has a shared file pointer and an individual file pointer
-	       to point where to read/write data in the file.
+	       to point where data should be read/written in the file.
 
 	       A shared file pointer is a shared resource among all nodes of the node set
              that has opened the file. Atomic I/O uses a shared file pointer.
 	       An (individual) file pointer is an individual resource on each node. 
 	       Collective I/O and direct I/O use individual file pointers.
 	       
-	       These two file pointers are managed in the structure xmp\_file\_t, .
+	       These two file pointers are managed in the structure xmp\_file\_t,
 	       and can be controlled and referenced only through
 	       the provided library functions.
 \if 0
@@ -759,10 +780,10 @@
 \fi
 
 \item[xmp\_range\_t] Descriptor of array section, including
-      lower bound, upper bound and stride for each dimension.
-      Functions for operating the descriptor are shown in following table.
+      lower bound, upper bound, and stride for each dimension.
+      Functions for operating the descriptor are shown in the following table.
       The xmp\_allocate\_range() function is used to allocate memory.
-      The xmp\_set\_range() function is used to set ranges of a array section.
+      The xmp\_set\_range() function is used to set ranges of an array section.
       The xmp\_free\_range() function releases the memory for the descriptor.
    \end{description}
 
@@ -773,7 +794,7 @@
       {\bf function name}  & \multicolumn{2}{c|}{\bf xmp\_range\_t $*$xmp\_allocate\_range(n\_dim)}  \\ \hline \hline
       argument & int n\_dim & the number of dimensions \\ \hline
       return value & xmp\_range\_t$*$ & descriptor of array section. NULL is returned
-	      when a program abend. \\ \hline
+	      when a program abends. \\ \hline
       \end{tabular}
      \end{center}
     \label{tb:aaa}
@@ -829,7 +850,9 @@
     \label{tb:aaa}
    \end{table}
 
-   File view is initialized, where file view is based on the MPI-IO vile view mechanism. The value of shared and individual file pointers depend on the value of amode.
+   File view is initialized, where file view is based on the MPI-IO file
+   view mechanism. The value of shared and individual file pointers
+   depends on the value of amode.
 
    \begin{table}[h]
      \begin{center}
@@ -932,8 +955,8 @@
       argument & xmp\_file\_t $*$fh & file structure \\ \hline
       return value & long long & Upon successful completion, the
 	      function shall open the file and return a non-negative
-	      integer representing the lowest numbered unused file
-	      descriptor. Otherwise, negative number shall be
+	      integer representing the lowest-numbered unused file
+	      descriptor. Otherwise, a negative number shall be
 	      returned. \\ \hline
       \end{tabular}
      \end{center}
@@ -942,7 +965,8 @@
    \end{table}
 
    \subsubsection{xmp\_ftell\_shared}
-   xmp\_ftell\_shared inquires the position of shared file pointer in the file structure. Independent execution.
+   xmp\_ftell\_shared inquires the position of the shared file pointer in
+   the file structure. Independent execution.
 
    \clearpage
    \begin{table}[h]
@@ -965,8 +989,12 @@
 
    \subsubsection{xmp\_file\_sync\_all}
    xmp\_file\_sync\_all guarantees completion of access to the file from nodes sharing the file.
-   Two data accesses conflict if they access the same absolute byte displacements of the same file and at least one is a write access.
-   When two accesses A1 and A2 to the same file conflict in direct or collective I/O, an xmp\_file\_sync\_all to the file must be invoked between A1 and A2, otherwise the outcome of the accesses is undefined.   
+   Two data accesses conflict if they access the same absolute byte
+   displacements of the same file, and at least one is a write access. 
+   When two accesses A1 and A2 to the same file conflict in direct or
+   collective I/O, an xmp\_file\_sync\_all to the file must be invoked
+   between A1 and A2; otherwise, the outcome of the accesses is
+   undefined.
    Collective execution.
 
    \begin{table}[h]
@@ -986,12 +1014,13 @@
 
    \subsection{Collective Global I/O Functions}
 
-   Collective I/O is executed collectively but using the individual pointer.
+   Collective I/O is executed collectively, but using the individual pointer.
    It reads/writes data from the position of the individual file pointer and moves the position
    by the length of the data.
 
    Before the file access, a file view is often specified. A file view, like a window to the file, 
-   spans the positions corresponding to the array elements that each node owns. 
+   spans the positions corresponding to the array elements that are
+   owned by each node. 
    For more details of file view, refer to the MPI 2.0 specification.
 
    \subsubsection{xmp\_file\_set\_view\_all}
@@ -1020,7 +1049,7 @@
    xmp\_file\_clear\_view\_all clears the file view. Collective execution.
 
    The positions of the shared and individual file pointers are set to
-   disp and 
+   disp, and 
    the elemental data type and the file type are set to MPI\_BYTE.
    
    \begin{table}[h]
@@ -1041,7 +1070,7 @@
 
    \subsubsection{xmp\_fread\_all}
    xmp\_fread\_all reads the same data from the position of the shared file
-   pointer onto the all executing nodes. Collective execution.
+   pointer onto all of the executing nodes. Collective execution.
 
    \begin{table}[h]
     \begin{center}
@@ -1063,10 +1092,11 @@
    \end{table}
 
    \subsubsection{xmp\_fwrite\_all}
-   xmp\_fwrite\_all writes individual data on the all executing nodes to the position of the shared file
-   pointer. Collective execution.
+   xmp\_fwrite\_all writes individual data on all of the executing nodes
+   to the position of the shared file pointer. Collective execution.
 
-   It is assumed that the file view is set previously. Each node writes its data into its own file view.
+   It is assumed that the file view is set in advance. Each node writes
+   its data into its own file view.
 
    \begin{table}[h]
     \begin{center}
@@ -1137,23 +1167,25 @@
 
    \subsection{Atomic Global I/O Functions}
 
-   Atomic I/O is executed independently but using the shared pointer. 
+   Atomic I/O is executed independently, but using the shared pointer. 
    It exclusively reads/writes local data
-   from the position of the shared file pointer and moves the position by the length of the data.
+   from the position of the shared file pointer, and moves the position
+   by the length of the data.
 
    Before atomic I/O is executed, the file view must be cleared.
    
    [Rationale]
 
-   Though the file views must be the same on all processes in order to use the shared file pointer,
-   xmp\_file\_set\_view\_all
+   Although the file views must be the same on all processes in order to
+   use the shared file pointer, the xmp\_file\_set\_view\_all
    function may set different file views for all nodes.
    Thus, before atomic I/O is used, the file view must be cleared.
 
    \subsubsection{xmp\_fread\_shared}
-   xmp\_fread\_shared exclusively reads local data form the position of the shared file
-   pointer and moves the position by the length of the data.
-   Independently execution.
+
+   xmp\_fread\_shared exclusively reads local data from the position of
+   the shared file pointer, and moves the position by the length of the data.
+   Independent execution.
 
    \begin{table}[h]
     \begin{center}
@@ -1201,10 +1233,10 @@
 
    \subsection{Direct Global I/O Functions}
 
-   Direct I/O is executed independently and using the individual pointer. 
+   Direct I/O is executed independently and uses the individual pointer. 
    It individually reads/writes local data
-   from the position of the individual file pointer and 
-   moves the position by the length of the data taking account of the file view.
+   from the position of the individual file pointer, and 
+   moves the position by the length of the data, considering the file view.
 
    In order to guarantee the order by xmp\_fread and xmp\_fwrite functions to the same file position, the file should be closed or the xmp\_file\_sync\_all function should be executed between these functions. Otherwise, the outcome of multiple accesses to the same file position, in which at least one is the xmp\_fwrite function, is implementation dependent.
    
@@ -1219,7 +1251,7 @@
    
    \subsubsection*{Advice to programmers}
 
-   Function xmp\_fseek is useful to set the individual file pointer.
+   Function xmp\_fseek is useful for setting the individual file pointer.
    It is not recommended using the file view together because of complexity.
 
    \subsubsection{xmp\_fread}

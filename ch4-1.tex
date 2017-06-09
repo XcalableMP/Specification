@@ -8,7 +8,7 @@ directives.
 \vspace{0.5cm}%
 
 \begin{tabular}{ll}
-{\tt xxx} & {\tt type-face} characters are used to indicate literal type characters. \\
+{\tt xxx} & {\tt type-face} characters are used to indicate literal-type characters. \\
 {\it xxx...} & If the line is followed by ``...'', then xxx can be
 repeated. \\
 {\it [xxx]} & {\it xxx} is optional. \\
@@ -26,8 +26,8 @@ are identified by unique sentinels {\tt\verb|!$xmp|}. An {\XMP}
 directive follows the rules for comment lines of either the Fortran free
 or fixed source form, depending on the source form of the surrounding
 program unit\footnote{Consequently, the rules of comment lines that an
-{\XMP} directive follows is the same as the ones that an {\OMP}
-directive follows.}. {\XMPF} directives are case-insensitive.
+{\XMP} directive follows are the same as the ones followed by an {\OMP}
+directive.}. {\XMPF} directives are case insensitive.
 
 \vspace{0.5cm}
 
@@ -66,16 +66,16 @@ language.
 %
 For example, in {\XMPF}, a node array declared by a {\tt nodes}
 directive is visible only within either the program unit, the
-derived-type declaration or the interface body that immediately
-surrounds the directives, unless overridden in the inner blocks or use
-or host associated,
+derived-type declaration, or the interface body that immediately
+surrounds the directives, unless it is overridden in the inner blocks or
+is use or host associated.
 %
-and, in {\XMPC}, a node array declared by a {\tt nodes} directive is
+Further, in {\XMPC}, a node array declared by a {\tt nodes} directive is
 visible only in the range from the declaring point to the end of 
 the block when placed within a block, or of the file when
 placed outside any blocks, unless overridden in the inner blocks.
 
-Note that, in {\XMPF}, node arrays and templates in other scoping unit
+Note that in {\XMPF}, node arrays and templates in other scoping units
 are accessible by use or host association.
 
 The following directives are declarative directives.
@@ -112,9 +112,9 @@ An executable directive and its associated user code make up an
 
 \vspace{0.5cm}
 
-Note that, in {\XMPF}, a corresponding {\tt end} directive is required
-for some executable directives such as {\tt task} and {\tt tasks} and,
-in {\XMPC}, the associated statement can be compound.
+Note that in {\XMPF}, a corresponding {\tt end} directive is required
+for some executable directives such as {\tt task} and {\tt tasks}, and
+in {\XMPC}, the associated statement can be a compound one.
 
 %\vspace{0.5cm}
 %
@@ -148,7 +148,7 @@ The following directives are executable directives.
 \subsubsection*{Synopsis}
 
 For {\XMP} {\Fort}, multiple attributes can be specified
-in one combined declarative directive, which is analogous to type
+by one combined declarative directive, which is analogous to type
 declaration statements in Fortran using the ``{\tt ::}'' punctuation.
 
 \subsubsection*{Syntax}
@@ -219,7 +219,7 @@ in addition to the following ones, are applied.
        {\it array-name}.
  \item If the {\tt dimension} attribute appears in a {\it
        combined-directive}, any object to which it applies must be
-       declared with either the {\tt template} or the {\tt nodes}
+       declared using either the {\tt template} or the {\tt nodes}
        attribute.
 \end{itemize}
 

@@ -25,23 +25,23 @@ a specified node set.
 
 When a node encounters a {\tt task} construct at runtime, it executes
 the associated block (called a {\it task}) if it is included by the node
-set specified by the {\tt on} clause; otherwise it skips executing the
-block.
+set specified by the {\tt on} clause; otherwise, it skips the execution
+of the block.
 
 %This line was inserted by Sakagami for svn test. 
 
 Unless a {\tt task} construct is surrounded by a {\tt \Directive{tasks}}
 construct, {\it nodes-ref} or {\it template-ref} in the {\tt on} clause
-is evaluated by the executing node set at the entry of the task;
-otherwise {\it nodes-ref} and {\it template-ref} of the {\tt task}
+is evaluated by the executing node set at the start of the task;
+otherwise, {\it nodes-ref} and {\it template-ref} of the {\tt task}
 construct are evaluated by the executing node set at the entry of the
-immediately surrounding {\tt tasks} construct.
+{\tt tasks} construct that immediately surrounds it.
 %where the evaluation
 %results must be the same in every node in the executing node set.
 %
-The current executing node set is set to that specified by the {\tt on}
-clause at the entry of the {\tt task} construct and rewound to the last
-one at the exit.
+The current executing node set is set to be that specified by the {\tt
+on} clause at the entry of the {\tt task} construct, and it is rewound
+to the last one at the exit.
 
 %When {\it nodes-ref} or {\it template-ref} is evaluated, the
 %corresponding new executing node set is created conceptually.
@@ -68,13 +68,13 @@ one at the exit.
 
 In XcalableMP Fortran, copies of variables {\tt a} and {\tt b} are replicated on
 nodes {\tt nd(1)} through {\tt nd(8)}. 
-A task defined by the {\tt task} construct is executed only on {\tt nd(1)} and
+A task defined by the {\tt task} construct is executed only on {\tt nd(1)}, and
 defines the copies of {\tt a} and {\tt b} on a node {\tt nd(1)}. 
 The copies on nodes {\tt nd(2)} through {\tt nd(8)} are not defined.
 
 In XcalableMP C, copies of variables {\tt a} and {\tt b} are replicated on
 nodes {\tt nd[0]} through {\tt nd[7]}. 
-A task defined by the {\tt task} construct is executed only on {\tt nd[0]} and
+A task defined by the {\tt task} construct is executed only on {\tt nd[0]}, and
 defines the copies of {\tt a} and {\tt b} on a node {\tt nd[0]}.
 The copies on nodes {\tt nd[1]} through {\tt nd[7]} are not defined.
 
@@ -175,7 +175,8 @@ executed by the owner of the array element {\tt a(:,j)} or {\tt a[j][:]}.
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{tasks}} construct is used to instruct the executing
-nodes to execute the multiple tasks it surrounds in arbitrary order.
+nodes to execute the multiple tasks that it surrounds in an arbitrary
+order.
 
 \subsubsection*{Syntax}
 \Syntax{tasks}
@@ -197,16 +198,16 @@ nodes to execute the multiple tasks it surrounds in arbitrary order.
 
 {\tt \Directive{task}} constructs surrounded by a {\tt tasks} construct
 are executed in arbitrary order without implicit synchronization at the
-entry of each task.
+start of each task.
 %
-As a result, if there is no overlap between the executing node sets of
+As a result, if there are no overlaps between the executing node sets of
 the adjacent tasks, they can be executed in parallel.
 
 {\it nodes-ref} or {\it template-ref} of each task immediately
 surrounded by a {\tt tasks} construct is evaluated by the executing node
 set at the entry of the {\tt tasks} construct.
 
-No implicit synchronization is performed at the entry and exit of the
+No implicit synchronization is performed at the start and end of the
 {\tt tasks} construct.
 %
 %implicit synchronization is performed at the exit of the {\tt tasks}
@@ -229,8 +230,8 @@ No implicit synchronization is performed at the entry and exit of the
  \item[Example 1]
 
 	    Three instances of subroutine {\tt task1} are concurrently
-	    executed by node sets {\tt p(1:500)}, {\tt p(501:800)} and
-	    {\tt p(801:1000)}, respectively.
+	    executed by node sets {\tt p(1:500)}, {\tt p(501:800)}, and
+	    {\tt p(801:1000)}.
 
 \hspace{\hsize}
 
@@ -282,7 +283,7 @@ No implicit synchronization is performed at the entry and exit of the
 
  \item[Example 2]
 
-	    The first node {\tt p(1)} executes the first and the second
+	    The first node {\tt p(1)} executes the first and second
 	    tasks, the final {\tt node p(8)} the second and the third
 	    tasks, and the other nodes {\tt p(2)} through {\tt p(7)}
 	    only the second task.
@@ -325,8 +326,8 @@ No implicit synchronization is performed at the entry and exit of the
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{loop}} construct specifies that each iteration of
-the following loop is executed by a node set specified by the {\tt on}
-clause, so that the iterations are distributed among nodes and executed
+the following loop is executed by a node set that is specified by the {\tt on}
+clause, so the iterations are distributed among nodes and executed
 in parallel.
 % where the specified data is accessed locally.
 % inserted by Sakagami,H. 09/11/13
@@ -476,17 +477,17 @@ and {\it reduction-spec} is:
 \subsubsection*{Description}
 
 A {\tt loop} directive is associated with a loop nest
-consisting of one or more tightly-nested loops that follow the directive
-and distribute the execution of their iterations onto the node set
+consisting of one or more tightly nested loops that follow the directive,
+and it distributes the execution of their iterations onto the node set
 specified by the {\tt on} clause.
 % inserted by Sakagami,H. 09/11/13
 %Since the iteration range of the loop for each node is determined before
 %the loop is executed, efficient loop execution can be expected.
 
-The sequence of {\it loop-index}'s in parenthesis denotes an index of
+The sequence of {\it loop-indexes} in parenthesis denotes an index of
 an iteration of the loop nests. If a control variable of a loop does
-not appear in the sequence, it is assumed that each possible value of
-it is specified in the sequence. The sequence can be considered to
+not appear in the sequence, it is assumed that each of its possible
+values is specified in the sequence. The sequence can be considered to 
 denote a set of indices of iterations.
 %
 When the sequence is omitted, it is assumed that the control variables
@@ -494,7 +495,7 @@ of all the loops in the associated loop nests are specified.
 
 When a {\it template-ref} is specified in the {\tt on} clause, the
 associated loop is distributed so that the iteration (set) indexed by
-the the sequence of {\it loop-index}'s  is executed by the node onto
+the sequence of {\it loop-indexes}  is executed by the node onto
 which a template element specified by the {\it template-ref} is
 distributed.
 
@@ -509,12 +510,12 @@ distributed.
 % modified by Sakagami,H. 09/11/13
 When a {\it nodes-ref} is specified in the {\tt on} clause, the
 associated loop is distributed so that the iteration (set) indexed by
-the the sequence of {\it loop-index}'s is executed by a node
+the sequence of {\it loop-indexes} is executed by a node
 specified by the {\it nodes-ref}.
 
 In addition, the executing node set is updated to the node set specified
-by the {\tt on} clause at the beginning of every iteration and restored
-to the last one at the end of it.
+by the {\tt on} clause at the beginning of every iteration, and it is
+restored to the last one at the end of it.
 
 % inserted and modified by Sakagami,H. 09/11/13
 %When the loop includes reduction operations, proper {\it reduction-clause}
@@ -536,17 +537,17 @@ nest.
 %construct with the following {\it template-spec} replacements:
 
 \mytextcolor{red}{
-When the {\tt expand} clause is specified and of the form ``{\it
+When the {\tt expand} clause is specified, and is of the form ``{\it
 int-expr} : {\it int-expr}'' in a dimension, 
 the first {\it int-expr} is subtracted from the local lower bound in
-that dimension and the second one is added to the local upper bound.
+that dimension, and the second one is added to the local upper bound.
 %
-When the {\tt expand} clause is specified and of the form {\it int-expr},
+When the {\tt expand} clause is specified, and is of the form {\it int-expr},
 the {\it int-expr} is subtracted from the local lower bound in that
-dimension and added to the local upper bounds.
+dimension, and is added to the local upper bounds.
 %
 However, an ``expanded'' local iteration space does not spread out of
-the original global itaration space unless the \Term{{\tt /unbound/}
+the original global iteration space unless the \Term{{\tt /unbound/}
 modifier} is specified in {\it expand-width}.
 }
 
@@ -556,18 +557,20 @@ that its local iteration space, $margin$, is:
 $$margin = expand \bigtriangleup orig$$
 where $expand$ is a local iteration space when an {\tt expand} clause
 with the same argument(s) is specified, 
-$orig$ is that when neither $expand$ nor $margin$, and
+$orig$ is a local iteration space when neither $expand$ nor $margin$,
+and 
 $\bigtriangleup$ is the symmetric difference operator.
 }
 
 \mytextcolor{red}{
 \begin{quotation}
-  (Advice to programmers and implementors) Using the {\tt expand} and
+  (Advice to programmers and implementers) Using the {\tt expand} and
   {\tt margin} clauses and asynchronous communication, programmers can
   overlap computation and communication as in the code left
   below. It is recommended for the implementation to support an
   extension that is a syntactic sugar for those sequence of constructs,
-  such as the {\tt peel\_and\_wait} clause in the code right below.
+  such as the {\tt peel\_and\_wait} clause in the code immediately
+  following.
 \end{quotation}
 }
 
@@ -617,7 +620,7 @@ $\bigtriangleup$ is the symmetric difference operator.
 
 \vspace{1zw}
 
-The reduction operation executed, except in cases with {\it
+The reduction operation that is executed, except in cases with {\it
 reduction-kind} of {\tt FIRSTMAX}, {\tt FIRSTMIN}, {\tt LASTMAX}, or
 {\tt LASTMIN},
 \mytextcolor{red}{
@@ -638,7 +641,7 @@ range of its value.
 %        with a triplet representing the range of its value.
 % \end{itemize}
 %
-Therefore, for example, the two codes below are equivalent.
+As an example, the two codes below are therefore equivalent.
 
 \vspace{1zw}
 
@@ -662,8 +665,8 @@ Therefore, for example, the two codes below are equivalent.
 \begin{minipage}{0.46\hsize}
 \begin{center}
 \begin{XFexampleR}
-// Initialize s_tmp to the identity
-// element of the op operator
+! Initialize s_tmp to the identity
+! element of the op operator
       s_tmp = ...
 
 !$xmp loop (j) on t(:,j) 
@@ -685,23 +688,25 @@ Therefore, for example, the two codes below are equivalent.
 
 \vspace{1zw}
 
-Particularly for the reduction kinds of {\tt FIRSTMAX}, {\tt FIRSTMIN},
-{\tt LASTMAX} and {\tt LASTMIN}, in addition to a corresponding {\tt
+In particular, for the reduction kinds of {\tt FIRSTMAX}, {\tt FIRSTMIN},
+{\tt LASTMAX}, and {\tt LASTMIN}, in addition to a corresponding {\tt
 MAX} or {\tt MIN} reduction operation, the {\it
-\Term{location-variable}}'s are set after executing the {\tt loop}
-construct as follows:
+location-variables}\index{location-variable} are set after executing the
+{\tt loop} construct as follows:
 %
 \begin{itemize}
  \item For {\tt FIRSTMAX} and {\tt FIRSTMIN}, they are set to their
        values at the end of the {\it first} iteration in which
        the {\it reduction-variable} takes the value of the reduction
-       result, where {\it first} means first in the sequential order in
+       result, where {\it first} refers to the first position in the
+       sequential order in 
        which iterations of the associated loop nest were executed
        without parallelization.
  \item For {\tt LASTMAX} and {\tt LASTMIN}, they are set to their
        values at the end of the {\it last} iteration in which
        the {\it reduction-variable} takes the value of the reduction
-       result, where {\it last} means last in the sequential order in
+       result, where {\it last} refers to the last position in the
+       sequential order in 
        which iterations of the associated loop nest were executed
        without parallelization.
 \end{itemize}
@@ -773,11 +778,16 @@ construct as follows:
  \item The template specified by {\it template-ref} must be fixed 
        before the {\tt loop} construct is executed.
 
+ % \item The {\tt loop} construct is global, which means that it must be
+ %       executed by all of the executing nodes, and each local variable
+ %       referenced in the directive must have the same value among all of
+ %       them, and the lower bound, upper bound, and step of the
+ %       associated loop must have the same value among all of them.
+
  \item The {\tt loop} construct is global, which means that it must be
-       executed by all of the executing nodes, and each local variable
-       referenced in the directive must have the same value among all of
-       them, and the lower bound, upper bound and step of the associated
-       loop must have the same value among all of them.
+       executed by all of the executing nodes with the same values for
+       each local variable referenced in the directive, and the lower
+       bound, upper bound, and step of the associated loop.
 
  \item \mycolor{red}{Either of the {\tt expand} or {\tt margin} clause,
 	   if any, can be specified.}
@@ -841,7 +851,7 @@ The {\tt loop} construct determines the node that executes each
 of the iterations, according to the distribution of template {\tt t}, and
 distributes 
 the execution. This example is syntactically equivalent to the one
-shown below, but will be faster because iterations to be executed by
+shown below, but will be faster because the iterations to be executed by
 each node can be determined before executing the loop.
 
 \Example{task}
@@ -872,7 +882,7 @@ each node can be determined before executing the loop.
       end do
 \end{XFexample}
 
-	   Since the first dimension of template {\tt t} is not
+	   Because the first dimension of template {\tt t} is not
 	   distributed, only the {\tt j} loop, which is aligned with the
 	   second dimension of {\tt t}, is distributed. This example is
 	   syntactically equivalent to the {\tt task} construct shown
@@ -910,7 +920,7 @@ each node can be determined before executing the loop.
 
 % modified by Sakagami,H. 09/11/13
 The distribution of loops in the nested loop can be specified
-using the sequence of {\it loop-index}'s in one {\tt loop}
+using the sequence of {\it loop-indexes} in one {\tt loop}
 construct. This example is equivalent to the loop shown
 below, but will run faster because the iterations 
 to be executed by each node can be determined outside of the nested
@@ -943,9 +953,9 @@ clause is a subset of that specified by the outer one.
       end do
 \end{XFexample}
 
-	   Three node sets {\tt p(:,1)}, {\tt p(:,2)} and {\tt p(:,3)}
+	   Three node sets {\tt p(:,1)}, {\tt p(:,2)}, and {\tt p(:,3)}
 	   are created as the executing node sets, and each of them
-	   executes iteration {\tt 1}, {\tt 2} and {\tt 3} of the
+	   executes iterations {\tt 1}, {\tt 2}, and {\tt 3} of the
 	   associated loop, respectively.
 %
 This example is equivalent to the loop
@@ -1094,7 +1104,7 @@ the reduction clause. This example is equivalent to the code given below.
 	   a} are obtained in {\tt ip} and {\tt jp} after executing the
 	   loops.
 % inserted by Sakagami,H. 09/11/13
-	   Note that this example cannot be written with the {\tt
+	   Note that this example cannot be written using the {\tt
 	   reduction} construct.
 % modified by Sakagami,H. 09/11/13
 
@@ -1119,7 +1129,7 @@ the reduction clause. This example is equivalent to the code given below.
 
 		   Assuming that the template {\tt t(100,100)} is distributed in
 		   (block,block) onto a node array {\tt p(4,4)}, the original local
-		   iterataion space on {\tt p(1,1)}, $orig_{1,1}$ is:
+		   iteration space on {\tt p(1,1)}, $orig_{1,1}$ is:
 		   \[
 		   \begin{array}{lllll}
 			 orig_{1,1} = \{ & (1,1), & (2,1), & (3,1), & (4,1), \\
@@ -1128,7 +1138,7 @@ the reduction clause. This example is equivalent to the code given below.
 		                     & (1,4), & (2,4), & (3,4), & (4,4) \quad \}
 		   \end{array}			 
 		   \]
-		   and it is expanded with the {\tt expand} clause for the first
+		   and it is expanded using the {\tt expand} clause for the first
 		   loop, as follows:
 		   \[
 		   \begin{array}{lllllll}
@@ -1168,7 +1178,7 @@ the reduction clause. This example is equivalent to the code given below.
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{array}} construct divides the work of an array
-assignment among nodes.
+assignment between nodes.
 
 \subsubsection*{Syntax}
 \Syntax{array}
@@ -1186,15 +1196,15 @@ assignment among nodes.
 The array assignment is an alternative to a loop that performs
 an assignment to each element of an array.
 %
-This directive specifies parallel execution of an array assignment,
+This directive specifies the parallel execution of an array assignment,
 where each sub-assignment and sub-operation of an element is executed by
-a node determined by the {\tt on} clause.
+a node that is determined by the {\tt on} clause.
 
 %The array assignment can be used instead of the loop of the assignment
 %for each element. This directive executes the array assignment in each
 %node.
 
-Note that array assignments can be used also in {\XMPC}, which is one of
+Note that array assignments can also be used in {\XMPC}, which is one of
 the language extensions introduced by {\XMP} (see Section \ref{sec:Array
 assignment statements in C}).
 
@@ -1205,13 +1215,16 @@ assignment statements in C}).
  \item The node set specified by {\it template-ref} in the {\tt on}
        clause must be a subset of the parent node set.
  \item The template section specified by {\it template-ref} must have
-       the same shape with the associated array assignment.
+       the same shape as the associated array assignment.
  %\item If the range in {\it template-ref} is omitted, all of the ranges
  %      are assumed to be specified.
+ % \item The {\tt \Directive{array}} construct is global and must be
+ %       executed by all of the executing nodes, and the variables
+ %       that appear in the construct must all have the same value among
+ %       all of them.
  \item The {\tt \Directive{array}} construct is global and must be
-       executed by all of the executing nodes, and each variable
-       appearing in the construct must have the same value among all of
-       them.
+       executed by all of the executing nodes with the same valuse for
+       the variables that appear in the construct.
 \end{itemize}
 % inserted by Sakagami,H. 09/11/13 --- end ---
 

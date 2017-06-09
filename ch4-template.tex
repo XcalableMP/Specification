@@ -124,10 +124,10 @@ where {\it template-subscript} must be one of:
 
 Being specified in the {\tt on} or the {\tt from} clause of some
 directives, the template reference refers to a subset of a node set
-where the specified subset of the template resides.
+in which the specified subset of the template resides.
 %The template reference refers to a subarray of the template array.  
 
-Specifically, the ``{\tt *}'' symbol appeared as {\it
+Specifically, the ``{\tt *}'' symbol that appeares as {\it
 template-subscript} in a dimension of {\it template-ref} is interpreted
 by each node at runtime as the indices of the elements in the dimension
 that reside in the node. ``{\tt *}'' in a template reference is
@@ -152,7 +152,7 @@ Assume that {\tt t} is a template.
 
 \begin{itemize}
 \item In the {\tt task} directive, the executing node set of the task
-      can be indirectly specified with a template reference in the {\tt
+      can be indirectly specified using a template reference in the {\tt
       on} clause.
 %\item In the {\tt task} directive, a set of executing nodes is
 %      indirectly specified for the task.
@@ -177,7 +177,7 @@ Assume that {\tt t} is a template.
 \end{minipage}
 
 \item In the {\tt loop} directive, the executing node set of each
-      iteration of the following loop is indirectly specified with a
+      iteration of the following loop is indirectly specified using a
       template reference in the {\tt on} clause.
 
 \vspace{0.5cm}
@@ -198,8 +198,8 @@ Assume that {\tt t} is a template.
 \end{minipage}
 
 \item In the {\tt array} directive, the executing node set on which the
-      following array assignment statement is performed in parallel is
-      indirectly specified with a template reference in the {\tt on}
+      associated array-assignment statement is performed in parallel is
+      indirectly specified using a template reference in the {\tt on}
       clause.
 
 \vspace{0.5cm}
@@ -221,7 +221,7 @@ Assume that {\tt t} is a template.
 
 \item In the {\tt barrier}, {\tt reduction}, and {\tt bcast} directives,
       the node set that is to perform the operation collectively can be
-      indirectly specified with a template reference in the {\tt on}
+      indirectly specified using a template reference in the {\tt on}
       clause.
 
 \vspace{0.5cm}
@@ -252,7 +252,7 @@ Assume that {\tt t} is a template.
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{distribute}} directive specifies distribution of
+The {\tt \Directive{distribute}} directive specifies the distribution of
 a template.
 
 \subsubsection*{Syntax}
@@ -283,8 +283,8 @@ where {\it dist-format} must be one of:
 \subsubsection*{Description}
 
 According to the specified distribution format, a template is distributed
-onto a specified node array. The dimension of the node array appearing in
-the {\tt onto} clause corresponds, in left-to-right order, with the dimension of
+onto a specified node array. The dimension of the node array that appears in
+the {\tt onto} clause corresponds, in order of left-to-right, to the dimension of
 the distributed template for which the corresponding {\it dist-format} is
 not ``{\tt *}''. 
 
@@ -360,13 +360,13 @@ directives at runtime.
        equal to the size of the corresponding dimension of the node array
        specified by {\it nodes-name}.
  \item Every element of the array {\it int-array} in parentheses
-       following {\tt gblock} must have a value of non-negative integer.
+       following {\tt gblock} must have a value of a nonnegative integer.
  \item The sum of the elements of the array {\it int-array} in 
        parentheses following {\tt gblock} must be equal to the size of
        the corresponding dimension of the template specified by {\it
        template-name}.
  \item \verb![C]! A {\tt distribute} directive for a template must
-       precede any its reference in the executable code in the block.
+       precede any of its references in the executable code in the block.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -520,7 +520,7 @@ second dimension of {\tt p} in {\tt block} format. The results are as follows:
 \end{minipage}
 
 Note that the ``64'' in {\tt template t} is not divisible by ``5'' in {\tt node p}. 
-Thus, sizes of the blocks are different among nodes.
+Thus, the sizes of the blocks are different among nodes.
 
 \end{description}
 
@@ -575,7 +575,7 @@ and {\it align-subscript} must be one of:
 \end{tabular}
 \vspace{0.3cm}
 
-Note that the variable {\it scalar-int-variable} appearing in {\it
+Note that the variable {\it scalar-int-variable} that appears in {\it
 align-source} is referred to as an ``\Term{align dummy variable}'' and
 {\it int-expr} appearing in {\it align-subscript} as an ``\Term{align
 offset}.''
@@ -583,47 +583,50 @@ offset}.''
 \subsubsection*{Description}
 
 The array specified by {\it array-name} is aligned with the template
-specified by {\it template-name} so that each element of the array
-indexed by the sequence of {\it align-source}'s is aligned with the
+that is specified by {\it template-name} so that each element of the array
+indexed by the sequence of {\it align-sources} is aligned with the
 element of the template indexed by the sequence of {\it
-align-subscript}'s, where {\it align-source}'s and {\it
-align-subscript}'s are interpreted as follows:
+align-subscripts}, where {\it align-sources} and {\it
+align-subscripts} are interpreted as follows:
 
 \begin{enumerate}
 \item The first form of {\it align-source} and {\it align-subscript}
       represents an align dummy variable and an expression of it,
-      respectively. The align dummy variable ranges over all valid index
-      values in the corresponding dimension of the array.
+      respectively. The align dummy variable is considered to range over
+      all valid index values in the corresponding dimension of the array.
 \item The second form ``{\tt *}'' of {\it align-source} and {\it
       align-subscript} represents a dummy variable (not an align dummy
       variable) that does not appear anywhere in the directive.
       \begin{itemize} 
        \item The second form of {\it align-source} is said to
 	     ``\Term{collapse}'' the corresponding dimension of the array. As a
-	     result, the index along the corresponding dimension makes
-	     no difference in determining the alignment.
+	     result, the index along the corresponding dimension does not
+			 affect the determination of the alignment.
        \item The second form of {\it align-subscript} is said to
 	     ``\Term{replicate}'' the array. Each element of the array is
-	     replicated, and aligned to all index values in the
+	     replicated, and is aligned to all index values in the
 	     corresponding dimension of the template.
       \end{itemize}
 \item The third form of {\it align-source} and the matching {\it
-      align-subscript} represents a same align dummy variable that
-      ranges over all valid index values in the corresponding dimension
+      align-subscript} represents the same align dummy variable whose
+      range spans all valid index values in the corresponding dimension
       of the array. The matching of colons (``{\tt :}'') in the sequence
-      of {\it align-source}'s and {\it align-subscript}'s is determined
+      of {\it align-sources} and {\it align-subscripts} is determined
       as follows:
 
       \begin{itemize}
-       \item \verb![F]! Colons in the sequence of {\it align-source}'s
-	     and those in the sequence of {\it align-subscript}'s are
-	     matched up in corresponding left-to-right order, where any
+       \item \verb![F]! Colons in the sequence of {\it align-sources}
+	     and those in the sequence of {\it align-subscripts} are
+	     matched in corresponding left-to-right order, where any
 	     {\it align-source} and {\it align-subscript} that is not a
 	     colon is ignored.
-       \item \verb![C]! Colons in the sequence of {\it align-source}'s in right-to-left order, and
-         those in the sequence of \verb|(|{\it align-subscript}\verb|)|'s in left-to-right order are matched up,
-         or those in the sequence of \verb|[|{\it align-subscript}\verb|]|'s in right-to-left order are matched up, 
-	 where any {\it align-source} and {\it align-subscript} that is not a colon is ignored.
+       \item \verb![C]! Colons in the sequence of {\it align-sources}
+			 in right-to-left order, and those in the sequence of
+			 \verb|(|{\it align-subscript}\verb|)|'s in left-to-right
+			 order are matched, or those in the sequence of \verb|[|{\it
+			 align-subscript}\verb|]|'s in right-to-left order are
+			 matched, where any {\it align-source} and {\it
+			 align-subscript} that is not a colon is ignored.
       \end{itemize}
 
 %      If both of {\it align-source} and {\it align-subscript} is ``:'',
@@ -642,19 +645,19 @@ in the ANSI style).
  \item \verb![C]! {\it array-name} must be declared by a declaration
        statement that lexically precedes the directive.
 \item \mycolor{red}{An align dummy variable may appear at most once in
-      the sequence of {\it align-source}'s.}\mycolor{black}{}
+      the sequence of {\it align-sources}.}\mycolor{black}{}
 \item An align dummy variable may appear at most once in the sequence of
-      {\it align-subscript}'s.
+      {\it align-subscripts}.
 \item An {\it align-subscript} may contain at most one occurrence of an
       align dummy variable.
 \item The {\it int-expr} in an {\it align-subscript} may not contain any
       occurrence of an align dummy variable.
-\item The sequence of {\it align-sources}'s must contain exactly as many
-      colons as the sequence of {\it align-subscript}'s contains.
+\item The sequence of {\it align-sources} must contain exactly as many
+      colons as contained by the sequence of {\it align-subscripts}.
 \item \verb![F]! The array specified by {\it array-name} must not appear
       as an {\it equivalence-object} in an {\tt equivalence} statement.
 \item \verb![C]! An {\tt align} directive for an array must
-      precede any its appearance in the executable code in the block.
+      precede any of its appearances in the executable code in the block.
 \item \verb![F]! The array specified by {\it array-name} shall not be
 	  initially defined.
 \item \verb![C]! The array specified by {\it array-name} shall not be
@@ -833,23 +836,23 @@ neighbor element of the block of the array.
 %
 When {\it shadow-width} is of the form ``{\it int-expr} : {\it
 int-expr},'' the shadow area of the width specified by the first {\it
-int-expr} is added at the lower bound and that specified by the second
-one at the upper bound in the dimension.
+int-expr} is added at the lower bound, and that specified by the second
+one is added at the upper bound in the dimension.
 %
 When {\it shadow-width} is of the form {\it int-expr}, the shadow
 area of the same width specified is added at both the upper and lower
 bounds in the dimension.
 %
 When {\it shadow-width} is of the form ``\verb|*|'', the entire area of
-the array is allocated on each node, and all of the area that it does not
-own is regarded as shadow.
+the array is allocated on each node, and the area that it does not
+own is regarded as a shadow.
 %
 This type of shadow is sometimes referred to as a ``\Term{full shadow}.''
 
-Note that the shadow area of a multi-dimensional array include
-``obliquely-neighboring'' elements, which are the ones owned by the node 
+Note that the shadow area of a multi-dimensional array includes
+``obliquely-neighboring'' elements, which are owned by the node 
 whose indices are different in more than one dimension, and that the
-shadow area can be allocated also at the global lower and upper bound of
+shadow area can also be allocated at the global lower and upper bounds of
 an array.
 
 The data stored in the storage area declared by the {\tt shadow}
@@ -857,9 +860,9 @@ directive is referred to as a {\it \Term{shadow object}}.
 %The shadow object can be
 %explicitly defined and referenced only by the below-described method.
 %
-A shadow object represents an element of a distributed array and 
+A shadow object represents an element of a distributed array, and 
 corresponds to the data object that represents the same
-element as it. The corresponding data object is referred to as the
+element as itself. The corresponding data object is referred to as the
 {\it \Term{reflection source}} of the shadow object.
 
 %Of the data allocated to a storage area other than a shadow area, data
@@ -877,12 +880,12 @@ element as it. The corresponding data object is referred to as the
 \begin{itemize}
  \item \verb![C]! {\it array-name} must be declared by a declaration
        statement that lexically precedes the directive.
-\item The value specified by {\it shadow-width} must be a non-negative
+\item The value specified by {\it shadow-width} must be a nonnegative
       integer.
 \item The number of {\it shadow-width} must be equal to the number of
       dimensions (or rank) of the array specified by {\it array-name}.
 \item \verb![C]! A {\tt shadow} directive for an array must
-      precede any its appearance in the executable code in the block.
+      precede any of its appearances in the executable code in the block.
 \end{itemize}
 
 \subsubsection*{Example}
@@ -910,7 +913,7 @@ element as it. The corresponding data object is referred to as the
 \begin{center}
 \includegraphics[width=\hsize]{figs/fig3.1.eps}
 \end{center}
-\caption{Example of Shadow of a Two-dimensional Array}
+\caption{Example showing shadow of a two-dimensional array.}
 \label{fig3.1}
 \end{figure}
 \end{minipage}
@@ -919,9 +922,9 @@ element as it. The corresponding data object is referred to as the
 
 The node {\tt p(2,2)} has {\tt a(17:32,17:32)} as a data object, and
 {\tt a(16,16)}, {\tt a(17:32,16)}, {\tt a(33,16)}, {\tt a(16,17:32)},
-{\tt a(33,17:32)}, {\tt a(16,33)}, {\tt a(17:32,33)} and {\tt a(33,33)}
+{\tt a(33,17:32)}, {\tt a(16,33)}, {\tt a(17:32,33)}, and {\tt a(33,33)}
 as shadow objects (Figure \ref{fig3.1}). Among them, {\tt a(16,16)},
-{\tt a(33,16)}, {\tt a(16,33)} and {\tt a(33,33)} are
+{\tt a(33,16)}, {\tt a(16,33)}, and {\tt a(33,33)} are
 ``obliquely-neighboring'' elements of {\tt p(2,2)}.
 
 
@@ -979,17 +982,17 @@ and {\it dist-format} is one of:
 The {\tt template\_fix} construct fixes the shape and/or the
 distribution of the template that is initially undefined, by specifying
 the sizes and/or the distribution format of 
-each dimension at runtime. Arrays aligned with an initially undefined
-template must be an allocatable array, in {\XMPF}, or a pointer (see
+each dimension at runtime. Arrays that are aligned with an initially undefined
+template must be allocatable arrays, in {\XMPF}, or a pointer (see
 Section \ref{sec:Dynamic Allocation of Global Data in C}), in
 {\XMPC}, which cannot be allocated until the template is fixed by the
-{\tt template\_fix} construct. Any constructs that have such a
-template in their {\tt on} clause must not be encountered until the
+{\tt template\_fix} construct. No constructs that have such a
+template in their {\tt on} clause should be encountered until the
 template is fixed by the {\tt template\_fix} construct. Any undefined
 template can be fixed only once by the {\tt template\_fix} construct in
 its scoping unit.
 
-The meaning of the sequence of {\it dist-format}'s is the same
+The meaning of the sequence of {\it dist-formats} is the same
 as that in the {\tt distribute} directive.
 
 \subsubsection*{Restrictions}
@@ -1001,13 +1004,14 @@ as that in the {\tt distribute} directive.
 %       directive that lexically precedes the directive.
 \item When a node encounters a {\tt template\_fix} construct at runtime,
       the template specified by {\it template-name} must be undefined.
-\item If the sequence of {\it dist-format}'s exists in a {\tt
-      template\_fix} construct, it must be identical with the 
-      sequence of {\it dist-format}'s in the {\tt distribute} directive
+\item If the sequence of {\it dist-formats} exists in a {\tt
+      template\_fix} construct, it must be identical to the 
+      sequence of {\it dist-formats} in the {\tt distribute} directive
       for the template specified by {\it template-name}, except for {\it
-      int-array} specified in the parenthesis following {\tt gblock}.
-\item Either the sequence of {\it dist-format}'s or the sequence of {\it
-      template-spec}'s must be given. 
+      int-array} specified in the parenthesis immediately after {\tt
+      gblock}.
+\item Either the sequence of {\it dist-formats} or the sequence of {\it
+      template-spec}'s should be given.
 %\item The {\tt template\_fix} construct must appear in executable
 %      context.
 \end{itemize}
@@ -1052,7 +1056,7 @@ a = xmp_malloc(xmp_desc_of(a), N);
 \end{center}
 \end{minipage}
 
-Since the shape is {\tt t(:)} or {\tt t[:]} and the distribution format is {\tt gblock(*)}, 
+Because the shape is {\tt t(:)} or {\tt t[:]} and the distribution format is {\tt gblock(*)}, 
 the template {\tt t} is initially undefined. The allocatable array
 {\tt a} is aligned with {\tt t}. After the size {\tt N} and the
 mapping array {\tt M} is defined, {\tt t} is fixed by the {\tt
@@ -1062,7 +1066,7 @@ mapping array {\tt M} is defined, {\tt t} is fixed by the {\tt
 In {\XMPC}, it is possible to allocate global arrays at runtime only
 when they are one-dimensional.
 %
-Such allocation is done through the following steps.
+Such an allocation is done by perfoming the following steps.
 %
 \begin{enumerate}
  \item Declare a pointer to an object of the type of the global array to

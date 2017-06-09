@@ -6,20 +6,20 @@ the following basic rule.
 
 \begin{itemize}
  \item {\XMP} directives and the invocation of an {\XMP}
-       intrinsic/built-in procedure should be single-threaded, and
-       therefore may be placed in the sequential part, or one of
-       the {\tt single}, {\tt master}, and {\tt critical} regions
-       that is closely nested inside a {\tt parallel} region whose
+       intrinsic/built-in procedure should be single-threaded, and they
+       may therefore be placed in the sequential part, or one of
+       the {\tt single}, {\tt master}, or {\tt critical} regions
+       that are closely nested inside a {\tt parallel} region whose
        parent thread is the initial thread;
 
- \item with the exception that {\XMP}'s {\tt loop} directive that
-       controls a loop can be placed immediately inside OpenMP's
+ \item with the exception that the {\XMP}'s {\tt loop} directive that
+       controls a loop can be placed immediately inside the OpenMP's
        parallel loop directive ({\tt parallel do} for Fortran and
        {\tt parallel for} for C), which controls the identical loop.
 \end{itemize}
 
 The behavior of coarray references in a {\tt parallel} region is
-implementation-dependent.
+implemetation-defined.
 
 \subsubsection*{Examples}
 \index{Example!OpenMP in XcalableMP programs}

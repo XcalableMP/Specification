@@ -56,8 +56,8 @@
 \gitem{declarative directive}
 
  An {\XMP} directive that may only be placed in a declarative context. A
- declarative directive has no associated executable user code, but
- instead has one or more associated user declarations.
+ declarative directive has no associated executable user code; instead,
+ it has one or more associated user declarations. 
 
 \gitem{executable directive}
 
@@ -67,7 +67,7 @@
 \gitem{construct}
 
  An {\XMP} executable directive (and for Fortran, the paired {\tt end}
- directive, if any) and the associated statement, loop or structured
+ directive, if any) and the associated statement, loop, or structured
  block, if any.
 
 %, not
@@ -79,17 +79,17 @@
  A construct that is executed collectively and synchronously by every
  node in the current executing node set. Global constructs are further 
  classified into two groups of {\it \Term{global communication
- constructs}}, such as {\tt gmove}, {\tt barrier}, etc., which specify
+ constructs}}, such as {\tt gmove} and {\tt barrier}, which specify
  communication or synchronization, and {\it \Term{work mapping
- constructs}}, such as {\tt loop}, {\tt array} and {\tt tasks}, which
- specify parallelization of loops, array assignments or tasks.
+ constructs}}, such as {\tt loop}, {\tt array}, and {\tt tasks}, which
+ specify parallelization of loops, array assignments, or tasks.
 
 \gitem{template}
 
  A dummy array that represents an index space to be distributed onto a
  node set, which serves as the ``template'' of parallelization in
- {\XMP} and can be considered to abstract, for example, a set of grid
- points in the grid method or particles in the particle method.
+ {\XMP} and can be considered to represent a set of, for example, grid
+ points in the grid method and particles in the particle method.
 %
  A template is used in an {\XMP} program to specify the data and work
  mapping.
@@ -128,8 +128,8 @@
 
 \gitem{global}
 
- A data or a work is {\it global} if and only if there is one or more
- replicated instances of it each of which is shared by the executing
+ A data or a work is {\it global} if and only if there are one or more
+ replicated instances of it, each of which is shared by the executing
  nodes.
 
 \gitem{local}
@@ -139,13 +139,13 @@
 
 \gitem{global-view model}
 
- A model of programming or parallelization, on which parallel programs
+ A programming or parallelization model on which parallel programs
  are written by specifying how to map global data and works onto nodes.
 
 \gitem{local-view model}
 
- A model of programming or parallelization, on which parallel programs
- are written by specifying how each node owns local data and does local
+ A programming or parallelization model on which parallel programs
+ are written by specifying how each node owns local data and performs local
  works.
 
 %Execution of a program has side-effects only on the data in the node. In
@@ -202,10 +202,10 @@
 \gitem{executing node set}
 
  A node set that contains all of the nodes participating in the
- execution of a procedure, a statement, a construct, etc. of an
+ execution of a procedure, statement, construct, etc. of an
  {\XMP} program is called its executing node set.
 %
- This term is used in this document to represent the {\it current
+ In this document, this term is used to represent the {\it current
  executing node set} unless it is ambiguous.
 %
  The executing node set at the beginning of the program execution
@@ -252,7 +252,7 @@
 
 \gitem{node number}
 A unique number assigned to each node in a node set, which starts from
-one and corresponds to its position within the node set which is
+one and corresponds to its position within the node set that is
 totally ordered.
 
 %\gitem{node number}
@@ -293,7 +293,7 @@ totally ordered.
 
 \gitem{variable}
 
- A named data storage block, whose value can be defined and redefined
+ A named data storage block whose value can be defined and redefined
  during the execution of a program. Note that {\it variables} include
  array sections.
 % and that they do not include array names for the C
@@ -301,34 +301,36 @@ totally ordered.
 
 \gitem{global data}
 
- An array that is aligned with a template. Elements of a global data are
+ An array that is aligned with a template. Elements of a global data
+ object are
  distributed onto nodes according to the distribution of the
- template. As a result, each node owns a part of a global data (called a
- {\it local section}), and can access directly it but cannot those on
- the other nodes.
+ template. As a result, each node owns a part of the global data (called a
+ {\it local section}), and can access it directly, but cannot access
+ those on the other nodes.
 
 %Data declared as a distributed array and shared by nodes.
 
 \gitem{local data}
 
- Data that is not global. Each node owns a replica of a local data,
- and can access directly it but cannot those on the other nodes. Note
- that the replicas of a local data do not always have the same value.
+ Data that are not global. Each node owns a replica of a local data object,
+ and can access it directly, but cannot access those on the other
+ nodes. Note that the replicas of a local data object do not always have the
+ same value.
 
 %Data is allocated in each node and is referenced only
 %within the node.
 
 \gitem{replicated data}
 
- A data whose storage is allocated on multiple nodes. A replicated data
- is either a local data or a global data replicated by an {\tt align}
- directive.
+ Data whose storage is allocated on multiple nodes. A replicated data
+ is either a local data object or a global data object replicated by an
+ {\tt align} directive.
 
 \gitem{distribution}
 
  Assigning each element of a template to nodes in a node set in a
- specified manner. In the broad sense, it means that of an array, a
- loop, etc.
+ specified manner. In a broad sense, it refers to assigning each element
+ of an array, loop, etc.
 
 % The partition of the index space of a data object among a set of nodes
 % according to a given pattern. The {\tt distribute} directive is used to 
@@ -336,8 +338,8 @@ totally ordered.
 
 \gitem{alignment}
 
- Associating each element of an array, a loop, etc. with an element of
- the specified template. An element of the aligned array, a loop,
+ Associating each element of an array, loop, etc. with an element of
+ the specified template. An element of the aligned array, loop,
  etc. is necessarily mapped to the same node as its associated element
  of the template.
 
@@ -348,10 +350,10 @@ totally ordered.
 
 \gitem{local section}
 
- A section of a global data that is allocated as an array on each node
+ A section of a global data object that is allocated as an array on each node
  at runtime.
 %
- The local section of a global data includes its shadow objects.
+ The local section of a global data object includes its shadow objects.
 
 \gitem{shadow}
 
@@ -409,14 +411,14 @@ totally ordered.
 
 \gitem{communication}
 
- A data movement among nodes. Communication in {\XMP} occurs only when
- the programmer instruct it explicitly with a global communication
+ The movement of data between nodes. Communication in {\XMP} occurs only
+ when the programmer instructs it explicitly using a global communication
  construct or a coarray reference.
 
 \gitem{reduction}
 
- A procedure of combining variables from each node in a specified manner
- and returning the result value. A reduction always involves
+ A procedure involving combining variables from each node in a specified
+ manner and returning the result value. A reduction always involves
  communication.
 %
  A reduction is specified by either the {\tt on} clause of the {\tt
@@ -426,14 +428,14 @@ totally ordered.
 
  Synchronization is a mechanism to ensure that multiple nodes do not
  execute specific portions of a program at the same
- time. Synchronization among any number of nodes is specified by the
- {\tt barrier} construct and that between two nodes by the {\tt post} and
+ time. Synchronization between any number of nodes is specified by the
+ {\tt barrier} construct, and that between two nodes by the {\tt post} and
  {\tt wait} constructs.
 
 \gitem{asynchronous communication}
 
- Communication that does not block and returns before it is
- complete. Thus statements that follow it can overtake it. An
+ Communication that does not block, and which returns before it is
+ complete. Thus, statements that follow it can overtake it. An
  asynchronous communication is specified by the {\tt async} clause of
  global communication constructs or the {\tt async} directive for
  a coarray reference.
@@ -446,7 +448,7 @@ totally ordered.
 
 \gitem{local alias}
 
- An alias to the local section of a global data, that is, a distributed
+ An alias to the local section of a global data object, that is, a distributed
  array. A local alias can be used in {\XMP} programs in the same way as
  normal local data.
 
@@ -465,7 +467,7 @@ totally ordered.
 
 \gitem{image}
 
-An instance of an XcalableMP program corresponding to a node respectively.
+An instance of an XcalableMP program corresponding to a respective node.
 
 \gitem{image set}
 
@@ -474,7 +476,7 @@ A totally ordered set of images.
 \gitem{image index}
 
 An integer value that identifies an image in an image set,
-whose range is one to the size of the image set.
+whose range is from one to the size of the image set.
 
 %???
 %In {\XMPC}, the lower cobound in each axis is one by default and
@@ -495,17 +497,17 @@ An image set corresponding to the executing node set
 one to one in turn.
 
 The executing image set at the beginning of the program execution
-is the entire image set.
+comprises the entire image set.
 
 \gitem{allocation image set}
 
-An image set that the coarray data object is allocated on.
+An image set on which the coarray data object is allocated.
 
 The allocation image set for a non-allocatable [F] or a static [C] 
-coarray variable is the entire image set.
+coarray variable comprises the entire image set.
 Otherwise, 
 the allocation image set for an allocatable [F] or an auto [C] 
-coarray variable is the executing image set where it is allocated
+coarray variable is the executing image set on which it is allocated
 unless it is specified by the {\tt COARRAY} directive.
 
 

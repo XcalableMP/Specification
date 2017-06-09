@@ -2,8 +2,8 @@
 \label{chap:Support for the Local-view Programming}
 
 In this chapter, the coarray features in XcalableMP, which are based on
-that of Fortran 2008, are described. Note that they are available also
-in {\XMPC}. Additionally, some directives for the local-view programming
+that of Fortran 2008, are described. Note that they are also available
+in {\XMPC}. In addition, some directives for the local-view programming
 are also described.
 
 %{\XMP} adopts coarray features for the local-view
@@ -25,18 +25,19 @@ In this sense, the interpretations and extensions defined in this
 
  \item Support for task parallelism \\
        XcalableMP makes it possible to construct a task parallel program by
-       combining multiple Fortran 2008 codes, which might be developed
+       combining multiple Fortran 2008 codes, which may be developed
        independently, with minimum modifications.
 
  \item Integration of global-view style programming and local-view style programming\\
-       In XcalableMP, users can use global-view style programming of
+       In XcalableMP, users can appropriately use global-view style
+       programming of 
        XcalableMP or local-view style programming, which is typically
-       used in MPI or Fortran 2008 programs, appropriately according to
-       the characteristics of code in a program.
+       used in MPI or Fortran 2008 programs, according to
+       the characteristics of the code in a program.
 
- \item Possibility of the support for multiple topologies of a computing system\\
+ \item Possibility of support for multiple topologies of a computing system\\
        An XcalableMP processor may allow users to specify the correspondence between 
-       node arrays and the topologies of a computing system and
+       node arrays and the topologies of a computing system, and to
        exploit the full potential of a particular system.
 
 \end{itemize}
@@ -54,16 +55,16 @@ is determined in association with a node array and a {\tt task} construct.
 
 
 \subsection{Primary Image Index}
-Every image has a default image index in all the images at the
+Every image has a default image index in all of the images at the
 invocation of a program. 
-In XcalableMP, the default image index is the primary image index
-and is an integer value in the range one to the number of images
+In XcalableMP, the default image index is the primary image index,
+and is an integer value that ranges from one to the number of images
 at the invocation of a program. 
 
 %\subsection{Primary node array}
 %A primary node array is a node array declared with ``=**'' in a NODES directive.
-A primary node array corresponds to all the images at the invocation of
-a program, and also corresponds to all the nodes at the invocation of
+A primary node array corresponds to all of the images at the invocation of
+a program, and it also corresponds to all of the nodes at the invocation of
 a program.
 The primary image index of an image is the (Fortran) subscript order value of 
 the uniquely corresponding element of a primary node array.
@@ -105,8 +106,9 @@ at the evaluation of the declaration of the node array.
 Each image in the current set of images corresponds 
 to the element of an executing node array whose
 subscript order value is the same as the current image index
-of the image at the evaluation of the declaration of the executing node array.
-In particular, when there are no {\tt task} directive constructs that are not
+of the image when the evaluation of the declaration of the executing
+node array is being evaluated.
+In particular, when all {\tt task} directive constructs are 
 completed, the current image index of an image is the same as the
 primary image index.
 
@@ -121,17 +123,20 @@ primary image index.
 %A non-primary node array is a node array declared without ``={\it node-ref}'', ``=**'', or ``=*''
 %in a NODES directive.
 
-A non-primary node array corresponds to all the images at the invocation of
-a program, and also corresponds to all the nodes at the invocation of
+A non-primary node array corresponds to all of the images at the
+invocation of a program, and it also corresponds to all the nodes at the
+invocation of 
 a program. The correspondence between each image and 
 each element of a non-primary node array is processor-dependent.
 A processor may support any means to specify the correspondence.
 
-The image index of an image in all the images at the invocation 
-of a program is the subscript order value of the corresponding element of
-a non-primary node array if and only if the current set of images
+The image index of an image in all of the images at the invocation 
+of a program is the subscript order value of the corresponding element
+of a non-primary node array. This is the case if and only if the current
+set of images 
 corresponds to the non-primary node whole array in which
-the nodes in the executing node set are ordered in (Fortran) array element order in the non-primary node whole array.
+the nodes in the executing node set are ordered in (Fortran)
+array-element order in the non-primary node whole array.
 The image index is a non-primary image index. 
 
 The correspondence between the primary image index and a non-primary image
@@ -160,17 +165,19 @@ to the same image.
 
 \subsection{Image Index Determined by an Equivalenced Node Array}
 
-A {\tt nodes} directive with ``={\it node-ref}'' that is not ``=*'' or ``=**''
+A {\tt nodes} directive with ``={\it node-ref}'' that is not ``=*'' or
+``=**''
 specifies that
-each element of the declared node array corresponds in (Fortran) array
-element order
+each element of the declared node array corresponds in (Fortran)
+array-element order
 to that of the {\it node-ref},
-which is a name of a node array or a subobject of a node array.
+which is the name of a node array or a subobject of a node array.
 The nodes in the declared node array and the corresponding images 
-are ordered in (Fortran) array element order in the {\it node-ref}.
+are ordered in (Fortran) array-element order in the {\it node-ref}.
 The image index of an image in the set of images
 corresponding to the declared node array
-is the integer order value in the range one to the cardinality of the set of images.
+is the integer order value ranging from one to the cardinality of the
+set of images.
 %The node number of a node in the set of nodes corresponding to the declared node array
 %is the integer order value in the range one to the cardinality of the set of nodes.
 
@@ -183,10 +190,10 @@ specify that an image index indicates the image corresponding to
 the element of a particular node array whose subscript order value is 
 the same as the image index.
 The image index is an on-node image index for the specified node array. 
-Since evaluation of the declaration of a node array 
+Because an evaluation of the declaration of a node array 
 determines a set of images corresponding to the node array,
 the directives specify that the set of images 
-is the ``all images'' for the image indices the directives affect.
+is the ``all images'' for the image indices affected by the directives.
 In particular, the on-node image index for a primary node array
 is the primary image index. 
 
@@ -195,8 +202,8 @@ is the primary image index.
 
 
 In XcalableMP, ``all images'' in Fortran 2008 changes coupled with the 
-execution of {\tt task} constructs and
- means the current set of images.
+execution of {\tt task} constructs, and
+refers to the current set of images.
 In particular,
 when an {\tt allocate} statement is executed for which an {\it
 allocate-object} is a coarray, there is an implicit synchronization of 
@@ -222,7 +229,7 @@ When an allocatable coarray is allocated during the execution of
        {\tt task} constructs,
        the coarray shall be subsequently deallocated before the completion of 
        the {\tt task} construct whose
-       {\tt task} directive is the most lately executed one 
+       {\tt task} directive is the most recently executed one 
        in the {\tt task} constructs that are not completed at the allocation.
 
 \end{itemize}
@@ -230,8 +237,8 @@ When an allocatable coarray is allocated during the execution of
 
 The image index determined by an image selector 
 indicates the current image index by default.
-Coarrays are visible within the range of the ``all images'' and
-accessed with the current image index by default.
+Coarrays are visible within the range of the ``all images,'' and are 
+accessed using the current image index by default.
 The image index that appears in an executable statement
 indicates the current image index by default.
 
@@ -262,7 +269,7 @@ is defined with the value of the coarray {\ttfamily a} on {\ttfamily node(5)}.
  \item In the following code fragment, an allocatable coarray {\ttfamily a}
 is allocated on the images 1, 2, 3, and 4, 
 which constitute the executing node set
-and correspond to {\ttfamily node(5)}, {\ttfamily node(6)}, {\ttfamily node(7)}, and {\ttfamily node(8)} respectively.
+and correspond to {\ttfamily node(5)}, {\ttfamily node(6)}, {\ttfamily node(7)}, and {\ttfamily node(8)}, respectively.
 
 \begin{XFexample}
       program xmpcoarray
@@ -291,7 +298,7 @@ and correspond to {\ttfamily node(5)}, {\ttfamily node(6)}, {\ttfamily node(7)},
   The result value of {\tt xmp\_node\_num()} is always the same as that of {\tt THIS\_IMAGE()}.
  \item 
        In a {\tt read} statement, an io-unit that is an asterisk
-       identifies an external unit that is preconnected for sequential
+       identifies an external unit that is preconnected for a sequential
        formatted input only on the image whose primary image index is one.
 
 \end{itemize}
@@ -336,30 +343,32 @@ of the node array that is specified in the {\tt coarray} directive.
        the current set of images
        at the allocation and the deallocation of the
        object shall correspond to the node array specified as the {\it
-       node-name} and the current image index of each image shall 
+       node-name}, and the current image index of each image shall 
        be the same as the subscript order value of the corresponding
        element of the node array.
 
- \item If an {\it object-name} is a name of an allocated allocatable
+ \item If an {\it object-name} is the name of an allocated allocatable
        dummy argument,
        the set of images onto which it is mapped
-       shall be a subset of the set of images that has allocated most lately 
+       shall be a subset of the set of images that has most recently
+       allocated 
        the corresponding argument in the chain of argument associations.
        
- \item If an {\it object-name} is a name of a nonallocatable dummy argument
-       whose ultimate argument has allocatable attribute,
+ \item If an {\it object-name} is the name of a nonallocatable dummy argument
+       whose ultimate argument has an allocatable attribute,
        the set of images onto which the {\it object-name} is mapped
-       shall be a subset of the set of images that has allocated most lately 
+       shall be a subset of the set of images that has most recently
+       allocated 
        the corresponding argument in the chain of argument associations.
 
  \item The image index determined by an image selector for an on-node
-       coarray shall be in the range of one to the size of the node
+       coarray shall be within the range of one to the size of the node
        array onto which the on-node coarray is mapped.
 
  \item 
 THIS\_IMAGE(COARRAY[,DIM]) shall be invoked by
 the image contained in the set of images onto which
-the COARRAY argument is mapped,
+the COARRAY argument is mapped
 if the COARRAY argument appears in a {\tt coarray} directive.
 
 
@@ -376,7 +385,7 @@ if the COARRAY argument appears in a {\tt coarray} directive.
        The result value of THIS\_IMAGE(COARRAY)
        is the sequence of cosubscript
        values for the COARRAY argument that would specify the on-node image index of the invoking image
-for the node array onto which the COARRAY argument is mapped,
+for the node array onto which the COARRAY argument is mapped
        if the COARRAY argument appears in a {\tt coarray} directive.	      
 
  \item 
@@ -385,14 +394,14 @@ for the node array onto which the COARRAY argument is mapped,
        the value
        of cosubscript DIM in the sequence of cosubscript values
        for the COARRAY argument that would specify the current image index of
-       the invoking image, if the COARRAY argument does not appear in a
+       the invoking image if the COARRAY argument does not appear in a
        {\tt coarray} directive.
        The result value of THIS\_IMAGE(COARRAY,DIM) is
        the value
        of cosubscript DIM in the sequence of cosubscript values
        for the COARRAY argument that would specify the on-node image index of
        the invoking image for the node array
-       onto which the COARRAY argument is mapped,
+       onto which the COARRAY argument is mapped
        if the COARRAY argument appears in a {\tt coarray}
        directive.
 \end{itemize}
@@ -436,8 +445,9 @@ unless the image index is determined by an image selector.
 
 
 The {\tt image} directive also specifies that 
-execution of a {\tt sync all} statement performs a synchronization of
-all the images corresponding to the node array specified in the {\tt
+the execution of a {\tt sync all} statement performs a synchronization
+of 
+all of the images corresponding to the node array specified in the {\tt
 image} directive.
 
 
@@ -486,7 +496,7 @@ image} directive.
          :               ! correspond to node(1:4), respectively.
 !$xmp image(node)        ! Synchronization between node(1:4) and
         sync images(5)   ! node(5).
-      a = s[1]           ! a on node(1:4) is defined with 
+      a = s[1]           ! a on node(1:4) is defined using
          :               ! the value of s on node(1).
       end subroutine	
 
@@ -495,7 +505,7 @@ image} directive.
       real, save :: b[*] ! The images 1, 2, 3, and 4 
          :               ! correspond to node(5:8), respectively.
       if(this_image() .eq. 1)then ! The image 1 indicates node(5).
-        s[1] = b      ! s on node(1) is defined with the value of 
+        s[1] = b      ! s on node(1) is defined using the value of 
                       ! b on node(5).
 !$xmp   image(node)                ! Synchronization between 
           sync images((/1,2,3,4/)) ! node(5) and node(1:4).
@@ -527,11 +537,13 @@ image indices between different sets of images.
 			The size of {\bfseries INDEX} shall be
 			greater than or equal to the value of {\bfseries NUMBER}.
 			It is an INTENT(IN) argument.
-			The value of each element of {\bfseries INDEX} shall be in
+			The value of each element of {\bfseries INDEX} shall be
+					within 
 			the range one
 			to the size of the node array specified 
 			in {\bfseries NODE\_DESC} if {\bfseries NODE\_DESC} appears.
-			The value of each element of {\bfseries INDEX} shall be in
+			The value of each element of {\bfseries INDEX} shall be
+					within 
 			the range one
 			to the cardinality of the current set of images
 			if {\bfseries NODE\_DESC} does not appear.
@@ -581,7 +593,8 @@ In the following code fragment, the value of {\ttfamily index(1:4)} is {\ttfamil
 			The size of {\bfseries INDEX} shall be
 			greater than or equal to the value of {\bfseries NUMBER}.
 			It is an INTENT(IN) argument.
-			The value of each element of {\bfseries INDEX} shall be in
+			The value of each element of {\bfseries INDEX} shall be
+					within 
 			the range one
 			to the size of the node array specified 
 			in {\bfseries NODE\_DESC}.
@@ -813,9 +826,11 @@ where {\it codimensions} is:
 
 \subsubsection*{Description}
 For {\XMPC}, 
-coarrays are declared with a colon and square bracket where {\it codimensions} specify the coshape of a variable.
+coarrays are declared with a colon and square bracket, where {\it
+codimensions} specify the coshape of a variable.
 
-Note that, the {\tt coarray} directive for defining a coarray in the XcalableMP specification 1.0 (page 49) is obsolete.
+Note that the {\tt coarray} directive for defining a coarray in the
+XcalableMP specification 1.0 (page 49) is obsolete.
 
 \subsubsection*{Restrictions}
 
@@ -852,14 +867,14 @@ The target node is specified using an extended notation in {\XMPC}.
 A sequence of {\tt [}{\it int-expr}{\tt ]}'s preceded by a colon in
 {\XMPC} determines the image index for a coarray to be accessed.
 
-An reference of coarrays can appear in the same place as an reference of
+A reference of coarrays can appear in the same place as an reference of
 normal variables in the base languages.
 
 \subsubsection*{Examples}
 \Example{coarray}
 
 In the following code, each executing node gets whole of {\tt B} from
-the image 10 (that is, the tenth node of the entire node set) and
+image 10 (that is, the tenth node of the entire node set) and
 copies it into the local storage for {\tt A}.
 
 \vspace{0.3cm}
@@ -1173,12 +1188,12 @@ A[:] = B[:]:[10];
     \item XMP\_STAT\_SUCCESS
     \item XMP\_STAT\_STOPPED\_IMAGE
   \end{itemize}
-  If an execution of the function is success, the {\it status} is defined with XMP\_STAT\_SUCCESS.
-  A condition where the {\it status} is defined with XMP\_STAT\_STOPPED\_IMAGE is the same as 
-  that where the {\it status} is defined with STAT\_STOPPED\_IMAGE in Fortran 2008.
-  These symbolic constants are defined in ``xmp.h''.
-  If any other error condition occurs during execution of these functions,
-  the {\it status} is defined with a value which is different from the value of XMP\_STAT\_SUCCESS and
+  If an execution of the function is successful, the {\it status} is defined using XMP\_STAT\_SUCCESS.
+  The condition where the {\it status} is defined using XMP\_STAT\_STOPPED\_IMAGE is the same as 
+  that where the {\it status} is defined using STAT\_STOPPED\_IMAGE in Fortran 2008.
+  These symbolic constants are defined in ``xmp.h.''
+  If any other error condition occurs during the execution of these functions,
+  the {\it status} is defined with a value that is different from the value of XMP\_STAT\_SUCCESS and
   XMP\_STAT\_STOPPED\_IMAGE.
   \item In {\tt xmp\_sync\_image}, the variable {\it image} determines a target image index.
   \item In {\tt xmp\_sync\_images}, the variable {\it num} is a number of target images, and 
@@ -1340,9 +1355,9 @@ The non-mapped array is an associating local array and
 the explicitly mapped array is an associated global array.
 The shape of the associating local array is the same as
 that of the node-local portion of the associated global array
-including shadow area.
+including the shadow area.
 Each element of the associating local array shares the 
-same storage unit in array element order with that of the node-local portion 
+same storage unit in array-element order with that of the node-local portion 
 of the associated global array.
 An associating local array and the corresponding global array always have
 the same allocation status.
@@ -1361,19 +1376,19 @@ An associating local array may be a coarray.
 An associating local array that is a coarray is
 an on-node coarray of the node array onto which the corresponding
 associated global array is mapped.
-Every specification and restriction on coarrays is also applied to an associating local
-array that is a coarray except that
+All specifications and restrictions on coarrays are also applied to an associating local
+array that is a coarray, with the exception that
 an associating local array is always declared with
 \mytextcolor{red}{\it assumed-shape-spec-list} of the same rank as the associated global array.
 In particular, a processor shall ensure that an associating local array 
 that is a coarray has
 the same bounds on all the images corresponding to the node array
 onto which the corresponding associated global array is mapped.
-The mapping attributes allowed for an associated global array are
+The mapping attributes that are allowed for an associated global array are
 processor-dependent.
 
 Note that the base language {\Fort} is extended so that a deferred-shape
-array that is not either an allocatable array or an array pointer is
+array that is neither an allocatable array nor an array pointer is
 declared if it is specified as a 
 {\it local-array-name} in the {\tt local\_alias} directive.
 
@@ -1385,10 +1400,10 @@ to global data}).
 \subsubsection*{Restrictions}
 
 \begin{itemize}
- \item A {\it global-array-name} shall be a name of an explicitly mapped
-       array declared in the same scoping unit. 
+ \item A {\it global-array-name} shall be the name of an explicitly
+       mapped array declared in the same scoping unit. 
 
- \item A {\it local-array-name} shall be a name of a non-mapped array
+ \item A {\it local-array-name} shall be the name of a non-mapped array
        declared in the same scoping unit. 
 
  \item A {\it local-array-name} shall not be a dummy argument.
@@ -1400,8 +1415,9 @@ to global data}).
        \mytextcolor{red}{\it assumed-shape-spec-list} of the
        same rank as the corresponding associated global array.
 
- \item A {\it local-array-name} shall appear in a COARRAY directive in the
-       same scoping unit and the {\it node-name} in the COARRAY directive
+ \item A {\it local-array-name} shall appear in a {\tt coarray}
+       directive in the same scoping unit and the {\it node-name} in the
+       {\tt coarray} directive 
        shall be the name of the node array onto which the
        associated global array is mapped.
 
@@ -1411,7 +1427,7 @@ an associating local array that is a coarray,
 the corresponding effective argument shall be
 an explicitly mapped array or a subobject of 
 an explicitly mapped array whose name appears
-in a LOCAL\_ALIAS directive %as a {\it global-array-name} 
+in a LOCAL\_ALIAS directive, %as a {\it global-array-name} 
 and the corresponding associating local array shall be a coarray.
 
  \item If a dummy argument is a coarray 
@@ -1459,8 +1475,8 @@ and the corresponding associating local array shall be a coarray.
 \end{XFexample}
 
 The array {\tt a} is distributed by block onto four nodes.
-The node {\tt n(2)} has its local section of twenty-five elements ({\tt
-a(25:50)}) with shadow areas of size one on both of the upper and lower 
+The node {\tt n(2)} has its local section of 25elements ({\tt
+a(25:50)}) with shadow areas of size one on both the upper and lower 
 bounds. The local alias {\tt b} is an array of 27 elements
 ({\tt b(1:27)}) on {\tt n(2)}. The table below shows the correspondence
 of each element of {\tt a} to that of {\tt b} on {\tt n(2)}.
@@ -1493,7 +1509,7 @@ upper shadow & 27      \\ \hline
 \end{XFexample}
 
 An array {\tt a} is distributed cyclically onto four nodes.
-Node {\tt n(2)} has its local section of twenty-five elements ({\tt
+Node {\tt n(2)} has its local section of 25 elements ({\tt
 a(2:100:4)}).
 %with shadow areas of size one on the upper and lower 
 %bounds.
@@ -1536,11 +1552,11 @@ correspondence of each element of a to that of {\tt b} on {\tt n(2)}.
       if (me < 4) b(4) = b(4)[me +1]
 \end{XFexample}
 
-Since the global array {\tt a} is an allocatable array, its local alias
+Because the global array {\tt a} is an allocatable array, its local alias
 {\tt b} is not defined when the subroutine starts execution. {\tt b} is
 defined when {\tt a} is allocated at the {\tt allocate}
-statement. Note that {\tt b} is declared as a coarray and therefore can be
-accessed in the same manner as a normal coarray.
+statement. Note that {\tt b} is declared as a coarray, and can therefore
+be accessed in the same manner as a normal coarray.
 
 \end{description}
 
@@ -1601,7 +1617,7 @@ synchronization.
 
 This construct ensures that the execution of statements that precede
 it is completed before statements that follow the matching
-\Directive{wait} construct start to be executed.
+\Directive{wait} construct start are executed.
 
 A {\tt \Directive{post}} construct issued with the arguments of {\it
 nodes-ref} and {\it tag} on a node (called a {\it \Term{posting node}})
@@ -1646,11 +1662,11 @@ by {\it nodes-ref}.
 \end{minipage}
 
 It is assumed that the code of the left is executed by the node {\tt
-p(1)} while that on  the right is executed by node {\tt p(2)}.
+p(1)}, while that on  the right is executed by node {\tt p(2)}.
 
 The {\tt post} construct on the left matches the {\tt wait} construct on
 the right because their {\it nodes-ref}'s represent each other and both
-{\it tags}'s have the same value of 1.
+{\it tags}'s have the same value of one.
 %
 These constructs ensure that no statement in {\tt S2} is executed by
 {\tt p(2)} until the execution of all statements in {\tt S1} is
@@ -1666,7 +1682,7 @@ completed by {\tt p(1)}.
 
 It is assumed that this code is executed by node {\tt p(2)}.
 
-The {\tt post} construct in the left code in Example 1 may matches
+The {\tt post} construct in the left code in Example 1 may match
 this {\tt wait} construct because both {\it nodes-ref} and
 {\it tag} are omitted in this {\tt wait} construct.
 
@@ -1704,13 +1720,13 @@ arguments of the waiting node and the same value as {\it tag} by the
 node specified by {\it nodes-ref}.
 
 If {\it tag} is omitted, then the {\tt \Directive{wait}} construct can
-match a {\tt \Directive{post}} construct issued with the arguments of
-the waiting node and any tag by the node specified by {\it nodes-ref}.
+match a {\tt \Directive{post}} construct that is issued with the
+arguments of the waiting node and any tag by the node specified by {\it nodes-ref}.
 %
 If both {\it tag} and {\it nodes-ref} are omitted, then the {\tt
 \Directive{wait}} construct can match a {\tt \Directive{post}}
-construct issued with the arguments of the waiting node and any tag on
-any node.
+construct that is issued with the arguments of the waiting node and any
+tag on any node.
 
 \subsubsection*{Restriction}
 
@@ -1756,21 +1772,25 @@ Please note the following points:
 The {\tt \Directive{lock}} construct, in combination with the {\tt \Directive{unlock}} construct,
 is used to control a {\it lock-object}.
 The {\it lock-object} must be defined as a coarray to control it on a target node.
-The {\it lock-object} must be an expression of type {\tt xmp\_lock\_t} 
+The {\it lock-object} must be an expression of type {\tt xmp\_lock\_t}, 
 which is an opaque object defined in ``xmp.h''.
 
 If the {\tt acquired\_lock} clause is not used in the {\tt \Directive{lock}} construct and 
 the {\it lock-object} is locked,
-a node stops at the {\tt \Directive{lock}} construct until the {\it lock-object} is unlocked by a different node.
+the node stops at the {\tt \Directive{lock}} construct until the {\it lock-object} is unlocked by a different node.
 If the {\tt acquired\_lock} clause is used in the {\tt \Directive{lock}} construct and 
 the {\it lock-object} is locked by a different node,
-a node does not stop at the {\tt \Directive{lock}} construct and the variable {\it success} is defined with the value false
-and {\tt \Directive{lock}} construct leaves the {\it lock-object} unchanged.
-If the {\tt acquired\_lock} clause is used in the {\tt \Directive{lock}} construct and the {\it lock-object} is unlocked,
+the node does not stop at the {\tt \Directive{lock}} construct and the
+variable {\it success} is defined with the value false;
+{\tt \Directive{lock}} construct leaves the {\it lock-object}
+unchanged.
+If the {\tt acquired\_lock} clause is used in the {\tt \Directive{lock}}
+construct and the {\it lock-object} is unlocked,
 the variable {\it success} is defined with the value true.
 
 The {\it status} is defined with one of the follow symbolic constants 
-when executing {\tt \Directive{lock}}/{\tt \Directive{unlock}} construct.
+when executing the {\tt \Directive{lock}}/{\tt \Directive{unlock}}
+construct.
 
 \begin{itemize}
 \item {\tt XMP\_STAT\_SUCCESS} \vspace{-2mm}
@@ -1779,16 +1799,18 @@ when executing {\tt \Directive{lock}}/{\tt \Directive{unlock}} construct.
 \item {\tt XMP\_STAT\_LOCKED\_OTHER\_IMAGE}
 \end{itemize}
 
-If an execution of {\tt \Directive{lock}}/{\tt \Directive{unlock}} construct is success,
+If the execution of the {\tt \Directive{lock}}/{\tt \Directive{unlock}}
+construct is successful, 
 the {\it status} is defined with {\tt XMP\_STAT\_SUCCESS}.
-A condition where the {\it status} is defined with 
+The condition where the {\it status} is defined with 
 {\tt XMP\_STAT\_LOCKED}, {\tt XMP\_STAT\_UNLOCKED}, or {\tt XMP\_STAT\_}
 {\tt LOCKED\_OTHER\_IMAGE} 
 is the same as that where the {\it status} is defined with
 {\tt STAT\_LOCKED}, {\tt STAT\_UNLOCKED}, or {\tt STAT\_LOCKED\_OTHER\_IMAGE} in Fortran 2008.
 These symbolic constants are defined in ``xmp.h''.
-If any other error condition occurs during execution of these constructs,
-the {\it status} is defined with a value which is different from the
+If any other error condition occurs during the execution of these
+constructs, 
+the {\it status} is defined with a value that is different from the
 value of {\tt XMP\_STAT\_SUCCESS}, {\tt XMP\_STAT\_LOCKED}, 
 {\tt XMP\_STAT\_UNLOCKED}, and {\tt XMP\_STAT\_LOCKED\_OTHER\_IMAGE}.
 

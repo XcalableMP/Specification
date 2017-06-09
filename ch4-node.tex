@@ -89,13 +89,21 @@ array that corresponds to the entire node set.
 %The ``{\tt *}'' symbol specifies the current executing node set.
 %The third form is used to declare a node array that corresponds to the
 %node set specified by {\it nodes-ref}.
-The second and fourth forms are used to declare a node array, each node of which is
-assigned to a node of the node set specified by {\it nodes-ref} at the
-corresponding position.
-In the first and second forms which use parentheses,
-the corresponding position is Fortran’s array element order, as if the node set were a one-dimensional node array.
-In the third and fourth forms which use square brackets,
-the corresponding position is C’s array element order, as if the node set were a one-dimensional node array.
+The second and fourth forms are used to declare a node array, each
+element of which is assigned to the node of the node set specified by {\it
+nodes-ref} at the corresponding position of its elements order.
+%
+% In the first and second forms, which use parentheses,
+% the corresponding position is Fortran’s array element order, as if the
+% node set is a one-dimensional node array.
+In the first and second forms, which use parentheses,
+the element order of the declared node array is based on Fortran’s.
+%
+% In the third and fourth forms, which use square brackets,
+% the corresponding position is C’s array element order, as if the node
+% set is a one-dimensional node array.
+In the third and fourth forms, which use square brackets,
+the element order of the declared node array is based on C’s.
 
 %If {\it map-type} is specified as {\tt regular}, then the order of nodes in
 %the node array follows that of the {\Fort} array. Therefore, in the first
@@ -107,12 +115,12 @@ the corresponding position is C’s array element order, as if the node set were
 %system dependent. It is desirable to order the nodes in order to make use of
 %the network topology for efficient communication. 
 
-If {\it node-size} in the last dimension is ``{\tt *}'' in the first and second forms
-or in the first dimension is ``{\tt *}'' in the third and fourth forms, then the size
-of the node array is automatically adjusted according to the total size
-of the entire node set in the first and third forms, 
-%the executing node set in the second form, 
-or the referenced node set in the second and fourth forms.
+If {\it node-size} in the last dimension is ``{\tt *}'' in the first and
+second forms, or if that in the first dimension is ``{\tt *}'' in the
+third and fourth forms, then the size of the node array is automatically
+adjusted according to the total size of either the entire node set in
+the first and third forms or the referenced node set in the second and
+fourth forms.
 
 \subsubsection*{Restrictions}
 
@@ -142,8 +150,8 @@ or the referenced node set in the second and fourth forms.
 \subsubsection*{Examples}
 \Example{nodes}
 
-The following are examples of the first and the third forms appeared in
-the main program. Since the node array {\tt p}, which corresponds to the
+The following are examples of the first and the third forms that appears in
+the main program. Because the node array {\tt p}, which corresponds to the
 entire node set, is declared to be of size 16, this program must be
 executed by 16 nodes.
 
@@ -206,7 +214,8 @@ int main() {
 %\end{XFexample}
 
 The following are examples of a node declaration in a procedure.
-Since {\tt p} is declared in the second and fourth forms to be of size 16 and
+Because {\tt p} is declared in the second and fourth forms to have a
+size of 16 and
 corresponds to the executing node set, the invocation of the {\tt foo}
 function must be executed by 16 nodes.
 %
@@ -315,7 +324,7 @@ represents the executing node set.
 %a triplet, or ``{\tt *}''. The notation of the subarray using a triplet
 %in the subscript is the same as that in {\Fort}. 
 
-Specifically, the ``{\tt *}'' symbol appeared as {\it nodes-subscript}
+Specifically, the ``{\tt *}'' symbol that appears as {\it nodes-subscript}
 in a dimension of {\it nodes-ref} is interpreted by each node at runtime
 as its position (coordinate) in the dimension of the referenced node
 array.
@@ -382,7 +391,7 @@ integer variable.
 \end{center}
 \end{minipage}
 
-\item To specify a node set to which the declared node array corresponds
+\item To specify the node array to which the declared node array corresponds
       in the second and fourth forms of the {\tt nodes} directive,\\
 
 \begin{minipage}{0.43\hsize}
@@ -403,7 +412,7 @@ integer variable.
 \end{center}
 \end{minipage}
 
-\item To specify a node array that corresponds to the executing node set
+\item To specify the node array that corresponds to the executing node set
       of a task in the {\tt task} directive,
 
 \begin{minipage}{0.43\hsize}
@@ -428,7 +437,7 @@ integer variable.
 \end{center}
 \end{minipage}
 
-\item To specify a node array that corresponds to the executing node set
+\item To specify the node array that corresponds to the executing node set
       in the {\tt barrier} and the {\tt reduction} directive,\\
 
 %In {\tt barrier} directive and the {\tt reduction} directive,

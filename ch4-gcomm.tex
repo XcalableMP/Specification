@@ -36,39 +36,41 @@ where {\it reflect-width} must be one of:
 
 \subsubsection*{Description}
 
-The {\tt reflect} construct updates each of the shadow object of the
+The {\tt reflect} construct updates each of the shadow objects of the
 array specified by {\it array-name} with the value of its corresponding
 reflection source. Note that the shadow objects corresponding to
 elements at the non-orthogonal positions are also updated with this
-construct as the default behavior.
+construct, unless the {\tt orthogonal} clause is specified.
 
 %copies the value of the reflection source of
 %the reflect-object specified by {\it array-name} to all shadow
 %objects.
 %This directive may execute the communications.
 
-When the {\tt width} clause is specified and of the form ``{\it
-int-expr} : {\it int-expr}'' in a dimension, the shadow area of the
+When the {\tt width} clause is specified and takes the form ``{\it
+int-expr} : {\it int-expr}'' in a dimension, the shadow area having the
 width specified by the first {\it int-expr} at the lower bound and that
 specified by the second one at the upper bound in the dimension are
 updated.
 %
-When the {\tt width} clause is specified and of the form {\it int-expr},
-the shadow areas of the same width specified at both the upper
+When the {\tt width} clause is specified, and takes the form {\it int-expr},
+the shadow areas having the same width specified at both the upper
 and lower bounds in the dimension are updated.
 %
-When the {\tt width} clause is omitted, whole shadow area of the array
+When the {\tt width} clause is omitted, the whole shadow area of the array
 is updated.
 
-Particularly when the \Term{{\tt /periodic/} modifier} is specified in
+In particular, when the \Term{{\tt /periodic/} modifier} is specified in
 {\it reflect-width}, the update of the shadow object in the dimension is
 ``periodic,'' which means that the shadow object at the global lower
-(upper) bound is treated as if corresponding to the data object of the
-global upper (lower) bound and updated with that value by the {\tt
+(upper) bound is treated as if it corresponds to the data object of the
+global upper (lower) bound, and is updated with that value by the {\tt
 reflect} construct.
 
-When the {\tt orthogonal} clause is specified,
-the shadow object is updated only by orthogonal nodes.
+When the {\tt orthogonal} clause is specified, only the shadow objects
+corresponding to elements at the orthogonal positions are updated by the
+{\tt reflect} construct.
+%the shadow object is updated only by orthogonal nodes.
 
 When the {\tt async} clause is specified, the statements following this
 construct may be executed before the operation is complete.
@@ -76,16 +78,16 @@ construct may be executed before the operation is complete.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
- \item The arrays specified by the sequence of {\it array-name}'s must
+ \item The arrays specified by the sequence of {\it array-names} must
        be mapped onto the executing node set.
- \item The reflect width of each dimension specified by {\it
+ \item The reflect width of each dimension specified by the {\it
        reflect-width} must not exceed the shadow width of the arrays.
  \item The {\tt reflect} construct is global, which means that it must be
        executed by all nodes in the current executing node set, and each local
        variable referenced in the construct must have the same value
        among all of them.
- \item {\it async-id} must be an expression of type default integer, in
-       {\XMPF}, or type {\tt int}, in {\XMPC}.
+ \item {\it async-id} must be an expression of type default integer in
+       {\XMPF} or type {\tt int} in {\XMPC}.
 \end{itemize}
 
 \subsubsection*{Example}
@@ -109,7 +111,7 @@ construct may be executed before the operation is complete.
 \begin{center}
 \includegraphics[width=0.9\hsize]{figs/fig3.2.eps}
 \end{center}
-\caption{Example of Periodic Shadow Reflection}
+\caption{Example of periodic shadow reflection.}
 \label{fig3.2}
 \end{myfigure}
 
@@ -146,9 +148,9 @@ the executing nodes.
 
 \subsubsection*{Description}
 
-This construct copies the value of the right-hand side (rhs) variable
-into the left-hand side (lhs) of the associated assignment statement,
-which may require communication between the executing nodes. Such
+This construct copies the value of the right-hand side variable
+into the left-hand side of the associated assignment statement,
+which may cause communication between the executing nodes. Such
 communication is detected, scheduled, and performed by the XcalableMP
 runtime system.
 
@@ -177,10 +179,10 @@ runtime system.
 %
 %\begin{tabular}{lll}
 %\hspace{0.5cm} & {\tt a = b} & ! {\tt a} and {\tt b} are arrays \\
-% & {\tt a(1:10) = b(n:n+9, k)} & ! lhs and rhs are array sections \\
-% & {\tt a(1:10) = s2} & ! lhs is an array section and rhs is a
+% & {\tt a(1:10) = b(n:n+9, k)} & ! left-hand side and right-hand side are array sections \\
+% & {\tt a(1:10) = s2} & ! left-hand side is an array section and right-hand side is a
 % scalar variable \\
-% & {\tt a(1:10) = b(i, j)} & ! lhs is an array section and rhs is a
+% & {\tt a(1:10) = b(i, j)} & ! left-hand side is an array section and right-hand side is a
 % scalar object \\
 %\end{tabular}
 %\end{itemize}
@@ -196,18 +198,19 @@ There are three operating modes of the {\tt gmove} construct:
  \item {\bf collective mode}\index{collective mode (of {\tt gmove})}
 
        When neither the {\tt in} nor the {\tt out} clause is specified,
-       the copy operation is performed collectively and cause an
-       implicit synchronization after it among the executing nodes.
+       the copy operation is performed collectively, and results in 
+       implicit synchronization among the executing nodes.
 
        If the {\tt async} clause is not specified, then the construct is
-       ``synchronous'' and it is guaranteed that the lhs data can be
-       read and overwritten, the rhs data can be overwritten, and all of
+       ``synchronous,'' and it is guaranteed that the left-hand side
+       data can be read and overwritten, the right-hand side data can be
+       overwritten, and all of 
        the operations of the construct on the executing nodes are
        completed when returning from the construct;
-       otherwise, the construct is ``asynchronous'' and it is not
-       guaranteed that until returning from the associating {\tt
-       wait\_async} construct (Section \ref{subsec:wait_async
-       Construct}).
+       otherwise, the construct is ``asynchronous,'' and it is not
+       guaranteed that the operations are completed, until the
+       associating {\tt wait\_async} construct (Section
+       \ref{subsec:wait_async Construct}) is completed.
 
 %In this case, all elements in both the source array and the target array
 %must be distributed onto the executing node set.
@@ -223,36 +226,36 @@ There are three operating modes of the {\tt gmove} construct:
 
  \item {\bf in mode}\index{in mode (of {\tt gmove})}
 
-       When the {\tt in} clause is specified, the rhs data of the
-       assignment, whole or parts of which may reside outside the
+       When the {\tt in} clause is specified, the right-hand side data of the
+       assignment, all or part of which may reside outside the
        executing node set, can be transferred from its owner nodes to
        the executing nodes by this construct.
 
        If the {\tt async} clause is not specified, then the construct is
-       ``synchronous'' and it is guaranteed that the lhs data
-       can be read and overwritten and all of the operations of the
-       construct on the owner nodes of the rhs and the executing nodes
+       ``synchronous,'' and it is guaranteed that the left-hand side data
+       can be read and overwritten, and that all of the operations of the
+       construct on the owner nodes of the right-hand side and the executing nodes
        are completed when returning from the construct;
-       otherwise, the construct is ``asynchronous'' and it is not
-       guaranteed that until returning from the associating {\tt
-       wait\_async} construct (Section \ref{subsec:wait_async
-       Construct}).
+       otherwise, the construct is ``asynchronous,'' and it is not
+       guaranteed that the operations are completed, until the
+       associating {\tt wait\_async} construct (Section
+       \ref{subsec:wait_async Construct}) is completed.
 
  \item {\bf out mode}\index{out mode (of {\tt gmove})}
 
-       When the {\tt out} clause is specified, the lhs data of the
-       assignment, whole or parts of which may reside outside the 
+       When the {\tt out} clause is specified, the left-hand side data of the
+       assignment, all or part of which may reside outside the 
        executing node set, can be transferred from the executing nodes
        to its owner nodes by this construct.
 
        If the {\tt async} clause is not specified, then the construct is
-       ``synchronous'' and it is guaranteed that the rhs data
-       can be overwritten and all of the operations of the construct on
-       the owner nodes of the lhs and the executing nodes are
+       ``synchronous,'' and it is guaranteed that the right-hand side data
+       can be overwritten, and that all of the operations of the construct on
+       the owner nodes of the left-hand side and the executing nodes are
        completed when returning from the construct; otherwise, the
-       construct is ``asynchronous'' and it is not guaranteed that until
-       returning from the associating {\tt wait\_async} construct
-       (Section \ref{subsec:wait_async Construct}).
+       construct is ``asynchronous,'' and it is not guaranteed that the
+       operations are completed, until the associating {\tt wait\_async}
+       construct (Section \ref{subsec:wait_async Construct}) is completed.
 
 \end{itemize}
 
@@ -292,27 +295,26 @@ construct may be executed before the operation is complete.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
- \item The {\tt gmove} construct must be followed by (i.e. associated
+ \item The {\tt gmove} construct must be followed by (i.e., associated
        with) a simple assignment statement that contains neither
        arithmetic operations nor function calls.
  \item The {\tt gmove} construct is global, which means that it must be
        executed by all nodes in the current executing node set, and each local
-       variable referenced in the construct must have the same value
-       among all of them.
- \item If the {\tt gmove} construct is in {\it collective} mode, then
-       all elements of the distributed arrays appearing in both the
-       lhs and the rhs of the associated assignment
+       variable referenced in the construct must have the same value.
+ \item If the {\tt gmove} construct is in the {\it collective} mode, then
+       all elements of the distributed arrays appearing on both the
+       left-hand side and the right-hand side of the associated assignment
        statement must reside in the executing node set.
- \item If the {\tt gmove} construct is in {\it in} mode, then
-       all elements of the distributed array appearing in the lhs of the
+ \item If the {\tt gmove} construct is in the {\it in} mode, then
+       all elements of the distributed array appearing on the left-hand side of the
        associated assignment statement must reside in the executing node
        set.
- \item If the {\tt gmove} construct is in {\it out} mode, then
-       all elements of the distributed array appearing in the rhs of the
+ \item If the {\tt gmove} construct is in the {\it out} mode, then
+       all elements of the distributed array appearing on the right-hand side of the
        associated assignment statement must reside in the executing node
        set.
- \item {\it async-id} must be an expression of type default integer, in
-       {\XMPF}, or type {\tt int}, in {\XMPC}.
+ \item {\it async-id} must be an expression of type default integer in
+       {\XMPF} or type {\tt int} in {\XMPC}.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -320,10 +322,10 @@ construct may be executed before the operation is complete.
 \item[Example 1: Array assignment]
 \Example{gmove}
 
-If both the lhs and the rhs are distributed
-arrays, then the copy operation is performed by all-to-all
-communication. If the lhs is a replicated array, this copy
-is performed by multi-cast communication. If the rhs is a
+If the arrays on both the left-hand side and the right-hand side are distributed, then the copy
+operation is performed using all-to-all 
+communication. If the left-hand side is a replicated array, this copy
+is performed using multi-cast communication. If the right-hand side is a
 replicated array, then no communication is required.
 
 \vspace{0.5cm}
@@ -348,9 +350,9 @@ replicated array, then no communication is required.
 
 \item[Example 2: Scalar assignment to an array] 
 
-When the rhs is an element of a distributed array, the copy
+When the right-hand side is an element of a distributed array, the copy operation
 is performed by broadcast communication from the owner of the element. If 
-the rhs is a replicated array, then no communication is required.
+the right-hand side is a replicated array, then no communication is required.
 
 \vspace{0.5cm}
 
@@ -374,15 +376,16 @@ the rhs is a replicated array, then no communication is required.
 
 \item[Example 3: in mode assignment]
 
-	   Since {\tt b(3)} referenced in the rhs of the
+	   Because {\tt b(3)} referenced on the right-hand side of the
 	   {\tt gmove} construct does not reside in the executing node
-	   set ({\tt p(1:2)}), the construct is executed in in
+	   set ({\tt p(1:2)}), the construct is executed in the {\it in}
 	   mode. Thus, {\tt b(3)} is transferred from its owner node
 	   {\tt p(3)} to the executing node set.
 
-	   It is not guaranteed until {\tt p(1:2)} returns from the
-	   construct that any node can read and overwrite {\tt a(1:2)}
-	   and any relevant operations on {\tt p(1:2)} and {\tt p(3)}
+	   Until {\tt p(1:2)} returns from the
+	   construct, there is no gurantee that any node can read and
+	   overwrite {\tt a(1:2)},
+	   and that any relevant operations on {\tt p(1:2)} and {\tt p(3)}
 	   are completed.
 
 \vspace{0.5cm}
@@ -518,14 +521,14 @@ The {\tt reduction} construct performs a type of
 % modified by Sakagami,H. 09/11/13                                            
 reduction operation specified by {\it reduction-kind} for the specified
 local variables among the node set specified by the {\tt on}
-clause and sets the reduction results to the variables on each of the
+clause, and it sets the reduction results to the variables on each of the
 nodes.
 %
-Note that some of the reduction operation ({\tt FIRSTMAX}, {\tt
-FIRSTMIN}, {\tt LASTMAX}, and {\tt LASTMIN}) that could be specified in
-the {\tt reduction} clause of the {\tt loop} directive cannot be
-specified in the {\tt reduction} construct, because their semantics are
-not defined in it.
+Note that some of the reduction operations, namely, {\tt FIRSTMAX}, {\tt
+FIRSTMIN}, {\tt LASTMAX}, and {\tt LASTMIN}, which can be specified in
+the {\tt reduction} clause of the {\tt loop} directive, cannot be
+specified in the {\tt reduction} construct because their semantics are
+not defined for it.
 %
 The variable specified by {\it variable}, which is the target of the
 reduction operation, is referred to as the ``\Term{reduction
@@ -534,7 +537,7 @@ variable becomes the same in every node that performs the operation.
 
 The reduction result is computed by combining the reduction variables on
 all of the nodes using the reduction operator. The ordering of this
-reduction is implementation-dependent.
+reduction is unspecified.
 
 When the {\tt async} clause is specified, the statements following this
 construct may be executed before the operation is complete.
@@ -571,15 +574,14 @@ case, a reduction operation is performed in each node set.
 %:'' or the range.
 %\item If {\tt on} clause is omitted, the operation is done in the current execu\
 %ting node.
- \item The variables specified by the sequence of {\it variable}'s must
-       either not be aligned or be replicated among nodes of the node
+ \item The variables specified by the sequence of {\it variables} must
+       either not be aligned or must be replicated among nodes of the node
        set specified by the {\tt on} clause.
  \item The {\tt reduction} construct is global, which means that it must
        be executed by all nodes in the current executing node set, and each local
-       variable referenced in the construct must have the same value
-       among all of them.
- \item {\it async-id} must be an expression of type default integer, in
-       {\XMPF}, or type {\tt int}, in {\XMPC}.
+       variable referenced in the construct must have the same value.
+ \item {\it async-id} must be an expression of type default integer in
+       {\XMPF} or type {\tt int} in {\XMPC}.
  \item The node set specified by the {\tt on} clause must be a subset of the
        executing node set.
 \end{itemize}
@@ -603,13 +605,13 @@ case, a reduction operation is performed in each node set.
 %total sum of the variable. The total sum is stored in the variable in
 %each node.
 In the first line, the reduction operation calculates the sum of the
-scalar variable {\tt s} in the executing node set and the result is
+scalar variable {\tt s} in the executing node set, and the result is
 stored in the variable in each node.
 
 % modified by Sakagami,H. 09/11/13                                             
 The reduction operation in the second line computes the maximum value of
 the variable {\tt aa} in each node set onto which each of the template
-section specified by {\tt t(*,:)} is distributed.
+sections specified by {\tt t(*,:)} is distributed.
 %that consists of nodes associated with the
 %range of the second dimension of template {\tt t}.
 
@@ -666,18 +668,17 @@ In these cases, the reduction operation on the scalar variable {\tt sum}
 is performed for every iteration in the outer loop, which may cause a
 large overhead.
 % modified by Sakagami,H. 09/11/13
-The {\tt reduction} clause cannot be specified for the {\tt
-\Directive{loop}} construct of the outer loop to reduce this overhead,
+To reduce this overhead, the {\tt reduction} clause should be specified
+in the {\tt \Directive{loop}} construct for the outer loop.
 %
 %because the loop index of the outer loop ({\tt j}) is different from that 
 %for the reduction operation ({\tt i}).
-because the node set where the reduction operation specified by a {\tt
-reduction} clause of a {\tt loop} construct is performed is determined
-from its {\tt on} clause (see \ref{sub:loop_construct}) and
-the {\tt on} clause of the outer {\tt loop} construct is different from
-that of the inner one. 
+This is because the node set in which the reduction operation is
+performed is determined on the basis of its {\tt on} clause (see
+\ref{sub:loop_construct}), and the {\tt on} clause of the outer {\tt
+loop} construct is different from that of the inner one. 
 %
-However, this code can be modified with the {\tt reduction}
+However, this code can be modified using the {\tt reduction}
 construct as follows: 
 
 \begin{XFexample}
@@ -736,7 +737,7 @@ from a specified node.
 \subsubsection*{Description}
 
 The values of the variables specified by the sequence of {\it
-variable}'s (called {\it \Term{broadcast variables}}) are broadcasted 
+variables} (called {\it \Term{broadcast variables}}) are broadcasted 
 from the node specified by the {\tt from} clause (called the
 {\it \Term{source node}}) to each of the nodes in the node set specified
 by the {\tt on} clause. After executing this construct,
@@ -757,15 +758,15 @@ construct may be executed before the operation is complete.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
- \item The variables specified by the sequence of {\it variable}'s must
-       either not be aligned or be replicated among nodes of the node set
+ \item The variables specified by the sequence of {\it variables} must
+       either not be aligned or must be replicated among nodes of the node set
        specified by the {\tt on} clause.
  \item The {\tt bcast} construct is global, which means that it must be
        executed by all nodes in the current executing node set, and each local
        variable referenced in the construct must have the same value
        among all of them.
- \item {\it async-id} must be an expression of type default integer, in
-       {\XMPF}, or type {\tt int}, in {\XMPC}.
+ \item {\it async-id} must be an expression of type default integer in
+       {\XMPF} or type {\tt int} in {\XMPC}.
  \item The node set specified by the {\tt on} clause must be a subset of
        the executing node set.
  \item The source node specified by the {\tt from} clause must belong to
@@ -779,7 +780,7 @@ construct may be executed before the operation is complete.
 
 \subsubsection*{Synopsis}
 
-The {\tt \Directive{wait\_async}} construct guarantees asynchronous
+The {\tt \Directive{wait\_async}} construct guarantees that asynchronous
 communications specified by {\it async-id} are complete.
 
 \subsubsection*{Syntax}
@@ -796,10 +797,11 @@ communications specified by {\it async-id} are complete.
 
 \subsubsection*{Description}
 
-The {\tt \Directive{wait\_async}} construct blocks and therefore
-statements following it are not executed until all of the asynchronous
-communications that are specified by {\it async-id}'s and issued on the
-node set specified by the {\tt on} clause are complete.
+The {\tt \Directive{wait\_async}} construct will block, and therefore
+statements following it will not be executed, until the completion of
+all of 
+the asynchronous communications that are specified by {\it async-id}'s
+and issued on the node set specified by the {\tt on} clause.
 \mytextcolor{red}{
 If an {\it async-id} is not associated with any asynchronous
 communication, the {\tt wait\_async} construct ignores it.
@@ -808,10 +810,10 @@ communication, the {\tt wait\_async} construct ignores it.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
- \item {\it async-id} must be an expression of type default integer, in
-       {\XMPF}, or type {\tt int}, in {\XMPC}.
+ \item {\it async-id} must be an expression of type default integer in
+       {\XMPF} or type {\tt int} in {\XMPC}.
  \item \mytextcolor{red}{\sout{{\it async-id} must be associated with an asynchronous
-       communication by the {\tt async} clause of a communication
+       communication using the {\tt async} clause of a communication
        construct.}}
  \item The {\tt wait\_async} construct is global, which means that it must
        be executed by all nodes in the current executing node set, and
@@ -832,14 +834,14 @@ communication, the {\tt wait\_async} construct ignores it.
 \subsubsection*{Synopsis}
 
 The {\tt async} clause of the {\tt reflect}, {\tt gmove}, {\tt
-reduction} and {\tt bcast} constructs allows the corresponding
+reduction}, and {\tt bcast} constructs enables the corresponding
 communication to be performed asynchronously.
 
 \subsubsection*{Description}
 
 Communication corresponding to the construct with an {\tt async} clause
-is performed asynchronously, that is, initiated but not completed,
-and therefore statements following it may be executed before the
+is performed asynchronously, that is, it is initiated but not completed,
+and therefore, statements following it may be executed before the
 communication is complete.
 
 %\subsubsection*{Restrictions}
@@ -863,10 +865,10 @@ communication is complete.
 
 The {\tt reflect} construct on the first line matches the {\tt wait}
 construct on the third line because both of their {\it async\_id}
-evaluate to 1.
+evaluate to one.
 %
 These constructs ensure that statements in {\tt S1} can be executed
-before the {\tt reflect} communication is complete and no statement in
+before the {\tt reflect} communication is complete, and no statement in
 {\tt S2} is executed until the {\tt reflect} communication is
 complete.
 
@@ -903,27 +905,27 @@ objects to their reflection source.
 
 The {\tt reduce\_shadow} construct adds values of shadow objects of the
 array specified by {\it array-name} to their reflection source. Note
-that the shadow objects corresponding to elements at the non-orothogonal
+that the shadow objects corresponding to elements at the non-orthogonal
 positions are also added as the default behavior.
 
-When the {\tt width} clause is specified and of the form ``{\it
-int-expr} : {\it int-expr}'' in a dimension, the shadow areas of the
-width specified by the first {\it int-expr} at the lower bound and that
+When the {\tt width} clause is specified and has the form ``{\it
+int-expr} : {\it int-expr}'' in a dimension, the shadow areas having the
+width specified by the first {\it int-expr} at the lower bound, and that
 specified by the second one at the upper bound in the dimension are
 added.
 %
-When the {\tt width} clause is specified and of the form {\it int-expr},
-the shadow areas of the same width specified at both the upper
+When the {\tt width} clause is specified and has the form {\it int-expr},
+the shadow areas having the same width specified at both the upper
 and lower bounds in the dimension are added.
 %
-When the {\tt width} clause is omitted, whole shadow area of the array
+When the {\tt width} clause is omitted, the whole shadow area of the array
 is added.
 
-Particularly when the \Term{{\tt /periodic/} modifier} is specified in
+In particular, when the \Term{{\tt /periodic/} modifier} is specified in
 {\it reflect-width}, the addition of the shadow object in the dimension is
 ``periodic,'' which means that the shadow object at the global lower
-(upper) bound is treated as if corresponding to the data object of the
-global upper (lower) bound and added by the {\tt reduce\_shadow}
+(upper) bound is treated as if it corresponds to the data object of the
+global upper (lower) bound and is added by the {\tt reduce\_shadow}
 construct.
 
 When the {\tt orthogonal} clause is specified,
@@ -935,7 +937,7 @@ construct may be executed before the operation is complete.
 \subsubsection*{Restrictions}
 
 \begin{itemize}
- \item The arrays specified by the sequence of {\it array-name}'s must
+ \item The arrays specified by the sequence of {\it array-names} must
        be mapped onto the executing node set.
  \item The width of each dimension specified by {\it
        reflect-width} must not exceed the shadow width of the arrays.
@@ -943,8 +945,8 @@ construct may be executed before the operation is complete.
        executed by all nodes in the current executing node set, and each local
        variable referenced in the construct must have the same value
        among all of them.
- \item {\it async-id} must be an expression of type default integer, in
-       {\XMPF}, or type {\tt int}, in {\XMPC}.
+ \item {\it async-id} must be an expression of type default integer in
+       {\XMPF} or type {\tt int} in {\XMPC}.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -980,5 +982,5 @@ both distributed onto nodes. On each node, a contribution of a particle
 {\tt f(k)} is added to the nearest grid point of the field and its
 neighbors, which may be in the shadow area on the node. In the last two
 lines, the values of the shadow area from neighboring nodes are added to
-the corresponding data object and then the results are copied back to
+the corresponding data object, and the results are then copied back to
 the shadow area on the neighboring nodes.
