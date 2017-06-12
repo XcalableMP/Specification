@@ -6,7 +6,8 @@
 
   \subsection{Local I/O}
 
-  Local I/O is the way to use I/O statements and standard I/O functions in the
+  Local I/O is a method that is employed to use I/O statements and
+  standard I/O functions in the 
   base languages, where I/O statements and functions are used without
   any directives.
 
@@ -62,10 +63,10 @@
   In a large system with many nodes, the global I/O can be expected to
   have higher speed and less memory consumption execution than master I/O.
 
-  [F] It is provided in the form of directives for a part of I/O
+  [F] It is provided in the form of directives for some of I/O
   statements, such as OPEN, CLOSE, READ, and WRITE statements.
 
-  [C] It is provided in the form of service functions and the include file.
+  [C] It is provided in the form of service functions and an include file.
 
   Global I/O can handle only unformatted (binary) files. In XcalableMP Fortran,
   implied DO loops and some specifiers cannot be used.
@@ -79,14 +80,14 @@
 
   There are three kinds of global I/O, as shown in Table
   \ref{tb:global}.
-  {\bf Collective} global I/O is collective execution and
+  {\bf Collective} global I/O is for collective execution and
   sequential file access.
   It handles global data in a sequential order, similar to master
   I/O.
-  {\bf Atomic} global I/O is independent execution and sequential file access.
+  {\bf Atomic} global I/O is for independent execution and sequential file access.
   Executing nodes share file positioning of the global I/O file and
   execute each I/O statement and library call mutually.
-  {\bf Direct} global I/O is independent execution and direct file access.
+  {\bf Direct} global I/O is for independent execution and direct file access.
   Each executing node has its own file positioning and accesses a shared
   file independently.
 
@@ -134,7 +135,7 @@
   Master I/O and global I/O connect a file to an executing node set
   collectively.
   
-  There are two ways of file connections, dynamic connection and
+  There are two ways of specifying file connections, dynamic connection and
   preconnection.
   Dynamic connection connects a file during the execution of the program.
   Preconnection connects a file at the beginning of execution of the
@@ -148,22 +149,24 @@
   node.
   It is implementation-defined which nodes can access the standard
   input, output, and error files.
-  It is also implementation dependent how the accesses to the files with
-  the same name by multiple nodes behaves.
+  % It is also implementation-defined how the accesses to the files having
+  % the same name by multiple nodes behaves.
+  The behavior of the accesses to files having
+  the same name on multiple nodes is also implementation-defined.
   The only primary node can access the standard input, output, and error
   files.
   
-  \if 0
-  File system visible to each node is implementation dependent.
+  % \if 0
+  % File system visible to each node is implementation dependent.
 
-  It is implementation dependent which nodes can access the standard
-  input, output and error files.
-  It is also implementation dependent how the accesses to the same file by multiple nodes behave; e.g.
-  , data in the standard input file may
-  be read only by one node or may be replicated to all nodes.
-  It is implementation dependent how data from the multiple nodes are
-  merged into the standard output/error file.
-  \fi
+  % It is implementation dependent which nodes can access the standard
+  % input, output and error files.
+  % It is also implementation dependent how the accesses to the same file by multiple nodes behave; e.g.
+  % , data in the standard input file may
+  % be read only by one node or may be replicated to all nodes.
+  % It is implementation dependent how data from the multiple nodes are
+  % merged into the standard output/error file.
+  % \fi
 
   \subsection{{\tt [F]} File Connection in Master I/O}
 
@@ -323,7 +326,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    Namelist input and output statements cannot treat global arrays.
@@ -338,7 +341,7 @@
    that can return values always return the same value among the
    executing node set.
 
-   When a condition that is specified with ERR, END or EOR specifier is
+   When a condition that is specified by the ERR, END, or EOR specifier is
    satisfied, all nodes of the executing node set are branched together to
    the same statement.
 
@@ -418,19 +421,19 @@
    The input item and output item of a data transfer statement with
    a \gio directive must be the name of a variable.
    
-   \if 0
-   Only the name of a variable (including global variable) can be specified 
-   as the input item of READ statement specified with a \gio directive,
-   but array element, array section,
-   structure component, substring, and implied DO loop are not allowed as input items.
+   % \if 0
+   % Only the name of a variable (including global variable) can be specified 
+   % as the input item of READ statement specified with a \gio directive,
+   % but array element, array section,
+   % structure component, substring, and implied DO loop are not allowed as input items.
 
-   Only the name of a global array
-   and an expression excluding global array reference can be specified
-   as the output item
-   of WRITE statement specified with a \gio directive, 
-   but an expression including global array
-   reference and implied DO loop are not allowed as input items.
-   \fi
+   % Only the name of a global array
+   % and an expression excluding global array reference can be specified
+   % as the output item
+   % of WRITE statement specified with a \gio directive, 
+   % but an expression including global array
+   % reference and implied DO loop are not allowed as input items.
+   % \fi
 
    \subsubsection*{Description}
 
@@ -474,7 +477,7 @@
       FILE & file name (scalar CHARACTER expression) & not omissible \\ \hline
       STATUS & 'OLD', 'NEW', 'REPLACE' or 'UNKNOWN' & 'UNKNOWN' \\ \hline
       POSITION & 'ASIS', 'REWIND' or 'APPEND' & 'ASIS' \\ \hline
-      ACTION & 'READ', 'WRITE' or 'READWRITE' & processor dependent \\ \hline
+      ACTION & 'READ', 'WRITE' or 'READWRITE' & implementation-defined \\ \hline
       RECL & the value of the record length (scalar constant expression) & not omissible \\ \hline
       ACCESS & 'SEQUENTIAL' or 'DIRECT' & 'SEQUENTIAL' \\ \hline
       FORM & 'FORMATTED' or 'UNFORMATTED' & For direct access, UNFORMATTED. For sequential access, this specifier shall not be omitted. \\ \hline
@@ -523,8 +526,9 @@
 
    REC is available only if the directive has a direct clause.
    
-   \item When a scalar variable of default INTEGER is specified to IOSTAT, an
-     error code is set to the specifiers.
+   \item When a scalar variable of default INTEGER is specified to
+		 the IOSTAT specifier, it becomes defined with an error code
+		 after execution.
 	 
    \end{itemize}
 
@@ -534,7 +538,7 @@
    All of these statements are called collective I/O statements.
 
    OPEN, CLOSE, READ, and WRITE statements specified with \gio directives
-   with atomic clauses are called atomic OPEN, atomic CLOSE, atomic READ, and
+   having atomic clauses are called atomic OPEN, atomic CLOSE, atomic READ, and
    atomic WRITE statements, respectively.
    All of these statements are called atomic I/O statements.
 
@@ -552,7 +556,7 @@
    connected by a collective OPEN statement.
 
    \subsubsection{{\tt file\_sync\_all} Directive}
-   Two data accesses conflict if they access the same absolute byte
+   Two data accesses cause a conflict if they access the same absolute byte
    displacements of the same file, and at least one is a write access. 
    When two accesses to the same file conflict in direct or collective I/O,
    the following file\_sync\_all directive to the file must be executed.
@@ -574,24 +578,24 @@
    If some nodes have made updates to the file, then all such updates
    become visible to subsequent reads of the file by the nodes.
 
-\if 0   
-   \begin{itemize}
-     \item BARRIER statement
+% \if 0   
+%    \begin{itemize}
+%      \item BARRIER statement
 
-   \begin{table}[h]
-    \begin{center}
-     \label{tb:globalopen}
-     \begin{tabular}{|c||p{90mm}|l|}
-       \hline
-       specifiers & value & default \\ \hline \hline
-       UNIT & external file unit (scalar constant expression)
-       & not omissible. \\ \hline
-     \end{tabular}
-    \end{center}
-   \end{table}
+%    \begin{table}[h]
+%     \begin{center}
+%      \label{tb:globalopen}
+%      \begin{tabular}{|c||p{90mm}|l|}
+%        \hline
+%        specifiers & value & default \\ \hline \hline
+%        UNIT & external file unit (scalar constant expression)
+%        & not omissible. \\ \hline
+%      \end{tabular}
+%     \end{center}
+%    \end{table}
 
-   \end{itemize}
-\fi
+%    \end{itemize}
+% \fi
 
    
    \subsection{Collective Global I/O Statement}
@@ -610,46 +614,46 @@
       \hline
       \multicolumn{1}{|c}{ }  & {\bf I/O item} & {\bf operation} \\ \hline
       input item & name of global array & The values read from a file are assigned to the elements of the global array.
-      The file positioning seeks by the size of the data.
+      The file positioning increases according to the size of the data.
       \\ \cline{2-3}
       & local variable &  The values read from the file are replicated into the
-	      local array on all executing nodes. The file positioning seeks by
+	      local array on all executing nodes. The file positioning increases according to
 	      the length of the data.
       \\ \hline
       output item & name of global array & The values of a global array are
       written to the file in the sequential order of the array elements.
-      The file positioning seeks by the size of the data.
+      The file positioning increases according to the size of the data.
       \\ \cline{2-3}
       & local variable, expression & The values evaluated on a node
 			   are arbitrarily selected by the language processor from the
 			   executing node set.
-      The file positioning seeks by the size of the data.
+      The file positioning increases according to the size of the data.
       \\ \hline
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
-\if 0
-   If an axis of the global array is aligned to an axis of the template
-   and they are not equal in length, the length of the axis of the
-   global array is regarded as the length of the axis of the
-   template. In the example below, array a is read/written in the
-   collective I/O file as if it was declared as a(10,100).\\
-   \begin{tabular}{ll}
-     \verb|!$xmp| & \verb|template t(100)| \\
-     & dimension a(10, 2:99) \\
-     \verb|!$xmp| & \verb|align a(*,i) with t(i)| \\
-   \end{tabular}
-\fi
+% \if 0
+%    If an axis of the global array is aligned to an axis of the template
+%    and they are not equal in length, the length of the axis of the
+%    global array is regarded as the length of the axis of the
+%    template. In the example below, array a is read/written in the
+%    collective I/O file as if it was declared as a(10,100).\\
+%    \begin{tabular}{ll}
+%      \verb|!$xmp| & \verb|template t(100)| \\
+%      & dimension a(10, 2:99) \\
+%      \verb|!$xmp| & \verb|align a(*,i) with t(i)| \\
+%    \end{tabular}
+% \fi
    
    \subsection{Atomic Global I/O Statement}
 
    Atomic I/O statements read/write shared files exclusively among executing nodes
    in arbitrary order.
    Because it is a nondeterministic parallel execution,
-   the results may differ every execution time even for the same program.
+   the results may differ every time it is executed, even for the same program.
 
    Atomic OPEN and CLOSE statements are executed collectively, while atomic
    READ and WRITE statements are executed independently.
@@ -670,7 +674,7 @@
 
    \subsection{Direct Global I/O Statement}
 
-   Direct I/O statements read/write shared files with specification of the
+   Direct I/O statements read/write shared files by specifying the
    file positioning for each node.
 
    Direct OPEN and CLOSE statements are executed collectively, while direct
@@ -682,25 +686,25 @@
    
    Direct READ and WRITE statements read/write local data at the file positioning
    specified by the REC specifier independently.
-   The file positioning is shifted from the top of the file by the product 
-   of the specifiers RECL (of OPEN statement) and
+   The file positioning is shifted from the top of the file on the basis
+   of the product of the specifiers RECL (of OPEN statement) and
    REC (of READ and WRITE statement). 
 
    In order to guarantee the order of direct I/O statements to the same
    file position, the file should be closed or the file\_sync\_all
    directive should be executed between these statements. Otherwise, the
    outcome of multiple accesses to the same file position, in which at
-   least one is a write access, is implementation dependent.
+   least one is a write access, is implementation-defined.
 
-   \if 0
-   \textcolor{red}{
-   Accessing to the same file position by READ/WRITE statements may not
-   occur in the same order in a program. In order to guarantee the order
-   of READ/WRITE specified, the file should be closed or the
-   file\_sync\_all directive should be executed between these
-   statements.
-   }
-   \fi
+   % \if 0
+   % \textcolor{red}{
+   % Accessing to the same file position by READ/WRITE statements may not
+   % occur in the same order in a program. In order to guarantee the order
+   % of READ/WRITE specified, the file should be closed or the
+   % file\_sync\_all directive should be executed between these
+   % statements.
+   % }
+   % \fi
    
    \section{{\tt [C]} Global I/O Library}
    XcalableMP C provides some data types defined in the include file ``xmp.h'',
@@ -769,15 +773,15 @@
 	       These two file pointers are managed in the structure xmp\_file\_t,
 	       and can be controlled and referenced only through
 	       the provided library functions.
-\if 0
-    \item[xmp\_array\_t] Mapping descriptor for a global array variable,
-	       which includes distribution, alignment, and the shape of nodes array.
+% \if 0
+%     \item[xmp\_array\_t] Mapping descriptor for a global array variable,
+% 	       which includes distribution, alignment, and the shape of nodes array.
 
-	       Mapping descriptor of global array A is obtained with
-	       the following built-in operator:
+% 	       Mapping descriptor of global array A is obtained with
+% 	       the following built-in operator:
 	       
-	       xmp\_array\_t xmp\_array\_of(A);
-\fi
+% 	       xmp\_array\_t xmp\_array\_of(A);
+% \fi
 
 \item[xmp\_range\_t] Descriptor of array section, including
       lower bound, upper bound, and stride for each dimension.
@@ -797,7 +801,7 @@
 	      when a program abends. \\ \hline
       \end{tabular}
      \end{center}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \begin{table}[h]
@@ -813,7 +817,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 \clearpage
    \begin{table}[h]
@@ -825,7 +829,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
    
    \subsection{Global I/O File Operation}
@@ -847,7 +851,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    File view is initialized, where file view is based on the MPI-IO file
@@ -856,23 +860,23 @@
 
    \begin{table}[h]
      \begin{center}
-    \label{tb:xxx}
+%    \label{tb:xxx}
     \begin{tabular}{|c|p{120mm}|}
       \hline
      amode & intended purpose \\ \hline \hline
-     r &  Open for reading only. File pointer points the beginning of
+     r &  Open for reading only. File pointer points to the beginning of
 	 the file.\\ \hline
      r+ & Open an existing file for update (reading and writing). File
-	 pointer points the beginning of the file. \\ \hline
-     w &  Create for writing. If a file by that name already exists, it
-	 will be overwritten. File pointer points the beginning of the file. \\ \hline
+	 pointer points to the beginning of the file. \\ \hline
+     w &  Create for writing. If a file having that name already exists, it
+	 will be overwritten. File pointer points to the beginning of the file. \\ \hline
      w+ & Create a new file for update (reading and writing). If a file
-	 by that name already exists, it will be overwritten. File
-	 pointer points the beginning of the file. \\ \hline
+	 having that name already exists, it will be overwritten. File
+	 pointer points to the beginning of the file. \\ \hline
      a & Append; open for writing at end-of-file or create for writing
-	 if the file does not exist. File pointer points the end of the file. \\ \hline
+	 if the file does not exist. File pointer points to the end of the file. \\ \hline
      a+ & Open for append; open (or create if the file does not exist)
-	 for update at the end of the file. File pointer points the
+	 for update at the end of the file. File pointer points to the
 	 beginning of the file. \\ \hline
     \end{tabular}
    \end{center}
@@ -917,7 +921,7 @@
       &  & an integer other than 0: abnormal termination \\ \hline
       \end{tabular}
      \end{center}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \subsubsection{xmp\_fseek\_shared}
@@ -940,11 +944,11 @@
       &  & an integer other than 0: abnormal termination \\ \hline
       \end{tabular}
      \end{center}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \subsubsection{xmp\_ftell}
-   xmp\_ftell inquires the position of the individual file pointer in the file structure. Independent execution.
+   xmp\_ftell returns the position of the individual file pointer in the file structure. Independent execution.
 
    \begin{table}[h]
     \begin{center}
@@ -961,11 +965,11 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \subsubsection{xmp\_ftell\_shared}
-   xmp\_ftell\_shared inquires the position of the shared file pointer in
+   xmp\_ftell\_shared returns the position of the shared file pointer in
    the file structure. Independent execution.
 
    \clearpage
@@ -984,7 +988,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \subsubsection{xmp\_file\_sync\_all}
@@ -1009,14 +1013,14 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \subsection{Collective Global I/O Functions}
 
    Collective I/O is executed collectively, but using the individual pointer.
-   It reads/writes data from the position of the individual file pointer and moves the position
-   by the length of the data.
+   It reads/writes data from the position of the individual file pointer
+   and moves the position forward by the length of the data.
 
    Before the file access, a file view is often specified. A file view, like a window to the file, 
    spans the positions corresponding to the array elements that are
@@ -1040,7 +1044,7 @@
       &  & an integer other than 0: abnormal termination \\ \hline
       \end{tabular}
      \end{center}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    The file view of distributed $desc$ limited to range $rp$ is set into file structure $fh$.
@@ -1065,7 +1069,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \subsubsection{xmp\_fread\_all}
@@ -1088,7 +1092,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \subsubsection{xmp\_fwrite\_all}
@@ -1114,7 +1118,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \subsubsection{xmp\_fread\_darray\_all}
@@ -1135,7 +1139,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    Data is read from the file to distributed $desc$ limited to range $rp$.
@@ -1159,7 +1163,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    Data is written from distributed $desc$ limited to range $rp$ to the file.
@@ -1170,7 +1174,7 @@
    Atomic I/O is executed independently, but using the shared pointer. 
    It exclusively reads/writes local data
    from the position of the shared file pointer, and moves the position
-   by the length of the data.
+   forward by the length of the data.
 
    Before atomic I/O is executed, the file view must be cleared.
    
@@ -1184,7 +1188,8 @@
    \subsubsection{xmp\_fread\_shared}
 
    xmp\_fread\_shared exclusively reads local data from the position of
-   the shared file pointer, and moves the position by the length of the data.
+   the shared file pointer, and moves the position forward by the length
+   of the data.
    Independent execution.
 
    \begin{table}[h]
@@ -1203,12 +1208,13 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \subsubsection{xmp\_fwrite\_shared}
    xmp\_fwrite\_shared exclusively writes local data to the
-   position of the shared file pointer and moves the position by the length of the data.
+   position of the shared file pointer and moves the position forward by
+   the length of the data.
    Independent execution.
 
    \begin{table}[h]
@@ -1227,7 +1233,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
 
@@ -1236,27 +1242,28 @@
    Direct I/O is executed independently and uses the individual pointer. 
    It individually reads/writes local data
    from the position of the individual file pointer, and 
-   moves the position by the length of the data, considering the file view.
+   moves the position forward by the length of the data, considering the file view.
 
    In order to guarantee the order by xmp\_fread and xmp\_fwrite functions to the same file position, the file should be closed or the xmp\_file\_sync\_all function should be executed between these functions. Otherwise, the outcome of multiple accesses to the same file position, in which at least one is the xmp\_fwrite function, is implementation dependent.
    
-   \if 0
-   \textcolor{red}{
-     Accessing to the same file position by READ/WRITE functions may not
-     occur in the same order in a program. In order to guarantee the
-     order of READ/WRITE specified, the file should be closed or the
-     file\_sync\_all function should be executed between these functions.
-     }
-   \fi
+   % \if 0
+   % \textcolor{red}{
+   %   Accessing to the same file position by READ/WRITE functions may not
+   %   occur in the same order in a program. In order to guarantee the
+   %   order of READ/WRITE specified, the file should be closed or the
+   %   file\_sync\_all function should be executed between these functions.
+   %   }
+   % \fi
    
    \subsubsection*{Advice to programmers}
 
    Function xmp\_fseek is useful for setting the individual file pointer.
-   It is not recommended using the file view together because of complexity.
+   It is not recommended to use it together with the file view because
+   of its complexity.
 
    \subsubsection{xmp\_fread}
    xmp\_fread reads data from the position of the individual file
-   pointer and moves the position by the length of the data.
+   pointer and moves the position forward by the length of the data.
    Independent execution.
 
    \begin{table}[h]
@@ -1275,12 +1282,12 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    \subsubsection{xmp\_fwrite}
    xmp\_fwrite writes data to the position of the individual file
-   pointer and moves the position by the length of the data.
+   pointer and moves the position forward jby the length of the data.
    Independent execution.
 
    \begin{table}[h]
@@ -1299,7 +1306,7 @@
       \end{tabular}
      \end{center}
 %    \caption{aaa}
-    \label{tb:aaa}
+%    \label{tb:aaa}
    \end{table}
 
    
