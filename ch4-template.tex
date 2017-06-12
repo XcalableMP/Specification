@@ -940,20 +940,17 @@ template.
 \Syntax{template\_fix}
 
 \begin{tabular}{ll}
-\verb![F]! & \verb|!$xmp| {\tt template\_fix} {\openb}\verb|(| {\it
- dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)|{\closeb}
- {\bsquare} \\
- & \hspace{3cm}{\bsquare} {\it template-name} {\openb}\verb|(|{\it
-     template-spec} {\openb}, {\it
-     template-spec}{\closeb}... \verb|)|{\closeb} \\
-& \\
-\verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} {\openb}\verb|(|
-     {\it dist-format} {\openb}, {\it
-     dist-format}{\closeb}...\verb|)|{\closeb} {\bsquare} \\
- & \hspace{3cm}{\bsquare} {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb}... \verb|)|{\closeb} \\
+\verb![F]! & \verb|!$xmp| {\tt template\_fix} {\bsquare} \\
+ & {\bsquare} {\openb}\verb|(| {\it dist-format} {\openb}, {\it dist-format}{\closeb}... \verb|)|{\closeb} 
+   {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb}... \verb|)|{\closeb} \\
+ & \\
+\verb![C]! & \verb|#pragma xmp|  {\tt template\_fix} {\bsquare} \\
+ & {\bsquare} {\openb}\verb|(| {\it dist-format} {\openb}, {\it dist-format}{\closeb}...\verb|)|{\closeb} 
+   {\it template-name} {\openb}\verb|(|{\it template-spec} {\openb}, {\it template-spec}{\closeb}... \verb|)|{\closeb} \\
  & \hspace{4cm} or \\
- & \hspace{3cm}{\bsquare} {\it template-name} \verb|[| {\it template-spec} \verb|]|
-     {\openb} \verb|[|{\it template-spec} \verb|]|... {\closeb} \\
+ & {\bsquare} {\openb}\verb|[| {\it dist-format} {\openb}, {\it dist-format}{\closeb}...\verb|]|{\closeb}
+   {\it template-name} \verb|[| {\it template-spec} \verb|]|
+   {\openb} \verb|[|{\it template-spec} \verb|]|... {\closeb} \\
 \end{tabular}
 \vspace{0.3cm}
 
@@ -1049,7 +1046,7 @@ double *a;
 N = ...;
 M[] = {...};
 ...
-#pragma xmp template_fix(gblock(M)) t[N]
+#pragma xmp template_fix[gblock(M)] t[N]
 ...
 a = xmp_malloc(xmp_desc_of(a), N);
 \end{XCexampleR}
