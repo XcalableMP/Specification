@@ -866,6 +866,7 @@ The target node is specified using an extended notation in {\XMPC}.
 
 A sequence of {\tt [}{\it int-expr}{\tt ]}'s preceded by a colon in
 {\XMPC} determines the image index for a coarray to be accessed.
+Note that the image index in {\XMPC} is 0-origin while the image index in {\XMPF} is 1-origin.
 
 A reference of coarrays can appear in the same place as an reference of
 normal variables in the base languages.
@@ -873,18 +874,35 @@ normal variables in the base languages.
 \subsubsection*{Examples}
 \Example{coarray}
 
-In the following code, each executing node gets whole of {\tt B} from
-image 10 (that is, the tenth node of the entire node set) and
+In the following left code, 
+image 1 (the second node of the entire node set) gets whole of {\tt B} from image 0 (the first node of the entire node set) and
 copies it into the local storage for {\tt A}.
-
+The right code is the example written in Fortran, which is the same as the left code.
 \vspace{0.3cm}
 
 \index{Example!coarray reference}
+\begin{minipage}{0.45\hsize}
+\begin{center}
 \begin{XCexample}
-int A[10]:[*], B[10]:[*];
+int A[100]:[*], B[100]:[*];
 
-A[:] = B[:]:[10];
+if(xmpc_this_image() == 1){
+  A[:] = B[:]:[0];
+}
 \end{XCexample}
+\end{center}
+\end{minipage}
+\begin{minipage}{0.45\hsize}
+\begin{center}
+\begin{XFexampleR}
+integer :: A(100)[*], B(100)[*]
+
+if (this_image() == 2) then
+  A(:) = B(:)[1]
+end if
+\end{XFexampleR}
+\end{center}
+\end{minipage}
 
 %\subsection{Declaration of Coarrays}
 %
