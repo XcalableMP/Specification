@@ -1,10 +1,9 @@
 \chapter{Support for the Local-view Programming}
 \label{chap:Support for the Local-view Programming}
 
-In this chapter, the coarray features in XcalableMP, which are based on
-that of Fortran 2008, are described. Note that they are also available
-in {\XMPC}. In addition, some directives for the local-view programming
-are also described.
+This chapter describes the coarray features in XcalableMP, which are based on
+that of Fortran 2008. Note that they are also available
+in {\XMPC}. In addition, this chapter describes some directives for the local-view programming.
 
 %{\XMP} adopts coarray features for the local-view
 %programming. Particularly in {\XMPF}, the features are compatible with
@@ -19,7 +18,7 @@ the following purposes:
  \item Upward compatibility to the Fortran 2008 coarray features\\
 If an {\XMPF} program does not contain any XMP directives,
 any standard-conforming Fortran 2008 program
-remains standard-conforming under XcalableMP.
+remains standard conforming under XcalableMP.
 In this sense, the interpretations and extensions defined in this
  chapter are upward compatible with the Fortran International Standard, ISO/IEC 1539-1:2010 (Fortran 2008).
 
@@ -74,7 +73,7 @@ the uniquely corresponding element of a primary node array.
 
 \subsection{Image Index Determined by a {\tt task} Directive}
 
-Execution of a {\tt task} directive determines that a set of nodes (and
+The execution of a {\tt task} directive determines that a set of nodes (and
 the corresponding set of images) forms an executing node set.
 If a name of a node array or a subobject of a node array 
 appears in the {\tt task} directive, the nodes and the corresponding 
@@ -127,7 +126,7 @@ A non-primary node array corresponds to all of the images at the
 invocation of a program, and it also corresponds to all the nodes at the
 invocation of 
 a program. The correspondence between each image and 
-each element of a non-primary node array is processor-dependent.
+each element of a non-primary node array is processor dependent.
 A processor may support any means to specify the correspondence.
 
 The image index of an image in all of the images at the invocation 
@@ -140,11 +139,11 @@ array-element order in the non-primary node whole array.
 The image index is a non-primary image index. 
 
 The correspondence between the primary image index and a non-primary image
-index of the same image is processor-dependent.
+index of the same image is processor dependent.
 Between any two distinct non-primary node arrays, 
 the correspondence between a non-primary image index 
 and the other non-primary image index of the same image is
-processor-dependent unless they have the same shape. 
+processor dependent unless they have the same shape. 
 If two non-primary node arrays have the same shape,
 the corresponding elements of the node arrays correspond
 to the same image.
@@ -185,7 +184,7 @@ set of images.
 \subsection{On-node Image Index}
 
 XcalableMP supports the {\tt coarray} directive and the {\tt image}
-directive to 
+directive to   %%%%%% HARD TO READ. The reviewer misunderstood this sentence.
 specify that an image index indicates the image corresponding to
 the element of a particular node array whose subscript order value is 
 the same as the image index.
@@ -291,11 +290,11 @@ and correspond to {\ttfamily node(5)}, {\ttfamily node(6)}, {\ttfamily node(7)},
 \paragraph*{Note}
 \begin{itemize}
  \item 
-       The result value of {\tt xmp\_num\_nodes()}
+       The result of {\tt xmp\_num\_nodes()}
        is always the same as that of {\ttfamily NUM\_IMAGES()}.
 
  \item 
-  The result value of {\tt xmp\_node\_num()} is always the same as that of {\tt THIS\_IMAGE()}.
+  The result of {\tt xmp\_node\_num()} is always the same as that of {\tt THIS\_IMAGE()}.
  \item 
        In a {\tt read} statement, an io-unit that is an asterisk
        identifies an external unit that is preconnected for a sequential
@@ -874,10 +873,9 @@ normal variables in the base languages.
 \subsubsection*{Examples}
 \Example{coarray}
 
-In the following left code, 
-image 1 (the second node of the entire node set) gets whole of {\tt B} from image 0 (the first node of the entire node set) and
-copies it into the local storage for {\tt A}.
-The right code is the example written in Fortran, which is the same as the left code.
+In the following codes, 
+the second image ([C] image index 1/[F] image index 2) gets all values of array {\tt B} 
+on the first image ([C] image index 0/[F] image index 1) to array {\tt A} on the second image.
 \vspace{0.3cm}
 
 \index{Example!coarray reference}
@@ -892,6 +890,7 @@ if(xmpc_this_image() == 1){
 \end{XCexample}
 \end{center}
 \end{minipage}
+~
 \begin{minipage}{0.45\hsize}
 \begin{center}
 \begin{XFexampleR}
@@ -1203,19 +1202,19 @@ end if
 \begin{itemize}
   \item The argument {\it status} is defined with one of the follow symbolic constants.
   \begin{itemize}
-    \item XMP\_STAT\_SUCCESS
-    \item XMP\_STAT\_STOPPED\_IMAGE
+    \item {\tt XMP\_STAT\_SUCCESS}
+    \item {\tt XMP\_STAT\_STOPPED\_IMAGE}
   \end{itemize}
-  If an execution of the function is successful, the {\it status} is defined using XMP\_STAT\_SUCCESS.
-  The condition where the {\it status} is defined using XMP\_STAT\_STOPPED\_IMAGE is the same as 
-  that where the {\it status} is defined using STAT\_STOPPED\_IMAGE in Fortran 2008.
+  If an execution of the function is successful, the {\it status} is defined using {\tt XMP\_STAT\_SUCCESS}.
+  The condition where the {\it status} is defined using {\tt XMP\_STAT\_STOPPED\_IMAGE} is the same as 
+  that where the {\it status} is defined using {\tt STAT\_STOPPED\_IMAGE} in Fortran 2008.
   These symbolic constants are defined in ``xmp.h.''
   If any other error condition occurs during the execution of these functions,
-  the {\it status} is defined with a value that is different from the value of XMP\_STAT\_SUCCESS and
-  XMP\_STAT\_STOPPED\_IMAGE.
+  the {\it status} is defined with a value that is different from the value of {\tt XMP\_STAT\_SUCCESS} and
+  {\tt XMP\_STAT\_STOPPED\_IMAGE}.
   \item In {\tt xmp\_sync\_image}, the variable {\it image} determines a target image index.
   \item In {\tt xmp\_sync\_images}, the variable {\it num} is a number of target images, and 
-        the variable {\it image\_set} is an array where target images set is defined.
+        the variable {\it image\_set} is an array in which the target image set is defined.
 \end{itemize}
 
 %\subsection{{\tt [C] sync\_memory} Directive}
@@ -1403,14 +1402,14 @@ that is a coarray has
 the same bounds on all the images corresponding to the node array
 onto which the corresponding associated global array is mapped.
 The mapping attributes that are allowed for an associated global array are
-processor-dependent.
+processor dependent.
 
 Note that the base language {\Fort} is extended so that a deferred-shape
 array that is neither an allocatable array nor an array pointer is
 declared if it is specified as a 
 {\it local-array-name} in the {\tt local\_alias} directive.
 
-In {\XMPC}, the {\tt address-of} operator applied to global data
+In {\XMPC}, the {\tt address-of} operator is applied to global data
 substitutes for the {\tt local\_alias} directive (see \ref{sec:pointer
 to global data}).
 
@@ -1615,7 +1614,7 @@ be accessed in the same manner as a normal coarray.
 \subsubsection*{Synopsis}
 
 The {\tt \Directive{post}} construct, in combination with the {\tt
-\Directive{wait}} construct, specifies a point-to-point
+\Directive{wait}} construct, specifies the point-to-point
 synchronization.
 
 \subsubsection*{Syntax}
@@ -1683,7 +1682,7 @@ It is assumed that the code of the left is executed by the node {\tt
 p(1)}, while that on  the right is executed by node {\tt p(2)}.
 
 The {\tt post} construct on the left matches the {\tt wait} construct on
-the right because their {\it nodes-ref}'s represent each other and both
+the right because their {\it nodes-ref}s represent each other and both
 {\it tags}'s have the same value of one.
 %
 These constructs ensure that no statement in {\tt S2} is executed by
@@ -1726,12 +1725,12 @@ synchronization.
 
 \subsubsection*{Description}
 
-This construct prohibits statements that follow this construct from
+This construct prohibits statements that follow from
 being executed until the execution of all statements preceding a
 matching \Directive{post} construct is completed on the node specified
 by {\it node-ref}.
 
-A {\tt \Directive{wait}} construct issued with the arguments of {\it nodes-ref} and {\it tag} 
+A {\tt \Directive{wait}} construct that is issued with the arguments of {\it nodes-ref} and {\it tag} 
 on a node (called a {\it \Term{waiting node}})
 dynamically matches a {\tt \Directive{post}} construct issued with the
 arguments of the waiting node and the same value as {\it tag} by the
