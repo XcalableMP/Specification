@@ -1,0 +1,216 @@
+\chapter{DRAFT: Coarray Features}
+\label{chap:DRAFT: Coarray Features}
+
+%-------------------------------------------------------%
+% ENVIRONMENT 
+%-------------------------------------------------------%
+\newcommand{\onlyF}{{\tt [F]}} 
+\newcommand{\onlyC}{{\tt [C]}} 
+
+\newenvironment{Constraints}{\subsubsection*{Constraints}
+ \begin{enumerate}}{\end{enumerate}}
+
+\newenvironment{Constraints F}{\subsubsection*{Constraints {\onlyF}}
+ \begin{enumerate}}{\end{enumerate}}
+
+\newenvironment{Constraints C}{\subsubsection*{Constraints {\onlyC}}
+ \begin{enumerate}}{\end{enumerate}}
+
+\newenvironment{Restriction}{\subsubsection*{Restriction}
+ \begin{itemize}}{\end{itemize}}
+
+\newcommand{\NEW}[1]{\mytextcolor{red}{#1}}
+
+%-------------------------------------------------------%
+% PREFACE
+%-------------------------------------------------------%
+
+\framebox[0.9\textwidth][c]{
+\rule[-5mm]{0mm}{10mm}
+This chapter is a proposal document to be added before 
+Section~\ref{chap:Support for the Local-view Programming}.
+}
+
+\bigskip
+
+
+%-- COARRAY AS THE LOCAL-VIEW
+For the local-view programming, {\XMP} supports the coarray features
+as a part of the language specifications.
+%-- SPECIFICATION RANGE OF THE XMP COARRAY
+{\XMPF} contains all coarray features defined in the standard Fortran~2008
+(ISO/IEC 1539-1:2010) with few incompatibility described in 
+Section~\ref{sec:Compatibility with the Fortran Standard}
+and includes some important intrinsic procedures defined in 
+the standard Fortran~2015.
+Also {\XMPC} contains the coarray features which was designed based on
+the ones of {\XMPF}.
+
+
+%-------------------------------------------------------%
+\section{Introduction for Coarrays}
+\label{sec:Introduction for Coarrays}
+%-------------------------------------------------------%
+
+\subsubsection*{Image}
+The local-view programming model is a Single Program Multiple Data 
+(SPMD) model as well as the global-view programming model.
+Each replication of the program is called an {\bf image}.
+The images are mapped one-by-one to the execution nodes.
+The correspondence between images and nodes is defined in 
+Chapter~\ref{chap:Interoperability of Global- and Local-views}.
+
+\subsubsection*{Image index}
+Each image has a unique number that is called {\bf image index}. 
+Image indices are consecutive and start from one.
+The image index and the number of images can be inquired with the intrinsic
+functions described in Section~\ref{sec:Intrinsic Procedures}.
+
+\subsubsection*{Coarray and coshape}
+A \NEW{\bf coarray} is a named or unnamed variable that is allowed to be referred 
+by the other images. 
+A coarray is declared with the codimension attribute
+that specifies the shape of a virtual multi-dimensional array of images.
+
+{\onlyC}
+
+The extent of each dimension of the shape is called {\bf coextent} and
+the number of the dimensions of the shape is called {\bf corank}.
+
+\subsubsection*{Static and allocatable coarrays}
+A coarray is either a \NEW{\bf static coarray} or an \NEW{\bf allocatable coarray}.
+
+{\onlyF} 
+A static coarray is a coarray that does not have the ALLOCATABLE attribute
+in the context.\footnote
+{It is called as nonallocatable coarray in the Fortran standard.}
+It has the SAVE attribute explicitly or implicitly if it is not a dummy argument.
+
+Its corank and codimensions are declared in the type declaration statement.
+%
+An allocatable coarray shall be a coarray that has the ALLOCATABLE attribute.
+Its corank is declared in the type declaration statement.
+Its codimensions are determined by the execution of the ALLOCATE statement
+that allocates the coarray.
+
+{\onlyC} 
+A static coarray is a coarray that is of a basic type, a{\tt struct} type, 
+or an array type of a constant length.
+Its corank and codimensions are declared in the declaration or in the 
+parameter-declaration.
+%
+An allocatable coarray is a coarray and an unnamed variable of any type.
+The pointer to the allocatable coarray is called a {\bf coarray pointer}.
+The corank of an allocatable coarray is declared in the declaration or 
+parameter-declaration for the corresponding coarray pointer.
+The codimensions of an allocatable coarray is determined by the execution of
+the intrinsic function {\tt xmp\_coarray\_malloc} that 
+allocates the allocatable coarray.
+
+\subsubsection*{Cosubscript}
+A coarray variable addressed on the different image can be 
+referenced and defined with the {\bf cosubscripts} that identifies the image index.
+See Section~\ref{sec:Allocation and Deallocation of Coarrays} for the detail.
+
+\subsubsection*{Coarray container}
+{\onlyF}
+A derived type that has a scalar coarray component is called 
+a \NEW{\bf coarray container type}.
+A derived type that has a scalar component of a coarray container type 
+is also called a coarray container type.
+A scalar object of a coarray container type is called 
+a \NEW{\bf coarray container}.
+
+{\onlyC}
+A {\tt struct} type that has a coarray component is called 
+a \NEW{\bf coarray container type}.
+A {\tt struct} type that has a component of a coarray container type 
+is also called a coarray container type.
+A object of a coarray container type is called 
+a \NEW{\bf coarray container}.
+
+\subsubsection*{Example}
+TBD\\
+Use example in email for coarray container.
+
+
+%-------------------------------------------------------%
+\section{Declaration of Coarrays}
+\label{sec:Declaration of Coarrays}
+%-------------------------------------------------------%
+\input{ch-co-decl.tex}
+
+%-------------------------------------------------------%
+\section{Reference and Definition of Coarrays}
+\label{sec:Reference and Definition of Coarrays}
+%-------------------------------------------------------%
+
+\begin{Constraints C}
+\item A coarray variable shall not be poiner-assigned.
+\end{Constraints C}
+
+%-------------------------------------------------------%
+\section{Allocation and Deallocation of Coarrays}
+\label{sec:Allocation and Deallocation of Coarrays}
+%-------------------------------------------------------%
+
+%-------------------------------------------------------%
+\section{Coarray Components}
+\label{sec:Coarray Components}
+%-------------------------------------------------------%
+
+\begin{Constraints F}
+\item A coarray container shall be a dummy argument or have 
+the ALLOCATABLE or SAVE attribute.\footnote
+{In other words, a local coarray container to the procedure should be a SAVE'd or 
+allocatable structure unless it is a dummy argument.}
+
+\item A coarray container shall be a nonpointer nonallocatable scalar, 
+shall not be a coarray, and shall not be a function result. 
+\end{Constraints F}
+
+\begin{Constraints C}
+\item A coarray container shall be a dummy argument or have the {\tt static} 
+or {\tt extern} storage class.\footnote
+{Conversely, a coarray container may not have {\tt auto} storage class.}
+
+\item A coarray container shall not be a coarray.
+
+\end{Constraints C}
+
+
+%-------------------------------------------------------%
+\section{Argument Association}
+\label{sec:Argument Association}
+%-------------------------------------------------------%
+
+\begin{Constraints F}
+\item An entity with the INTENT(OUT) attribute shall not be
+an allocatable coarray or a coarray container.
+%-- ORIGINALLY IN C541:
+% or have a subobject that is an allocatable coarray.
+%--
+
+\item An entity with the VALUE attribute shall not be a 
+coarray container. %-- C557
+
+\item A procedure that has a coarray dummy argument 
+shall have an explicit interface if it is referenced. %-- 12.4.2.2-1
+
+\end{Constraints F}
+
+%-------------------------------------------------------%
+\section{Synchronization and Error Handling}
+\label{sec:Synchronization and Error Handling}
+%-------------------------------------------------------%
+
+%-------------------------------------------------------%
+\section{Intrinsic Procedures}
+\label{sec:Intrinsic Procedures}
+%-------------------------------------------------------%
+
+%-------------------------------------------------------%
+\section{Compatibility with the Fortran Standard}
+\label{sec:Compatibility with the Fortran Standard}
+%-------------------------------------------------------%
+
