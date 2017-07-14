@@ -1,3 +1,8 @@
+%-------------------------------------------------------%
+\section{Declaration of Coarrays}
+\label{sec:Declaration of Coarrays}
+%-------------------------------------------------------%
+
 %============================================
 \subsection{Declaration statement of coarray}
 \label{sec:Declaration statement of coarray}
@@ -22,7 +27,7 @@ that may point an unnamed coarray.
 
 \subsubsection*{Syntax \onlyF}
 {\it coarray-spec} is adopted in the type declaration statement, as shown below.
-As a kind of {\it attr-spec}, the CODIMENSION attribure specifier is added.
+As a kind of {\it attr-spec}, the CODIMENSION attribute specifier is added.
 Besides, {\it entry-decl} is extended with {\it coarray-spec}.
 Underlined parts are addition to the Fortran 90 standard.
 
@@ -61,8 +66,8 @@ Underlined parts are addition to the Fortran 90 standard.
 \end{center}
 %
 {\it explicit-coshape-spec} and {\it deferred-coshape-spec} is defined in 
-Section~\ref{sec:Explicit-coshape coarray} and
-Section~\ref{sec:Deferred-coshape coarray}, respectively.
+Section~\ref{sec:Static coarray} and
+Section~\ref{sec:Allocatable coarray}, respectively.
 
 
 \subsubsection*{Syntax \onlyC}
@@ -84,9 +89,12 @@ as an underlined part shown below:
     {\openb} {\it abstract-declarator} {\closeb}\\
  \\
   {\it declarator} & {\bf is} &
-    {\openb}
-      {\tt *} {\openb} {\it type-qualifier} {\closeb}\/{\tt ...}
-    {\closeb}\/{\tt ...} {\it direct-declarator} \\
+    {\openb} {\it pointer} {\closeb} {\it direct-declarator} \\
+  \\
+  {\it pointer} & {\bf is} &
+    {\tt *} {\openb} {\it type-qualifier} {\closeb}\/{\tt ...}\\
+  & {\bf or} &
+    {\tt *} {\openb} {\it type-qualifier} {\closeb}\/{\tt ...} {\it pointer}\\
  \end{tabular}
 \end{center}
 %
@@ -129,10 +137,6 @@ as an underlined part shown below:
  \end{tabular}
 \end{center}
 %
-{\it explicit-coshape-spec} and {\it deferred-coshape-spec} is defined in 
-Section~\ref{sec:Explicit-coshape coarray} and
-Section~\ref{sec:Deferred-coshape coarray}, respectively.
-
 
 \begin{Constraints F}
 \item A coarray shall be a dummy argument or have the ALLOCATABLE or SAVE 
@@ -164,12 +168,26 @@ storage class.\footnote
 storage class.}
 
 \item A coarray shall not be a function. 
-A coarray variable shall not be a pointer to a function.
+A coarray pointer shall not be a pointer to a function.
 
-\item A coarray shall not be an {\tt enum} or {\tt union} type or
-be specified with the {\tt const} qualifier.\footnote
-{A coarray is treated as if it is specified with the {\tt volatile} qualifier 
-even if it is not specified, isn't it?}
+\item A coarray shall not be of an {\tt enum} or {\tt union} type.
+
+\item A {\it declaration-specifiers} of a {\it declaration} or 
+{\it parameter-declaration} shall not contain the {\tt volatile} type qualifier.\footnote
+{Because it is difficult to allow the access to the coarray from outside of the 
+language system.
+The {\tt const} qualifier here asserts the coarray data is not be modified 
+like INTENT(IN) of Fortran.}
+
+\item For a coarray pointer, the most right {\it pointer} of a {\it declarator} 
+shall not contain the {\tt volatile} or {\tt restrict} type qualifier.\footnote
+{Because it is difficult to permit .......}
+
+\item For an array coarray, the {\it type-qualifier}s and the {\tt static} keyword
+apearing inside the outermost (the most left) brackets shall meeet the following conditions.
+ \begin{itemize}
+ \item The {\tt const} qualifier
+ \end{itemize}
 
 \end{Constraints C}
 
@@ -211,6 +229,72 @@ a declaration with the specification of the codimension attribute
 defines the coshape of the coarray corresponding to the specified variable.
 
 
+A declaration of a coarray has either an {\it explicit-coshape-spec} 
+or a {\it deferred-coshape-spec} as the {\it coarray-spec}.
+A static coarray (Section~\ref{sec:Static coarray}) is declarad 
+with an {\it explicit-coshape-spec} and
+an allocatable coaray (Section~\ref{sec:Allocatable coarray}) is declarad 
+with a {\it deferred-coshape-spec}.
+
+
+
+{\onlyF} 
+An explicit coshape specifies the corank and the cobounds, 
+except the upper cobound of the final (outermost) dimension.
+For each dimension, 
+\(($coextent$) = ($upper cobound$) - ($lower cobound$) + 1.\)
+A deffered coshape specifies the corank and does not specify cobounds.
+
+{\onlyC}
+An explicit coshape specifies the corank and the coextents,
+except the extent of the final (outermost) dimension.
+The lower cobound is always zero and the upper cobound is the same as 
+the coextent for each dimension.
+A deffered coshape specifies the corank and does not specify coextents.
+
+
+The corank and coextents of an explicit coshape is explicitly declared
+for the scope.
+An explicit coshape of a coarray has a constant corank and 
+constant coextents in the scope.
+A deferred coshape of a coarray has a constant corank and
+unknown coextents 
+
+%A coarray is either an {\bf explicit-coshape coarray} or a 
+%{\bf deferred-coshape coarray}.
+
+A coshape of a coarray is either explicit or deferred in the scope.
+%
+The corank and coextents of the explicit coshape
+are specified in the declaration of the coarray.
+They are determined at compile 
+
+The coextents of the explicit coshape are specified in the declaration of
+the coarray and determined at compile time or at the begining of the scope.
+%
+The coextents of the deferred coshape are determined when the coarray 
+is allocated. 
+
+
+explicitly declared 
+and is constant in the scope.
+The coextents of the deferred coshape are 
+It is 
+
+
+The corank of the deferred coshape is 
+
+An explicit-coshape coarray has a coshape whose corank and coextents 
+
+The coextents of a coarray are explicitly declarad 
+
+ in the scope, and
+a differed coshape has 
+
+
+
+
+
 \paragraph*{NOTE}
 In {\XMPC}, after the following declaration:
 \begin{verbatim}
@@ -238,16 +322,18 @@ shall not exceed fifteen.
 \end{Restriction}
 
 \subsubsection*{Example}
-See Examples in Sections~\ref{sec:Explicit-coshape coarray} and 
-\ref{sec:Deferred-coshape coarray}.
+See Examples in Sections~\ref{sec:Static coarray} and 
+\ref{sec:Allocatable coarray}.
 
 
 %============================================
-\subsection{Explicit-coshape coarray}
-\label{sec:Explicit-coshape coarray}
+\subsection{Static coarray}
+\label{sec:Static coarray}
 %============================================
 
 \subsubsection*{Synopsis}
+
+A static coarray is a coarray that has a static data and coshape during execution of the program.
 
 An explicit-coshape coarray is a coarray that has its corank and cobounds,
 which are declared with a {\it coarray-spec} that is an {\it explicit-coshape-spec}
@@ -292,7 +378,7 @@ only in a subprogram, BLOCK construct, or interface body.
 
 \begin{Constraints C}
 \item
-If a {\it coarray-spec} appering in an {\it init-declarator} or 
+If a {\it coarray-spec} appearing in an {\it init-declarator} or 
 a {\it parameter-declaration} is an {\it explicit-coshape-spec}, 
 the {\it declarator} followed by the {\it coarray-spec} shall be
 in the following format:\footnote
@@ -331,14 +417,14 @@ and shall not be less than 0.
 
 
 %============================================
-\subsection{Deferred-coshape coarray}
-\label{sec:Deferred-coshape coarray}
+\subsection{Allocatable coarray}
+\label{sec:Allocatable coarray}
 %============================================
 
 \subsubsection*{Synopsis}
 
 A deferred-coshape coarray is a coarray that has its corank 
-declarad by a {\it deferred-coshape-spec}.
+declared by a {\it deferred-coshape-spec}.
 Its cobounds are determined by allocation or argument association.
 
 \subsubsection*{Syntax}
@@ -364,7 +450,7 @@ that is a {\it deferred-coshape-spec}.
 
 \begin{Constraints C}
 \item 
-If a {\it coarray-spec} appering in an {\it init-declarator} or 
+If a {\it coarray-spec} appearing in an {\it init-declarator} or 
 a {\it parameter-declaration} is an {\it deferred-coshape-spec}, 
 the {\it declarator} followed by the {\it coarray-spec} shall be
 a pointer.
@@ -389,7 +475,7 @@ when the coarray is allocated.
 
 C560 The VOLATILE attribute shall not be specified for a coarray that is accessed by use (11.2.2) or host (16.5.1.4) association.  %-- 5.3.19 VOLATILE attribute
 
-C561 Within a BLOCK construct (8.1.4), the VOLATILE attribute shall not be specied for a coarray that is not a construct entity (16.4) of that construct.  %-- 5.3.19 VOLATILE attribute
+C561 Within a BLOCK construct (8.1.4), the VOLATILE attribute shall not be specified for a coarray that is not a construct entity (16.4) of that construct.  %-- 5.3.19 VOLATILE attribute
 
 If the target of a pointer is a coarray, the pointer shall have the VOLATILE attribute if and only if the coarray has the VOLATILE attribute.  %-- 7.2.2.3-8
 

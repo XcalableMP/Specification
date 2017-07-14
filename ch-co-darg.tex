@@ -1,0 +1,100 @@
+%-------------------------------------------------------%
+\section{Argument Association}
+\label{sec:Argument Association}
+%-------------------------------------------------------%
+
+\begin{Constraints F}
+\item An entity with the INTENT(OUT) attribute shall not be
+an allocatable coarray or a coarray container.
+%-- ORIGINALLY IN C541:
+% or have a subobject that is an allocatable coarray.
+%--
+
+\item An entity with the VALUE attribute shall not be a 
+coarray container. %-- C557
+
+\item A procedure that has a coarray dummy argument 
+shall have an explicit interface if it is referenced. %-- 12.4.2.2-1
+
+\end{Constraints F}
+
+
+\subsubsection*{Example}
+
+{\onlyF}
+{\tt a1} and {\tt a2} are explicit-shape coarrays and
+{\tt a3} and {\tt a4} are assumed-shape coarrays.
+These coarrays must have explicit coshapes.
+Because subroutine {\tt foo} has coarray dummy arguments,
+the explicit interface must be visible to subroutine {\tt caller}.
+
+{\onlyC}
+{\tt a1} and {\tt a2} are specified size of coarrays and
+{\tt a3} and {\tt a5} are unspecified size of coarrays.
+These coarrays must have explicit coshapes.
+Because function {\tt foo} has coarray dummy arguments,
+the prototype definition must be visible to function {\tt caller}.
+
+\begin{center}
+ \begin{minipage}{0.48\hsize}
+  \begin{XFexample}
+module moo
+ integer,parameter :: m=5
+end module moo
+
+!-- CALLER --
+subroutine caller
+ interface
+  subroutine foo(n, a1, a2, a3, a4)
+   use moo
+   integer n
+   real a1(10,5)[*], a2(n,m)[*]
+   real a3(10,*)[*], a4(0:n-1,0:*)[*]
+  end subroutine foo
+ end interface
+ real,save :: a(10,5)[*]
+ call foo(10, a, a, a, a)
+end subroutine caller
+
+!-- SUBROUTINE --
+subroutine foo(n, a1, a2, a3, a4)
+ use moo
+ integer n
+ real a1(10,5)[*], a2(n,m)[*]
+ real a3(10,*)[*], a4(0:n-1,0:*)[*]
+ ...
+end subroutine caller
+  \end{XFexample}
+ \end{minipage}
+%
+ \begin{minipage}{0.48\hsize}
+  \begin{XCexampleR}
+
+int const m = 5;
+
+/*-- PROTOTYPE --*/
+void foo(int n,
+         float a1[5][10]:[*],
+         float a2[m][n]:[*],
+         float a3[][10]:[*],
+         float a5[][*]:[*]);
+
+/*-- CALLER --*/
+void caller() {
+  float static a[5][10];
+
+  foo(10, a, a, a, a);
+}
+
+/*-- FUNCTION --*/
+void foo(int n,
+         float a1[5][10]:[*],
+         float a2[m][n]:[*],
+         float a3[][10]:[*],
+         float a5[][n]:[*]) {
+  ...
+
+}
+  \end{XCexampleR}
+ \end{minipage}
+\end{center}
