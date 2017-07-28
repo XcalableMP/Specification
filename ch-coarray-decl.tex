@@ -2,6 +2,33 @@
 \section{Declaration of Coarrays}
 \label{sec:Declaration of Coarrays}
 %-------------------------------------------------------%
+%**************************************************
+\subsubsection*{Static and allocatable coarrays}
+A coarray is either a \NEW{\bf static coarray} or an \NEW{\bf allocatable coarray}.
+%
+A static coarray is declarad with an explicit specification of the coshape.
+If it is a dummy argument, the coshape is redefined by the specification during 
+the execution in the scope.
+%
+An allocatable coarray is declared with an deferred specification of the coshape.
+which are determined when the data object is allocated.
+If it is a dummy argument, the coshape is inherited from the actural argument.
+
+{\onlyF} 
+A static coarray does not have the ALLOCATABLE attribute.
+A procedure-local static coarray must have the SAVE attribute 
+unless it is a dummy argument.
+An allocatable coarray has the ALLOCATABLE attribute.
+
+{\onlyC} 
+A static coarray is of a basic type, a {\tt struct} type, or an array.
+An allocatable coarray is not a named variable and the target of a coarray pointer.
+Intrinsic function {\tt xmp\_coarray\_malloc} allocates an allocatable coarray,
+determines the coextents, and returns the address to be assigned to the coarray pointer.
+
+%**************************************************
+
+
 
 %============================================
 \subsection{Declaration statement of coarray}
@@ -478,4 +505,45 @@ C560 The VOLATILE attribute shall not be specified for a coarray that is accesse
 C561 Within a BLOCK construct (8.1.4), the VOLATILE attribute shall not be specified for a coarray that is not a construct entity (16.4) of that construct.  %-- 5.3.19 VOLATILE attribute
 
 If the target of a pointer is a coarray, the pointer shall have the VOLATILE attribute if and only if the coarray has the VOLATILE attribute.  %-- 7.2.2.3-8
+
+
+%============================================
+\subsection{Coarray Container}
+\label{sec:Coarray Container}
+%============================================
+
+{\onlyF}
+A derived type that has a scalar coarray component is called 
+a \NEW{\bf coarray container type}.
+A derived type that has a scalar component of a coarray container type 
+is also called a coarray container type.
+A scalar object of a coarray container type is called 
+a \NEW{\bf coarray container}.
+
+{\onlyC}
+A {\tt struct} type that has a coarray component is called 
+a \NEW{\bf coarray container type}.
+A {\tt struct} type that has a component of a coarray container type 
+is also called a coarray container type.
+A object of a coarray container type is called 
+a \NEW{\bf coarray container}.
+
+\begin{Constraints F}
+\item A coarray container shall be a dummy argument or have 
+the ALLOCATABLE or SAVE attribute.\footnote
+{In other words, a local coarray container to the procedure should be a SAVE'd or 
+allocatable structure unless it is a dummy argument.}
+
+\item A coarray container shall be a nonpointer nonallocatable scalar, 
+shall not be a coarray, and shall not be a function result. 
+\end{Constraints F}
+
+\begin{Constraints C}
+\item A coarray container shall be a dummy argument or have the {\tt static} 
+or {\tt extern} storage class.\footnote
+{Conversely, a coarray container may not have {\tt auto} storage class.}
+
+\item A coarray container shall not be a coarray.
+
+\end{Constraints C}
 

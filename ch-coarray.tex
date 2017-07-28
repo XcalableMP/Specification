@@ -53,132 +53,135 @@ the ones of {\XMPF}.
 \subsubsection*{Image and image index}
 The local-view programming model is a Single Program Multiple Data (SPMD) model.
 Each replication of the program is called an {\bf image}.
+Every image has a different {\bf image index}, which is an integer number 
+between one and the number of images.
+The number of images is not determined until the program execution.
+
+In {\XMP}, a virtual array of the whole images with any number of dimensions 
+is called an {\bf image array}. 
+Each array element of an image array is corresponding to an image index
+in the array element order of Fortran.
+The extent of the final (outermost) dimension is not determined until
+the program execution because it depends on the number of images.
+
 The images are mapped one-by-one to the execution nodes.
 The correspondence between images and nodes is defined in 
 Chapter~\ref{chap:Interoperability of Global- and Local-views}.
+Inquire functions about the image index and the number of images 
+are described in Section~\ref{sec:Intrinsic Procedures}.
 
-Each image has a unique number that is called {\bf image index}. 
-Image indices are consecutive and start from one.
-The number of images is fixed at the begining of the program execution.
-The image index and the number of images can be inquired with the intrinsic
-functions described in Section~\ref{sec:Intrinsic Procedures}.
 
-\subsubsection*{Coarrays}
-A \NEW{\bf coarray} is a named or unnamed variable that is allowed to be referred 
-by the other images. 
-A coarray is either a {\bf scalar coarray} or an {\bf array coarray}.
+\subsubsection*{Coarray}
+A {\bf coarray} is an object that has an image array.
+The coarray declared as a coarray with {\it coarray-spec} is
+called a {\bf whole coarray}.
+A subobject of a whole coarray is also regarded as a coarray under
+some restrictions and has the same image array as the whole coarray.
+
+A coarray has a {\bf corank}, {\bf cobounds} and {\bf coextents}.
+A corank of a coarray is the number of dimensions of the image array.
+Lower and upper cobounds and coextents of a coarray are
+the upper and lower bounds and extents of the image array, respectively,
+for each dimension.
 
 {\onlyF}
 A coarray has either an intrinsic type or a derived type.
+A coarray is allowed to be a scalar or an array,
+and allowed to be allocatable or non-allocatable.
+A non-allocatable coarray must have the SAVE attribute explicitly or
+implicitly; any non-allocatable and non-saved local coarray to a subprogram
+is not allowed.
+% example
+For example, the type declaration statement shown below declares a 
+two-dimensional array coarray of real type. 
+The {\it coarray-spec} is the notation ``{\tt [4,0:*]}''.
+The corank is 2, the lower and upper cobounds of the first dimension 
+are 1 (default) and 4, and the lower cobound of the second dimension is 0.
 
 {\onlyC}
-A scalar coarray shall be a coarray of a basic type or a {\tt struct} type.
-An array coarray shall be a coarray of an array type.
-A {\bf coarray pointer} shall be a pointer to a coarray.\footnote
-{A coarray pointer is not a coarray. 
-The target of a coarray pointer is an unnamed coarray.}
+A coarray is allowed to be a basic type, a structure type, or an array type.
+In the case of an array type, the coarray is the object that the variable 
+ultimately points and the name of the variable is regarded as the 
+name of the coarray. 
+All names of whole coarrays must have the {\tt static} or {\tt extern}
+storage class specifier; any {\tt auto} coarray is not allowed.
+% example
+For example, the declaration shown below declares a two-dimensional array
+coarray of float type. 
+The {\it coarray-spec} is the notation ``{\tt [*][4]}''.
+The corank is 2 and the coextents of the first dimension is 4.
+Because the lower cobound is always 0, the lower and upper cobounds of 
+the first dimension is 0 and 3, respectively.
 
-\subsubsection*{Attributes of coarray}
-A coarray and a coarray pointer are declared with a coarray specifier ({\it coarray-spec}) 
-that describes a virtual array of images
-corresponding to the coarray and to the target coarray of the coarray pointer,
-respectively.
-The shape of the virtual array of images is called a {\bf coshape}.
-
-A {\bf corank} is the number of the dimensions of a coshape.
-The corank is defined as 0 for a non-coarray variable.
+\begin{center}
+ \begin{minipage}{0.48\hsize}
+  \begin{XFexample}
+  real, save :: z(10,20)[4,0:*]
+  \end{XFexample}
+ \end{minipage}
 %
-A {\bf coextent} is the extent of a dimension of a coshape.
-Each coextent must be a positive number.
-The coextent of the final dimension is determined at enter of the 
-program execution.
-%
-Lower and upper {\bf cobounds} are the lower and upper bounds of a
-dimension of the virtual array of images, respectively. 
+ \begin{minipage}{0.48\hsize}
+  \begin{XCexampleR}
+  static float z[20][10]:[*][4];
+  \end{XCexampleR}
+ \end{minipage}
+\end{center}
 
 
-\subsubsection*{Static and allocatable coarrays}
-A coarray is either a \NEW{\bf static coarray} or an \NEW{\bf allocatable coarray}.
-%
-A static coarray is declarad with an explicit specification of the coshape.
-If it is a dummy argument, the coshape is redefined by the specification during 
-the execution in the scope.
-%
-An allocatable coarray is declared with an deferred specification of the coshape.
-which are determined when the data object is allocated.
-If it is a dummy argument, the coshape is inherited from the actural argument.
+\subsubsection*{[C] Coarray Pointer}
 
-{\onlyF} 
-A static coarray does not have the ALLOCATABLE attribute.
-A procedure-local static coarray must have the SAVE attribute 
-unless it is a dummy argument.
-An allocatable coarray has the ALLOCATABLE attribute.
+A {\bf coarray pointer} is a pointer to a non-named coarray, which is
+called a {\bf target coarray}.
+A target coarray is allocated and freed with library functions
+{\tt xmp\_comalloc} and {\tt xmp\_cofree}, respectively.
+A coarray pointer retains the address of an allocated target coarray.
+To avoid aliasing between coarrays, a coarray pointer is not allowed to 
+point to any named coarrays or its subobjects,
+nor to point the same target coarray or its subobjects that is pointed from
+the other coarray pointer.
+% example
+For example, the first line of the code fragment shown below 
+declares coarray pointer {\bf y} pointing to an array coarray 
+of double type. 
+The second line allocates a target coarray of size 
+{\tt sizeof(double)*10*20} with the first-dimension coextent 4.
+The third line frees the coarray and the value of {\bf y} becomes
+invalid.
 
-{\onlyC} 
-A static coarray is of a basic type, a {\tt struct} type, or an array.
-An allocatable coarray is not a named variable and the target of a coarray pointer.
-Intrinsic function {\tt xmp\_coarray\_malloc} allocates an allocatable coarray,
-determines the coextents, and returns the address to be assigned to the coarray pointer.
+\begin{center}
+ \begin{minipage}{0.70\hsize}
+  \begin{XCexampleR}
+  double (*y)[10]:[][];
+  y = xmp_comalloc(sizeof(double)*10*20, 4);
+  xmp_cofree(y);
+  \end{XCexampleR}
+ \end{minipage}
+\end{center}
 
 
-**************************************************
+\subsubsection*{Coarray Container}
+
+A non-coarray structure object can have ultimate (leaf) components as 
+allocatable coarrays (in {\XMPF}) or as coarray pointers (in {\XMPC}).
+The strucure object is called a {\bf coarray container} in {\XMP}.
+
+{\onlyF} A coarray container must be a scalar, may not be a pointer
+or an allocatable, may not be a coarray, and may not be a function result.
+
+{\onlyC} A coarray container may not be a coarray and may not be a function
+result.
 
 
 \subsubsection*{Cosubscript}
-A coarray variable addressed on the different image can be 
-referenced and defined with the {\bf cosubscripts} that identifies the image index.
+A coarray on the different image can be referenced and defined
+by referring the coarray with {\bf cosubscripts}, which
+is an array element of an image array.
 See Section~\ref{sec:Allocation and Deallocation of Coarrays} for the detail.
 
-\subsubsection*{Coarray container}
-{\onlyF}
-A derived type that has a scalar coarray component is called 
-a \NEW{\bf coarray container type}.
-A derived type that has a scalar component of a coarray container type 
-is also called a coarray container type.
-A scalar object of a coarray container type is called 
-a \NEW{\bf coarray container}.
 
-{\onlyC}
-A {\tt struct} type that has a coarray component is called 
-a \NEW{\bf coarray container type}.
-A {\tt struct} type that has a component of a coarray container type 
-is also called a coarray container type.
-A object of a coarray container type is called 
-a \NEW{\bf coarray container}.
+\input{ch-coarray-decl}
 
-\subsubsection*{Example}
-TBD\\
-Use example in email for coarray container.
-
-
-\input{ch-co-decl}
-
-%-------------------------------------------------------%
-\section{Coarray Components}
-\label{sec:Coarray Components}
-%-------------------------------------------------------%
-
-\begin{Constraints F}
-\item A coarray container shall be a dummy argument or have 
-the ALLOCATABLE or SAVE attribute.\footnote
-{In other words, a local coarray container to the procedure should be a SAVE'd or 
-allocatable structure unless it is a dummy argument.}
-
-\item A coarray container shall be a nonpointer nonallocatable scalar, 
-shall not be a coarray, and shall not be a function result. 
-\end{Constraints F}
-
-\begin{Constraints C}
-\item A coarray container shall be a dummy argument or have the {\tt static} 
-or {\tt extern} storage class.\footnote
-{Conversely, a coarray container may not have {\tt auto} storage class.}
-
-\item A coarray container shall not be a coarray.
-
-\end{Constraints C}
-
-
-\input{ch-co-darg}
+\input{ch-coarray-darg}
 
 %-------------------------------------------------------%
 \section{Allocation and Deallocation of Coarrays}
