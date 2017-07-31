@@ -2,37 +2,12 @@
 \section{Declaration of Coarrays}
 \label{sec:Declaration of Coarrays}
 %-------------------------------------------------------%
-%**************************************************
-\subsubsection*{Static and allocatable coarrays}
-A coarray is either a \NEW{\bf static coarray} or an \NEW{\bf allocatable coarray}.
-%
-A static coarray is declarad with an explicit specification of the coshape.
-If it is a dummy argument, the coshape is redefined by the specification during 
-the execution in the scope.
-%
-An allocatable coarray is declared with an deferred specification of the coshape.
-which are determined when the data object is allocated.
-If it is a dummy argument, the coshape is inherited from the actural argument.
-
-{\onlyF} 
-A static coarray does not have the ALLOCATABLE attribute.
-A procedure-local static coarray must have the SAVE attribute 
-unless it is a dummy argument.
-An allocatable coarray has the ALLOCATABLE attribute.
-
-{\onlyC} 
-A static coarray is of a basic type, a {\tt struct} type, or an array.
-An allocatable coarray is not a named variable and the target of a coarray pointer.
-Intrinsic function {\tt xmp\_coarray\_malloc} allocates an allocatable coarray,
-determines the coextents, and returns the address to be assigned to the coarray pointer.
-
-%**************************************************
 
 
 
 %============================================
-\subsection{Declaration statement of coarray}
-\label{sec:Declaration statement of coarray}
+\subsection{Declaration Statement of Coarray}
+\label{sec:Declaration Statement of Coarray}
 %============================================
 
 \subsubsection*{Synopsis}
@@ -66,7 +41,6 @@ Underlined parts are addition to the Fortran 90 standard.
   {\it entity-decl-list}\\
   \\
   {\it attr-spec} & {\bf is} & {\tt ...}\\
-  & {\bf or} & {\tt ...}\\
   & \multicolumn{2}{l}{\tt ...}\\
   & \underline{\bf or} & 
     \underline{{\tt CODIMENSION} {\tt [} {\it coarray-spec} {\tt ]}}\\
@@ -93,8 +67,8 @@ Underlined parts are addition to the Fortran 90 standard.
 \end{center}
 %
 {\it explicit-coshape-spec} and {\it deferred-coshape-spec} is defined in 
-Section~\ref{sec:Static coarray} and
-Section~\ref{sec:Allocatable coarray}, respectively.
+Section~\ref{sec:Explicit coshape} and
+Section~\ref{sec:Deferred coshape}, respectively.
 
 
 \subsubsection*{Syntax \onlyC}
@@ -178,13 +152,11 @@ variable unless it is a dummy argument.}
 \item A coarray shall not be a {\it common-block-object}
 or a {\it equivalence-object}.
 
-%-- COMMENT OUT. This is not in F90.
-% \item The VOLATILE attribute shall not be specified for a coarray that is 
-% associated by use or host association. %-- C560
-%
-% \item Within a BLOCK construct, the VOLATILE attribute shall not be specified
-% for a coarray that is not a construct entity of that construct.
-%
+\item The VOLATILE attribute shall not be specified for a coarray that is 
+associated by use or host association. %-- C560
+
+\item Within a BLOCK construct, the VOLATILE attribute shall not be specified
+for a coarray that is not a construct entity of that construct.  %-- C561
 
 \end{Constraints F}
 
@@ -207,164 +179,51 @@ The {\tt const} qualifier here asserts the coarray data is not be modified
 like INTENT(IN) of Fortran.}
 
 \item For a coarray pointer, the most right {\it pointer} of a {\it declarator} 
-shall not contain the {\tt volatile} or {\tt restrict} type qualifier.\footnote
-{Because it is difficult to permit .......}
+shall not contain the {\tt volatile} type qualifier.\footnote
+{It is difficult to allow coarrays to be disturbed from the outside of the language.}
 
-\item For an array coarray, the {\it type-qualifier}s and the {\tt static} keyword
-apearing inside the outermost (the most left) brackets shall meeet the following conditions.
- \begin{itemize}
- \item The {\tt const} qualifier
- \end{itemize}
+\item For an array coarray, the outermost (the most left) brakets shall not contain the {\tt volatile} type qualifier.
 
 \end{Constraints C}
 
 
 \subsubsection*{Description}
 
-The entity that is declared
-by a {\it type-declaration-statement} (in {\XMPF}) or 
-by a {\it declaration} (in {\XMPC})
-with {\it coarray-spec} is a coarray variable.
-
-{\onlyF} A coarray variable is a coarray itself.
+{\onlyF} The entity declared with a {\it coarray-spec} is a coarray, and
+the {\it coarray-spec} specifies the coshape of the coarray.
 A coarray is a scalar or an array data object and is of a basic or derived type.
-The specification of {\it coarray-spec} in {\it entity-decl} 
-overrides the specification of {\it coarray-spec} in {\it attr-spec}
+The specification of the {\it coarray-spec} in the {\it entity-decl} 
+overrides the specification of the {\it coarray-spec} in the {\it attr-spec}
 if both are specified.
 
-{\onlyC} \NEW{A coarray in {\XMPC} is a single or sequence of a data object 
-each of which is of a basic type or of a {\tt struct} type.}
-A coarray variable of a basic type or a {\tt struct} type is a coarray 
-as a single data object.
-A coarray variable of an array or of a pointer is a (nested) pointer 
-to a coarray.
+{\onlyC} The entity of a basic or structure type declared with a {\it coarray-spec} 
+is a coarray, and the {\it coarray-spec} specifies the coshape of the coarray.
+The entity of a pointer type declared with a {\it coarray-spec} is a coarray pointer, 
+and the {\it coarray-spec} specifies the coshape of the coarray that the coarray pointer points.
 
 A coarray can be initialized. 
 Each image can initialize coarrays on the image and cannot initialize
 any coarrays on the other images.
 
-
-{\onlyF} A type declaration statement 
-with the specification of the codimension attribute
-defines the coshape of the specified variable.
-
-{\onlyC} If the specified variable is of a basic type or of a {\tt struct} type,
-a declaration with the specification of the codimension attribute
-defines the coshape of the specified variable.
-If the specified variable is of an array or of a pointer,
-a declaration with the specification of the codimension attribute
-defines the coshape of the coarray corresponding to the specified variable.
-
-
 A declaration of a coarray has either an {\it explicit-coshape-spec} 
 or a {\it deferred-coshape-spec} as the {\it coarray-spec}.
-A static coarray (Section~\ref{sec:Static coarray}) is declarad 
-with an {\it explicit-coshape-spec} and
-an allocatable coaray (Section~\ref{sec:Allocatable coarray}) is declarad 
-with a {\it deferred-coshape-spec}.
+A static coarray and a dummy coarray are declarad with an 
+{\it explicit-coshape-spec} (Section~\ref{sec:Explicit coshape}).
+An allocatable coaray and a coarray pointer is declarad with a 
+{\it deferred-coshape-spec} (Section~\ref{sec:Deferred coshape}).
 
-
-
-{\onlyF} 
-An explicit coshape specifies the corank and the cobounds, 
-except the upper cobound of the final (outermost) dimension.
-For each dimension, 
-\(($coextent$) = ($upper cobound$) - ($lower cobound$) + 1.\)
-A deffered coshape specifies the corank and does not specify cobounds.
-
-{\onlyC}
-An explicit coshape specifies the corank and the coextents,
-except the extent of the final (outermost) dimension.
-The lower cobound is always zero and the upper cobound is the same as 
-the coextent for each dimension.
-A deffered coshape specifies the corank and does not specify coextents.
-
-
-The corank and coextents of an explicit coshape is explicitly declared
-for the scope.
-An explicit coshape of a coarray has a constant corank and 
-constant coextents in the scope.
-A deferred coshape of a coarray has a constant corank and
-unknown coextents 
-
-%A coarray is either an {\bf explicit-coshape coarray} or a 
-%{\bf deferred-coshape coarray}.
-
-A coshape of a coarray is either explicit or deferred in the scope.
-%
-The corank and coextents of the explicit coshape
-are specified in the declaration of the coarray.
-They are determined at compile 
-
-The coextents of the explicit coshape are specified in the declaration of
-the coarray and determined at compile time or at the begining of the scope.
-%
-The coextents of the deferred coshape are determined when the coarray 
-is allocated. 
-
-
-explicitly declared 
-and is constant in the scope.
-The coextents of the deferred coshape are 
-It is 
-
-
-The corank of the deferred coshape is 
-
-An explicit-coshape coarray has a coshape whose corank and coextents 
-
-The coextents of a coarray are explicitly declarad 
-
- in the scope, and
-a differed coshape has 
-
-
-
-
-
-\paragraph*{NOTE}
-In {\XMPC}, after the following declaration:
-\begin{verbatim}
-            static double a1[10]:[*][4];
-\end{verbatim}
-{\tt a1} is not a coarray but a pointer to the coarray on this image.
-The coarray is referred as {\tt a1[:]} using the notation defined in 
-Chapter~\ref{chap:Base Language Extensions in {\XMPC}}.
-In contrast, for a basic type variable {\tt v1} and a {\tt struct} 
-variable {\tt s1}:
-\begin{verbatim}
-            static int b1:[*][4];
-            static struct {int n; double a;} s1:[*][4];
-\end{verbatim}
-variables {\tt b1} and {\tt s1} are the coarrays.
-
-
-
-\begin{Restriction}
-\item 
-The sum of the rank\footnote{the number of dimensions} and 
-corank\footnote{the number of codimensions} of a coarray 
-shall not exceed fifteen.
-
-\end{Restriction}
-
-\subsubsection*{Example}
-See Examples in Sections~\ref{sec:Static coarray} and 
-\ref{sec:Allocatable coarray}.
 
 
 %============================================
-\subsection{Static coarray}
-\label{sec:Static coarray}
+\subsection{Explicit coshape}
+\label{sec:Explicit coshape}
 %============================================
 
 \subsubsection*{Synopsis}
 
-A static coarray is a coarray that has a static data and coshape during execution of the program.
+A static coarray and a dummy coarray (Section~\ref{sec:Introduction for Coarrays})
+are declared with a {\it coarray-spec} that is an {\it explicit-coshape-spec}.
 
-An explicit-coshape coarray is a coarray that has its corank and cobounds,
-which are declared with a {\it coarray-spec} that is an {\it explicit-coshape-spec}
-for the coarray variable.
 
 \subsubsection*{Syntax \onlyF}
 
@@ -401,6 +260,9 @@ A nonallocatable coarray shall have a {\it coarray-spec} that is an
 A lower-cobound or upper-cobound that is not a constant expression shall appear 
 only in a subprogram, BLOCK construct, or interface body.
 
+\item
+The upper cobound shall not be less than the lower cobound.
+
 \end{Constraints F}
 
 \begin{Constraints C}
@@ -428,31 +290,67 @@ only in a block scope or function prototype scope.
 
 \subsubsection*{Description}
 
+An explicit coshape is valid for the scope it is specified.
+Non-constant values in the explicit coshape are 
+evaluated at the entry of the block in {\XMPF} or at the 
+executon of the declarattion in {\XMPC}.
+
 {\onlyF}
-Cobounds of an explicit-coshape coarray are determined on entry to the procedure
-if they are not constant expressions.
+An explicit coshape specifies the corank and the cobounds, 
+except the upper cobound of the final (outermost) dimension.
 If the lower cobound is omitted, the default value is 1.
-The upper cobound shall not be less than the lower cobound.
-A cosubscript of the coarray in that codimension shall not be less than the lower
-cobound or greater than the upper cobound.
+For each dimension, \\
+\(($coextent$) = ($upper cobound$) - ($lower cobound$) + 1.\)
 
 {\onlyC}
-Coextents of an explicit-coshape coarray are determined on entry to the scope 
-if they are not constant expressions.
-A cosubscript of the coarray in that codimension shall be less than the coextent
-and shall not be less than 0.
+An explicit coshape specifies the corank and the coextents,
+except the extent of the final (outermost) dimension.
+The lower cobound is always zero and the upper cobound is the same as 
+the coextent for each dimension.
+
+
+
+\subsubsection*{Example}
+
+{\onlyF} The type declaration statement shown below declares a 
+two-dimensional array coarray of real type. 
+The {\it coarray-spec} is the notation ``{\tt [4,0:*]}''.
+The corank is 2, the lower and upper cobounds of the first dimension 
+are 1 (default) and 4, and the lower cobound of the second dimension is 0.
+
+{\onlyC} The declaration shown below declares a two-dimensional array
+coarray of float type. 
+The {\it coarray-spec} is the notation ``{\tt [*][4]}''.
+The corank is 2 and the coextents of the first dimension is 4.
+Because the lower cobound is always 0, the lower and upper cobounds of 
+the first dimension is 0 and 3, respectively.
+
+\begin{center}
+ \begin{minipage}{0.48\hsize}
+  \begin{XFexample}
+  real, save :: z(10,20)[4,0:*]
+  \end{XFexample}
+ \end{minipage}
+%
+ \begin{minipage}{0.48\hsize}
+  \begin{XCexampleR}
+  static float z[20][10]:[*][4];
+  \end{XCexampleR}
+ \end{minipage}
+\end{center}
 
 
 %============================================
-\subsection{Allocatable coarray}
-\label{sec:Allocatable coarray}
+\subsection{Deferred coshape}
+\label{sec:Deferred coshape}
 %============================================
 
 \subsubsection*{Synopsis}
 
-A deferred-coshape coarray is a coarray that has its corank 
-declared by a {\it deferred-coshape-spec}.
-Its cobounds are determined by allocation or argument association.
+An allocatable coarray and a coarray pointer 
+(Section~\ref{sec:Introduction for Coarrays}) are declared with 
+a {\it coarray-spec} that is an {\it deferred-coshape-spec}.
+
 
 \subsubsection*{Syntax}
 
@@ -487,24 +385,47 @@ a pointer.
 
 \subsubsection*{Description}
 
-{\onlyF}
-The cobounds of an unallocated allocatable coarray are undefined.
-The cobounds of an allocated allocatable coarray are those specified 
-when the coarray is allocated.
+A deferred coshape specifies the corank of the coarray but does not
+specify the cobounds or the coextents, which are
+determined by allocation or argument association.
+If the coarray or the coarray pointer is a dummy argument,
+the coshape is inherited from the corresponding actual argument.
 
-{\onlyC}
 
 
-%============================================
-\subsection{Volatile {\onlyF} Attribute/{\onlyC} Type Qualifier}
-\label{sec:Volatile}
-%============================================
+\subsubsection*{Example}
 
-C560 The VOLATILE attribute shall not be specified for a coarray that is accessed by use (11.2.2) or host (16.5.1.4) association.  %-- 5.3.19 VOLATILE attribute
+{\onlyF} The type declaration statement shown below declares a 
+two-dimensional array coarray of real type. 
+The {\it coarray-spec} of {\tt z} is the notation ``{\tt [:,:]}'',
+and the corank is 2.
+The {\it coarray-spec} of {\tt x} is the notation ``{\tt [:]}'',
+and the corank is 1.
+All upper and lower cobounds are always unknown in deferred coshape.
 
-C561 Within a BLOCK construct (8.1.4), the VOLATILE attribute shall not be specified for a coarray that is not a construct entity (16.4) of that construct.  %-- 5.3.19 VOLATILE attribute
+{\onlyC} The declaration shown below declares a two-dimensional array
+coarray of float type. 
+The {\it coarray-spec} of {\tt z} is the notation ``{\tt [][]}'',
+and the corank is 2.
+The {\it coarray-spec} of {\tt x} is the notation ``{\tt []}'',
+and the corank is 1.
+All coextents are always unknown in deferred coshape.
 
-If the target of a pointer is a coarray, the pointer shall have the VOLATILE attribute if and only if the coarray has the VOLATILE attribute.  %-- 7.2.2.3-8
+\begin{center}
+ \begin{minipage}{0.48\hsize}
+  \begin{XFexample}
+  real, allocatable :: z(:,:)[:,:]
+  type(my_t), allocatable :: x[:]
+  \end{XFexample}
+ \end{minipage}
+%
+ \begin{minipage}{0.48\hsize}
+  \begin{XCexampleR}
+  float (*z)[10]:[][];
+  struct my_t *x:[];
+  \end{XCexampleR}
+ \end{minipage}
+\end{center}
 
 
 %============================================
@@ -514,19 +435,19 @@ If the target of a pointer is a coarray, the pointer shall have the VOLATILE att
 
 {\onlyF}
 A derived type that has a scalar coarray component is called 
-a \NEW{\bf coarray container type}.
+a {\bf coarray container type}.
 A derived type that has a scalar component of a coarray container type 
 is also called a coarray container type.
 A scalar object of a coarray container type is called 
-a \NEW{\bf coarray container}.
+a {\bf coarray container}.
 
 {\onlyC}
 A {\tt struct} type that has a coarray component is called 
-a \NEW{\bf coarray container type}.
+a {\bf coarray container type}.
 A {\tt struct} type that has a component of a coarray container type 
 is also called a coarray container type.
 A object of a coarray container type is called 
-a \NEW{\bf coarray container}.
+a {\bf coarray container}.
 
 \begin{Constraints F}
 \item A coarray container shall be a dummy argument or have 
@@ -546,4 +467,50 @@ or {\tt extern} storage class.\footnote
 \item A coarray container shall not be a coarray.
 
 \end{Constraints C}
+
+
+\subsubsection*{Example}
+
+{\onlyF} Variable {\tt cc} is a structure container
+and has a coarray structure component {\tt cc\%a}.
+Variable {\tt dd} is also a structure container
+and has ultimate coarray structure components {\tt dd\%x\%a}
+and {\tt dd\%y\%a}.
+
+{\onlyC} Variable {\tt cc} is a structure container
+and has a coarray structure component {\tt cc.a}.
+Variable {\tt dd} is also a structure container
+and has ultimate coarray structure components {\tt dd.x.a}
+and {\tt dd.y.a}.
+
+\begin{center}
+ \begin{minipage}{0.48\hsize}
+  \begin{XFexample}
+  type cc_t
+    integer size
+    real, allocate :: a(:)[:,:]
+  end type
+  type dd_t
+    type(cc_t) :: x,y
+  end type
+  type(cc_t),save :: cc
+  type(dd_t),save :: dd
+  \end{XFexample}
+ \end{minipage}
+%
+ \begin{minipage}{0.48\hsize}
+  \begin{XCexampleR}
+  typedef struct {
+    int size;
+    double (*a)[10]:[][];
+  } cc_t;
+  typedef struct {
+    cc_t x, y;
+  } dd_t;
+  static cc_t cc;
+  static dd_t dd;
+  \end{XCexampleR}
+ \end{minipage}
+\end{center}
+
 

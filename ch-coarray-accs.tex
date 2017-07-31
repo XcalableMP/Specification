@@ -1,0 +1,28 @@
+\begin{Constraints C}
+\item A coarray variable shall not be pointer-assigned.
+\end{Constraints C}
+
+{\onlyF}
+A cosubscript of the coarray in that codimension shall not be less than the lower
+cobound or greater than the upper cobound.
+
+{\onlyC}
+A cosubscript of the coarray in that codimension shall be less than the coextent
+and shall not be less than 0.
+
+
+\subsubsection*{Note}
+In {\XMPC}, after the following declaration:
+\begin{verbatim}
+            static double a1[10]:[*][4];
+\end{verbatim}
+{\tt a1} is not a coarray but a pointer to the coarray on this image.
+The coarray is referred as {\tt a1[:]} using the notation defined in 
+Chapter~\ref{chap:Base Language Extensions in {\XMPC}}.
+In contrast, for a basic type variable {\tt v1} and a {\tt struct} 
+variable {\tt s1}:
+\begin{verbatim}
+            static int b1:[*][4];
+            static struct {int n; double a;} s1:[*][4];
+\end{verbatim}
+variables {\tt b1} and {\tt s1} are the coarrays.
