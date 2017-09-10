@@ -536,7 +536,6 @@ nest.
 %{\tt LASTMIN}, is equivalent to the {\tt \Directive{reduction}}
 %construct with the following {\it template-spec} replacements:
 
-\mytextcolor{red}{
 When the {\tt expand} clause is specified, and is of the form ``{\it
 int-expr} : {\it int-expr}'' in a dimension, 
 the first {\it int-expr} is subtracted from the local lower bound in
@@ -549,9 +548,8 @@ dimension, and is added to the local upper bounds.
 However, an ``expanded'' local iteration space does not spread out of
 the original global iteration space unless the \Term{{\tt /unbound/}
 modifier} is specified in {\it expand-width}.
-}
 
-\mytextcolor{red}{
+
 When the {\tt margin} clause is specified, the loop is transformed so
 that its local iteration space, $margin$, is:
 $$margin = expand \bigtriangleup orig$$
@@ -560,9 +558,8 @@ with the same argument(s) is specified,
 $orig$ is a local iteration space when neither $expand$ nor $margin$,
 and 
 $\bigtriangleup$ is the symmetric difference operator.
-}
 
-\mytextcolor{red}{
+
 \begin{quotation}
   (Advice to programmers and implementers) Using the {\tt expand} and
   {\tt margin} clauses and asynchronous communication, programmers can
@@ -572,7 +569,6 @@ $\bigtriangleup$ is the symmetric difference operator.
   such as the {\tt peel\_and\_wait} clause in the code immediately
   following.
 \end{quotation}
-}
 
 \vspace{1zw}
 
@@ -623,10 +619,9 @@ $\bigtriangleup$ is the symmetric difference operator.
 The reduction operation that is executed, except in cases with {\it
 reduction-kind} of {\tt FIRSTMAX}, {\tt FIRSTMIN}, {\tt LASTMAX}, or
 {\tt LASTMIN},
-\mytextcolor{red}{
 is equivalent to the {\tt reduction}
 construct with {\it reduction-kind} of ``{\tt +}'' for ``{\tt -}'' in
-the clause and the same {\it reduction-kind} for the other kinds},
+the clause and the same {\it reduction-kind} for the other kinds,
  the same {\it
 reduction-variable}, and an {\tt on} clause obtained from that of the
 {\tt loop} directive by replacing each {\it loop-index} in the {\it
@@ -789,8 +784,8 @@ location-variables}\index{location-variable} are set after executing the
        each local variable referenced in the directive, and the lower
        bound, upper bound, and step of the associated loop.
 
- \item \mycolor{red}{Either of the {\tt expand} or {\tt margin} clause,
-	   if any, can be specified.}
+ \item Either of the {\tt expand} or {\tt margin} clause,
+	   if any, can be specified.
 
  \item The number of {\it expand-width}, if any, must be equal to the
 	   number of dimensions (or rank) of the template specified by {\it
@@ -1110,7 +1105,6 @@ the reduction clause. This example is equivalent to the code given below.
 
 \item[Example 8]
 \hspace{\hsize}
-\mycolor{red}{
 \begin{XFexample}
 !$xmp loop (i,j) on t(i,j) expand(/unbound/1,/unbound/1)
       do j = 1, 16
@@ -1169,7 +1163,7 @@ the reduction clause. This example is equivalent to the code given below.
 			                   & &    & (5,0), & (5,1), & (5,2), & (5,3), & (5,4), & (5,5) \quad \}
 		   \end{array}			 
 		   \]
-}
+
 \end{description}
 
 

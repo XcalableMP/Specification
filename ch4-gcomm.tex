@@ -802,19 +802,17 @@ statements following it will not be executed, until the completion of
 all of 
 the asynchronous communications that are specified by {\it async-id}'s
 and issued on the node set specified by the {\tt on} clause.
-\mytextcolor{red}{
 If an {\it async-id} is not associated with any asynchronous
 communication, the {\tt wait\_async} construct ignores it.
-}
 
 \subsubsection*{Restrictions}
 
 \begin{itemize}
  \item {\it async-id} must be an expression of type default integer in
        {\XMPF} or type {\tt int} in {\XMPC}.
- \item \mytextcolor{red}{\sout{{\it async-id} must be associated with an asynchronous
+ \item \sout{{\it async-id} must be associated with an asynchronous
        communication using the {\tt async} clause of a communication
-       construct.}}
+       construct.}
  \item The {\tt wait\_async} construct is global, which means that it must
        be executed by all nodes in the current executing node set, and
        each local variable referenced in the construct must have the
@@ -873,10 +871,8 @@ before the {\tt reflect} communication is complete, and no statement in
 complete.
 
 
-\mytextcolor{red}{
 \subsection{{\tt reduce\_shadow} Construct}
 \label{154624_16Jan17}
-}
 
 \subsubsection*{Synopsis}
 

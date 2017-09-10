@@ -813,7 +813,7 @@ Coarrays are declared in {\XMPC}.
 % \end{tabular}
 
 \begin{tabular}{ll}
-\verb![C]! & \mytextcolor{red}{{\it data-type} {\it variable} {\tt :} {\it codimensions}} \\
+\verb![C]! & {\it data-type} {\it variable} {\tt :} {\it codimensions} \\
 \end{tabular}
 
 \vspace{0.5cm}
@@ -1396,7 +1396,7 @@ associated global array is mapped.
 All specifications and restrictions on coarrays are also applied to an associating local
 array that is a coarray, with the exception that
 an associating local array is always declared with
-\mytextcolor{red}{\it assumed-shape-spec-list} of the same rank as the associated global array.
+{\it assumed-shape-spec-list} of the same rank as the associated global array.
 In particular, a processor shall ensure that an associating local array 
 that is a coarray has
 the same bounds on all the images corresponding to the node array
@@ -1429,7 +1429,7 @@ to global data}).
        the corresponding associated global array.
 
  \item An associating local array shall be declared with
-       \mytextcolor{red}{\it assumed-shape-spec-list} of the
+       {\it assumed-shape-spec-list} of the
        same rank as the corresponding associated global array.
 
  \item A {\it local-array-name} shall appear in a {\tt coarray}
