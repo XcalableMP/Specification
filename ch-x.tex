@@ -1,11 +1,10 @@
 \chapter{Programming Interface for {\MPI}}
+This chapter describes the programming interface for {\MPI},
+which is widely used for parallel programming in cluster computing.
+Users can introduce {\MPI} functions to {\XMP} using the interface.   
 
-   This chapter describes the programming interface for {\MPI},
-   which is widely used for parallel programming in cluster computing.
-   Users can introduce {\MPI} functions to {\XMP} using the interface.   
-
-   {\XMP} provides the following user API functions to mix {\MPI}
-   functions with {\XMP}.
+\section{Call {\MPI} functions from an {\XMP} program}
+{\XMP} provides the following user API functions to call {\MPI} functions from an {\XMP} program.
 
 \begin{itemize}
 \item {\tt xmp\_get\_mpi\_comm}
@@ -13,7 +12,7 @@
 \item {\tt xmp\_finalize\_mpi}
 \end{itemize}
 
-\section{\tt xmp\_get\_mpi\_comm}
+\subsection{\tt xmp\_get\_mpi\_comm}
 \index{xmp\_get\_mpi\_comm@{\tt xmp\_get\_mpi\_comm}}
 
 \subsubsection*{Format}
@@ -32,7 +31,7 @@
 
 none.
 
-\section{\tt xmp\_init\_mpi}
+\subsection{\tt xmp\_init\_mpi}
 \index{xmp\_init\_mpi@{\tt xmp\_init\_mpi}}
 
 \subsubsection*{Format}
@@ -52,8 +51,7 @@ none.
    In {\XMPC}, the command-line arguments {\tt argc} and {\tt argv}
    should be given to {\tt xmp\_init\_mpi}.
 
-
-\section{\tt xmp\_finalize\_mpi}
+\subsection{\tt xmp\_finalize\_mpi}
 \index{xmp\_finalize\_mpi@{\tt xmp\_finalize\_mpi}}
 
 \subsubsection*{Format}
@@ -72,7 +70,7 @@ none.
 
    none.
 
-\section*{Example}
+\subsection*{Example}
 \index{Example!MPI interface}
 
 \begin{XCexample}
@@ -103,6 +101,87 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 \end{XCexample}
+
+\newpage
+
+\section{Call {\XMP} functions from an {\MPI} program}
+{\XMP} provides the following user API functions to call {\XMP} functions from an {\MPI} program.
+
+\begin{itemize}
+\item {\tt xmp\_init}
+\item {\tt xmp\_finalize}
+\end{itemize}
+
+The {\XMP} functions should appear between {\tt xmp\_init} and {\tt xmp\_finalize}.
+
+\subsection{\tt xmp\_init}
+\index{xmp\_init@{\tt xmp\_init}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+\verb![F]!&             & {\tt xmp\_init(comm)}\\
+& {\tt integer} & {\tt comm} \\
+\verb![C]!&  {\tt void} & {\tt xmp\_init(MPI\_Comm comm)}
+\end{tabular}
+
+\subsubsection*{Synopsis}
+{\tt xmp\_init} initializes the {\XMP} execution environment.
+The MPI communicatior indicated in {\tt xmp\_init} is used as an executing node set in the {\XMP} functions.
+{\tt xmp\_init} should appear after {\tt MPI\_Init}.
+
+\subsubsection*{Arguments}
+MPI Communicator {\tt comm} should be given to {\tt xmp\_init}.
+
+\subsection{\tt xmp\_finalize}
+\index{xmp\_finalize@{\tt xmp\_finalize}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+\verb![F]!&  {\tt }& {\tt xmp\_finalize()}\\
+
+\verb![C]!&  {\tt void}& {\tt xmp\_finalize(void)}
+\end{tabular}
+
+\subsubsection*{Synopsis}
+{\tt xmp\_finalize} finalizes the {\XMP} execution environment.
+{\tt xmp\_finalize} should appear before {\tt MPI\_Finalize}.
+
+\subsubsection*{Arguments}
+none.
+
+\subsection*{Example}
+
+\begin{XCexample}
+#include ``mpi.h''
+#include ``xmp.h''
+
+int main(int argc, char *argv[]) {
+  MPI_Init(&argc, &argv);
+  xmp_init(MPI_COMM_WORLD);
+  foo();  // foo() is an XMP function
+  xmp_finalize();
+  MPI_Finalize();
+
+  return 0;
+}
+\end{XCexample}
+
+\begin{XFexample}
+program test
+  include 'mpif.h'
+  integer ierror
+
+  call MPI_INIT(ierror)
+  call xmp_init(MPI_COMM_WORLD)
+  call foo()  ! is an XMP function
+  call xmp_finalize()
+  call MPI_FINALIZE(ierror)
+end program test
+\end{XFexample}
+
+
 
 \cleardoublepage
 
