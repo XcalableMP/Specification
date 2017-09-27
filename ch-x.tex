@@ -113,6 +113,7 @@ int main(int argc, char *argv[]) {
 \end{itemize}
 
 The {\XMP} functions should appear between {\tt xmp\_init} and {\tt xmp\_finalize}.
+Please refer to chapter \ref{chap:procedure} and examples in this section about how arguments are passed to the {\XMP} functions.
 
 \subsection{\tt xmp\_init}
 \index{xmp\_init@{\tt xmp\_init}}
@@ -151,36 +152,76 @@ MPI Communicator {\tt comm} should be given to {\tt xmp\_init}.
 \subsubsection*{Arguments}
 none.
 
-\subsection*{Example}
+\subsection*{Example (C language)}
+
+\begin{MPICexample}
+#include <mpi.h>
+#include <xmp.h>
+#define N 5
+
+int main(int argc, char **argv)
+{
+  int a[N], comm_size;
+
+  MPI_Init(&argc, &argv);
+  MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
+
+  xmp_init(MPI_COMM_WORLD);
+  foo(N*comm_size, a);   // foo() is an XMP function
+  xmp_finalize();
+
+  MPI_Finalize();
+  return 0;
+}
+\end{MPICexample}
 
 \begin{XCexample}
-#include ``mpi.h''
-#include ``xmp.h''
+void foo(int total_elements, int a[total_elements])
+{
+#pragma xmp nodes p[*]
+#pragma xmp template t[total_elements]
+#pragma xmp distribute t[block] onto p
+#pragma xmp align a[i] with t[i]
 
-int main(int argc, char *argv[]) {
-  MPI_Init(&argc, &argv);
-  xmp_init(MPI_COMM_WORLD);
-  foo();  // foo() is an XMP function
-  xmp_finalize();
-  MPI_Finalize();
-
-  return 0;
+#pragma xmp loop on t[i]
+  for(int i=0;i<total_elements;i++)
+    a[i] = i;
 }
 \end{XCexample}
 
-\begin{XFexample}
+\subsection*{Example (Fortran)}
+
+\begin{MPIFexample}
 program test
   include 'mpif.h'
-  integer ierror
+  integer, parameter :: N = 5
+  integer :: a(N), ierr, comm_size
 
-  call MPI_INIT(ierror)
+  call MPI_INIT(ierr)
+  call MPI_COMM_SIZE(MPI_COMM_WORLD, comm_size, ierr)
+
   call xmp_init(MPI_COMM_WORLD)
-  call foo()  ! is an XMP function
+  call foo(comm_size*5, a)
   call xmp_finalize()
-  call MPI_FINALIZE(ierror)
-end program test
-\end{XFexample}
 
+  call MPI_FINALIZE(ierr)
+end program test
+\end{MPIFexample}
+
+\begin{XFexample}
+subroutine foo(total_elements, a)
+  integer total_elements, a(total_elements)
+!$xmp nodes p(*)
+!$xmp template t(total_elements)
+!$xmp distribute t(block) onto p
+!$xmp align a(i) with t(i)
+
+!$xmp loop on t(i)
+  do i=1, total_elements
+  a(i) = i
+  end do
+end subroutine foo
+\end{XFexample}
 
 
 \cleardoublepage
