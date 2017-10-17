@@ -1017,11 +1017,12 @@ as that in the {\tt distribute} directive.
 \Example{template\_fix}
 
 \vspace{0.5cm}
-\begin{minipage}{0.45\hsize}
+\begin{minipage}{0.46\hsize}
 \begin{center}
 \begin{XFexample}
+!$xmp nodes p(*)
 !$xmp template t(:)
-!$xmp distribute t(gblock(*))
+!$xmp distribute t(gblock(*)) onto p
 real, allocatable :: a(:)
 !$xmp align a(i) with t(i)
 ...
@@ -1035,11 +1036,12 @@ allocate (a(N))
 \end{center}
 \end{minipage}
 %
-\begin{minipage}{0.52\hsize}
+\begin{minipage}{0.54\hsize}
 \begin{center}
 \begin{XCexampleR}
+#pragma xmp nodes p[*]
 #pragma xmp template t[:]
-#pragma xmp distribute t[gblock(*)]
+#pragma xmp distribute t[gblock(*)] onto p
 double *a;
 #pragma xmp align a[i] with t[i]
 ...
