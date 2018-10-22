@@ -142,20 +142,24 @@ The following directives are executable directives.
 \end{itemize}
 
 
-\subsection{Combined Directive}
+\subsection{Combined Directive}\label{sub:CombinedDirective}
 \index{combined directive}
 
 \subsubsection*{Synopsis}
 
-For {\XMP} {\Fort}, multiple attributes can be specified
-by one combined declarative directive, which is analogous to type
-declaration statements in Fortran using the ``{\tt ::}'' punctuation.
+Multiple attributes can be specified by one combined declarative directive,
+which is analogous to type declaration statements using the ``{\tt ::}'' punctuation.
 
 \subsubsection*{Syntax}
 
 \begin{center}
 \begin{tabular}{llll}
 \verb![F]! & \verb|!$xmp| {\it combined-directive} & {\bf is} & {\it
+ combined-attribute} {\openb}, {\it combined-attribute}
+ {\closeb}... {\tt ::} \\
+ & & & {\it combined-decl} {\openb}, {\it combined-decl}
+ {\closeb}... \\
+ \verb![C]! & \verb|#pragma xmp| {\it combined-directive} & {\bf is} & {\it
  combined-attribute} {\openb}, {\it combined-attribute}
  {\closeb}... {\tt ::} \\
  & & & {\it combined-decl} {\openb}, {\it combined-decl}
@@ -180,7 +184,7 @@ declaration statements in Fortran using the ``{\tt ::}'' punctuation.
  & {\tt shadow} \verb|(| {\it shadow-width} {\openb},
      {\it shadow-width}{\closeb}... \verb|)| \\
 % & {\tt coarray} {\tt on} {\it nodes-ref} \\
- & {\tt dimension} \verb|(| {\it explicit-shape-spec} {\openb},
+ & [F] {\tt dimension} \verb|(| {\it explicit-shape-spec} {\openb},
      {\it explicit-shape-spec}{\closeb}... \verb|)|
 \end{tabular}
 
@@ -217,7 +221,7 @@ in addition to the following ones, are applied.
  \item If the {\tt align} or {\tt shadow} attribute appears in a
        {\it combined-directive}, each {\it combined-decl} must be an
        {\it array-name}.
- \item If the {\tt dimension} attribute appears in a {\it
+ \item \verb![F]! If the {\tt dimension} attribute appears in a {\it
        combined-directive}, any object to which it applies must be
        declared using either the {\tt template} or the {\tt nodes}
        attribute.
