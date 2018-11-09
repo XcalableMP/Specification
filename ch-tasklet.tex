@@ -1,0 +1,1367 @@
+%\chapter{Overview of the {\XMP} 2.0 Model}
+\chapter{DRAFT: Tasklet of upcoming {\XMP} 2.0}
+\label{183724_5Nov18}
+
+This chapter shows a draft of the specification of the tasklet
+features from upcoming {\XMP} 2.0.
+%
+The models and any other rules of {\XMP} 2.0 follows those of {\XMP}
+unless specified.
+
+\section{{\XMP} Extended Execution Model}
+
+When a node encounters a \verb|tasklets| construct at runtime, a set of
+threads are created, an
+implicit tasklet for {\it structured-block} is generated on the
+node, and one of the threads begins execution of it.
+
+When a thread encounters a \verb|tasklet| construct at runtime, a new
+tasklet is generated on the node. Execution of generated
+tasklets is assigned to one of the threads on the node, subject to the
+thread's availability to execute work. Thus, execution of the new
+tasklet could be immediate, or deferred until later according to the
+tasklet scheduling constraint (Section \ref{115313_4Oct18}) and thread
+availability.
+
+At the end of the \verb|tasklets| construct, there is an implicit
+\verb|taskletwait| construct to complete all of the tasklets generated
+in the construct, after which the threads created at the beginning of the
+construct are terminated, and the node resumes the execution.
+
+
+\section{Glossary}\label{sec:tasklet-glossary}
+
+\subsection{Node Terminology}
+
+\begin{namelist}{predecessor taskletx}
+
+\gitem{node}
+
+  A logical entity managed by the XcalableMP runtime system, which has
+  its own local memory and can communicate with each other, and on which
+  one or more threads can execute inside the \verb|tasklets| region.
+
+\end{namelist}
+
+\subsection{Thread Terminology}
+
+\begin{namelist}{predecessor taskletx}
+
+\gitem{thread}
+
+  An execution entity of tasklets, which execute on a node inside a
+  \verb|tasklets| region.
+
+\end{namelist}
+
+\subsection{Tasklet Terminology}
+
+\begin{namelist}{predecessor taskletx}
+
+\gitem{tasklet}
+
+  A specific instance of executable code and its data environment,
+  generated when a thread encounters a \verb|tasklet| construct.
+
+\gitem{tasklet dependence}
+
+  An ordering relation between two sibling tasklets: the dependent
+  tasklet and a previously generated predecessor tasklet. The tasklet
+  dependence is fulfilled when the predecessor tasklet has completed.
+
+\gitem{dependent tasklet}
+
+  A tasklet that because of a tasklet dependence cannot be executed
+  until its predecessor tasklets have completed.
+
+\gitem{predecessor tasklet}
+
+  A tasklet that must complete before its dependent tasklets can be
+  executed.
+
+\end{namelist}
+
+
+\section{Directives}
+\index{directive}
+
+\subsection{Tasklet Constructs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% tasklets
+%
+
+\subsubsection{{\tt tasklets} Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{tasklets}} construct starts a region for tasklet
+execution. See Section \ref{104936_4Oct18} for a general description of
+the XMP's tasklet execution model.
+
+\subsubsection*{Syntax}
+\Syntax{tasklet}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt tasklets} {\openb}{\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\}{\closeb} \\
+& {\it structured-block} \\
+& \verb|!$xmp| {\tt end tasklets} \\
+& \\
+\verb![C]! & \verb|#pragma xmp| {\tt tasklets} {\openb}{\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\}{\closeb} \\
+& {\it structured-block} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+When a node encounters a \verb|tasklets| construct at runtime, an
+implicit tasklet for {\it structured-block} is created and a thread on
+the node begins execution of it. There is an implicit \verb|taskletwait|
+construct at the end of the \verb|tasklets| construct.
+
+In a \verb|tasklets| region, only directives listed below can be
+specified.
+
+\begin{itemize}
+  \item \verb|tasklet|
+  \item \verb|taskletyield|
+  \item \verb|taskletwait|
+  \item \verb|tasklet reflect|
+  \item \verb|tasklet gmove|
+  \item \verb|tasklet bcast|
+  \item \verb|tasklet reduction|
+  \item \verb|tasklet reduce_shadow|
+\end{itemize}
+
+Note that a \verb|tasklets| region may not contain another
+\verb|tasklets| construct, that is, \verb|tasklets| cannot be nested.
+
+In addition, no OpenMP directives can be specified in a \verb|tasklets|
+region.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item The {\tt tasklets} construct is global, which means that it must
+       be executed by all nodes in the current executing node set, and
+       each local variable referenced in the construct must have the
+       same value.
+ \item The node set specified by the {\tt on} clause must be a subset of
+       the executing node set.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% tasklet
+%
+
+\subsubsection{{\tt tasklet} Construct}
+
+\subsubsection*{Synopsis}
+
+The {\tt \Directive{tasklet}} construct defines a tasklet that will be
+executed by a specified node set.
+
+\subsubsection*{Syntax}
+\Syntax{tasklet}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt tasklet} {\openb}{\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\}{\closeb}
+	  {\openb} {\it depend-clause} {\closeb}... \\
+& {\it structured-block} \\
+& \verb|!$xmp| {\tt end tasklet} \\
+& \\
+\verb![C]! & \verb|#pragma xmp| {\tt tasklet} {\openb}{\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\}{\closeb}
+	  {\openb} {\it depend-clause} {\closeb}... \\
+& {\it structured-block} \\
+\end{tabular}
+
+\vspace{0.3cm}
+
+where {\it depend-clause} is one of:
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & \verb|in (|    {\it variable} {\openb}, {\it variable}{\closeb}... \verb|)| \\
+ \hspace{0.5cm} & \verb|out (|   {\it variable} {\openb}, {\it variable}{\closeb}... \verb|)| \\
+ \hspace{0.5cm} & \verb|inout (| {\it variable} {\openb}, {\it variable}{\closeb}... \verb|)| \\
+\end{tabular}
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & \verb|pro_post (| \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb}, {\it tag}{\closeb} \verb|)|\\
+ \hspace{0.5cm} & \verb|pro_wait| {\openb}{\tt (} \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb},
+	  {\it tag}{\closeb} {\tt )}{\closeb}\\
+ \hspace{0.5cm} & \verb|epi_post (| \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb}, {\it tag}{\closeb} \verb|)|\\
+ \hspace{0.5cm} & \verb|epi_wait| {\openb}{\tt (} \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb},
+	  {\it tag}{\closeb} {\tt )}{\closeb}\\
+\end{tabular}
+
+\vspace{0.3cm}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & \verb|remote_in| {\openb}\verb|(| {\it variable} {\openb}, \{{\it nodes-ref} $\vert$ {\it template-ref}\}{\closeb}
+  {\openb}, {\it tag}{\closeb} \verb|)|{\closeb}\\
+ \hspace{0.5cm} & \verb|remote_out| {\openb}\verb|(| {\it variable} {\openb}, \{{\it nodes-ref} $\vert$ {\it template-ref}\}{\closeb}
+  {\openb}, {\it tag}{\closeb} \verb|)|{\closeb}\\
+ \hspace{0.5cm} & \verb|accept_remote_in (|  {\it variable}, \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb},
+	  {\it tag}{\closeb} \verb|)|\\
+ \hspace{0.5cm} & \verb|accept_remote_out (| {\it variable}, \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb},
+	  {\it tag}{\closeb} \verb|)|\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+When a thread encounters a {\tt tasklet} construct at runtime, it
+generates a tasklet from the code for the associated block and put the
+tasklet into the tasklet pool if it is included by the node set
+specified by the {\tt on} clause; otherwise, it skips the block.
+
+If the {\tt on} clause is omitted, it is assumed that the nodes that
+owns a variable selected by the implementation from the {\it variables}
+specified in the \verb|out| clause, if any, is specified in it;
+otherwise it is assumed that the current executing node set is specified
+in it.
+
+The tasklet may have some scheduling constraints defined by {\it
+depend-clause}. The specification of each {\it depend-clause} is
+described in the following sections.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+  \item The node set specified by {\it nodes-ref} or {\it template-ref}
+		in the {\tt on} clause must be a subset of the parent node set.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% in/out/inout
+%
+
+\subsubsection{{\tt in}/{\tt out}/{\tt inout} Clauses}
+
+\subsubsection*{Synopsis}
+
+The \verb|in|, \verb|out|, and \verb|inout| clauses specify dependences
+of tasklets within a node.
+
+\subsubsection*{Syntax}
+\Syntax{in}
+\Syntax{out}
+\Syntax{inout}
+
+\begin{tabular}{ll}
+ \hspace{0.5cm} & \verb|in (|    {\it variable} {\openb}, {\it variable}{\closeb}... \verb|)| \\
+ \hspace{0.5cm} & \verb|out (|   {\it variable} {\openb}, {\it variable}{\closeb}... \verb|)| \\
+ \hspace{0.5cm} & \verb|inout (| {\it variable} {\openb}, {\it variable}{\closeb}... \verb|)| \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The \verb|in|, \verb|out|, and \verb|inout| clauses work in the same
+way as the {\tt depend} clause of the {\tt task} directive in OpenMP 4.0
+or later, with regard to dependences of tasklets within a node.
+
+The \verb|in| clause. The generated tasklet will be a dependent tasklet
+of all previously generated sibling tasklets that reference at least one
+of the list items in an \verb|out| or \verb|inout| clause.
+
+The \verb|out| and \verb|inout| clauses. The generated tasklet will be a
+dependent tasklet of all previously generated sibling tasklets that
+reference at least one of the list items in an \verb|in|, \verb|out|, or
+\verb|inout| clause.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+  \item {\it variables} used in these clauses of the same tasklet or sibling
+		tasklets must indicate identical storage locations or disjoint
+		storage locations.
+  \item {\it variables} cannot be zero-length array sections.
+  \item A variable that is part of another variable (such as an element
+		of a structure) but is not an array element or an array section
+		cannot appear in these clause.
+  % \item For a vec element of sink dependence-type of the form xi + di or
+  % 		xi 􀀀 di if the loop iteration variable xi has an integral or
+  % 		pointer type, the expression xi + di or xi 􀀀 di for any value of
+  % 		the loop iteration variable xi that can encounter the ordered
+  % 		construct must be computable in the loop iteration variable’s
+  % 		type without overflow.
+  % \item For a vec element of sink dependence-type of the form xi + di or
+  % 		xi 􀀀 di if the loop iteration variable xi is of a random access
+  % 		iterator type other than pointer type, the expression ( xi - lb
+  % 		i ) + di or ( xi - lbi ) 􀀀 di for any value of the loop
+  % 		iteration variable xi that can encounter the ordered construct
+  % 		must be computable in the type that would be used by
+  % 		std::distance applied to variables of the type of xi without
+  % 		overflow.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% pro_post
+%
+
+\subsubsection{{\tt pro\_post} Clause}
+
+\subsubsection*{Synopsis}
+
+The \verb|pro_post| clause, in combination with the \verb|pro_wait| or
+\verb|epi_wait| construct, specifies a point-to-point synchronization
+between tasklets.
+
+\subsubsection*{Syntax}
+\Syntax{pro\_post}
+
+\begin{tabular}{ll}
+\verb|pro_post (| \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb}, {\it tag}{\closeb} \verb|)|\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+This clause ensures that the predecessor tasklets have completed on the
+local node before tasklets that have a matching \verb|pro_wait| clause
+are scheduled, or tasklets that have a matching \verb|epi_wait| clause
+are completed on remote nodes.
+
+A \verb|pro_post| clause having the arguments of {\it nodes-ref}/{\it
+template-ref} and {\it tag}, of a tasklet on a node (called a {\it
+posting node}) dynamically matches at most one \verb|pro_wait| or
+\verb|epi_wait| clause having the arguments of the posting node (unless
+omitted) and the same value as {\it tag} (unless omitted), of a tasklet
+on the node specified by {\it nodes-ref}/{\it template-ref}.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+  \item {\it tag} must be an expression of type default integer, in
+   		{\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% pro_wait
+%
+
+\subsubsection{{\tt pro\_wait} Clause}
+
+\subsubsection*{Synopsis}
+
+The \verb|pro_wait| clause, in combination with the \verb|pro_post|
+or \verb|epi_post| clause, specifies a point-to-point synchronization
+between tasklets.
+
+\subsubsection*{Syntax}
+\Syntax{pro\_wait}
+
+\begin{tabular}{ll}
+\verb|pro_wait| {\openb}{\tt (} \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb},
+	  {\it tag}{\closeb} {\tt )}{\closeb}\\
+%\verb|pro_wait| {\openb}{\tt (} {\it nodes-ref} {\openb}, {\it tag}{\closeb} {\tt )}{\closeb}\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+This clause prohibits the tasklet from being scheduled on the local node
+until tasklets that have a matching \verb|pro_post|
+clause are scheduled, or tasklets that have a matching \verb|epi_post|
+clause are completed on remote nodes.
+
+A \verb|pro_wait| clause having the arguments of {\it nodes-ref}/{\it
+template-ref} and {\it tag}, of a tasklet on a node (called a {\it
+waiting node}) dynamically matches a \verb|pro_post| clause having the 
+arguments of the waiting node and the same value as {\it tag}, of a
+tasklet on the node specified by {\it nodes-ref}/{\it template-ref}.
+
+If {\it tag} is omitted, then the \verb|pro_wait| construct can
+match a \verb|pro_post| or \verb|epi_post| clause having the
+arguments of the waiting node and any tag, of tasklet on the node
+specified by {\it nodes-ref}/{\it template-ref}.
+%
+If both {\it nodes-ref}/{\it template-ref} and {\it tag} are omitted, then the
+\verb|pro_wait| clause can match a \verb|pro_post| or \verb|epi_post|
+clause having the arguments of any node and any tag.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+  \item {\it tag} must be an expression of type default integer, in
+   		{\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% epi_post
+%
+
+\subsubsection{{\tt epi\_post} Clause}
+
+\subsubsection*{Synopsis}
+
+The \verb|epi_post| clause, in combination with the \verb|pro_wait| or
+\verb|epi_wait| construct, specifies a point-to-point synchronization
+between tasklets.
+
+\subsubsection*{Syntax}
+\Syntax{epi\_wait}
+
+\begin{tabular}{ll}
+\verb|epi_post (| \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb}, {\it tag}{\closeb} \verb|)|\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+This clause ensures that the tasklet have completed on the
+local node before tasklets that have a matching \verb|pro_wait| clause
+are scheduled, or tasklets that have a matching \verb|epi_wait| clause
+are completed on remote nodes.
+
+A \verb|pro_post| clause having the arguments of {\it
+nodes-ref}/{\it template-ref} and {\it tag}, of a tasklet on a node (called a {\it posting
+node}) dynamically matches at most one \verb|pro_wait| or
+\verb|epi_wait| clause having the arguments of the posting node (unless
+omitted) and the same value as {\it tag} (unless omitted), of a tasklet
+on the node specified by {\it nodes-ref}/{\it template-ref}.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+  \item {\it tag} must be an expression of type default integer, in
+   		{\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% epi_wait
+%
+
+\subsubsection{{\tt epi\_wait} Clause}
+
+\subsubsection*{Synopsis}
+
+The \verb|epi_wait| clause, in combination with the \verb|pro_post|
+or \verb|epi_post| clause, specifies a point-to-point synchronization
+between tasklets.
+
+\subsubsection*{Syntax}
+\Syntax{epi\_wait}
+
+\begin{tabular}{ll}
+\verb|epi_wait| {\openb}{\tt (} \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb},
+	  {\it tag}{\closeb} {\tt )}{\closeb}\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+This clause prohibits the tasklet from being completed on the local node 
+until tasklets that have a matching \verb|pro_post|
+clause are scheduled, or tasklets that have a matching \verb|epi_post|
+clause are completed on remote nodes.
+
+A \verb|pro_wait| clause having the arguments of {\it nodes-ref}/{\it template-ref} and
+{\it tag}, of a tasklet on a node (called a {\it waiting node})
+dynamically matches a \verb|pro_post| clause having the
+arguments of the waiting node and the same value as {\it tag}, of a
+tasklet on the node specified by {\it nodes-ref}/{\it template-ref}.
+
+If {\it tag} is omitted, then the \verb|pro_wait| construct can
+match a \verb|pro_post| or \verb|epi_post| clause having the
+arguments of the waiting node and any tag, of tasklet on the node
+specified by {\it nodes-ref}/{\it template-ref}.
+%
+If both {\it nodes-ref}/{\it template-ref} and {\it tag} are omitted, then the
+\verb|pro_wait| clause can match a \verb|pro_post| or \verb|epi_post|
+clause having the arguments of any node and any tag.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+  \item {\it tag} must be an expression of type default integer, in
+   		{\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% remote_in
+%
+
+\subsubsection{{\tt remote\_in} Clauses}
+
+\subsubsection*{Synopsis}
+
+The \verb|remote_in| clause specifies a predecessor tasklet with regard to a
+data dependency derived from a remote-read (get) operation.
+
+\subsubsection*{Syntax}
+\Syntax{remote\_in}
+
+\begin{tabular}{ll}
+\verb|remote_in| {\openb}\verb|(| \{{\it variable} $\vert$ \verb|*|\}
+  {\openb}, \{{\it nodes-ref} $\vert$ {\it template-ref}\}{\closeb}
+  {\openb}, {\it tag}{\closeb} \verb|)|{\closeb}\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+A \verb|remote_in| clause can be regarded as a syntactic sugar for the
+combination of {\tt in}, \verb|pro_wait|, and \verb|epi_post| clauses.
+
+If \verb|*| is specified as the first argument or all of the arguments
+are omitted, no {\tt in} clause is implied.
+
+If the second argument is omitted, the implied \verb|pro_wait| clause
+will match the first incoming \verb|pro_post| or \verb|epi_post| clause
+from a node and the implied \verb|epi_post| will work as if the node
+was specified in it.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+  \item {\it variables} used in these clauses of the same tasklet or sibling
+		tasklets must indicate identical storage locations or disjoint
+		storage locations.
+  \item {\it variables} cannot be zero-length array sections.
+  \item A variable that is part of another variable (such as an element
+		of a structure) but is not an array element or an array section
+		cannot appear in these clause.
+  \item {\it tag} must be an expression of type default integer, in
+   		{\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% accept_remote_in
+%
+
+\subsubsection{{\tt accept\_remote\_in} Clause}
+
+\subsubsection*{Synopsis}
+
+The \verb|accept_remote_in| clause specifies a dependent tasklet with regard
+to a data dependency derived from a remote-read (get) operation.
+
+\subsubsection*{Syntax}
+\Syntax{accept\_remote\_in}
+
+\begin{tabular}{ll}
+\verb|accept_remote_in (| {\it variable}, \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb}, {\it tag}{\closeb} \verb|)|\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+A \verb|accept_remote_in| clause can be regarded as a syntactic sugar for the
+combination of {\tt in}, \verb|pro_post|, and \verb|epi_wait| clauses.
+
+\begin{quotation}
+  (Advice to implementers) The action for the implied \verb|epi_wait|
+  clause may be deferred until a dependent tasklet of the tasklet with
+  respect to the the implied \verb|in| clause is scheduled.
+\end{quotation}
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+  \item {\it variables} used in these clauses of the same tasklet or sibling
+		tasklets must indicate identical storage locations or disjoint
+		storage locations.
+  \item {\it variables} cannot be zero-length array sections.
+  \item A variable that is part of another variable (such as an element
+		of a structure) but is not an array element or an array section
+		cannot appear in these clause.
+  \item {\it tag} must be an expression of type default integer, in
+   		{\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% remote_out
+%
+
+\subsubsection{{\tt remote\_out} Clause}
+
+\subsubsection*{Synopsis}
+
+The \verb|remote_out| clause specifies a predecessor tasklet with regard to a
+data dependency derived from a remote-write (put) operation.
+
+\subsubsection*{Syntax}
+\Syntax{remote\_out}
+
+\begin{tabular}{ll}
+\verb|remote_out| {\openb}\verb|(| \{{\it variable} $\vert$ \verb|*|\}
+  {\openb}, \{{\it nodes-ref} $\vert$ {\it template-ref}\}{\closeb}
+  {\openb}, {\it tag}{\closeb} \verb|)|{\closeb}\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+A \verb|remote_out| clause can be regarded as a syntactic sugar for the
+combination of {\tt out}, {\tt pro\_wait}, and {\tt epi\_post} clauses.
+
+If \verb|*| is specified as the first argument or all of the arguments
+are omitted, no {\tt in} clause is implied.
+
+If the second argument is omitted, the implied \verb|pro_wait| clause
+will match the first incoming \verb|pro_post| or \verb|epi_post| clause
+from a node and the implied \verb|epi_post| will work as if the node
+was specified in it.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+  \item {\it variables} used in these clauses of the same tasklet or sibling
+		tasklets must indicate identical storage locations or disjoint
+		storage locations.
+  \item {\it variables} cannot be zero-length array sections.
+  \item A variable that is part of another variable (such as an element
+		of a structure) but is not an array element or an array section
+		cannot appear in these clause.
+  \item {\it tag} must be an expression of type default integer, in
+   		{\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% accept_remote_out
+%
+
+\subsubsection{{\tt accept\_remote\_out} Clause}
+
+\subsubsection*{Synopsis}
+
+The \verb|accept_remote_out| clause specifies a dependent tasklet with regard
+to a data dependency derived from a remote-write (put) operation.
+
+\subsubsection*{Syntax}
+\Syntax{accept\_remote\_out}
+
+\begin{tabular}{ll}
+\verb|accept_remote_out (| {\it variable}, \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\openb},
+	  {\it tag}{\closeb} \verb|)|\\
+\end{tabular}
+
+\subsubsection*{Description}
+
+A \verb|accept_remote_out| clause can be regarded as a syntactic sugar for the
+combination of {\tt out}, \verb|pro_post|, and \verb|epi_wait| clauses.
+
+\begin{quotation}
+  (Advice to implementers) The action for the implied \verb|pro_post|
+  clause may be advanced after the scheduling constraint enforced by the
+  implied \verb|out| clause is met.
+\end{quotation}
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+  \item {\it variables} used in these clauses of the same tasklet or sibling
+		tasklets must indicate identical storage locations or disjoint
+		storage locations.
+  \item {\it variables} cannot be zero-length array sections.
+  \item A variable that is part of another variable (such as an element
+		of a structure) but is not an array element or an array section
+		cannot appear in these clause.
+  \item {\it tag} must be an expression of type default integer, in
+   		{\XMPF}, or type {\tt int}, in {\XMPC}.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Examples
+%
+
+%\subsubsection{Examples of {\tt tasklet} Constructs}
+
+% \Example{task}
+% \Example{end task}
+
+% \begin{description}
+
+% \item[Example 1]
+
+% In XcalableMP Fortran, copies of variables {\tt a} and {\tt b} are replicated on
+% nodes {\tt nd(1)} through {\tt nd(8)}. 
+% A task defined by the {\tt task} construct is executed only on {\tt nd(1)} and
+% defines the copies of {\tt a} and {\tt b} on a node {\tt nd(1)}. 
+% The copies on nodes {\tt nd(2)} through {\tt nd(8)} are not defined.
+
+% In XcalableMP C, copies of variables {\tt a} and {\tt b} are replicated on
+% nodes {\tt nd[0]} through {\tt nd[7]}. 
+% A task defined by the {\tt task} construct is executed only on {\tt nd[0]} and
+% defines the copies of {\tt a} and {\tt b} on a node {\tt nd[0]}.
+% The copies on nodes {\tt nd[1]} through {\tt nd[7]} are not defined.
+
+% \hspace{\hsize}
+
+% \begin{minipage}{0.44\hsize}
+% \begin{center}
+% \begin{XFexample}
+% !$xmp nodes nd(8)
+% !$xmp template t(100)
+% !$xmp distribute t(block) onto nd
+
+%       real a, b;
+
+% !$xmp task on nd(1)
+%       read(*,*) a
+%       b = a*1.e-6
+% !$xmp end task
+% \end{XFexample}
+% \end{center}
+% \end{minipage}
+% %
+% \begin{minipage}{0.51\hsize}
+% \begin{center}
+% \begin{XCexampleR}
+% #pragma xmp nodes nd[8]
+% #pragma xmp template t[100]
+% #pragma xmp distribute t[block] onto nd
+
+%     float a, b;
+
+% #pragma xmp task on nd[0]
+%     {
+%         scanf ("%f", &a);
+%         b = a*1.e-6;
+%     }
+% \end{XCexampleR}
+% \end{center}
+% \end{minipage}
+
+% \vspace{1cm}
+
+% \item[Example 2]
+
+% According to the {\tt on} clause with a template reference,
+% an assignment statement in the {\tt task} construct is
+% executed by the owner of the array element {\tt a(:,j)} or {\tt a[j][:]}.
+
+% \hspace{\hsize}
+
+% \begin{minipage}{0.44\hsize}
+% \begin{center}
+% \begin{XFexample}
+% !$xmp nodes nd(8)
+% !$xmp template t(100)
+% !$xmp distribute t(block) onto nd
+
+%       integer i,j
+%       real a(200,100)
+% !$xmp align a(*,j) with t(j)
+
+%       i = ...
+%       j = ...
+
+% !$xmp task on t(j)
+%       a(i,j) = 1.0
+% !$xmp end task
+% \end{XFexample}
+% \end{center}
+% \end{minipage}
+% %
+% \begin{minipage}{0.51\hsize}
+% \begin{center}
+% \begin{XCexampleR}
+% #pragma xmp nodes nd[8]
+% #pragma xmp template t[100]
+% #pragma xmp distribute t(block) onto nd
+
+%     int i,j;
+%     float a[100][200];
+% #pragma align a[j][*] with t[j]
+
+%     i = ...;
+%     j = ...;
+
+% #pragma xmp task on t[j]
+%     a[j][i] = 1.0;
+% }
+% \end{XCexampleR}
+% \end{center}
+% \end{minipage}
+
+% \end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% taskletloop
+%
+
+% \subsection{{\tt taskletloop} Construct}
+
+% \subsubsection*{Synopsis}
+
+% The \verb|taskletloop| construct specifies that the iterations of one or
+% more associated loops will be executed in parallel using tasklets. The
+% iterations are distributed across tasklets created by the construct and
+% scheduled to be executed.
+
+% \subsubsection*{Syntax}
+% \Syntax{taskletloop}
+
+% \begin{tabular}{ll}
+% \verb![F]! & \verb|!$xmp| {\tt taskletloop} {\openb} \verb|(| {\it loop-index}
+%  {\openb}, {\it loop-index}{\closeb}... \verb|)| {\closeb} 
+% 	  {\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\bsquare} \\
+%  & \hspace{5cm}{\bsquare} 
+% 	  {\openb} \verb|expand(| {\it expand-width} {\openb}, {\it
+% 	  expand-width}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
+%  & \hspace{5cm}{\bsquare} 
+% 	  {\openb} \verb|margin(| {\it margin-width} {\openb}, {\it
+% 	  margin-width}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
+%  & \hspace{5cm}{\bsquare} 
+% 	  {\openb} {\it reduction-clause} {\closeb}... \\
+%  & {\it do-loops} \\
+%  & \\
+% \verb![C]! & \verb|#pragma xmp| {\tt taskletloop} {\openb} \verb|(| {\it
+%      loop-index} {\openb}, {\it loop-index}{\closeb}... \verb|)|
+%      {\closeb} {\tt on} \{{\it nodes-ref} $\vert$ {\it template-ref}\} {\bsquare} \\
+%  & \hspace{5cm}{\bsquare} 
+% 	  {\openb} \verb|expand(| {\it expand-width} {\openb}, {\it
+% 	  expand-width}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
+%  & \hspace{5cm}{\bsquare} 
+% 	  {\openb} \verb|margin(| {\it margin-width} {\openb}, {\it
+% 	  margin-width}{\closeb}... \verb|)| {\closeb} {\bsquare} \\
+%  & \hspace{5cm}{\bsquare}
+% 	  {\openb} {\it reduction-clause} {\closeb}... \\
+%  & {\it for-loops} \\
+% \end{tabular}
+
+% \subsubsection*{Description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% taskletyield
+%
+
+\subsubsection{{\tt taskletyield} Construct}
+
+\subsubsection*{Synopsis}
+
+The \verb|taskletyield| construct specifies that the current tasklet can
+be suspended in favor of execution of a different tasklet.
+%The taskyield construct is a stand-alone directive.
+
+\subsubsection*{Syntax}
+\Syntax{taskletyield}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt taskletyield} \\
+& \\
+\verb![C]! & \verb|#pragma xmp| {\tt taskletyield} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The \verb|taskletyield| construct includes an explicit task scheduling
+point in the current tasklet.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% taskletwait
+%
+
+\subsubsection{{\tt taskletwait} Construct}
+
+\subsubsection*{Synopsis}
+
+The \verb|taskletwait| construct specifies a wait on the completion of
+child tasklets of the current tasklet.
+
+\subsubsection*{Syntax}
+\Syntax{taskletwait}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp| {\tt taskletwait} \\
+& \\
+\verb![C]! & \verb|#pragma xmp| {\tt taskletwait} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The \verb|taskletwait| construct includes an implicit task scheduling
+point in the current tasklet. The current tasklet is suspended at the
+tasklet scheduling point until all child tasks that it generated before
+the taskletwait construct complete execution.
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %
+% % taskletbarrier
+% %
+
+% \subsection{{\tt taskletbarrier} Construct}
+
+% \subsubsection*{Synopsis}
+
+% The \verb|taskletbarrier| construct specifies a wait on the completion
+% of descendant tasklets of the current tasklet.
+
+% \subsubsection*{Syntax}
+% \Syntax{taskletwait}
+
+% \begin{tabular}{ll}
+% \verb![F]! & \verb|!$xmp| {\tt taskletbarrier} \\
+% & \\
+% \verb![C]! & \verb|#pragma xmp| {\tt taskletbarrier} \\
+% \end{tabular}
+
+% \subsubsection*{Description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Tasklet Scheduling
+%
+
+\subsection{Tasklet Scheduling}
+\label{115313_4Oct18}
+
+% tasklet scheduling points
+
+Whenever a thread reaches a tasklet scheduling point, the implementation
+may cause it to perform a tasklet switch, beginning or resuming
+execution of a different tasklet. Tasklet scheduling points are implied
+at the following locations:
+
+\begin{itemize}
+  \item the point immediately following the generation of a tasklet
+  \item the point of completion of a tasklet that has one or more
+		implicit or explicit \verb|epi_wait| clauses
+  \item after the point of completion of a tasklet
+  \item at a \verb|taskletyield| construct
+  \item at an implicit and explicit \verb|taskletwait| construct
+\end{itemize}
+
+% actions at a tasklet scheduling point
+
+When a thread encounters a tasklet scheduling point, it may do either of
+the following, subject to the Tasklet Scheduling Constraints (below):
+
+\begin{itemize}
+  \item begin execution of a tasklet
+  \item resume any suspended tasklet
+\end{itemize}
+
+If more than one of the above choices is available, it is unspecified as
+to which will be chosen.
+
+% task scheduling constraints
+
+Tasklet Scheduling Constraints are as follows:
+
+\begin{enumerate}
+  % \item Scheduling of new tasklets is constrained by the set of tasklets
+  % 		that are not suspended at a \verb|barrier| construct.
+  % 		%
+  % 		If this set is empty, any new tasklet may be scheduled.
+  % 		%
+  % 		Otherwise, a new tasklet may be scheduled only if it is a
+  % 		descendent tasklet of every tasklet in the set.
+  \item A dependent tasklet shall not be scheduled until its tasklet
+		dependences are fulfilled.
+  \item A tasklet that has one or more implicit or explicit
+		\verb|pro_wait| clauses shall not be scheduled until all of the
+		\verb|pro_wait| clauses are matched with \verb|pro_post| or
+		\verb|epi_post| clauses.
+\end{enumerate}
+
+% A program relying on any other assumption about task scheduling is
+% non-conforming.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Global Communication Tasklet Constructs
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Communication Tasklet Constructs}
+
+\subsubsection{Overview}
+
+The communication tasklet constructs define inter-node interactions
+between tasklets on the basis of XMP's global-view communication
+constructs.
+
+They are executed as a set of tasklets, each of which produces the same
+effect on a node as the corresponding global-view communication
+construct does.
+% Each of the communication tasklet constructs works as a
+% local construct, not global.
+
+\begin{quotation}
+  % (Advice to implementers) To implement the above feature of the
+  % communication tasklet constructs, they should be based only on the 
+  % remote read (get) operation. 
+  (Advice to implementers) To implement the above feature of the
+  communication tasklet constructs, they should be based on
+  remote read (get) operations and point-to-point synchronizations.
+\end{quotation}
+
+
+% Each the construct can be ragarded as a syntactic sugar for a {\tt
+% tasklet} construct that has a global-view communication construct in its
+% associated block and appropriate {\it depend-clause}'s.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% tasklet reflect
+%
+
+\subsubsection{{\tt tasklet reflect} Construct}
+
+\subsubsection*{Synopsis}
+
+The \verb|tasklet reflect| construct defines tasklets that update the
+shadow area of a global array like the \verb|reflect| directive.
+
+\subsubsection*{Syntax}
+\Syntax{tasklet reflect}
+
+\begin{tabular}{ll}
+ \verb![F]! & \verb|!$xmp tasklet| {\tt reflect} \verb|(| {\it array-name}
+ {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+     {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt orthogonal}{\closeb} {\bsquare} \\
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt on} \{{\it nodes-ref} $\vert$
+	  {\it template-ref}\}{\closeb} \\
+\verb![C]! & \verb|#pragma xmp tasklet| {\tt reflect} \verb|(| {\it array-name}
+     {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+     {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt orthogonal}{\closeb} {\bsquare} \\
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt on} \{{\it nodes-ref} $\vert$
+	  {\it template-ref}\}{\closeb} \\
+\end{tabular}
+
+% #pragma xmp tasklet reflect (array-name[, array-name] ... )
+% [chunksize (reflect-chunksize[, reflect-chunksize] ... ) ]
+
+\subsubsection*{Description}
+
+The \verb|tasklet reflect| construct generates a tasklet on each of the
+nodes specified by the \verb|on| clause, which will produce the same
+effect as the \verb|reflect| construct having the same clauses does. In
+addition, for each of the arrays specified by the sequence of {\it
+array-names}, an \verb|inout| clause for it implicitly added to the
+generated tasklets.
+
+Note that \verb|tasklet reflect| is a local construct, unlike
+\verb|reflect|, and therefore the node set specified by the \verb|on|
+clause need not include all of the nodes onto which the target arrays
+are mapped.
+
+% The chunksize clause can be matched the task dependency
+% descriptions of users using the dependency generated by the
+% \verb|tasklet reflect| construct.
+% %
+% When users calculate an array in block units, such as
+% in the cache blocking technique for a node with data dependency, the
+% user-specified task dependency and generated data dependency for halo
+% exchange may not identically match.
+% %
+% By specifying the chunksize clause,
+% the halo region is distributed logically to equal-sized contiguous chunks,
+% and data dependencies for the halo exchange are generated
+% automatically by the XMP runtime system based on the specified chunk
+% size.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ % \item The arrays specified by the sequence of {\it array-names} must
+ %       be mapped onto the executing node set.
+ \item The reflect width of each dimension specified by the {\it
+       reflect-width} must not exceed the shadow width of the arrays.
+ \item The node set specified by the {\tt on} clause must be a subset of the
+       executing node set.
+\end{itemize}
+
+\subsubsection*{Example}
+
+% For example, when updating one side of a halo region for a one-dimensional
+% global array on two nodes, these communications are separated into
+% four tasks: the sender of the upper element on node 1, the receiver of
+% the upper halo region on node 1, the sender of the lower element on node
+% 2, and the receiver of the lower halo region on node 2.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% tasklet gmove
+%
+
+\subsubsection{{\tt tasklet gmove} Construct}
+
+\subsubsection*{Synopsis}
+
+The \verb|tasklet gmove| construct defines tasklets that copy the
+variable from the right-hand side (rhs) into the left-hand side (lhs) of
+the associated assignment statement like the \verb|gmove| construct.
+
+\subsubsection*{Syntax}
+\Syntax{tasklet gmove}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp tasklet| {\tt gmove} {\openb}{\tt on} \{{\it
+	  nodes-ref} $\vert$ {\it template-ref}\}{\closeb} \\
+% {\it dest} {\tt =} {\it source} \\
+\verb![C]! & \verb|#pragma xmp tasklet| {\tt gmove} {\openb}{\tt on} \{{\it
+	  nodes-ref} $\vert$ {\it template-ref}\}{\closeb} \\
+% {\it dest} {\tt =} {\it source} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The \verb|tasklet gmove| construct generates a tasklet on each of the
+nodes specified by the \verb|on| clause, which will produce the same
+effect as the \verb|gmove| construct having the same clauses does. In
+addition, for the variables on the right-hand and left-hand side of the
+associated assignment statement, \verb|in| and \verb|out| clauses are
+implicitly added to the generated tasklets, respectively,
+
+Note that \verb|tasklet gmove| is a local construct, unlike
+\verb|gmove|, and therefore the node set specified by the \verb|on|
+clause need not include all of the nodes onto which global arrays
+appearing in the associated statement, if any, are mapped.
+
+% The copy operation is basically performed on all
+% execution nodes. However, if the distributed array is specified at the
+% associated assignment statement, only nodes with the distributed array
+% execute the operation in the task. The execution nodes can also be
+% determined by the on clause. When the in, out, or inout clause is
+% present on the tasklet gmove directive, the generated task has the
+% corresponding data dependency in a node, similar to the tasklet
+% directive. While the gmove directive also supports one-sided
+% communication by the in and out clauses, which differ from those used
+% for data dependencies, the tasklet gmove directive does not support
+% these in this work.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item The \verb|tasklet gmove| construct must be followed by (i.e.,
+       associated with) a simple assignment statement that contains
+       neither arithmetic operations nor function calls.
+ \item The node set specified by the {\tt on} clause must be a subset of the
+       executing node set.
+\end{itemize}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %
+% % tasklet barrier
+% %
+
+% \subsection{{\tt tasklet barrier} Construct}
+
+% The \verb|tasklet barrier| construct defines a tasklet that ???
+% like the \verb|barrier| construct.
+
+% \subsubsection*{Synopsis}
+
+
+% \subsubsection*{Syntax}
+% \Syntax{tasklet_barrier}
+
+% \begin{tabular}{ll}
+% \verb![F]! & \verb|!$xmp tasklet| {\tt barrier} {\openb}{\tt on} {\it nodes-ref}
+%  $\vert${\it template-ref}{\closeb} \\
+% \verb![C]! & \verb|#pragma xmp tasklet| {\tt barrier} {\openb}{\tt on} {\it
+%      nodes-ref} $\vert$ {\it template-ref}{\closeb} \\
+% \end{tabular}
+
+% \subsubsection*{Description}
+
+
+% \subsubsection*{Restriction}
+
+% \begin{itemize}
+% \item The node set specified by the {\tt on} clause must be a subset of the
+%       executing node set.  
+% \end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% tasklet bcast
+%
+
+\subsubsection{{\tt tasklet bcast} Construct}
+
+\subsubsection*{Synopsis}
+
+The \verb|tasklet bcast| construct defines tasklets that perform
+broadcast communication from a specified node like the \verb|bcast|
+construct.
+
+\subsubsection*{Syntax}
+\Syntax{tasklet bcast}
+
+\begin{tabular}{ll}
+ \verb![F]! & \verb|!$xmp tasklet| {\tt bcast} \verb|(| {\it variable} 
+ {\openb}, {\it variable}{\closeb}... \verb|)|
+ {\openb}{\tt from} {\it nodes-ref} $\vert$ {\it template-ref}{\closeb}
+ {\bsquare} \\
+ & \hspace{5cm} {\bsquare} {\openb}{\tt on} {\it nodes-ref}{\closeb}
+     $\vert$ {\it template-ref}{\closeb} \\
+
+ \verb![C]! & \verb|#pragma xmp tasklet| {\tt bcast} \verb|(| {\it variable} 
+ {\openb}, {\it variable}{\closeb}... \verb|)|
+ {\openb}{\tt from} {\it nodes-ref}  $\vert$ {\it
+     template-ref}{\closeb} {\bsquare} \\
+ & \hspace{5cm} {\bsquare} {\openb}{\tt on} {\it nodes-ref} $\vert$ {\it
+     template-ref}{\closeb} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The \verb|tasklet bcast| construct generates a tasklet on each of the
+nodes specified by the \verb|on| clause, which will produce the same
+effect as the \verb|bcast| construct having the same clauses does. In
+addition, for each of the variables specified by the sequence of {\it
+variables}, an \verb|inout| clause for it implicitly added to the
+generated tasklets.
+
+Note that \verb|tasklet bcast| is a local construct, unlike
+\verb|bcast|.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item The variables specified by the sequence of {\it variables} must
+       either not be aligned or must be replicated among nodes of the
+       node set specified by the {\tt on} clause.
+ \item The node set specified by the {\tt on} clause must be a subset of
+       the executing node set.
+ \item The source node specified by the {\tt from} clause must belong to
+       the node set specified by the {\tt on} clause.
+ \item The source node specified by the {\tt from} clause must be one
+	   node.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% tasklet reduction
+%
+
+\subsubsection{{\tt tasklet reduction} Construct}
+
+\subsubsection*{Synopsis}
+
+The \verb|tasklet reduction| construct defines tasklets that perform a
+reduction operation like the \verb|reduction| construct.
+
+\subsubsection*{Syntax}
+\Syntax{tasklet reduction}
+
+\begin{tabular}{ll}
+\verb![F]! & \verb|!$xmp tasklet| {\tt reduction (} {\it reduction-kind} {\it
+  :} {\it variable} {\openb}, {\it variable} {\closeb}... {\tt )}
+ {\bsquare} \\
+ & \hspace{6cm} {\bsquare} {\openb}{\tt on} {\it node-ref} $\vert$ {\it
+     template-ref}{\closeb} \\
+\verb![C]! & \verb|#pragma xmp tasklet| {\tt reduction (} {\it reduction-kind} {\it
+  :} {\it variable} {\openb}, {\it variable} {\closeb}... {\tt )}
+ {\bsquare} \\
+ & \hspace{6cm} {\bsquare} {\openb}{\tt on} {\it node-ref} $\vert$ {\it
+     template-ref}{\closeb} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The \verb|tasklet reduction| construct generates a tasklet on each of
+the nodes specified by the \verb|on| clause, which will produce the same
+effect as the \verb|reduction| construct having the same clauses
+does. In addition, for each of the variables specified by the sequence
+of {\it variables}, an \verb|inout| clause for it implicitly added to
+the generated tasklets.
+
+Note that \verb|tasklet reduction| is a local construct, unlike
+\verb|reduction|.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ \item The variables specified by the sequence of {\it variables} must
+       either not be aligned or must be replicated among nodes of the node
+       set specified by the {\tt on} clause.
+ \item The node set specified by the {\tt on} clause must be a subset of the
+       executing node set.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% tasklet reduce_shadow
+%
+
+\subsubsection{{\tt tasklet reduce\_shadow} Construct}
+
+\subsubsection*{Synopsis}
+
+The \verb|tasklet reduce_shadow| construct defines tasklets that add
+values of shadow objects to their reflection source like the
+\verb|reduce_shadow| construct.
+
+\subsubsection*{Syntax}
+\Syntax{tasklet reduce\_shadow}
+
+\begin{tabular}{ll}
+ \verb![F]! & \verb|!$xmp tasklet| {\tt reduce\_shadow} \verb|(| {\it array-name}
+ {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+     {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt orthogonal}{\closeb} {\bsquare} \\
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt on} \{{\it nodes-ref} $\vert$
+	  {\it template-ref}\}{\closeb} \\
+\verb![C]! & \verb|#pragma xmp tasklet| {\tt reduce\_shadow} \verb|(| {\it array-name}
+     {\openb}, {\it array-name}{\closeb}... \verb|)| {\bsquare} \\
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt width (} {\it reflect-width}
+     {\openb}, {\it reflect-width}{\closeb}... {\tt )}{\closeb}
+     {\openb}{\tt orthogonal}{\closeb} {\bsquare} \\
+ &\hspace{0.3cm} {\bsquare} {\openb}{\tt on} \{{\it nodes-ref} $\vert$
+	  {\it template-ref}\}{\closeb} \\
+\end{tabular}
+
+\subsubsection*{Description}
+
+The \verb|tasklet reduce_shadow| construct generates a tasklet on each
+of the nodes specified by the \verb|on| clause, which will produce the
+same effect as the \verb|reduce_shadow| construct having the same
+clauses does. In addition, for each of the arrays specified by the
+sequence of {\it array-names}, an \verb|inout| clause for it implicitly
+added to the generated tasklets.
+
+Note that \verb|tasklet reduce_shadow| is a local construct, unlike
+\verb|reduce_shadow|, and therefore the node set specified by the
+\verb|on| clause need not include all of the nodes onto which the target
+arrays are mapped.
+
+\subsubsection*{Restrictions}
+
+\begin{itemize}
+ % \item The arrays specified by the sequence of {\it array-names} must
+ %       be mapped onto the executing node set.
+ \item The width of each dimension specified by {\it
+       reflect-width} must not exceed the shadow width of the arrays.
+ \item The node set specified by the {\tt on} clause must be a subset of the
+       executing node set.
+\end{itemize}
