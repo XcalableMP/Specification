@@ -488,7 +488,7 @@ array.
  \item {\tt ndims} is the rank of the node array specified by {\tt d}.
 \end{itemize}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\tt xmp\_nodes\_index}
 \index{xmp\_nodes\_index@{\tt xmp\_nodes\_index}}
 
@@ -524,7 +524,38 @@ executing node in the target node array.
        specified by {\tt d}.
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsection{\tt xmpc\_nodes\_index}
+\index{xmpc\_nodes\_index@{\tt xmpc\_nodes\_index}}
+
+\subsubsection*{Format}
+
+\begin{tabular}{lll}
+
+\verb![C]!&  {\tt int}& {\tt xmpc\_nodes\_index(xmp\_desc\_t d, int dim, int *index)}\\
+
+\end{tabular}
+
+\subsubsection*{Synopsis}
+
+The {\tt xmpc\_nodes\_index} function provides the indices - 1 of the executing node in the target node array.
+
+\subsubsection*{Input Arguments}
+
+\begin{itemize}
+ \item {\tt d} is a descriptor of a node array.
+ \item {\tt dim} is the target dimension of the node array.
+\end{itemize}
+
+\subsubsection*{Output Arguments}
+
+\begin{itemize}
+ \item {\tt index} is an index - 1 of the target dimension of the node array
+       specified by {\tt d}.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\tt xmp\_nodes\_size}
 \index{xmp\_node\_size@{\tt xmp\_nodes\_size}}
 

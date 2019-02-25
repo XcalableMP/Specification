@@ -367,6 +367,8 @@ directives at runtime.
        template-name}.
  \item \verb![C]! A {\tt distribute} directive for a template must
        precede any of its references in the executable code in the block.
+\item A template can be distributed only once by a {\tt distribute} directive.
+\item A template that is not distributed can not be referenced.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -659,9 +661,10 @@ in the ANSI style).
 \item \verb![C]! An {\tt align} directive for an array must
       precede any of its appearances in the executable code in the block.
 \item \verb![F]! The array specified by {\it array-name} shall not be
-	  initially defined.
+      initially defined.
 \item \verb![C]! The array specified by {\it array-name} shall not be
-	  initialized through an {\it initializer}.
+      initialized through an {\it initializer}.
+\item An array can be aligned only once by an {\tt align} directive.
 \end{itemize}
 
 \subsubsection*{Examples}
@@ -886,6 +889,7 @@ element as itself. The corresponding data object is referred to as the
       dimensions (or rank) of the array specified by {\it array-name}.
 \item \verb![C]! A {\tt shadow} directive for an array must
       precede any of its appearances in the executable code in the block.
+\item A shadow area for a distributed array can be allocated only once by a {\tt shadow} directive.
 \end{itemize}
 
 \subsubsection*{Example}
